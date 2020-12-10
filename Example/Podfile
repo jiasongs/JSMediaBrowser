@@ -1,0 +1,19 @@
+platform :ios, '10.0'
+use_frameworks! :linkage => :static
+
+def pod_Common
+  pod 'JSMediaBrowser', :path => '..'
+  pod 'QMUIKit', '~> 4.2.1' 
+  pod 'Masonry', '~> 1.1.0'
+end
+
+target 'JSMediaBrowserExample' do
+  pod_Common
+  # 调试工具
+  pod 'LookinServer', :configurations => ['Debug']
+  pod 'MLeaksFinder', :configurations => ['Debug']
+end
+
+target 'JSMediaBrowserExampleMacOS' do
+  pod_Common
+end
