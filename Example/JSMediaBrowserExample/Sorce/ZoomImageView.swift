@@ -44,6 +44,7 @@ public class ZoomImageView: ZoomBaseView {
     }
     
     @objc public var viewportRect: CGRect = CGRect.zero
+    @objc public var viewportRectMaxWidth: CGFloat = 700;
     
     @objc public var maximumZoomScale: CGFloat = 2.0 {
         didSet {
@@ -147,14 +148,9 @@ extension ZoomImageView {
     
     @objc open func finalViewportRect() -> CGRect {
         var rect: CGRect = self.viewportRect
-        guard let scrollView = self.scrollView else { return rect }
         if (rect.isEmpty && !self.bounds.isEmpty) {
-            // 有可能此时还没有走到过 layoutSubviews 因此拿不到正确的 scrollView 的 size，因此这里要强制 layout 一下
-            if (!scrollView.bounds.size.equalTo(self.bounds.size)) {
-                self.setNeedsLayout()
-                self.layoutIfNeeded()
-            }
-            rect = CGRectMakeWithSize(scrollView.bounds.size)
+            let size: CGSize = CGSize.init(width: min(self.bounds.width, viewportRectMaxWidth), height: self.bounds.height)
+            rect = CGRect.init(x: (self.bounds.width - size.width) / 2, y: 0, width: size.width, height: size.height)
         }
         return rect
     }
@@ -233,7 +229,7 @@ extension ZoomImageView {
             let scaleY: CGFloat = viewport.height / mediaSize.height
             if let image = self.image {
                 let radio: CGFloat = image.size.height / image.size.width
-                let finalHeight: CGFloat = viewport.width * radio;
+                let finalHeight: CGFloat = image.size.width > viewport.width ? viewport.width * radio : image.size.height;
                 if (finalHeight > viewport.height) {
                     contentMode = .scaleAspectFill;
                 }
@@ -258,7 +254,7 @@ extension ZoomImageView {
         let viewport: CGRect = self.finalViewportRect()
         // 强制 layout 以确保下面的一堆计算依赖的都是最新的 frame 的值
         self.layoutIfNeeded()
-        let contentViewFrame: CGRect = self.convert(contentView.frame, from: contentView.superview)
+        let contentViewFrame: CGRect = self.contentViewRectInZoomImageView()
         var contentInset: UIEdgeInsets = UIEdgeInsets.zero
         contentInset.top = viewport.minY
         contentInset.left = viewport.minX
@@ -270,7 +266,7 @@ extension ZoomImageView {
         }
         if viewport.width > contentViewFrame.width {
             contentInset.left = floor(viewport.midX - contentViewFrame.width / 2.0)
-            contentInset.right = floor(self.bounds.width - viewport.midY - contentViewFrame.width / 2.0)
+            contentInset.right = floor(self.bounds.width - viewport.midX - contentViewFrame.width / 2.0)
         }
         self.scrollView?.contentInset = contentInset
         self.scrollView?.contentSize = contentView.frame.size

@@ -141,9 +141,9 @@
 		7A23CDBB2582020A004B4033 /* Sorce */ = {
 			isa = PBXGroup;
 			children = (
+				7A23CE36258227DD004B4033 /* MediaBrowserProtocol.swift */,
 				7A23CDC525820254004B4033 /* MediaBrowserView.swift */,
 				7AEF5D8B2583240F006550CE /* MediaBrowserViewController.swift */,
-				7A23CE36258227DD004B4033 /* MediaBrowserProtocol.swift */,
 				7A23CDDF2582032F004B4033 /* PagingCollectionView.swift */,
 				7A23CDE4258203D2004B4033 /* PagingLayout.swift */,
 				7AEF5D84258321A2006550CE /* ZoomBaseView.swift */,

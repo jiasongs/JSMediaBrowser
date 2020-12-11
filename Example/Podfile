@@ -4,7 +4,7 @@ use_frameworks! :linkage => :static
 def pod_Common
   pod 'JSMediaBrowser', :path => '..'
   pod 'QMUIKit', '~> 4.2.1' 
-  pod 'Masonry', '~> 1.1.0'
+  pod 'SnapKit', '~> 5.0.0'
   pod 'SDWebImage', '~> 5.10.0'
 end
 

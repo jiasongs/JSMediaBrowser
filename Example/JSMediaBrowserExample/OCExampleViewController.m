@@ -6,7 +6,11 @@
 //
 
 #import "OCExampleViewController.h"
+#if !TARGET_OS_MACCATALYST
 #import "JSMediaBrowserExample-Swift.h"
+#else
+#import "JSMediaBrowserExampleMacOS-Swift.h"
+#endif
 
 @interface OCExampleViewController ()
 

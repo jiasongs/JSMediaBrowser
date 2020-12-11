@@ -8,6 +8,7 @@
 import UIKit
 import QMUIKit
 import SDWebImage
+import SnapKit
 
 class ViewController: UIViewController {
     
@@ -41,11 +42,21 @@ class ViewController: UIViewController {
         self.browser!.dataSource = self;
         self.browser!.registerClass(ImageCollectionViewCell.self, forCellWithReuseIdentifier: "ImageCollectionViewCell")
         self.view.addSubview(self.browser!)
+
+        var margin: CGFloat = 0;
+        if (TARGET_OS_MACCATALYST != 0) {
+            margin = 100;
+        }
+        self.browser.snp.makeConstraints { (make) in
+            make.left.equalTo(self.view.snp.left).offset(margin)
+            make.top.equalTo(self.view.snp.top).offset(margin)
+            make.right.equalTo(self.view.snp.right).offset(-margin)
+            make.bottom.equalTo(self.view.snp.bottom).offset(-margin)
+        }
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        self.browser!.frame = self.view.bounds
         let margins: UIEdgeInsets = UIEdgeInsets.init(top: QMUIHelper.safeAreaInsetsForDeviceWithNotch().top + self.qmui_navigationBarMaxYInViewCoordinator, left: 24 + self.view.qmui_safeAreaInsets.left, bottom: 24, right: 24 + self.view.qmui_safeAreaInsets.right);
         let contentWidth: CGFloat = self.view.qmui_width - UIEdgeInsetsGetHorizontalValue(margins);
         let column: Int = 3
