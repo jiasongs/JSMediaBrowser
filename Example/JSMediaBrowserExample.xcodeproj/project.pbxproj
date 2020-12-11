@@ -23,8 +23,8 @@
 		7A23CDE12582032F004B4033 /* PagingCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A23CDDF2582032F004B4033 /* PagingCollectionView.swift */; };
 		7A23CDE5258203D2004B4033 /* PagingLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A23CDE4258203D2004B4033 /* PagingLayout.swift */; };
 		7A23CDE6258203D2004B4033 /* PagingLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A23CDE4258203D2004B4033 /* PagingLayout.swift */; };
-		7A23CE37258227DD004B4033 /* MediaBrowserViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A23CE36258227DD004B4033 /* MediaBrowserViewProtocol.swift */; };
-		7A23CE38258227DD004B4033 /* MediaBrowserViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A23CE36258227DD004B4033 /* MediaBrowserViewProtocol.swift */; };
+		7A23CE37258227DD004B4033 /* MediaBrowserProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A23CE36258227DD004B4033 /* MediaBrowserProtocol.swift */; };
+		7A23CE38258227DD004B4033 /* MediaBrowserProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A23CE36258227DD004B4033 /* MediaBrowserProtocol.swift */; };
 		7A23CE4225823DE1004B4033 /* ZoomImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A23CE4125823DE1004B4033 /* ZoomImageView.swift */; };
 		7A23CE4325823DE1004B4033 /* ZoomImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A23CE4125823DE1004B4033 /* ZoomImageView.swift */; };
 		7AEF5D85258321A2006550CE /* ZoomBaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AEF5D84258321A2006550CE /* ZoomBaseView.swift */; };
@@ -33,6 +33,8 @@
 		7AEF5D8D2583240F006550CE /* MediaBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AEF5D8B2583240F006550CE /* MediaBrowserViewController.swift */; };
 		7AEF5DBC2583544B006550CE /* ZoomViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AEF5DBB2583544B006550CE /* ZoomViewProtocol.swift */; };
 		7AEF5DBD2583544B006550CE /* ZoomViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AEF5DBB2583544B006550CE /* ZoomViewProtocol.swift */; };
+		7AEF5DCE25837379006550CE /* OCExampleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AEF5DCD25837379006550CE /* OCExampleViewController.m */; };
+		7AEF5DCF25837379006550CE /* OCExampleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AEF5DCD25837379006550CE /* OCExampleViewController.m */; };
 		89516E7FD204A204EF2CF80F /* Pods_JSMediaBrowserExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CCDCF6D2CDAF3039877EFE3 /* Pods_JSMediaBrowserExample.framework */; };
 		A44935B3B09FE2856D04EDB9 /* Pods_JSMediaBrowserExampleMacOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B64BB0B3D884C22FBBA821AB /* Pods_JSMediaBrowserExampleMacOS.framework */; };
 /* End PBXBuildFile section */
@@ -53,11 +55,15 @@
 		7A23CDC525820254004B4033 /* MediaBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaBrowserView.swift; sourceTree = "<group>"; };
 		7A23CDDF2582032F004B4033 /* PagingCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PagingCollectionView.swift; sourceTree = "<group>"; };
 		7A23CDE4258203D2004B4033 /* PagingLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PagingLayout.swift; sourceTree = "<group>"; };
-		7A23CE36258227DD004B4033 /* MediaBrowserViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaBrowserViewProtocol.swift; sourceTree = "<group>"; };
+		7A23CE36258227DD004B4033 /* MediaBrowserProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaBrowserProtocol.swift; sourceTree = "<group>"; };
 		7A23CE4125823DE1004B4033 /* ZoomImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomImageView.swift; sourceTree = "<group>"; };
 		7AEF5D84258321A2006550CE /* ZoomBaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomBaseView.swift; sourceTree = "<group>"; };
 		7AEF5D8B2583240F006550CE /* MediaBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaBrowserViewController.swift; sourceTree = "<group>"; };
 		7AEF5DBB2583544B006550CE /* ZoomViewProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZoomViewProtocol.swift; sourceTree = "<group>"; };
+		7AEF5DCA25837379006550CE /* JSMediaBrowserExample-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "JSMediaBrowserExample-Bridging-Header.h"; sourceTree = "<group>"; };
+		7AEF5DCB25837379006550CE /* JSMediaBrowserExampleMacOS-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "JSMediaBrowserExampleMacOS-Bridging-Header.h"; sourceTree = "<group>"; };
+		7AEF5DCC25837379006550CE /* OCExampleViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OCExampleViewController.h; sourceTree = "<group>"; };
+		7AEF5DCD25837379006550CE /* OCExampleViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OCExampleViewController.m; sourceTree = "<group>"; };
 		7CCDCF6D2CDAF3039877EFE3 /* Pods_JSMediaBrowserExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JSMediaBrowserExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B64BB0B3D884C22FBBA821AB /* Pods_JSMediaBrowserExampleMacOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JSMediaBrowserExampleMacOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7AD73DCE445666C2F26F2AE /* Pods-JSMediaBrowserExampleMacOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JSMediaBrowserExampleMacOS.release.xcconfig"; path = "Target Support Files/Pods-JSMediaBrowserExampleMacOS/Pods-JSMediaBrowserExampleMacOS.release.xcconfig"; sourceTree = "<group>"; };
@@ -119,6 +125,10 @@
 				7A23CDBB2582020A004B4033 /* Sorce */,
 				7A23CD5A2581F365004B4033 /* AppDelegate.swift */,
 				7A23CD5E2581F365004B4033 /* ViewController.swift */,
+				7AEF5DCC25837379006550CE /* OCExampleViewController.h */,
+				7AEF5DCD25837379006550CE /* OCExampleViewController.m */,
+				7AEF5DCA25837379006550CE /* JSMediaBrowserExample-Bridging-Header.h */,
+				7AEF5DCB25837379006550CE /* JSMediaBrowserExampleMacOS-Bridging-Header.h */,
 				7A23CD602581F365004B4033 /* Main.storyboard */,
 				7A23CD632581F367004B4033 /* Assets.xcassets */,
 				7A23CD652581F367004B4033 /* LaunchScreen.storyboard */,
@@ -133,7 +143,7 @@
 			children = (
 				7A23CDC525820254004B4033 /* MediaBrowserView.swift */,
 				7AEF5D8B2583240F006550CE /* MediaBrowserViewController.swift */,
-				7A23CE36258227DD004B4033 /* MediaBrowserViewProtocol.swift */,
+				7A23CE36258227DD004B4033 /* MediaBrowserProtocol.swift */,
 				7A23CDDF2582032F004B4033 /* PagingCollectionView.swift */,
 				7A23CDE4258203D2004B4033 /* PagingLayout.swift */,
 				7AEF5D84258321A2006550CE /* ZoomBaseView.swift */,
@@ -207,6 +217,10 @@
 				TargetAttributes = {
 					7A23CD562581F365004B4033 = {
 						CreatedOnToolsVersion = 12.2;
+						LastSwiftMigration = 1220;
+					};
+					7A23CD742581F3C1004B4033 = {
+						LastSwiftMigration = 1220;
 					};
 				};
 			};
@@ -355,11 +369,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7AEF5DCE25837379006550CE /* OCExampleViewController.m in Sources */,
 				7AEF5D85258321A2006550CE /* ZoomBaseView.swift in Sources */,
 				7A23CDE5258203D2004B4033 /* PagingLayout.swift in Sources */,
 				7A23CDE02582032F004B4033 /* PagingCollectionView.swift in Sources */,
 				7AEF5DBC2583544B006550CE /* ZoomViewProtocol.swift in Sources */,
-				7A23CE37258227DD004B4033 /* MediaBrowserViewProtocol.swift in Sources */,
+				7A23CE37258227DD004B4033 /* MediaBrowserProtocol.swift in Sources */,
 				7A23CDC625820254004B4033 /* MediaBrowserView.swift in Sources */,
 				7A23CD5F2581F365004B4033 /* ViewController.swift in Sources */,
 				7A23CD5B2581F365004B4033 /* AppDelegate.swift in Sources */,
@@ -372,11 +387,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7AEF5DCF25837379006550CE /* OCExampleViewController.m in Sources */,
 				7AEF5D86258321A2006550CE /* ZoomBaseView.swift in Sources */,
 				7A23CDE6258203D2004B4033 /* PagingLayout.swift in Sources */,
 				7A23CDE12582032F004B4033 /* PagingCollectionView.swift in Sources */,
 				7AEF5DBD2583544B006550CE /* ZoomViewProtocol.swift in Sources */,
-				7A23CE38258227DD004B4033 /* MediaBrowserViewProtocol.swift in Sources */,
+				7A23CE38258227DD004B4033 /* MediaBrowserProtocol.swift in Sources */,
 				7A23CDC725820254004B4033 /* MediaBrowserView.swift in Sources */,
 				7A23CD762581F3C1004B4033 /* ViewController.swift in Sources */,
 				7A23CD772581F3C1004B4033 /* AppDelegate.swift in Sources */,
@@ -529,6 +545,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = JSMediaBrowserExample/JSMediaBrowserExample.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = KJ6AEY5JEH;
@@ -541,6 +558,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.jiasong.JSMediaBrowserExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "JSMediaBrowserExample/JSMediaBrowserExample-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -552,6 +571,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = JSMediaBrowserExample/JSMediaBrowserExample.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = KJ6AEY5JEH;
@@ -564,6 +584,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.jiasong.JSMediaBrowserExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "JSMediaBrowserExample/JSMediaBrowserExample-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -575,6 +596,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = JSMediaBrowserExample/JSMediaBrowserExample.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = KJ6AEY5JEH;
@@ -587,6 +609,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.jiasong.JSMediaBrowserExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "JSMediaBrowserExample/JSMediaBrowserExampleMacOS-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
@@ -598,6 +622,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = JSMediaBrowserExample/JSMediaBrowserExample.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = KJ6AEY5JEH;
@@ -610,6 +635,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.jiasong.JSMediaBrowserExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "JSMediaBrowserExample/JSMediaBrowserExampleMacOS-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 2;
 			};

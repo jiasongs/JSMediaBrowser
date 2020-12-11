@@ -1,5 +1,5 @@
 //
-//  MediaBrowserViewProtocol.swift
+//  MediaBrowserProtocol.swift
 //  JSMediaBrowserExample
 //
 //  Created by jiasong on 2020/12/10.
@@ -9,8 +9,8 @@ import UIKit
 
 @objc public protocol MediaBrowserViewDataSource: NSObjectProtocol {
     
-    func numberOfMediaItemsInBrowserView(_ browserView: MediaBrowserView) -> Int;
-    func mediaBrowserView(_ browserView: MediaBrowserView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell;
+    @objc func numberOfMediaItemsInBrowserView(_ browserView: MediaBrowserView) -> Int;
+    @objc func mediaBrowserView(_ browserView: MediaBrowserView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell;
     
 }
 

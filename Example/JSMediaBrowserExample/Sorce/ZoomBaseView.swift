@@ -9,10 +9,10 @@ import UIKit
 
 public class ZoomBaseView: UIView {
     
-    open weak var delegate: ZoomViewProtocol?
-    open var singleTapGesture: UITapGestureRecognizer?
-    open var doubleTapGesture: UITapGestureRecognizer?
-    open var longPressGesture: UILongPressGestureRecognizer?
+    @objc open weak var delegate: ZoomViewProtocol?
+    @objc open var singleTapGesture: UITapGestureRecognizer?
+    @objc open var doubleTapGesture: UITapGestureRecognizer?
+    @objc open var longPressGesture: UILongPressGestureRecognizer?
     
     public override init(frame: CGRect) {
         super.init(frame: frame)

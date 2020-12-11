@@ -11,10 +11,10 @@ import QMUIKit
 
 public class ZoomImageView: ZoomBaseView {
     
-    private(set) var scrollView: UIScrollView?
+    @objc private(set) var scrollView: UIScrollView?
     
     private var isImageViewInitialized: Bool = false
-    private(set) lazy var imageView: UIImageView = {
+    @objc private(set) lazy var imageView: UIImageView = {
         isImageViewInitialized = true
         let imageView = UIImageView.init()
         imageView.isHidden = true
@@ -23,7 +23,7 @@ public class ZoomImageView: ZoomBaseView {
     }()
     
     private var isLivePhotoViewViewInitialized: Bool = false
-    private(set) lazy var livePhotoView: PHLivePhotoView = {
+    @objc private(set) lazy var livePhotoView: PHLivePhotoView = {
         isLivePhotoViewViewInitialized = true
         let livePhotoView = PHLivePhotoView.init()
         livePhotoView.isHidden = true
@@ -31,7 +31,7 @@ public class ZoomImageView: ZoomBaseView {
         return livePhotoView
     }()
     
-    public var contentView: UIView? {
+    @objc public var contentView: UIView? {
         get {
             if (isImageViewInitialized && !imageView.isHidden) {
                 return imageView
@@ -43,15 +43,15 @@ public class ZoomImageView: ZoomBaseView {
         }
     }
     
-    public var viewportRect: CGRect = CGRect.zero
+    @objc public var viewportRect: CGRect = CGRect.zero
     
-    public var maximumZoomScale: CGFloat = 2.0 {
+    @objc public var maximumZoomScale: CGFloat = 2.0 {
         didSet {
             self.scrollView?.maximumZoomScale = maximumZoomScale
         }
     }
     
-    public weak var image: UIImage? {
+    @objc public weak var image: UIImage? {
         didSet {
             if isLivePhotoViewViewInitialized {
                 self.livePhotoView.isHidden = true
@@ -66,7 +66,7 @@ public class ZoomImageView: ZoomBaseView {
         }
     }
     
-    public weak var livePhoto: PHLivePhoto? {
+    @objc public weak var livePhoto: PHLivePhoto? {
         didSet {
             self.livePhotoView.isHidden = false
             if isImageViewInitialized {
@@ -80,7 +80,7 @@ public class ZoomImageView: ZoomBaseView {
         }
     }
     
-    public var enabledZoom: Bool = true
+    @objc public var enabledZoom: Bool = true
     
     public override func didInitialize(frame: CGRect) -> Void {
         super.didInitialize(frame: frame);

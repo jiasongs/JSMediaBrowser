@@ -9,13 +9,13 @@ import UIKit
 
 public class MediaBrowserView: UIView {
     
-    public weak var dataSource: MediaBrowserViewDataSource?
-    public weak var delegate: MediaBrowserViewDelegate?
+    @objc public weak var dataSource: MediaBrowserViewDataSource?
+    @objc public weak var delegate: MediaBrowserViewDelegate?
     
-    private(set) var collectionView: PagingCollectionView?
-    private(set) var collectionViewLayout: PagingLayout?
+    @objc private(set) var collectionView: PagingCollectionView?
+    @objc private(set) var collectionViewLayout: PagingLayout?
     
-    public var currentMediaIndex: Int = 0 {
+    @objc public var currentMediaIndex: Int = 0 {
         didSet {
             if isNeededScrollToItem {
                 self.setCurrentMedia(index: self.currentMediaIndex, animated: false)
