@@ -12,8 +12,8 @@ public class MediaBrowserView: UIView {
     public weak var dataSource: MediaBrowserViewDataSource?
     public weak var delegate: MediaBrowserViewDelegate?
     
-    private(set) var collectionView: PagingCollectionView!
-    private(set) var collectionViewLayout: PagingLayout!
+    private(set) var collectionView: PagingCollectionView?
+    private(set) var collectionViewLayout: PagingLayout?
     
     public var currentMediaIndex: Int = 0 {
         didSet {
@@ -39,10 +39,10 @@ public class MediaBrowserView: UIView {
     
     func didInitialize(frame: CGRect) -> Void {
         self.collectionViewLayout = PagingLayout.init()
-        self.collectionView = PagingCollectionView.init(frame: frame, collectionViewLayout: self.collectionViewLayout)
-        self.collectionView.delegate = self
-        self.collectionView.dataSource = self
-        self.addSubview(self.collectionView)
+        self.collectionView = PagingCollectionView.init(frame: frame, collectionViewLayout: self.collectionViewLayout!)
+        self.collectionView?.delegate = self
+        self.collectionView?.dataSource = self
+        self.addSubview(self.collectionView!)
     }
     
 }
@@ -53,23 +53,24 @@ extension MediaBrowserView {
         self.isNeededScrollToItem = false
         self.currentMediaIndex = index
         self.isNeededScrollToItem = true
-        self.collectionView.reloadData()
-        if index < self.collectionView.numberOfItems(inSection: 0) {
-            self.collectionView.scrollToItem(at: IndexPath.init(item: self.currentMediaIndex, section: 0), at: .centeredHorizontally, animated: animated)
-            self.collectionView.layoutIfNeeded()
+        self.collectionView?.reloadData()
+        guard let numberOfItems = self.collectionView?.numberOfItems(inSection: 0) else { return }
+        if index < numberOfItems {
+            self.collectionView?.scrollToItem(at: IndexPath.init(item: self.currentMediaIndex, section: 0), at: .centeredHorizontally, animated: animated)
+            self.collectionView?.layoutIfNeeded()
         }
     }
     
     @objc open func reloadData() -> Void {
-        self.collectionView.reloadData()
+        self.collectionView?.reloadData()
     }
     
     @objc open func registerClass(_ cellClass: AnyClass, forCellWithReuseIdentifier identifier: String) -> Void {
-        self.collectionView.register(cellClass, forCellWithReuseIdentifier: identifier)
+        self.collectionView?.register(cellClass, forCellWithReuseIdentifier: identifier)
     }
     
     @objc open func dequeueReusableCell(withReuseIdentifier identifier: String, for indexPath: IndexPath) -> UICollectionViewCell {
-        return self.collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath)
+        return self.collectionView?.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) ?? UICollectionViewCell.init()
     }
     
 }
@@ -93,14 +94,14 @@ extension MediaBrowserView: UICollectionViewDelegateFlowLayout {
     }
     
     public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if self.delegate != nil && self.delegate!.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:willDisplay:forItemAt:))) {
-            self.delegate?.mediaBrowserView?(self, willDisplay: cell, forItemAt: indexPath)
+        if let delegate = self.delegate, delegate.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:willDisplay:forItemAt:))) {
+            delegate.mediaBrowserView?(self, willDisplay: cell, forItemAt: indexPath)
         }
     }
     
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if self.delegate != nil && self.delegate!.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:didEndDisplaying:forItemAt:))) {
-            self.delegate?.mediaBrowserView?(self, didEndDisplaying: cell, forItemAt: indexPath)
+        if let delegate = self.delegate, delegate.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:didEndDisplaying:forItemAt:))) {
+            delegate.mediaBrowserView?(self, didEndDisplaying: cell, forItemAt: indexPath)
         }
     }
     
@@ -108,8 +109,8 @@ extension MediaBrowserView: UICollectionViewDelegateFlowLayout {
         if scrollView != self.collectionView {
             return
         }
-        if self.delegate != nil && self.delegate!.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:didScrollTo:))) {
-            self.delegate?.mediaBrowserView?(self, didScrollTo: self.currentMediaIndex)
+        if let delegate = self.delegate, delegate.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:didScrollTo:))) {
+            delegate.mediaBrowserView?(self, didScrollTo: self.currentMediaIndex)
         }
     }
     
@@ -120,12 +121,14 @@ extension MediaBrowserView: UICollectionViewDelegateFlowLayout {
         if self.isChangingCollectionViewBounds {
             return
         }
+        guard let collectionView = self.collectionView else { return }
+        guard let collectionViewLayout = self.collectionViewLayout else { return }
         let betweenOrEqual =  { (minimumValue: CGFloat, value: CGFloat, maximumValue: CGFloat) -> Bool in
             return minimumValue <= value && value <= maximumValue
         }
-        let pageWidth: CGFloat = self.collectionView(self.collectionView, layout: self.collectionViewLayout, sizeForItemAt: IndexPath.init(item: 0, section: 0)).width
-        let pageHorizontalMargin: CGFloat = self.collectionViewLayout.pageSpacing
-        let contentOffsetX: CGFloat = self.collectionView.contentOffset.x
+        let pageWidth: CGFloat = self.collectionView(collectionView, layout: collectionViewLayout, sizeForItemAt: IndexPath.init(item: 0, section: 0)).width
+        let pageHorizontalMargin: CGFloat = collectionViewLayout.pageSpacing
+        let contentOffsetX: CGFloat = collectionView.contentOffset.x
         var index: CGFloat = contentOffsetX / (pageWidth + pageHorizontalMargin)
         let isFirstDidScroll: Bool = self.previousIndexWhenScrolling == 0
         let fastToRight: Bool = (floor(index) - floor(self.previousIndexWhenScrolling) >= 1.0) && (floor(index) - self.previousIndexWhenScrolling > 0.5)
@@ -135,11 +138,11 @@ extension MediaBrowserView: UICollectionViewDelegateFlowLayout {
         
         if !isFirstDidScroll && (turnPageToRight || turnPageToLeft) {
             index = round(index)
-            if 0 <= index && Int(index) < self.collectionView.numberOfItems(inSection: 0) {
+            if 0 <= index && Int(index) < collectionView.numberOfItems(inSection: 0) {
                 self.isNeededScrollToItem = false
                 self.currentMediaIndex = Int(index)
                 self.isNeededScrollToItem = true
-                if self.delegate != nil && self.delegate!.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:willScrollHalfTo:))) {
+                if let delegate = self.delegate, delegate.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:willScrollHalfTo:))) {
                     self.delegate?.mediaBrowserView?(self, willScrollHalfTo: Int(index))
                 }
             }
@@ -153,12 +156,13 @@ extension MediaBrowserView {
     
     open override func layoutSubviews() {
         super.layoutSubviews()
-        let isCollectionViewSizeChanged = !self.collectionView.bounds.size.equalTo(self.bounds.size)
+        guard let collectionView = self.collectionView  else { return }
+        let isCollectionViewSizeChanged = !collectionView.bounds.size.equalTo(self.bounds.size)
         if isCollectionViewSizeChanged {
             self.isChangingCollectionViewBounds = true
-            self.collectionViewLayout.invalidateLayout()
-            self.collectionView.frame = self.bounds
-            self.collectionView.scrollToItem(at: IndexPath.init(item: self.currentMediaIndex, section: 0), at: .centeredHorizontally, animated: false)
+            self.collectionViewLayout?.invalidateLayout()
+            self.collectionView?.frame = self.bounds
+            self.collectionView?.scrollToItem(at: IndexPath.init(item: self.currentMediaIndex, section: 0), at: .centeredHorizontally, animated: false)
             self.isChangingCollectionViewBounds = false
         }
     }

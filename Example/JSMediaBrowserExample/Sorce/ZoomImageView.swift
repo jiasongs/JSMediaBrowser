@@ -11,14 +11,14 @@ import QMUIKit
 
 public class ZoomImageView: ZoomBaseView {
     
-    private(set) var scrollView: UIScrollView!
+    private(set) var scrollView: UIScrollView?
     
     private var isImageViewInitialized: Bool = false
     private(set) lazy var imageView: UIImageView = {
         isImageViewInitialized = true
         let imageView = UIImageView.init()
         imageView.isHidden = true
-        self.scrollView.addSubview(imageView)
+        self.scrollView?.addSubview(imageView)
         return imageView
     }()
     
@@ -27,7 +27,7 @@ public class ZoomImageView: ZoomBaseView {
         isLivePhotoViewViewInitialized = true
         let livePhotoView = PHLivePhotoView.init()
         livePhotoView.isHidden = true
-        self.scrollView.addSubview(livePhotoView)
+        self.scrollView?.addSubview(livePhotoView)
         return livePhotoView
     }()
     
@@ -47,7 +47,7 @@ public class ZoomImageView: ZoomBaseView {
     
     public var maximumZoomScale: CGFloat = 2.0 {
         didSet {
-            self.scrollView.maximumZoomScale = maximumZoomScale
+            self.scrollView?.maximumZoomScale = maximumZoomScale
         }
     }
     
@@ -87,15 +87,15 @@ public class ZoomImageView: ZoomBaseView {
         self.contentMode = .center
         
         self.scrollView = UIScrollView.init(frame: CGRect.init(origin: CGPoint.zero, size: frame.size))
-        self.scrollView.showsHorizontalScrollIndicator = false
-        self.scrollView.showsVerticalScrollIndicator = false
-        self.scrollView.minimumZoomScale = 0
-        self.scrollView.maximumZoomScale = self.maximumZoomScale
-        self.scrollView.delegate = self
+        self.scrollView?.showsHorizontalScrollIndicator = false
+        self.scrollView?.showsVerticalScrollIndicator = false
+        self.scrollView?.minimumZoomScale = 0
+        self.scrollView?.maximumZoomScale = self.maximumZoomScale
+        self.scrollView?.delegate = self
         if #available(iOS 11.0, *) {
-            self.scrollView.contentInsetAdjustmentBehavior = .never
+            self.scrollView?.contentInsetAdjustmentBehavior = .never
         }
-        self.addSubview(self.scrollView)
+        self.addSubview(self.scrollView!)
     }
     
 }
@@ -103,10 +103,10 @@ public class ZoomImageView: ZoomBaseView {
 extension ZoomImageView {
     
     @objc open func contentViewRectInZoomImageView() -> CGRect {
-        if (self.contentView == nil) {
+        guard let contentView = self.contentView else {
             return CGRect.zero
         }
-        return self.convert(self.contentView!.frame, from: self.contentView!.superview)
+        return self.convert(contentView.frame, from: contentView.superview)
     }
     
     @objc open func revertZooming() -> Void {
@@ -118,22 +118,22 @@ extension ZoomImageView {
         var maximumZoomScale: CGFloat = enabledZoomImageView ? self.maximumZoomScale : minimumZoomScale
         maximumZoomScale = max(minimumZoomScale, maximumZoomScale)
         let zoomScale: CGFloat = minimumZoomScale
-        let shouldFireDidZoomingManual: Bool = zoomScale == self.scrollView.zoomScale
-        self.scrollView.panGestureRecognizer.isEnabled = enabledZoomImageView
-        self.scrollView.pinchGestureRecognizer?.isEnabled = enabledZoomImageView
-        self.scrollView.minimumZoomScale = minimumZoomScale
-        self.scrollView.maximumZoomScale = maximumZoomScale
+        let shouldFireDidZoomingManual: Bool = zoomScale == self.scrollView?.zoomScale
+        self.scrollView?.panGestureRecognizer.isEnabled = enabledZoomImageView
+        self.scrollView?.pinchGestureRecognizer?.isEnabled = enabledZoomImageView
+        self.scrollView?.minimumZoomScale = minimumZoomScale
+        self.scrollView?.maximumZoomScale = maximumZoomScale
         self.contentView?.frame = CGRectSetXY(self.contentView?.frame ?? CGRect.zero, 0, 0)
         self.setZoom(scale: zoomScale, animated: false)
         if (shouldFireDidZoomingManual) {
             self.handleDidEndZooming()
         }
-        self.scrollView.contentOffset = { () -> CGPoint in
-            var x: CGFloat = self.scrollView.contentOffset.x
-            var y: CGFloat = self.scrollView.contentOffset.y
+        
+        self.scrollView?.contentOffset = { () -> CGPoint in
+            var x: CGFloat = self.scrollView?.contentOffset.x ?? 0
+            var y: CGFloat = self.scrollView?.contentOffset.y ?? 0
             let viewport: CGRect = self.finalViewportRect()
-            if (!viewport.isEmpty && self.contentView != nil) {
-                let contentView: UIView = self.contentView!
+            if let contentView = self.contentView, !viewport.isEmpty {
                 if (viewport.width < contentView.frame.width) {
                     x = contentView.frame.width / 2 - viewport.width / 2 - viewport.minX
                 }
@@ -147,13 +147,14 @@ extension ZoomImageView {
     
     @objc open func finalViewportRect() -> CGRect {
         var rect: CGRect = self.viewportRect
+        guard let scrollView = self.scrollView else { return rect }
         if (rect.isEmpty && !self.bounds.isEmpty) {
             // 有可能此时还没有走到过 layoutSubviews 因此拿不到正确的 scrollView 的 size，因此这里要强制 layout 一下
-            if (!self.scrollView.bounds.size.equalTo(self.bounds.size)) {
+            if (!scrollView.bounds.size.equalTo(self.bounds.size)) {
                 self.setNeedsLayout()
                 self.layoutIfNeeded()
             }
-            rect = CGRectMakeWithSize(self.scrollView.bounds.size)
+            rect = CGRectMakeWithSize(scrollView.bounds.size)
         }
         return rect
     }
@@ -161,20 +162,20 @@ extension ZoomImageView {
     @objc open func setZoom(scale: CGFloat, animated: Bool) -> Void {
         if animated {
             UIView.animate(withDuration: 0.25, delay: 0.0, options: UIView.AnimationOptions(rawValue: UIView.AnimationOptions.RawValue(QMUIViewAnimationOptionsCurveOut)), animations: {
-                self.scrollView.zoomScale = scale
+                self.scrollView?.zoomScale = scale
             }, completion: nil)
         } else {
-            self.scrollView.zoomScale = scale
+            self.scrollView?.zoomScale = scale
         }
     }
     
     @objc open func zoom(to rect: CGRect, animated: Bool) -> Void {
         if (animated) {
             UIView.animate(withDuration: 0.25, delay: 0.0, options: UIView.AnimationOptions(rawValue: UIView.AnimationOptions.RawValue(QMUIViewAnimationOptionsCurveOut)), animations: {
-                self.scrollView.zoom(to: rect, animated: animated)
+                self.scrollView?.zoom(to: rect, animated: animated)
             }, completion: nil)
         } else {
-            self.scrollView.zoom(to: rect, animated: animated)
+            self.scrollView?.zoom(to: rect, animated: animated)
         }
     }
     
@@ -187,7 +188,7 @@ extension ZoomImageView {
         if (self.bounds.isEmpty) {
             return
         }
-        self.scrollView.frame = self.bounds
+        self.scrollView?.frame = self.bounds
     }
     
     open override var frame: CGRect {
@@ -230,10 +231,12 @@ extension ZoomImageView {
             var minScale: CGFloat = 1
             let scaleX: CGFloat = viewport.width / mediaSize.width
             let scaleY: CGFloat = viewport.height / mediaSize.height
-            let radio: CGFloat = self.image!.size.height / self.image!.size.width;
-            let finalHeight: CGFloat = viewport.width * radio;
-            if (finalHeight > viewport.height) {
-                contentMode = .scaleAspectFill;
+            if let image = self.image {
+                let radio: CGFloat = image.size.height / image.size.width
+                let finalHeight: CGFloat = viewport.width * radio;
+                if (finalHeight > viewport.height) {
+                    contentMode = .scaleAspectFill;
+                }
             }
             if (contentMode == .scaleAspectFit) {
                 minScale = min(scaleX, scaleY)
@@ -251,10 +254,7 @@ extension ZoomImageView {
     }
     
     private func handleDidEndZooming() -> Void {
-        if self.contentView == nil {
-            return
-        }
-        let contentView: UIView = self.contentView!
+        guard let contentView = self.contentView else { return }
         let viewport: CGRect = self.finalViewportRect()
         // 强制 layout 以确保下面的一堆计算依赖的都是最新的 frame 的值
         self.layoutIfNeeded()
@@ -272,25 +272,26 @@ extension ZoomImageView {
             contentInset.left = floor(viewport.midX - contentViewFrame.width / 2.0)
             contentInset.right = floor(self.bounds.width - viewport.midY - contentViewFrame.width / 2.0)
         }
-        self.scrollView.contentInset = contentInset
-        self.scrollView.contentSize = contentView.frame.size
+        self.scrollView?.contentInset = contentInset
+        self.scrollView?.contentSize = contentView.frame.size
     }
     
     @objc public override func handleDoubleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) -> Void {
         super.handleDoubleTapGesture(gestureRecognizer);
         if (self.enabledZoomImageView) {
+            guard let scrollView = self.scrollView else { return }
             let gesturePoint: CGPoint = gestureRecognizer.location(in: gestureRecognizer.view)
             // 如果图片被压缩了，则第一次放大到原图大小，第二次放大到最大倍数
-            if (self.scrollView.zoomScale >= self.scrollView.maximumZoomScale) {
-                self.setZoom(scale: self.scrollView.minimumZoomScale, animated: true)
+            if (scrollView.zoomScale >= scrollView.maximumZoomScale) {
+                self.setZoom(scale: scrollView.minimumZoomScale, animated: true)
             } else {
                 var newZoomScale: CGFloat = 0
-                if (self.scrollView.zoomScale < 1) {
+                if (scrollView.zoomScale < 1) {
                     // 如果目前显示的大小比原图小，则放大到原图
                     newZoomScale = 1
                 } else {
                     // 如果当前显示原图，则放大到最大的大小
-                    newZoomScale = self.scrollView.maximumZoomScale
+                    newZoomScale = scrollView.maximumZoomScale
                 }
                 var zoomRect: CGRect = CGRect.zero
                 let tapPoint: CGPoint = self.contentView?.convert(gesturePoint, from: gestureRecognizer.view) ?? CGPoint.zero

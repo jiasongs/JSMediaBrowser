@@ -18,12 +18,12 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.dataSource = ["https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=1466376595,3460773628&fm=26&gp=0.jpg",
-                            "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=643903962,2695937018&fm=26&gp=0.jpg",
-                            "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3121164654,816590068&fm=26&gp=0.jpg",
-                            "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=622096340,3782403238&fm=26&gp=0.jpg",
-                            "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=349365238,2569710698&fm=26&gp=0.jpg",
-                            "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1566929321,2427730641&fm=26&gp=0.jpg",
-                            "https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1607418626&di=8c9d107764f8873ca1f22997094abeac&src=http://b-ssl.duitang.com/uploads/item/201807/13/20180713120020_umtgg.thumb.700_0.jpg"]
+                           "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=643903962,2695937018&fm=26&gp=0.jpg",
+                           "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3121164654,816590068&fm=26&gp=0.jpg",
+                           "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=622096340,3782403238&fm=26&gp=0.jpg",
+                           "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=349365238,2569710698&fm=26&gp=0.jpg",
+                           "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1566929321,2427730641&fm=26&gp=0.jpg",
+                           "https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1607418626&di=8c9d107764f8873ca1f22997094abeac&src=http://b-ssl.duitang.com/uploads/item/201807/13/20180713120020_umtgg.thumb.700_0.jpg"]
         self.floatLayoutView = QMUIFloatLayoutView.init()
         self.floatLayoutView!.itemMargins = UIEdgeInsets.init(top: QMUIHelper.pixelOne(), left: QMUIHelper.pixelOne(), bottom: 0, right: 0);
         for item: String in self.dataSource {
@@ -59,7 +59,7 @@ class ViewController: UIViewController {
     @objc func handleImageButtonEvent() -> Void {
         
     }
-
+    
 }
 
 extension ViewController: MediaBrowserViewDataSource {

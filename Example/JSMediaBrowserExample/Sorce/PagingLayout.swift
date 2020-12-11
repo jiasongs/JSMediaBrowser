@@ -36,9 +36,12 @@ extension PagingLayout {
     override func prepare() {
         super.prepare()
         var itemSize: CGSize = self.itemSize
-        let layoutDelegate = self.collectionView?.delegate as! UICollectionViewDelegateFlowLayout
-        if layoutDelegate.responds(to: #selector(UICollectionViewDelegateFlowLayout.collectionView(_:layout:sizeForItemAt:))) {
-            itemSize = layoutDelegate.collectionView?(self.collectionView!, layout: self, sizeForItemAt: IndexPath.init(item: 0, section: 0)) ?? CGSize.zero
+        guard let collectionView = self.collectionView else { return }
+        if let layoutDelegate = collectionView.delegate {
+            if layoutDelegate.responds(to: #selector(UICollectionViewDelegateFlowLayout.collectionView(_:layout:sizeForItemAt:))) {
+                let delegate = layoutDelegate as! UICollectionViewDelegateFlowLayout
+                itemSize = delegate.collectionView?(collectionView, layout: self, sizeForItemAt: IndexPath.init(item: 0, section: 0)) ?? CGSize.zero
+            }
         }
         self.finalItemSize = itemSize;
     }
