@@ -53,11 +53,14 @@ public class ZoomImageView: ZoomBaseView {
     
     public weak var image: UIImage? {
         didSet {
-            self.livePhotoView.isHidden = true
+            if isLivePhotoViewViewInitialized {
+                self.livePhotoView.isHidden = true
+            }
             self.imageView.isHidden = false
             if self.image != nil {
                 self.imageView.image = self.image
                 self.imageView.qmui_frameApplyTransform = CGRect.init(origin: CGPoint.zero, size: self.image?.size ?? CGSize.zero)
+                
                 self.revertZooming()
             }
         }
@@ -66,7 +69,9 @@ public class ZoomImageView: ZoomBaseView {
     public weak var livePhoto: PHLivePhoto? {
         didSet {
             self.livePhotoView.isHidden = false
-            self.imageView.isHidden = true
+            if isImageViewInitialized {
+                self.imageView.isHidden = true
+            }
             if self.livePhoto != nil {
                 self.livePhotoView.livePhoto = self.livePhoto
                 self.livePhotoView.qmui_frameApplyTransform = CGRect.init(origin: CGPoint.zero, size: self.image?.size ?? CGSize.zero)
@@ -75,38 +80,8 @@ public class ZoomImageView: ZoomBaseView {
         }
     }
     
-    public var minimumZoomScale: CGFloat {
-        get {
-            if self.image == nil && self.livePhoto == nil {
-                return 1
-            }
-            let viewport: CGRect = self.finalViewportRect()
-            var mediaSize: CGSize = CGSize.zero
-            if self.image != nil {
-                mediaSize = self.image!.size
-            } else if self.livePhoto != nil {
-                mediaSize = self.livePhoto!.size
-            }
-            var minScale: CGFloat = 1
-            let scaleX: CGFloat = viewport.width / mediaSize.width
-            let scaleY: CGFloat = viewport.height / mediaSize.height
-            if (self.contentMode == .scaleAspectFit) {
-                minScale = min(scaleX, scaleY)
-            } else if (self.contentMode == .scaleAspectFill) {
-                minScale = max(scaleX, scaleY)
-            } else if (self.contentMode == .center) {
-                if (scaleX >= 1 && scaleY >= 1) {
-                    minScale = 1
-                } else {
-                    minScale = min(scaleX, scaleY)
-                }
-            }
-            return minScale
-        }
-    }
-    
     public var enabledZoom: Bool = true
-        
+    
     public override func didInitialize(frame: CGRect) -> Void {
         super.didInitialize(frame: frame);
         self.contentMode = .center
@@ -138,8 +113,8 @@ extension ZoomImageView {
         if (self.bounds.isEmpty) {
             return
         }
-        let enabledZoomImageView: Bool = self.enabledZoomImageView()
-        let minimumZoomScale: CGFloat = self.maximumZoomScale
+        let enabledZoomImageView: Bool = self.enabledZoomImageView
+        let minimumZoomScale: CGFloat = self.minimumZoomScale
         var maximumZoomScale: CGFloat = enabledZoomImageView ? self.maximumZoomScale : minimumZoomScale
         maximumZoomScale = max(minimumZoomScale, maximumZoomScale)
         let zoomScale: CGFloat = minimumZoomScale
@@ -231,12 +206,48 @@ extension ZoomImageView {
         }
     }
     
-    private func enabledZoomImageView() -> Bool {
+    private var enabledZoomImageView: Bool {
         var enabledZoom: Bool = self.enabledZoom
-        if ((isImageViewInitialized && isLivePhotoViewViewInitialized) || imageView.isHidden && livePhotoView.isHidden) {
-            enabledZoom = false
+        if self.contentView == nil {
+            enabledZoom = false;
         }
         return enabledZoom
+    }
+    
+    private var minimumZoomScale: CGFloat {
+        get {
+            if self.image == nil && self.livePhoto == nil {
+                return 1
+            }
+            let viewport: CGRect = self.finalViewportRect()
+            var mediaSize: CGSize = CGSize.zero
+            if self.image != nil {
+                mediaSize = self.image!.size
+            } else if self.livePhoto != nil {
+                mediaSize = self.livePhoto!.size
+            }
+            var contentMode = self.contentMode
+            var minScale: CGFloat = 1
+            let scaleX: CGFloat = viewport.width / mediaSize.width
+            let scaleY: CGFloat = viewport.height / mediaSize.height
+            let radio: CGFloat = self.image!.size.height / self.image!.size.width;
+            let finalHeight: CGFloat = viewport.width * radio;
+            if (finalHeight > viewport.height) {
+                contentMode = .scaleAspectFill;
+            }
+            if (contentMode == .scaleAspectFit) {
+                minScale = min(scaleX, scaleY)
+            } else if (contentMode == .scaleAspectFill) {
+                minScale = max(scaleX, scaleY)
+            } else if (contentMode == .center) {
+                if (scaleX >= 1 && scaleY >= 1) {
+                    minScale = 1
+                } else {
+                    minScale = min(scaleX, scaleY)
+                }
+            }
+            return minScale
+        }
     }
     
     private func handleDidEndZooming() -> Void {
@@ -253,11 +264,11 @@ extension ZoomImageView {
         contentInset.left = viewport.minX
         contentInset.right = self.bounds.width - viewport.maxX
         contentInset.bottom = self.bounds.height - viewport.maxY
-        if (viewport.height > contentViewFrame.height) {
+        if viewport.height > contentViewFrame.height {
             contentInset.top = floor(viewport.midY - contentViewFrame.height / 2.0)
             contentInset.bottom = floor(self.bounds.height - viewport.midY - contentViewFrame.height / 2.0)
         }
-        if (viewport.width > contentViewFrame.width) {
+        if viewport.width > contentViewFrame.width {
             contentInset.left = floor(viewport.midX - contentViewFrame.width / 2.0)
             contentInset.right = floor(self.bounds.width - viewport.midY - contentViewFrame.width / 2.0)
         }
@@ -265,8 +276,9 @@ extension ZoomImageView {
         self.scrollView.contentSize = contentView.frame.size
     }
     
-    @objc public override func handleDoubleTapGestureWithPoint(_ gestureRecognizer: UITapGestureRecognizer) -> Void {
-        if (self.enabledZoomImageView()) {
+    @objc public override func handleDoubleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) -> Void {
+        super.handleDoubleTapGesture(gestureRecognizer);
+        if (self.enabledZoomImageView) {
             let gesturePoint: CGPoint = gestureRecognizer.location(in: gestureRecognizer.view)
             // 如果图片被压缩了，则第一次放大到原图大小，第二次放大到最大倍数
             if (self.scrollView.zoomScale >= self.scrollView.maximumZoomScale) {

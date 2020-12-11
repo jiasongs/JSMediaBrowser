@@ -55,7 +55,7 @@ extension MediaBrowserView {
         self.isNeededScrollToItem = true
         self.collectionView.reloadData()
         if index < self.collectionView.numberOfItems(inSection: 0) {
-            self.collectionView.scrollToItem(at: NSIndexPath.init(item: self.currentMediaIndex, section: 0) as IndexPath, at: .centeredHorizontally, animated: animated)
+            self.collectionView.scrollToItem(at: IndexPath.init(item: self.currentMediaIndex, section: 0), at: .centeredHorizontally, animated: animated)
             self.collectionView.layoutIfNeeded()
         }
     }
@@ -112,7 +112,7 @@ extension MediaBrowserView: UICollectionViewDelegateFlowLayout {
             self.delegate?.mediaBrowserView?(self, didScrollTo: self.currentMediaIndex)
         }
     }
-
+    
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView != self.collectionView {
             return
@@ -120,34 +120,25 @@ extension MediaBrowserView: UICollectionViewDelegateFlowLayout {
         if self.isChangingCollectionViewBounds {
             return
         }
-        
         let betweenOrEqual =  { (minimumValue: CGFloat, value: CGFloat, maximumValue: CGFloat) -> Bool in
             return minimumValue <= value && value <= maximumValue
         }
-        
         let pageWidth: CGFloat = self.collectionView(self.collectionView, layout: self.collectionViewLayout, sizeForItemAt: IndexPath.init(item: 0, section: 0)).width
         let pageHorizontalMargin: CGFloat = self.collectionViewLayout.pageSpacing
         let contentOffsetX: CGFloat = self.collectionView.contentOffset.x
         var index: CGFloat = contentOffsetX / (pageWidth + pageHorizontalMargin)
-        
         let isFirstDidScroll: Bool = self.previousIndexWhenScrolling == 0
-        
-        // fastToRight example : self.previousIndexWhenScrolling 1.49, index = 2.0
         let fastToRight: Bool = (floor(index) - floor(self.previousIndexWhenScrolling) >= 1.0) && (floor(index) - self.previousIndexWhenScrolling > 0.5)
         let turnPageToRight: Bool = fastToRight || betweenOrEqual(self.previousIndexWhenScrolling, floor(index) + 0.5, index)
-        
-        // fastToLeft example : self.previousIndexWhenScrolling 2.51, index = 1.99
         let fastToLeft: Bool = (floor(self.previousIndexWhenScrolling) - floor(index) >= 1.0) && (self.previousIndexWhenScrolling - ceil(index) > 0.5)
         let turnPageToLeft: Bool = fastToLeft || betweenOrEqual(index, floor(index) + 0.5, self.previousIndexWhenScrolling)
         
         if !isFirstDidScroll && (turnPageToRight || turnPageToLeft) {
             index = round(index)
             if 0 <= index && Int(index) < self.collectionView.numberOfItems(inSection: 0) {
-                
                 self.isNeededScrollToItem = false
                 self.currentMediaIndex = Int(index)
                 self.isNeededScrollToItem = true
-                
                 if self.delegate != nil && self.delegate!.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:willScrollHalfTo:))) {
                     self.delegate?.mediaBrowserView?(self, willScrollHalfTo: Int(index))
                 }
@@ -167,7 +158,7 @@ extension MediaBrowserView {
             self.isChangingCollectionViewBounds = true
             self.collectionViewLayout.invalidateLayout()
             self.collectionView.frame = self.bounds
-            self.collectionView.scrollToItem(at: NSIndexPath.init(item: self.currentMediaIndex, section: 0) as IndexPath, at: .centeredHorizontally, animated: false)
+            self.collectionView.scrollToItem(at: IndexPath.init(item: self.currentMediaIndex, section: 0), at: .centeredHorizontally, animated: false)
             self.isChangingCollectionViewBounds = false
         }
     }
