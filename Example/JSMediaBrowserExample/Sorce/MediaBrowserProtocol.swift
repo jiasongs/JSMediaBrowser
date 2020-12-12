@@ -23,3 +23,13 @@ import UIKit
     @objc optional func mediaBrowserView(_ browserView: MediaBrowserView, didScrollTo index: Int);
     
 }
+
+@objc public protocol MediaBrowserViewGestureDelegate: NSObjectProtocol {
+    
+    @objc optional func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, singleTouch gestureRecognizer: UITapGestureRecognizer)
+    @objc optional func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, doubleTouch gestureRecognizer: UITapGestureRecognizer)
+    @objc optional func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, longPress gestureRecognizer: UILongPressGestureRecognizer)
+    @objc optional func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, dismissing gestureRecognizer: UIPanGestureRecognizer, verticalDistance: CGFloat)
+    @objc optional func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool
+    
+}

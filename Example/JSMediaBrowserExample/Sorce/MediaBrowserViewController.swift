@@ -8,7 +8,7 @@
 import UIKit
 
 class MediaBrowserViewController: UIViewController {
-
+    
     @objc open var browserView: MediaBrowserView?
     @objc open var sourceItems: Array<String> = []
     
@@ -34,7 +34,7 @@ class MediaBrowserViewController: UIViewController {
             self.view.addSubview(browserView)
         }
     }
-
+    
 }
 
 extension MediaBrowserViewController: MediaBrowserViewDelegate {

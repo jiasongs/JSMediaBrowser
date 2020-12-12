@@ -7,7 +7,7 @@
 
 import UIKit
 import PhotosUI
-import QMUIKit
+import JSCoreKit
 
 public class ZoomImageView: ZoomBaseView {
     
@@ -48,7 +48,7 @@ public class ZoomImageView: ZoomBaseView {
             self.imageView.isHidden = false
             if self.image != nil {
                 self.imageView.image = self.image
-                self.imageView.qmui_frameApplyTransform = CGRect.init(origin: CGPoint.zero, size: self.image?.size ?? CGSize.zero)
+                self.imageView.js_frameApplyTransform = CGRect.init(origin: CGPoint.zero, size: self.image?.size ?? CGSize.zero)
                 
                 self.revertZooming()
             }
@@ -57,13 +57,13 @@ public class ZoomImageView: ZoomBaseView {
     
     @objc public weak var livePhoto: PHLivePhoto? {
         didSet {
-            self.livePhotoView.isHidden = false
             if isImageViewInitialized {
                 self.imageView.isHidden = true
             }
+            self.livePhotoView.isHidden = false
             if self.livePhoto != nil {
                 self.livePhotoView.livePhoto = self.livePhoto
-                self.livePhotoView.qmui_frameApplyTransform = CGRect.init(origin: CGPoint.zero, size: self.image?.size ?? CGSize.zero)
+                self.livePhotoView.js_frameApplyTransform = CGRect.init(origin: CGPoint.zero, size: self.image?.size ?? CGSize.zero)
                 self.revertZooming()
             }
         }
@@ -128,7 +128,9 @@ extension ZoomImageView {
         self.scrollView?.minimumZoomScale = minimumZoomScale
         self.scrollView?.maximumZoomScale = maximumZoomScale
         /// 重置Frame
-        self.contentView?.frame = CGRectSetXY(self.contentView?.frame ?? CGRect.zero, 0, 0)
+        if let contentView = self.contentView {
+            contentView.frame = CGRect.init(x: 0, y: 0, width: contentView.frame.width, height: contentView.frame.height)
+        }
         self.setZoom(scale: zoomScale, animated: false)
         if (shouldFireDidZoomingManual) {
             self.handleDidEndZooming()
@@ -160,7 +162,7 @@ extension ZoomImageView {
     
     @objc open func setZoom(scale: CGFloat, animated: Bool) -> Void {
         if animated {
-            UIView.animate(withDuration: 0.25, delay: 0.0, options: UIView.AnimationOptions(rawValue: UIView.AnimationOptions.RawValue(QMUIViewAnimationOptionsCurveOut)), animations: {
+            UIView.animate(withDuration: 0.25, delay: 0.0, options: UIView.AnimationOptions.curveEaseInOut, animations: {
                 self.scrollView?.zoomScale = scale
             }, completion: nil)
         } else {
@@ -170,11 +172,37 @@ extension ZoomImageView {
     
     @objc open func zoom(to rect: CGRect, animated: Bool) -> Void {
         if (animated) {
-            UIView.animate(withDuration: 0.25, delay: 0.0, options: UIView.AnimationOptions(rawValue: UIView.AnimationOptions.RawValue(QMUIViewAnimationOptionsCurveOut)), animations: {
+            UIView.animate(withDuration: 0.25, delay: 0.0, options: UIView.AnimationOptions.curveEaseInOut, animations: {
                 self.scrollView?.zoom(to: rect, animated: animated)
             }, completion: nil)
         } else {
             self.scrollView?.zoom(to: rect, animated: animated)
+        }
+    }
+    
+    @objc open func zoom(from gestureRecognizer: UIGestureRecognizer, animated: Bool) -> Void {
+        guard let scrollView = self.scrollView else { return }
+        guard let cententView = self.contentView else { return }
+        let gesturePoint: CGPoint = gestureRecognizer.location(in: gestureRecognizer.view)
+        // 如果图片被压缩了，则第一次放大到原图大小，第二次放大到最大倍数
+        if (scrollView.zoomScale >= scrollView.maximumZoomScale) {
+            self.setZoom(scale: scrollView.minimumZoomScale, animated: true)
+        } else {
+            var newZoomScale: CGFloat = 0
+            if (scrollView.zoomScale < 1) {
+                // 如果目前显示的大小比原图小，则放大到原图
+                newZoomScale = 1
+            } else {
+                // 如果当前显示原图，则放大到最大的大小
+                newZoomScale = scrollView.maximumZoomScale
+            }
+            let tapPoint: CGPoint = cententView.convert(gesturePoint, from: gestureRecognizer.view)
+            var zoomRect: CGRect = CGRect.zero
+            zoomRect.size.width = scrollView.bounds.width / newZoomScale
+            zoomRect.size.height = scrollView.bounds.height / newZoomScale
+            zoomRect.origin.x = tapPoint.x - zoomRect.width / 2
+            zoomRect.origin.y = tapPoint.y - zoomRect.height / 2
+            self.zoom(to: zoomRect, animated: animated)
         }
     }
     
@@ -187,7 +215,7 @@ extension ZoomImageView {
         if (self.bounds.isEmpty) {
             return
         }
-        self.scrollView?.qmui_frameApplyTransform = self.bounds
+        self.scrollView?.js_frameApplyTransform = self.bounds
     }
     
     open override var frame: CGRect {
@@ -273,34 +301,6 @@ extension ZoomImageView {
         }
         self.scrollView?.contentInset = contentInset
         self.scrollView?.contentSize = contentView.frame.size
-    }
-    
-    @objc public override func handleDoubleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) -> Void {
-        super.handleDoubleTapGesture(gestureRecognizer);
-        if (self.enabledZoomImageView) {
-            guard let scrollView = self.scrollView else { return }
-            let gesturePoint: CGPoint = gestureRecognizer.location(in: gestureRecognizer.view)
-            // 如果图片被压缩了，则第一次放大到原图大小，第二次放大到最大倍数
-            if (scrollView.zoomScale >= scrollView.maximumZoomScale) {
-                self.setZoom(scale: scrollView.minimumZoomScale, animated: true)
-            } else {
-                var newZoomScale: CGFloat = 0
-                if (scrollView.zoomScale < 1) {
-                    // 如果目前显示的大小比原图小，则放大到原图
-                    newZoomScale = 1
-                } else {
-                    // 如果当前显示原图，则放大到最大的大小
-                    newZoomScale = scrollView.maximumZoomScale
-                }
-                var zoomRect: CGRect = CGRect.zero
-                let tapPoint: CGPoint = self.contentView?.convert(gesturePoint, from: gestureRecognizer.view) ?? CGPoint.zero
-                zoomRect.size.width = self.bounds.width / newZoomScale
-                zoomRect.size.height = self.bounds.height / newZoomScale
-                zoomRect.origin.x = tapPoint.x - zoomRect.width / 2
-                zoomRect.origin.y = tapPoint.y - zoomRect.height / 2
-                self.zoom(to: zoomRect, animated: true)
-            }
-        }
     }
     
 }
