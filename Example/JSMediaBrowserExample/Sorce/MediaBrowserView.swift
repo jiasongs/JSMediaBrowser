@@ -13,15 +13,15 @@ public class MediaBrowserView: UIView {
     @objc public weak var dataSource: MediaBrowserViewDataSource?
     @objc public weak var delegate: MediaBrowserViewDelegate?
     
-    @objc private(set) var collectionView: PagingCollectionView?
-    @objc private(set) var collectionViewLayout: PagingLayout?
-    
     @objc open weak var gestureDelegate: MediaBrowserViewGestureDelegate?
     @objc open var singleTapGesture: UITapGestureRecognizer?
     @objc open var doubleTapGesture: UITapGestureRecognizer?
     @objc open var longPressGesture: UILongPressGestureRecognizer?
     @objc open var dismissingGesture: UIPanGestureRecognizer?
     @objc open var dismissingGestureEnabled: Bool = true
+    
+    @objc private(set) var collectionView: PagingCollectionView?
+    @objc private(set) var collectionViewLayout: PagingLayout?
     
     private var gestureBeganLocation: CGPoint = CGPoint.zero
     
