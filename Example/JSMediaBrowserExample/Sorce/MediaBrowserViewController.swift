@@ -10,7 +10,7 @@ import UIKit
 class MediaBrowserViewController: UIViewController {
     
     @objc open var browserView: MediaBrowserView?
-    @objc open var sourceItems: Array<String> = []
+    @objc open var sourceItems: Array<MediaBrowserViewSourceProtocol>?
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)

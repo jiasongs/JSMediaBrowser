@@ -33,3 +33,12 @@ import UIKit
     @objc optional func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool
     
 }
+
+@objc public protocol MediaBrowserViewSourceProtocol: NSObjectProtocol {
+    
+    @objc var sourceRect: CGRect { get set }
+    @objc weak var sourceView: UIView? { get set }
+    @objc var thumbImage: UIImage? { get set }
+    
+    
+}

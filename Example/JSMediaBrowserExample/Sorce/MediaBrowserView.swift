@@ -23,8 +23,6 @@ public class MediaBrowserView: UIView {
     @objc private(set) var collectionView: PagingCollectionView?
     @objc private(set) var collectionViewLayout: PagingLayout?
     
-    private var gestureBeganLocation: CGPoint = CGPoint.zero
-    
     @objc public var currentMediaIndex: Int = 0 {
         didSet {
             if isNeededScrollToItem {
@@ -36,6 +34,7 @@ public class MediaBrowserView: UIView {
     private var isChangingCollectionViewBounds: Bool = false
     private var previousIndexWhenScrolling: CGFloat = 0
     private var isNeededScrollToItem: Bool = true
+    private var gestureBeganLocation: CGPoint = CGPoint.zero
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -75,8 +74,6 @@ public class MediaBrowserView: UIView {
         self.addGestureRecognizer(self.dismissingGesture!)
         
         self.singleTapGesture?.require(toFail: doubleTapGesture!)
-        self.singleTapGesture?.require(toFail: self.dismissingGesture!)
-        self.doubleTapGesture?.require(toFail: self.dismissingGesture!)
     }
     
 }
