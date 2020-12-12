@@ -20,7 +20,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    MediaBrowserView *view = nil;
+//    MediaBrowserView *view = nil;
 }
 
 /*

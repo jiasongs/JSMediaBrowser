@@ -7,6 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7A0A4A222584EAC400512729 /* ImageEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A212584EAC400512729 /* ImageEntity.swift */; };
+		7A0A4A232584EAC400512729 /* ImageEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A212584EAC400512729 /* ImageEntity.swift */; };
+		7A0A4A292584EDC200512729 /* LoaderEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A282584EDC200512729 /* LoaderEntity.swift */; };
+		7A0A4A2A2584EDC200512729 /* LoaderEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A282584EDC200512729 /* LoaderEntity.swift */; };
+		7A0A4A322584EF4E00512729 /* ImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A312584EF4E00512729 /* ImageCell.swift */; };
+		7A0A4A332584EF4E00512729 /* ImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A312584EF4E00512729 /* ImageCell.swift */; };
+		7A0A4A412584F20200512729 /* BaseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A402584F20200512729 /* BaseCell.swift */; };
+		7A0A4A422584F20200512729 /* BaseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A402584F20200512729 /* BaseCell.swift */; };
+		7A0A4A482584FCC500512729 /* BaseEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A472584FCC500512729 /* BaseEntity.swift */; };
+		7A0A4A492584FCC500512729 /* BaseEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A472584FCC500512729 /* BaseEntity.swift */; };
+		7A0A4A532584FDF300512729 /* DataSourceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A522584FDF300512729 /* DataSourceProtocol.swift */; };
+		7A0A4A542584FDF300512729 /* DataSourceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A522584FDF300512729 /* DataSourceProtocol.swift */; };
+		7A0A4A65258506AE00512729 /* TransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A64258506AE00512729 /* TransitionAnimator.swift */; };
+		7A0A4A66258506AE00512729 /* TransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A64258506AE00512729 /* TransitionAnimator.swift */; };
 		7A23CD5B2581F365004B4033 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A23CD5A2581F365004B4033 /* AppDelegate.swift */; };
 		7A23CD5F2581F365004B4033 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A23CD5E2581F365004B4033 /* ViewController.swift */; };
 		7A23CD622581F365004B4033 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7A23CD602581F365004B4033 /* Main.storyboard */; };
@@ -40,6 +54,13 @@
 /* Begin PBXFileReference section */
 		05CE0DCC7E9D19C545FB46B6 /* Pods-JSMediaBrowserExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JSMediaBrowserExample.release.xcconfig"; path = "Target Support Files/Pods-JSMediaBrowserExample/Pods-JSMediaBrowserExample.release.xcconfig"; sourceTree = "<group>"; };
 		2CA5FEFE7F71BC6264231527 /* Pods-JSMediaBrowserExampleMacOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JSMediaBrowserExampleMacOS.debug.xcconfig"; path = "Target Support Files/Pods-JSMediaBrowserExampleMacOS/Pods-JSMediaBrowserExampleMacOS.debug.xcconfig"; sourceTree = "<group>"; };
+		7A0A4A212584EAC400512729 /* ImageEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEntity.swift; sourceTree = "<group>"; };
+		7A0A4A282584EDC200512729 /* LoaderEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoaderEntity.swift; sourceTree = "<group>"; };
+		7A0A4A312584EF4E00512729 /* ImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCell.swift; sourceTree = "<group>"; };
+		7A0A4A402584F20200512729 /* BaseCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCell.swift; sourceTree = "<group>"; };
+		7A0A4A472584FCC500512729 /* BaseEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseEntity.swift; sourceTree = "<group>"; };
+		7A0A4A522584FDF300512729 /* DataSourceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSourceProtocol.swift; sourceTree = "<group>"; };
+		7A0A4A64258506AE00512729 /* TransitionAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionAnimator.swift; sourceTree = "<group>"; };
 		7A23CD572581F365004B4033 /* JSMediaBrowserExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JSMediaBrowserExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A23CD5A2581F365004B4033 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7A23CD5E2581F365004B4033 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -96,6 +117,55 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		7A0A4A4E2584FD3800512729 /* Image */ = {
+			isa = PBXGroup;
+			children = (
+				7A0A4A312584EF4E00512729 /* ImageCell.swift */,
+				7A0A4A212584EAC400512729 /* ImageEntity.swift */,
+			);
+			path = Image;
+			sourceTree = "<group>";
+		};
+		7A0A4A4F2584FD4700512729 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				7A0A4A402584F20200512729 /* BaseCell.swift */,
+				7A0A4A472584FCC500512729 /* BaseEntity.swift */,
+			);
+			path = Base;
+			sourceTree = "<group>";
+		};
+		7A0A4A502584FD5F00512729 /* Loader */ = {
+			isa = PBXGroup;
+			children = (
+				7A0A4A282584EDC200512729 /* LoaderEntity.swift */,
+			);
+			path = Loader;
+			sourceTree = "<group>";
+		};
+		7A0A4A512584FD6F00512729 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				7A23CE36258227DD004B4033 /* MediaBrowserProtocol.swift */,
+				7A23CDC525820254004B4033 /* MediaBrowserView.swift */,
+				7A23CDDF2582032F004B4033 /* PagingCollectionView.swift */,
+				7A23CDE4258203D2004B4033 /* PagingLayout.swift */,
+				7AEF5D84258321A2006550CE /* ZoomBaseView.swift */,
+				7A23CE4125823DE1004B4033 /* ZoomImageView.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		7A0A4A5D2584FE5A00512729 /* General */ = {
+			isa = PBXGroup;
+			children = (
+				7A0A4A4F2584FD4700512729 /* Base */,
+				7A0A4A4E2584FD3800512729 /* Image */,
+				7A0A4A502584FD5F00512729 /* Loader */,
+			);
+			path = General;
+			sourceTree = "<group>";
+		};
 		7A23CD4E2581F365004B4033 = {
 			isa = PBXGroup;
 			children = (
@@ -138,13 +208,11 @@
 		7A23CDBB2582020A004B4033 /* Sorce */ = {
 			isa = PBXGroup;
 			children = (
-				7A23CE36258227DD004B4033 /* MediaBrowserProtocol.swift */,
-				7A23CDC525820254004B4033 /* MediaBrowserView.swift */,
+				7A0A4A512584FD6F00512729 /* Core */,
+				7A0A4A5D2584FE5A00512729 /* General */,
 				7AEF5D8B2583240F006550CE /* MediaBrowserViewController.swift */,
-				7A23CDDF2582032F004B4033 /* PagingCollectionView.swift */,
-				7A23CDE4258203D2004B4033 /* PagingLayout.swift */,
-				7AEF5D84258321A2006550CE /* ZoomBaseView.swift */,
-				7A23CE4125823DE1004B4033 /* ZoomImageView.swift */,
+				7A0A4A64258506AE00512729 /* TransitionAnimator.swift */,
+				7A0A4A522584FDF300512729 /* DataSourceProtocol.swift */,
 			);
 			path = Sorce;
 			sourceTree = "<group>";
@@ -366,14 +434,21 @@
 			buildActionMask = 2147483647;
 			files = (
 				7AEF5DCE25837379006550CE /* OCExampleViewController.m in Sources */,
+				7A0A4A482584FCC500512729 /* BaseEntity.swift in Sources */,
 				7AEF5D85258321A2006550CE /* ZoomBaseView.swift in Sources */,
 				7A23CDE5258203D2004B4033 /* PagingLayout.swift in Sources */,
 				7A23CDE02582032F004B4033 /* PagingCollectionView.swift in Sources */,
+				7A0A4A532584FDF300512729 /* DataSourceProtocol.swift in Sources */,
+				7A0A4A65258506AE00512729 /* TransitionAnimator.swift in Sources */,
+				7A0A4A412584F20200512729 /* BaseCell.swift in Sources */,
+				7A0A4A222584EAC400512729 /* ImageEntity.swift in Sources */,
 				7A23CE37258227DD004B4033 /* MediaBrowserProtocol.swift in Sources */,
 				7A23CDC625820254004B4033 /* MediaBrowserView.swift in Sources */,
 				7A23CD5F2581F365004B4033 /* ViewController.swift in Sources */,
+				7A0A4A322584EF4E00512729 /* ImageCell.swift in Sources */,
 				7A23CD5B2581F365004B4033 /* AppDelegate.swift in Sources */,
 				7A23CE4225823DE1004B4033 /* ZoomImageView.swift in Sources */,
+				7A0A4A292584EDC200512729 /* LoaderEntity.swift in Sources */,
 				7AEF5D8C2583240F006550CE /* MediaBrowserViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -383,14 +458,21 @@
 			buildActionMask = 2147483647;
 			files = (
 				7AEF5DCF25837379006550CE /* OCExampleViewController.m in Sources */,
+				7A0A4A492584FCC500512729 /* BaseEntity.swift in Sources */,
 				7AEF5D86258321A2006550CE /* ZoomBaseView.swift in Sources */,
 				7A23CDE6258203D2004B4033 /* PagingLayout.swift in Sources */,
 				7A23CDE12582032F004B4033 /* PagingCollectionView.swift in Sources */,
+				7A0A4A542584FDF300512729 /* DataSourceProtocol.swift in Sources */,
+				7A0A4A66258506AE00512729 /* TransitionAnimator.swift in Sources */,
+				7A0A4A422584F20200512729 /* BaseCell.swift in Sources */,
+				7A0A4A232584EAC400512729 /* ImageEntity.swift in Sources */,
 				7A23CE38258227DD004B4033 /* MediaBrowserProtocol.swift in Sources */,
 				7A23CDC725820254004B4033 /* MediaBrowserView.swift in Sources */,
 				7A23CD762581F3C1004B4033 /* ViewController.swift in Sources */,
+				7A0A4A332584EF4E00512729 /* ImageCell.swift in Sources */,
 				7A23CD772581F3C1004B4033 /* AppDelegate.swift in Sources */,
 				7A23CE4325823DE1004B4033 /* ZoomImageView.swift in Sources */,
+				7A0A4A2A2584EDC200512729 /* LoaderEntity.swift in Sources */,
 				7AEF5D8D2583240F006550CE /* MediaBrowserViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

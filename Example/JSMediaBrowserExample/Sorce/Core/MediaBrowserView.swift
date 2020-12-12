@@ -84,7 +84,7 @@ extension MediaBrowserView {
         self.isNeededScrollToItem = false
         self.currentMediaIndex = index
         self.isNeededScrollToItem = true
-        self.collectionView?.reloadData()
+        self.reloadData()
         guard let numberOfItems = self.collectionView?.numberOfItems(inSection: 0) else { return }
         if index < numberOfItems {
             self.collectionView?.scrollToItem(at: IndexPath.init(item: self.currentMediaIndex, section: 0), at: .centeredHorizontally, animated: animated)
@@ -121,6 +121,25 @@ extension MediaBrowserView {
     
 }
 
+extension MediaBrowserView {
+    
+    open override func layoutSubviews() {
+        super.layoutSubviews()
+        guard let collectionView = self.collectionView  else { return }
+        let isCollectionViewSizeChanged = !collectionView.bounds.size.equalTo(self.bounds.size)
+        if isCollectionViewSizeChanged {
+            self.isChangingCollectionViewBounds = true
+            self.collectionViewLayout?.invalidateLayout()
+            self.collectionView?.frame = self.bounds
+            if let numberOfItems = self.collectionView?.numberOfItems(inSection: 0), self.currentMediaIndex < numberOfItems {
+                self.collectionView?.scrollToItem(at: IndexPath.init(item: self.currentMediaIndex, section: 0), at: .centeredHorizontally, animated: false)
+            }
+            self.isChangingCollectionViewBounds = false
+        }
+    }
+    
+}
+
 extension MediaBrowserView: UICollectionViewDataSource {
     
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -150,6 +169,10 @@ extension MediaBrowserView: UICollectionViewDelegateFlowLayout {
             delegate.mediaBrowserView?(self, didEndDisplaying: cell, forItemAt: indexPath)
         }
     }
+    
+}
+
+extension MediaBrowserView: UIScrollViewDelegate {
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         if scrollView != self.collectionView {
@@ -194,23 +217,6 @@ extension MediaBrowserView: UICollectionViewDelegateFlowLayout {
             }
         }
         self.previousIndexWhenScrolling = index
-    }
-    
-}
-
-extension MediaBrowserView {
-    
-    open override func layoutSubviews() {
-        super.layoutSubviews()
-        guard let collectionView = self.collectionView  else { return }
-        let isCollectionViewSizeChanged = !collectionView.bounds.size.equalTo(self.bounds.size)
-        if isCollectionViewSizeChanged {
-            self.isChangingCollectionViewBounds = true
-            self.collectionViewLayout?.invalidateLayout()
-            self.collectionView?.frame = self.bounds
-            self.collectionView?.scrollToItem(at: IndexPath.init(item: self.currentMediaIndex, section: 0), at: .centeredHorizontally, animated: false)
-            self.isChangingCollectionViewBounds = false
-        }
     }
     
 }
@@ -288,7 +294,7 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
         }
         return true
     }
-
+    
     private func endDismissingGesture(_ gesture: UIPanGestureRecognizer, verticalDistance: CGFloat) -> Void {
         if self.toggleDismissingGestureDelegate(gesture, verticalDistance: verticalDistance) {
             self.gestureBeganLocation = CGPoint.zero;

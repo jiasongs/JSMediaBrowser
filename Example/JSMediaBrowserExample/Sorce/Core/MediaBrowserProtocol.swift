@@ -18,7 +18,6 @@ import UIKit
     
     @objc optional func mediaBrowserView(_ browserView: MediaBrowserView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath);
     @objc optional func mediaBrowserView(_ browserView: MediaBrowserView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath);
-    
     @objc optional func mediaBrowserView(_ browserView: MediaBrowserView, willScrollHalfTo index: Int);
     @objc optional func mediaBrowserView(_ browserView: MediaBrowserView, didScrollTo index: Int);
     
@@ -31,14 +30,5 @@ import UIKit
     @objc optional func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, longPress gestureRecognizer: UILongPressGestureRecognizer)
     @objc optional func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, dismissing gestureRecognizer: UIPanGestureRecognizer, verticalDistance: CGFloat)
     @objc optional func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool
-    
-}
-
-@objc public protocol MediaBrowserViewSourceProtocol: NSObjectProtocol {
-    
-    @objc var sourceRect: CGRect { get set }
-    @objc weak var sourceView: UIView? { get set }
-    @objc var thumbImage: UIImage? { get set }
-    
     
 }
