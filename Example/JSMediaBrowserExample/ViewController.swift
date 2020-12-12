@@ -38,11 +38,12 @@ class ViewController: UIViewController {
         floatLayoutView.isHidden = true;
         
         self.browser = MediaBrowserView.init()
+        self.browser.backgroundColor = .black
         self.browser!.delegate = self;
         self.browser!.dataSource = self;
         self.browser!.registerClass(ImageCollectionViewCell.self, forCellWithReuseIdentifier: "ImageCollectionViewCell")
         self.view.addSubview(self.browser!)
-
+        
         var margin: CGFloat = 0;
         if (TARGET_OS_MACCATALYST != 0) {
             margin = 100;
@@ -82,6 +83,7 @@ extension ViewController: MediaBrowserViewDataSource {
     public func mediaBrowserView(_ browserView: MediaBrowserView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let item = self.dataSource[indexPath.item]
         let cell: ImageCollectionViewCell = self.browser.dequeueReusableCell(withReuseIdentifier: "ImageCollectionViewCell", for: indexPath) as! ImageCollectionViewCell
+        cell.zoomImageView.gestureDelegate = self
         cell.zoomImageView.sd_internalSetImage(with: URL.init(string: item), placeholderImage: nil, options: SDWebImageOptions(rawValue: 0), context: nil, setImageBlock: nil, progress: nil) { (image, data, eror, type, finshed, url) in
             cell.zoomImageView.image = image;
         }
@@ -98,6 +100,44 @@ extension ViewController: MediaBrowserViewDelegate {
     
     private func mediaBrowserView(_ browserView: MediaBrowserView, didEndDisplaying cell: ImageCollectionViewCell, forItemAt indexPath: IndexPath) {
         cell.zoomImageView.revertZooming()
+    }
+    
+}
+
+extension ViewController: ZoomViewGestureDelegate {
+    
+    func zoomingView(_ zoomingView: ZoomBaseView, singleTouch gestureRecognizer: UITapGestureRecognizer) {
+        QMUITips.show(withText: "单击")
+    }
+    
+    func zoomingView(_ zoomingView: ZoomBaseView, doubleTouch gestureRecognizer: UITapGestureRecognizer) {
+        QMUITips.show(withText: "双击")
+    }
+    
+    func zoomingView(_ zoomingView: ZoomBaseView, longPress gestureRecognizer: UILongPressGestureRecognizer) {
+        QMUITips.show(withText: "长按")
+    }
+    
+    func zoomingView(_ zoomingView: ZoomBaseView, dismissing gestureRecognizer: UIPanGestureRecognizer, verticalDistance: CGFloat) {
+        if gestureRecognizer.state == .changed {
+            let alpha: CGFloat = 1.0 - verticalDistance / self.browser.bounds.height * 1.8;
+            self.browser.backgroundColor = self.browser.backgroundColor?.withAlphaComponent(min(alpha, 1.0))
+        } else if gestureRecognizer.state == .ended {
+            if (verticalDistance > self.browser.bounds.height / 2 / 3) {
+                /// dissmiss
+                let cell: ImageCollectionViewCell = self.browser.collectionView?.visibleCells.first as! ImageCollectionViewCell
+                cell.zoomImageView.resetDismissingGesture()
+                UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseInOut, animations: {
+                    self.browser.backgroundColor = self.browser.backgroundColor?.withAlphaComponent(1)
+                }, completion: nil)
+            } else {
+                let cell: ImageCollectionViewCell = self.browser.collectionView?.visibleCells.first as! ImageCollectionViewCell
+                cell.zoomImageView.resetDismissingGesture()
+                UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseInOut, animations: {
+                    self.browser.backgroundColor = self.browser.backgroundColor?.withAlphaComponent(1)
+                }, completion: nil)
+            }
+        }
     }
     
 }

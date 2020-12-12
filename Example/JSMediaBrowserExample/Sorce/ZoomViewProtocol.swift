@@ -7,11 +7,12 @@
 
 import UIKit
 
-@objc public protocol ZoomViewProtocol: NSObjectProtocol {
+@objc public protocol ZoomViewGestureDelegate: NSObjectProtocol {
     
     @objc optional func zoomingView(_ zoomingView: ZoomBaseView, singleTouch gestureRecognizer: UITapGestureRecognizer)
     @objc optional func zoomingView(_ zoomingView: ZoomBaseView, doubleTouch gestureRecognizer: UITapGestureRecognizer)
     @objc optional func zoomingView(_ zoomingView: ZoomBaseView, longPress gestureRecognizer: UILongPressGestureRecognizer)
+    @objc optional func zoomingView(_ zoomingView: ZoomBaseView, dismissing gestureRecognizer: UIPanGestureRecognizer, verticalDistance: CGFloat)
     @objc optional func zoomingView(_ zoomingView: ZoomBaseView, gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool
     
 }

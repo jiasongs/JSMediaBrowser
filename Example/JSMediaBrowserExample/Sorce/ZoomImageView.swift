@@ -31,18 +31,6 @@ public class ZoomImageView: ZoomBaseView {
         return livePhotoView
     }()
     
-    @objc public var contentView: UIView? {
-        get {
-            if (isImageViewInitialized && !imageView.isHidden) {
-                return imageView
-            }
-            if (isLivePhotoViewViewInitialized && !livePhotoView.isHidden) {
-                return livePhotoView
-            }
-            return nil
-        }
-    }
-    
     @objc public var viewportRect: CGRect = CGRect.zero
     @objc public var viewportRectMaxWidth: CGFloat = 700;
     
@@ -103,11 +91,26 @@ public class ZoomImageView: ZoomBaseView {
 
 extension ZoomImageView {
     
-    @objc open func contentViewRectInZoomImageView() -> CGRect {
-        guard let contentView = self.contentView else {
-            return CGRect.zero
+    @objc open override var containerView: UIView? {
+        get {
+            return self.scrollView
         }
-        return self.convert(contentView.frame, from: contentView.superview)
+    }
+    
+    @objc open override var contentView: UIView? {
+        get {
+            if (isImageViewInitialized && !imageView.isHidden) {
+                return imageView
+            }
+            if (isLivePhotoViewViewInitialized && !livePhotoView.isHidden) {
+                return livePhotoView
+            }
+            return nil
+        }
+    }
+    
+    @objc open override func contentViewRectInZoomView() -> CGRect {
+        return super.contentViewRectInZoomView()
     }
     
     @objc open func revertZooming() -> Void {
@@ -124,12 +127,12 @@ extension ZoomImageView {
         self.scrollView?.pinchGestureRecognizer?.isEnabled = enabledZoomImageView
         self.scrollView?.minimumZoomScale = minimumZoomScale
         self.scrollView?.maximumZoomScale = maximumZoomScale
+        /// 重置Frame
         self.contentView?.frame = CGRectSetXY(self.contentView?.frame ?? CGRect.zero, 0, 0)
         self.setZoom(scale: zoomScale, animated: false)
         if (shouldFireDidZoomingManual) {
             self.handleDidEndZooming()
         }
-        
         self.scrollView?.contentOffset = { () -> CGPoint in
             var x: CGFloat = self.scrollView?.contentOffset.x ?? 0
             var y: CGFloat = self.scrollView?.contentOffset.y ?? 0
@@ -184,7 +187,7 @@ extension ZoomImageView {
         if (self.bounds.isEmpty) {
             return
         }
-        self.scrollView?.frame = self.bounds
+        self.scrollView?.qmui_frameApplyTransform = self.bounds
     }
     
     open override var frame: CGRect {
@@ -254,17 +257,17 @@ extension ZoomImageView {
         let viewport: CGRect = self.finalViewportRect()
         // 强制 layout 以确保下面的一堆计算依赖的都是最新的 frame 的值
         self.layoutIfNeeded()
-        let contentViewFrame: CGRect = self.contentViewRectInZoomImageView()
+        let contentViewFrame: CGRect = self.contentViewRectInZoomView()
         var contentInset: UIEdgeInsets = UIEdgeInsets.zero
         contentInset.top = viewport.minY
         contentInset.left = viewport.minX
         contentInset.right = self.bounds.width - viewport.maxX
         contentInset.bottom = self.bounds.height - viewport.maxY
-        if viewport.height > contentViewFrame.height {
+        if viewport.height >= contentViewFrame.height {
             contentInset.top = floor(viewport.midY - contentViewFrame.height / 2.0)
             contentInset.bottom = floor(self.bounds.height - viewport.midY - contentViewFrame.height / 2.0)
         }
-        if viewport.width > contentViewFrame.width {
+        if viewport.width >= contentViewFrame.width {
             contentInset.left = floor(viewport.midX - contentViewFrame.width / 2.0)
             contentInset.right = floor(self.bounds.width - viewport.midX - contentViewFrame.width / 2.0)
         }
