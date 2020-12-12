@@ -63,7 +63,7 @@ public class ZoomImageView: ZoomBaseView {
             self.livePhotoView.isHidden = false
             if self.livePhoto != nil {
                 self.livePhotoView.livePhoto = self.livePhoto
-                self.livePhotoView.js_frameApplyTransform = CGRect.init(origin: CGPoint.zero, size: self.image?.size ?? CGSize.zero)
+                self.livePhotoView.js_frameApplyTransform = CGRect.init(origin: CGPoint.zero, size: self.livePhoto?.size ?? CGSize.zero)
                 self.revertZooming()
             }
         }
@@ -80,6 +80,8 @@ public class ZoomImageView: ZoomBaseView {
         self.scrollView?.showsVerticalScrollIndicator = false
         self.scrollView?.minimumZoomScale = 0
         self.scrollView?.maximumZoomScale = self.maximumZoomScale
+        self.scrollView?.scrollsToTop = false;
+        self.scrollView?.delaysContentTouches = false;
         self.scrollView?.delegate = self
         if #available(iOS 11.0, *) {
             self.scrollView?.contentInsetAdjustmentBehavior = .never
@@ -117,14 +119,14 @@ extension ZoomImageView {
         if (self.bounds.isEmpty) {
             return
         }
-        let enabledZoomImageView: Bool = self.enabledZoomImageView
+        let finalEnabledZoom: Bool = self.finalEnabledZoom
         let minimumZoomScale: CGFloat = self.minimumZoomScale
-        var maximumZoomScale: CGFloat = enabledZoomImageView ? self.maximumZoomScale : minimumZoomScale
+        var maximumZoomScale: CGFloat = finalEnabledZoom ? self.maximumZoomScale : minimumZoomScale
         maximumZoomScale = max(minimumZoomScale, maximumZoomScale)
         let zoomScale: CGFloat = minimumZoomScale
         let shouldFireDidZoomingManual: Bool = zoomScale == self.scrollView?.zoomScale
-        self.scrollView?.panGestureRecognizer.isEnabled = enabledZoomImageView
-        self.scrollView?.pinchGestureRecognizer?.isEnabled = enabledZoomImageView
+        self.scrollView?.panGestureRecognizer.isEnabled = finalEnabledZoom
+        self.scrollView?.pinchGestureRecognizer?.isEnabled = finalEnabledZoom
         self.scrollView?.minimumZoomScale = minimumZoomScale
         self.scrollView?.maximumZoomScale = maximumZoomScale
         /// 重置Frame
@@ -234,7 +236,7 @@ extension ZoomImageView {
         }
     }
     
-    private var enabledZoomImageView: Bool {
+    private var finalEnabledZoom: Bool {
         var enabledZoom: Bool = self.enabledZoom
         if self.contentView == nil {
             enabledZoom = false;

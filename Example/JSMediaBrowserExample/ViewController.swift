@@ -38,7 +38,6 @@ class ViewController: UIViewController {
         floatLayoutView.isHidden = true;
         
         self.browser = MediaBrowserView.init()
-        self.browser.backgroundColor = .black
         self.browser!.delegate = self;
         self.browser!.dataSource = self;
         self.browser!.gestureDelegate = self

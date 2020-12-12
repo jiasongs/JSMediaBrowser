@@ -25,7 +25,6 @@ class PagingCollectionView: UICollectionView {
         self.showsVerticalScrollIndicator = false;
         self.scrollsToTop = false;
         self.delaysContentTouches = false;
-        self.canCancelContentTouches = false;
         self.decelerationRate = .fast;
         self.isPagingEnabled = true;
         if #available(iOS 11.0, *) {
