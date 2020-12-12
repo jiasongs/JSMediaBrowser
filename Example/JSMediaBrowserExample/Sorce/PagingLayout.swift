@@ -47,15 +47,16 @@ extension PagingLayout {
     }
     
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        var layoutAttsArray = Array<UICollectionViewLayoutAttributes>.init()
-        layoutAttsArray.append(contentsOf: super.layoutAttributesForElements(in: rect) ?? [])
+        var attributesArray = Array<UICollectionViewLayoutAttributes>.init()
+        let superAttributesArray: Array<UICollectionViewLayoutAttributes> = super.layoutAttributesForElements(in: rect)?.map(){ $0.copy() as! UICollectionViewLayoutAttributes } ?? []
+        attributesArray.append(contentsOf: superAttributesArray)
         let halfWidth: CGFloat = self.finalItemSize.width / 2.0
         let centerX: CGFloat = (self.collectionView?.contentOffset.x ?? 0.0) + halfWidth
-        for attributes in layoutAttsArray {
-            attributes.center = CGPoint.init(x: attributes.center.x + (attributes.center.x - centerX) / halfWidth * self.pageSpacing / 2, y: attributes.center.y)
-            attributes.size = self.finalItemSize;
+        for attribute in attributesArray {
+            attribute.center = CGPoint.init(x: attribute.center.x + (attribute.center.x - centerX) / halfWidth * self.pageSpacing / 2, y: attribute.center.y)
+            attribute.size = self.finalItemSize;
         }
-        return layoutAttsArray;
+        return attributesArray;
     }
     
     override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
