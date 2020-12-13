@@ -37,20 +37,6 @@ class ViewController: UIViewController {
         }
         self.view.addSubview(floatLayoutView!)
         
-        let pieProgressView = PieProgressView.init()
-        pieProgressView.tintColor = UIColor.red
-        pieProgressView.progress = 0.7;
-        self.view.addSubview(pieProgressView)
-        pieProgressView.snp.makeConstraints { (make) in
-            make.centerX.equalTo(self.view.snp.centerX)
-            make.centerY.equalTo(self.view.snp.centerY)
-            make.width.equalTo(80)
-            make.height.equalTo(80)
-        }
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2) {
-            pieProgressView.setProgress(0.2, animated: true)
-        }
-        
     }
     
     override func viewDidLayoutSubviews() {
