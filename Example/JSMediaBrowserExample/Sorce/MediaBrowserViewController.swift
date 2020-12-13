@@ -131,9 +131,9 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     func mediaBrowserView(_ browserView: MediaBrowserView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var cell: BaseCell?
         guard let loaderItem = loaderItems?[indexPath.item] else { return UICollectionViewCell.init() }
-        if let sourceItem = loaderItem.sourceItem, sourceItem.isKind(of: ImageEntity.self) {
+        if let loaderItem = loaderItem as? ImageLoaderEntity, let sourceItem = loaderItem.sourceItem, sourceItem.isKind(of: ImageEntity.self) {
             cell = browserView.dequeueReusableCell(withReuseIdentifier: imageCellIdentifier, for: indexPath) as? BaseCell
-            //            cell?.updateCell(loaderEntity: loaderItem, at: indexPath)
+            cell?.updateCell(loaderEntity: loaderItem, at: indexPath)
         }
         return cell!
     }

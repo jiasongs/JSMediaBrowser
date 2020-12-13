@@ -28,7 +28,7 @@ class ViewController: UIViewController {
         self.floatLayoutView!.itemMargins = UIEdgeInsets.init(top: QMUIHelper.pixelOne(), left: QMUIHelper.pixelOne(), bottom: 0, right: 0);
         for item: String in self.dataSource {
             let button = QMUIButton.init()
-            button.layer.cornerRadius = 10;
+//            button.layer.cornerRadius = 10;
             button.layer.masksToBounds = true;
             button.sd_setImage(with: URL.init(string: item)!, for: UIControl.State.normal, completed: nil)
             button.imageView?.contentMode = .scaleAspectFill

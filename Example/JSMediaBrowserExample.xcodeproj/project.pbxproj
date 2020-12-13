@@ -19,8 +19,8 @@
 		7A0A4A422584F20200512729 /* BaseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A402584F20200512729 /* BaseCell.swift */; };
 		7A0A4A482584FCC500512729 /* BaseEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A472584FCC500512729 /* BaseEntity.swift */; };
 		7A0A4A492584FCC500512729 /* BaseEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A472584FCC500512729 /* BaseEntity.swift */; };
-		7A0A4A532584FDF300512729 /* DataSourceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A522584FDF300512729 /* DataSourceProtocol.swift */; };
-		7A0A4A542584FDF300512729 /* DataSourceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A522584FDF300512729 /* DataSourceProtocol.swift */; };
+		7A0A4A532584FDF300512729 /* DataSourceProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A522584FDF300512729 /* DataSourceProtocols.swift */; };
+		7A0A4A542584FDF300512729 /* DataSourceProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A522584FDF300512729 /* DataSourceProtocols.swift */; };
 		7A0A4A65258506AE00512729 /* TransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A64258506AE00512729 /* TransitionAnimator.swift */; };
 		7A0A4A66258506AE00512729 /* TransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A64258506AE00512729 /* TransitionAnimator.swift */; };
 		7A23CD5B2581F365004B4033 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A23CD5A2581F365004B4033 /* AppDelegate.swift */; };
@@ -66,7 +66,7 @@
 		7A0A4A312584EF4E00512729 /* ImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCell.swift; sourceTree = "<group>"; };
 		7A0A4A402584F20200512729 /* BaseCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCell.swift; sourceTree = "<group>"; };
 		7A0A4A472584FCC500512729 /* BaseEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseEntity.swift; sourceTree = "<group>"; };
-		7A0A4A522584FDF300512729 /* DataSourceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSourceProtocol.swift; sourceTree = "<group>"; };
+		7A0A4A522584FDF300512729 /* DataSourceProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSourceProtocols.swift; sourceTree = "<group>"; };
 		7A0A4A64258506AE00512729 /* TransitionAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionAnimator.swift; sourceTree = "<group>"; };
 		7A23CD572581F365004B4033 /* JSMediaBrowserExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JSMediaBrowserExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A23CD5A2581F365004B4033 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -162,10 +162,10 @@
 		7A0A4A5D2584FE5A00512729 /* General */ = {
 			isa = PBXGroup;
 			children = (
-				7A0A4A522584FDF300512729 /* DataSourceProtocol.swift */,
-				7A77E2D22585E42B00B8150D /* View */,
+				7A0A4A522584FDF300512729 /* DataSourceProtocols.swift */,
 				7A0A4A4F2584FD4700512729 /* Base */,
 				7A0A4A4E2584FD3800512729 /* Image */,
+				7A77E2D22585E42B00B8150D /* View */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -452,7 +452,7 @@
 				7A23CDE02582032F004B4033 /* PagingCollectionView.swift in Sources */,
 				7A77E2FC25864A8C00B8150D /* ImageLoaderEntity.swift in Sources */,
 				7A06334A2585DC1200DADA21 /* DefaultWebImageMediator.swift in Sources */,
-				7A0A4A532584FDF300512729 /* DataSourceProtocol.swift in Sources */,
+				7A0A4A532584FDF300512729 /* DataSourceProtocols.swift in Sources */,
 				7A0A4A65258506AE00512729 /* TransitionAnimator.swift in Sources */,
 				7A0A4A412584F20200512729 /* BaseCell.swift in Sources */,
 				7A77E2D42585E45F00B8150D /* PieProgressView.swift in Sources */,
@@ -479,7 +479,7 @@
 				7A23CDE12582032F004B4033 /* PagingCollectionView.swift in Sources */,
 				7A77E2FD25864A8C00B8150D /* ImageLoaderEntity.swift in Sources */,
 				7A06334B2585DC1200DADA21 /* DefaultWebImageMediator.swift in Sources */,
-				7A0A4A542584FDF300512729 /* DataSourceProtocol.swift in Sources */,
+				7A0A4A542584FDF300512729 /* DataSourceProtocols.swift in Sources */,
 				7A0A4A66258506AE00512729 /* TransitionAnimator.swift in Sources */,
 				7A0A4A422584F20200512729 /* BaseCell.swift in Sources */,
 				7A77E2D52585E45F00B8150D /* PieProgressView.swift in Sources */,

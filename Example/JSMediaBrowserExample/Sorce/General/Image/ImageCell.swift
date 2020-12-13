@@ -24,30 +24,21 @@ open class ImageCell: BaseCell {
         zoomImageView?.js_frameApplyTransform = self.contentView.bounds
     }
     
-    public override func updateCell<ImageLoaderEntity>(loaderEntity: ImageLoaderEntity, at indexPath: IndexPath) {
+    public override func updateCell<T: LoaderProtocol>(loaderEntity: T, at indexPath: IndexPath) {
         super.updateCell(loaderEntity: loaderEntity, at: indexPath)
+        guard let loaderEntity = loaderEntity as? ImageLoaderEntity else { return }
         if let sourceItem: ImageEntity = loaderEntity.sourceItem as? ImageEntity {
             if let imageURL = sourceItem.imageUrl {
-                loaderEntity.webImageMediator?.loadImage(url:imageURL, progress: { (receivedSize, expectedSize) in
-                    
-                }, completed: { (image, error, finished) in
+                self.zoomImageView?.sd_internalSetImage(with: imageURL, placeholderImage: nil, options: SDWebImageOptions.init(rawValue: 0), context: nil, setImageBlock: nil, progress: nil, completed: { (image, data, errot, cache, bool, url) in
                     self.zoomImageView?.image = image;
                 })
+//                loaderEntity.webImageMediator?.loadImage(url:imageURL, progress: { (receivedSize, expectedSize) in
+//
+//                }, completed: { (image, error, finished) in
+//                    self.zoomImageView?.image = image;
+//                })
             }
         }
     }
-    
-    //    open override func updateCell<ImageLoaderEntity>(loaderEntity: ImageLoaderEntity, at indexPath: IndexPath) where ImageLoaderEntity: LoaderProtocol {
-    //        super.updateCell(loaderEntity: loaderEntity, at: indexPath)
-    //        if let sourceItem: ImageEntity = loaderEntity.sourceItem as? ImageEntity {
-    //            if let imageURL = sourceItem.imageUrl {
-    //                loaderEntity.webImageMediator?.loadImage(url:imageURL, progress: { (receivedSize, expectedSize) in
-    //
-    //                }, completed: { (image, error, finished) in
-    //                    self.zoomImageView?.image = image;
-    //                })
-    //            }
-    //        }
-    //    }
     
 }
