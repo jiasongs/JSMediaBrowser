@@ -8,7 +8,8 @@
 import UIKit
 import JSCoreKit
 
-@objc public protocol TransitionAnimatorDelegate: NSObjectProtocol {
+@objc(MediaBrowserViewControllerTransitionAnimatorDelegate)
+public protocol TransitionAnimatorDelegate: NSObjectProtocol {
     
     @objc var sourceRect: CGRect { get }
     @objc weak var sourceView: UIView? { get }
@@ -34,13 +35,13 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
     private var animationTransformKey: String = "TransformKey"
     private var animationMaskGroupKey: String = "MaskGroupKey"
-    private var cornerRadiusMaskLayer: CALayer?
+    private var maskLayer: CALayer?
     
     override init() {
         super.init()
-        self.cornerRadiusMaskLayer = CALayer.init();
-        self.cornerRadiusMaskLayer?.js_removeDefaultAnimations()
-        self.cornerRadiusMaskLayer?.backgroundColor = UIColor.white.cgColor;
+        self.maskLayer = CALayer.init();
+        self.maskLayer?.js_removeDefaultAnimations()
+        self.maskLayer?.backgroundColor = UIColor.white.cgColor;
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
@@ -132,7 +133,7 @@ extension TransitionAnimator {
             var fromTransform: CGAffineTransform = CGAffineTransform.identity;
             var toTransform: CGAffineTransform = CGAffineTransform.identity;
             var transform: CGAffineTransform = CGAffineTransform.init(scaleX: finalRatio, y: finalRatio);
-        
+            
             let contentViewCenterAfterScale: CGPoint = CGPoint.init(x: centerInZoomView.x + (zoomContentViewCenterInZoomView.x - centerInZoomView.x) * finalRatio, y: centerInZoomView.y + (zoomContentViewCenterInZoomView.y - centerInZoomView.y) * finalRatio)
             let translationAfterScale: CGSize = CGSize.init(width: sourceRect.midX - contentViewCenterAfterScale.x, height: sourceRect.midY - contentViewCenterAfterScale.y)
             transform = transform.concatenating(CGAffineTransform.init(translationX: translationAfterScale.width, y: translationAfterScale.height))
@@ -173,9 +174,9 @@ extension TransitionAnimator {
             maskAnimation.fillMode = .forwards;
             maskAnimation.isRemovedOnCompletion = false;
             maskAnimation.animations = [cornerRadiusAnimation, boundsAnimation];
-            self.cornerRadiusMaskLayer?.position = JSCGPointGetCenterWithRect(zoomContentView?.bounds ?? CGRect.zero);// 不管怎样，mask 都是居中的
-            zoomContentView?.layer.mask = self.cornerRadiusMaskLayer;
-            self.cornerRadiusMaskLayer?.add(maskAnimation, forKey: animationMaskGroupKey)
+            self.maskLayer?.position = JSCGPointGetCenterWithRect(zoomContentView?.bounds ?? CGRect.zero);// 不管怎样，mask 都是居中的
+            self.maskLayer?.add(maskAnimation, forKey: animationMaskGroupKey)
+            zoomContentView?.layer.mask = self.maskLayer;
             
             if (isPresenting) {
                 zoomView?.transform = fromTransform;
@@ -214,7 +215,7 @@ extension TransitionAnimator {
         zoomView?.transform = CGAffineTransform.identity
         zoomView?.layer.removeAnimation(forKey: animationTransformKey)
         
-        self.cornerRadiusMaskLayer?.removeAnimation(forKey: animationMaskGroupKey)
+        self.maskLayer?.removeAnimation(forKey: animationMaskGroupKey)
         self.delegate?.zoomContentView?.layer.mask = nil;
     }
     

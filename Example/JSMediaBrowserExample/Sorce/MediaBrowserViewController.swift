@@ -17,12 +17,13 @@ enum TransitioningStyle: Int {
 @objc class MediaBrowserViewController: UIViewController {
     
     @objc open var browserView: MediaBrowserView?
-    @objc open var sourceItems: Array<MediaBrowserViewSourceProtocol>? {
+    @objc open var sourceItems: Array<SourceProtocol>? {
         didSet {
             var array: Array<LoaderEntity> = Array.init()
             sourceItems?.forEach({ (item) in
                 let loader: LoaderEntity = LoaderEntity.init()
                 loader.sourceItem = item
+                loader.webImageMediator = nil;
                 array.append(loader)
             })
             loaderItems = array
@@ -53,7 +54,7 @@ enum TransitioningStyle: Int {
     }
     
     
-    private var loaderItems: Array<MediaBrowserViewLoaderProtocol>?
+    private var loaderItems: Array<LoaderProtocol>?
     private var imageCellIdentifier = "ImageCell"
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {

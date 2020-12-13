@@ -23,12 +23,16 @@ open class ImageCell: BaseCell {
         super.layoutSubviews()
         zoomImageView?.js_frameApplyTransform = self.contentView.bounds
     }
-    
-    open override func updateCell(loaderEntity: MediaBrowserViewLoaderProtocol, at indexPath: IndexPath) -> Void {
+        
+    open override func updateCell(loaderEntity: LoaderProtocol, at indexPath: IndexPath) -> Void {
         super.updateCell(loaderEntity: loaderEntity, at: indexPath)
         if let sourceItem: ImageEntity = loaderEntity.sourceItem as? ImageEntity {
-            zoomImageView?.sd_internalSetImage(with: sourceItem.imageURL, placeholderImage: nil, options: SDWebImageOptions(rawValue: 0), context: nil, setImageBlock: nil, progress: nil) { (image, data, eror, type, finshed, url) in
-                self.zoomImageView?.image = image;
+            if let imageURL = sourceItem.imageURL {
+                loaderEntity.webImageMediator?.loadImage(url:imageURL, progress: { (receivedSize, expectedSize) in
+                    
+                }, completed: { (image, error, finished) in
+                    self.zoomImageView?.image = image;
+                })
             }
         }
         

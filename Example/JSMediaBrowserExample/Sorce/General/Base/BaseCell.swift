@@ -8,7 +8,7 @@
 import UIKit
 
 @objc(MediaBrowserBaseCell)
-open class BaseCell: UICollectionViewCell, MediaBrowserViewCellProtocol {
+open class BaseCell: UICollectionViewCell, CellProtocol {
     
     public var emptyView: UIView? {
         get {
@@ -36,7 +36,7 @@ open class BaseCell: UICollectionViewCell, MediaBrowserViewCellProtocol {
         
     }
     
-    open func updateCell(loaderEntity: MediaBrowserViewLoaderProtocol, at indexPath: IndexPath) -> Void {
+    open func updateCell(loaderEntity: LoaderProtocol, at indexPath: IndexPath) -> Void {
         
     }
     

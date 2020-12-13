@@ -8,7 +8,7 @@
 import UIKit
 
 @objc(MediaBrowserBaseEntity)
-open class BaseEntity: NSObject, MediaBrowserViewSourceProtocol {
+open class BaseEntity: NSObject, SourceProtocol {
     
     public var sourceRect: CGRect = CGRect.zero
     public var sourceView: UIView?

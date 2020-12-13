@@ -8,8 +8,9 @@
 import UIKit
 
 @objc(MediaBrowserLoaderEntity)
-open class LoaderEntity: NSObject, MediaBrowserViewLoaderProtocol {
-
-    public var sourceItem: MediaBrowserViewSourceProtocol?
+open class LoaderEntity: NSObject, LoaderProtocol {
+    
+    public var sourceItem: SourceProtocol?
+    public var webImageMediator: WebImageMediatorProtocol?
     
 }
