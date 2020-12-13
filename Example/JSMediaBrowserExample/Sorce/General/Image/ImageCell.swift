@@ -27,7 +27,7 @@ open class ImageCell: BaseCell {
     open override func updateCell(loaderEntity: LoaderProtocol, at indexPath: IndexPath) -> Void {
         super.updateCell(loaderEntity: loaderEntity, at: indexPath)
         if let sourceItem: ImageEntity = loaderEntity.sourceItem as? ImageEntity {
-            if let imageURL = sourceItem.imageURL {
+            if let imageURL = sourceItem.imageUrl {
                 loaderEntity.webImageMediator?.loadImage(url:imageURL, progress: { (receivedSize, expectedSize) in
                     
                 }, completed: { (image, error, finished) in

@@ -71,7 +71,7 @@ class ViewController: UIViewController {
         var sourceItems: Array<ImageEntity> = [];
         for (index, urlString) in self.dataSource.enumerated() {
             let imageEntity = ImageEntity.init(sourceView: self.floatLayoutView.subviews[index], thumbImage: nil)
-            imageEntity.imageURL = URL.init(string: urlString)
+            imageEntity.imageUrl = URL.init(string: urlString)
             imageEntity.sourceCornerRadius = self.floatLayoutView.subviews[index].layer.cornerRadius
             sourceItems.append(imageEntity)
          }

@@ -11,7 +11,7 @@ import UIKit
 open class ImageEntity: BaseEntity {
     
     open var image: UIImage?
-    open var imageURL: URL?
+    open var imageUrl: URL?
 
     
 }
