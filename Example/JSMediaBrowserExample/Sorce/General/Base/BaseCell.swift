@@ -10,18 +10,6 @@ import UIKit
 @objc(MediaBrowserBaseCell)
 open class BaseCell: UICollectionViewCell, CellProtocol {
     
-    public var emptyView: UIView? {
-        get {
-            return UIView.init()
-        }
-    }
-    
-    public var loadingView: UIView? {
-        get {
-            return UIView.init()
-        }
-    }
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.didInitialize()
@@ -36,7 +24,11 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
         
     }
     
-    open func updateCell(loaderEntity: LoaderProtocol, at indexPath: IndexPath) -> Void {
+    public func updateCell<T>(loaderEntity: T, at indexPath: IndexPath) {
+        
+    }
+    
+    public func updateLoading(receivedSize: Int, expectedSize: Int) {
         
     }
     

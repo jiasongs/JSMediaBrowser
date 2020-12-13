@@ -11,8 +11,8 @@
 		7A06334B2585DC1200DADA21 /* DefaultWebImageMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0633492585DC1200DADA21 /* DefaultWebImageMediator.swift */; };
 		7A0A4A222584EAC400512729 /* ImageEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A212584EAC400512729 /* ImageEntity.swift */; };
 		7A0A4A232584EAC400512729 /* ImageEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A212584EAC400512729 /* ImageEntity.swift */; };
-		7A0A4A292584EDC200512729 /* LoaderEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A282584EDC200512729 /* LoaderEntity.swift */; };
-		7A0A4A2A2584EDC200512729 /* LoaderEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A282584EDC200512729 /* LoaderEntity.swift */; };
+		7A0A4A292584EDC200512729 /* BaseLoaderEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A282584EDC200512729 /* BaseLoaderEntity.swift */; };
+		7A0A4A2A2584EDC200512729 /* BaseLoaderEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A282584EDC200512729 /* BaseLoaderEntity.swift */; };
 		7A0A4A322584EF4E00512729 /* ImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A312584EF4E00512729 /* ImageCell.swift */; };
 		7A0A4A332584EF4E00512729 /* ImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A312584EF4E00512729 /* ImageCell.swift */; };
 		7A0A4A412584F20200512729 /* BaseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A402584F20200512729 /* BaseCell.swift */; };
@@ -45,6 +45,8 @@
 		7A23CE4325823DE1004B4033 /* ZoomImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A23CE4125823DE1004B4033 /* ZoomImageView.swift */; };
 		7A77E2D42585E45F00B8150D /* PieProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A77E2D32585E45F00B8150D /* PieProgressView.swift */; };
 		7A77E2D52585E45F00B8150D /* PieProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A77E2D32585E45F00B8150D /* PieProgressView.swift */; };
+		7A77E2FC25864A8C00B8150D /* ImageLoaderEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A77E2FB25864A8C00B8150D /* ImageLoaderEntity.swift */; };
+		7A77E2FD25864A8C00B8150D /* ImageLoaderEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A77E2FB25864A8C00B8150D /* ImageLoaderEntity.swift */; };
 		7AEF5D85258321A2006550CE /* ZoomBaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AEF5D84258321A2006550CE /* ZoomBaseView.swift */; };
 		7AEF5D86258321A2006550CE /* ZoomBaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AEF5D84258321A2006550CE /* ZoomBaseView.swift */; };
 		7AEF5D8C2583240F006550CE /* MediaBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AEF5D8B2583240F006550CE /* MediaBrowserViewController.swift */; };
@@ -60,7 +62,7 @@
 		2CA5FEFE7F71BC6264231527 /* Pods-JSMediaBrowserExampleMacOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JSMediaBrowserExampleMacOS.debug.xcconfig"; path = "Target Support Files/Pods-JSMediaBrowserExampleMacOS/Pods-JSMediaBrowserExampleMacOS.debug.xcconfig"; sourceTree = "<group>"; };
 		7A0633492585DC1200DADA21 /* DefaultWebImageMediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultWebImageMediator.swift; sourceTree = "<group>"; };
 		7A0A4A212584EAC400512729 /* ImageEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEntity.swift; sourceTree = "<group>"; };
-		7A0A4A282584EDC200512729 /* LoaderEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoaderEntity.swift; sourceTree = "<group>"; };
+		7A0A4A282584EDC200512729 /* BaseLoaderEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseLoaderEntity.swift; sourceTree = "<group>"; };
 		7A0A4A312584EF4E00512729 /* ImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCell.swift; sourceTree = "<group>"; };
 		7A0A4A402584F20200512729 /* BaseCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCell.swift; sourceTree = "<group>"; };
 		7A0A4A472584FCC500512729 /* BaseEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseEntity.swift; sourceTree = "<group>"; };
@@ -82,6 +84,7 @@
 		7A23CE36258227DD004B4033 /* MediaBrowserProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaBrowserProtocol.swift; sourceTree = "<group>"; };
 		7A23CE4125823DE1004B4033 /* ZoomImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomImageView.swift; sourceTree = "<group>"; };
 		7A77E2D32585E45F00B8150D /* PieProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieProgressView.swift; sourceTree = "<group>"; };
+		7A77E2FB25864A8C00B8150D /* ImageLoaderEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoaderEntity.swift; sourceTree = "<group>"; };
 		7AEF5D84258321A2006550CE /* ZoomBaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomBaseView.swift; sourceTree = "<group>"; };
 		7AEF5D8B2583240F006550CE /* MediaBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaBrowserViewController.swift; sourceTree = "<group>"; };
 		7AEF5DCA25837379006550CE /* JSMediaBrowserExample-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "JSMediaBrowserExample-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -128,6 +131,7 @@
 			children = (
 				7A0A4A312584EF4E00512729 /* ImageCell.swift */,
 				7A0A4A212584EAC400512729 /* ImageEntity.swift */,
+				7A77E2FB25864A8C00B8150D /* ImageLoaderEntity.swift */,
 			);
 			path = Image;
 			sourceTree = "<group>";
@@ -137,16 +141,9 @@
 			children = (
 				7A0A4A402584F20200512729 /* BaseCell.swift */,
 				7A0A4A472584FCC500512729 /* BaseEntity.swift */,
+				7A0A4A282584EDC200512729 /* BaseLoaderEntity.swift */,
 			);
 			path = Base;
-			sourceTree = "<group>";
-		};
-		7A0A4A502584FD5F00512729 /* Loader */ = {
-			isa = PBXGroup;
-			children = (
-				7A0A4A282584EDC200512729 /* LoaderEntity.swift */,
-			);
-			path = Loader;
 			sourceTree = "<group>";
 		};
 		7A0A4A512584FD6F00512729 /* Core */ = {
@@ -165,10 +162,10 @@
 		7A0A4A5D2584FE5A00512729 /* General */ = {
 			isa = PBXGroup;
 			children = (
+				7A0A4A522584FDF300512729 /* DataSourceProtocol.swift */,
 				7A77E2D22585E42B00B8150D /* View */,
 				7A0A4A4F2584FD4700512729 /* Base */,
 				7A0A4A4E2584FD3800512729 /* Image */,
-				7A0A4A502584FD5F00512729 /* Loader */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -220,7 +217,6 @@
 				7A0A4A5D2584FE5A00512729 /* General */,
 				7AEF5D8B2583240F006550CE /* MediaBrowserViewController.swift */,
 				7A0A4A64258506AE00512729 /* TransitionAnimator.swift */,
-				7A0A4A522584FDF300512729 /* DataSourceProtocol.swift */,
 			);
 			path = Sorce;
 			sourceTree = "<group>";
@@ -454,6 +450,7 @@
 				7AEF5D85258321A2006550CE /* ZoomBaseView.swift in Sources */,
 				7A23CDE5258203D2004B4033 /* PagingLayout.swift in Sources */,
 				7A23CDE02582032F004B4033 /* PagingCollectionView.swift in Sources */,
+				7A77E2FC25864A8C00B8150D /* ImageLoaderEntity.swift in Sources */,
 				7A06334A2585DC1200DADA21 /* DefaultWebImageMediator.swift in Sources */,
 				7A0A4A532584FDF300512729 /* DataSourceProtocol.swift in Sources */,
 				7A0A4A65258506AE00512729 /* TransitionAnimator.swift in Sources */,
@@ -466,7 +463,7 @@
 				7A0A4A322584EF4E00512729 /* ImageCell.swift in Sources */,
 				7A23CD5B2581F365004B4033 /* AppDelegate.swift in Sources */,
 				7A23CE4225823DE1004B4033 /* ZoomImageView.swift in Sources */,
-				7A0A4A292584EDC200512729 /* LoaderEntity.swift in Sources */,
+				7A0A4A292584EDC200512729 /* BaseLoaderEntity.swift in Sources */,
 				7AEF5D8C2583240F006550CE /* MediaBrowserViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -480,6 +477,7 @@
 				7AEF5D86258321A2006550CE /* ZoomBaseView.swift in Sources */,
 				7A23CDE6258203D2004B4033 /* PagingLayout.swift in Sources */,
 				7A23CDE12582032F004B4033 /* PagingCollectionView.swift in Sources */,
+				7A77E2FD25864A8C00B8150D /* ImageLoaderEntity.swift in Sources */,
 				7A06334B2585DC1200DADA21 /* DefaultWebImageMediator.swift in Sources */,
 				7A0A4A542584FDF300512729 /* DataSourceProtocol.swift in Sources */,
 				7A0A4A66258506AE00512729 /* TransitionAnimator.swift in Sources */,
@@ -492,7 +490,7 @@
 				7A0A4A332584EF4E00512729 /* ImageCell.swift in Sources */,
 				7A23CD772581F3C1004B4033 /* AppDelegate.swift in Sources */,
 				7A23CE4325823DE1004B4033 /* ZoomImageView.swift in Sources */,
-				7A0A4A2A2584EDC200512729 /* LoaderEntity.swift in Sources */,
+				7A0A4A2A2584EDC200512729 /* BaseLoaderEntity.swift in Sources */,
 				7AEF5D8D2583240F006550CE /* MediaBrowserViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

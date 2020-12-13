@@ -9,9 +9,9 @@ import UIKit
 
 @objc(MediaBrowserBaseEntity)
 open class BaseEntity: NSObject, SourceProtocol {
-    
+
     public var sourceRect: CGRect = CGRect.zero
-    public var sourceView: UIView?
+    weak public var sourceView: UIView?
     public var sourceCornerRadius: CGFloat = 0
     public var thumbImage: UIImage?
     
@@ -20,9 +20,8 @@ open class BaseEntity: NSObject, SourceProtocol {
         self.sourceRect = sourceRect;
         self.thumbImage = thumbImage;
     }
-    
-    public required init(sourceView: UIView?, thumbImage: UIImage?) {
-        super.init()
+        
+    public required init<T>(sourceView: T?, thumbImage: UIImage?) where T : UIView {
         self.sourceView = sourceView;
         self.thumbImage = thumbImage;
     }

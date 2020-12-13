@@ -17,7 +17,7 @@ public protocol TransitionAnimatorDelegate: NSObjectProtocol {
     @objc weak var contentView: UIView? { get }
     @objc weak var zoomView: UIView? { get }
     @objc weak var zoomContentView: UIView? { get }
-    @objc var zoomViewContentRect: CGRect { get }
+    @objc var zoomContentViewRect: CGRect { get }
     
 }
 
@@ -115,7 +115,7 @@ extension TransitionAnimator {
         } else if style == .zoom {
             let contentView = self.delegate?.contentView;
             let zoomView = self.delegate?.zoomView
-            let zoomViewContentRect = self.delegate?.zoomViewContentRect ?? CGRect.zero
+            let zoomViewContentRect = self.delegate?.zoomContentViewRect ?? CGRect.zero
             let zoomContentView = self.delegate?.zoomContentView
             var zoomContentViewFrame = needViewController?.view.convert(zoomViewContentRect, to: nil) ?? CGRect.zero;
             var zoomContentViewCenterInZoomView: CGPoint = JSCGPointGetCenterWithRect(zoomViewContentRect);

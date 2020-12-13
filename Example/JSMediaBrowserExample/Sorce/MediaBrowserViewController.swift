@@ -17,14 +17,16 @@ enum TransitioningStyle: Int {
 @objc class MediaBrowserViewController: UIViewController {
     
     @objc open var browserView: MediaBrowserView?
-    @objc open var sourceItems: Array<SourceProtocol>? {
+    @objc open var sourceItems: Array<BaseEntity>? {
         didSet {
-            var array: Array<LoaderEntity> = Array.init()
+            var array: Array<BaseLoaderEntity> = Array.init()
             sourceItems?.forEach({ (item) in
-                let loader: LoaderEntity = LoaderEntity.init()
-                loader.sourceItem = item
-                loader.webImageMediator = nil;
-                array.append(loader)
+                if item.isKind(of: ImageEntity.self) {
+                    let loader: ImageLoaderEntity = ImageLoaderEntity.init()
+                    loader.sourceItem = item
+                    loader.webImageMediator = nil;
+                    array.append(loader)
+                }
             })
             loaderItems = array
         }
@@ -109,17 +111,16 @@ extension MediaBrowserViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        self.browserView?.js_frameApplyTransform = self.view.bounds;
+        browserView?.js_frameApplyTransform = self.view.bounds;
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.browserView?.reloadData()
-        self.browserView?.collectionView?.layoutIfNeeded()
+        browserView?.reloadData()
+        browserView?.collectionView?.layoutIfNeeded()
     }
     
 }
-
 
 extension MediaBrowserViewController: MediaBrowserViewDataSource {
     
@@ -132,7 +133,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         guard let loaderItem = loaderItems?[indexPath.item] else { return UICollectionViewCell.init() }
         if let sourceItem = loaderItem.sourceItem, sourceItem.isKind(of: ImageEntity.self) {
             cell = browserView.dequeueReusableCell(withReuseIdentifier: imageCellIdentifier, for: indexPath) as? BaseCell
-            cell?.updateCell(loaderEntity: loaderItem, at: indexPath)
+            //            cell?.updateCell(loaderEntity: loaderItem, at: indexPath)
         }
         return cell!
     }
@@ -184,11 +185,11 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
 }
 
 extension MediaBrowserViewController: UIViewControllerTransitioningDelegate {
-
+    
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return self.transitioningAnimator
     }
-
+    
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return self.transitioningAnimator
     }
@@ -196,23 +197,23 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate {
 }
 
 extension MediaBrowserViewController: TransitionAnimatorDelegate {
-  
+    
     var sourceRect: CGRect {
-        if let sourceItem = self.sourceItems?[self.browserView?.currentMediaIndex ?? 0] {
+        if let sourceItem = self.sourceItems?[browserView?.currentMediaIndex ?? 0] {
             return sourceItem.sourceRect
         }
         return CGRect.zero
     }
     
     var sourceView: UIView? {
-        if let sourceItem = self.sourceItems?[self.browserView?.currentMediaIndex ?? 0] {
+        if let sourceItem = self.sourceItems?[browserView?.currentMediaIndex ?? 0] {
             return sourceItem.sourceView
         }
         return nil
     }
     
     var sourceCornerRadius: CGFloat {
-        if let sourceItem = self.sourceItems?[self.browserView?.currentMediaIndex ?? 0] {
+        if let sourceItem = self.sourceItems?[browserView?.currentMediaIndex ?? 0] {
             if sourceItem.sourceCornerRadius > 0 {
                 return sourceItem.sourceCornerRadius
             } else {
@@ -228,7 +229,7 @@ extension MediaBrowserViewController: TransitionAnimatorDelegate {
     
     var zoomView: UIView? {
         if let cell = self.browserView?.currentMidiaCell {
-           return cell
+            return cell
         }
         return nil
     }
@@ -240,7 +241,7 @@ extension MediaBrowserViewController: TransitionAnimatorDelegate {
         return nil
     }
     
-    var zoomViewContentRect: CGRect {
+    var zoomContentViewRect: CGRect {
         if let imageCell = self.browserView?.currentMidiaCell as? ImageCell, imageCell.isKind(of: ImageCell.self) {
             return imageCell.zoomImageView?.contentViewRectInZoomView() ?? CGRect.zero
         }
