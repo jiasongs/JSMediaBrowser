@@ -18,7 +18,7 @@ public class ZoomImageView: ZoomBaseView {
         isImageViewInitialized = true
         let imageView = UIImageView.init()
         imageView.isHidden = true
-        self.scrollView?.addSubview(imageView)
+        scrollView?.addSubview(imageView)
         return imageView
     }()
     
@@ -27,7 +27,7 @@ public class ZoomImageView: ZoomBaseView {
         isLivePhotoViewViewInitialized = true
         let livePhotoView = PHLivePhotoView.init()
         livePhotoView.isHidden = true
-        self.scrollView?.addSubview(livePhotoView)
+        scrollView?.addSubview(livePhotoView)
         return livePhotoView
     }()
     
@@ -36,14 +36,14 @@ public class ZoomImageView: ZoomBaseView {
     
     @objc public var maximumZoomScale: CGFloat = 2.0 {
         didSet {
-            self.scrollView?.maximumZoomScale = maximumZoomScale
+            scrollView?.maximumZoomScale = maximumZoomScale
         }
     }
     
     @objc public weak var image: UIImage? {
         didSet {
             if isLivePhotoViewViewInitialized {
-                self.livePhotoView.isHidden = true
+                livePhotoView.isHidden = true
             }
             self.imageView.isHidden = false
             if self.image != nil {
@@ -57,7 +57,7 @@ public class ZoomImageView: ZoomBaseView {
     @objc public weak var livePhoto: PHLivePhoto? {
         didSet {
             if isImageViewInitialized {
-                self.imageView.isHidden = true
+                imageView.isHidden = true
             }
             self.livePhotoView.isHidden = false
             if self.livePhoto != nil {
@@ -289,6 +289,7 @@ extension ZoomImageView {
     
     private func handleDidEndZooming() -> Void {
         guard let contentView = self.contentView else { return }
+        guard let scrollView = self.scrollView else { return }
         let viewport: CGRect = self.finalViewportRect()
         // 强制 layout 以确保下面的一堆计算依赖的都是最新的 frame 的值
         self.layoutIfNeeded()
@@ -296,18 +297,18 @@ extension ZoomImageView {
         var contentInset: UIEdgeInsets = UIEdgeInsets.zero
         contentInset.top = viewport.minY
         contentInset.left = viewport.minX
-        contentInset.right = self.bounds.width - viewport.maxX
-        contentInset.bottom = self.bounds.height - viewport.maxY
+        contentInset.right = scrollView.bounds.width - viewport.maxX
+        contentInset.bottom = scrollView.bounds.height - viewport.maxY
         if viewport.height >= contentViewFrame.height {
             contentInset.top = floor(viewport.midY - contentViewFrame.height / 2.0)
-            contentInset.bottom = floor(self.bounds.height - viewport.midY - contentViewFrame.height / 2.0)
+            contentInset.bottom = floor(scrollView.bounds.height - viewport.midY - contentViewFrame.height / 2.0)
         }
         if viewport.width >= contentViewFrame.width {
             contentInset.left = floor(viewport.midX - contentViewFrame.width / 2.0)
-            contentInset.right = floor(self.bounds.width - viewport.midX - contentViewFrame.width / 2.0)
+            contentInset.right = floor(scrollView.bounds.width - viewport.midX - contentViewFrame.width / 2.0)
         }
-        self.scrollView?.contentInset = contentInset
-        self.scrollView?.contentSize = contentView.frame.size
+        scrollView.contentInset = contentInset
+        scrollView.contentSize = contentView.frame.size
     }
     
 }
