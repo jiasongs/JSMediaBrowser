@@ -118,9 +118,12 @@ extension TransitionAnimator {
             }
             let contentView = self.delegate?.contentView
             let zoomView = self.delegate?.zoomView
-            let zoomViewContentRect = self.delegate?.zoomContentViewRect ?? CGRect.zero
+            var zoomViewContentRect = self.delegate?.zoomContentViewRect ?? CGRect.zero
+            zoomViewContentRect.origin.y = max(zoomViewContentRect.minY, 0)
+            zoomViewContentRect.size.height = min(zoomViewContentRect.height, zoomView?.frame.height ?? 0)
             let zoomContentView = self.delegate?.zoomContentView
-            let zoomContentViewBounds = zoomContentView?.bounds ?? CGRect.zero
+            var zoomContentViewBounds = zoomContentView?.bounds ?? CGRect.zero
+            zoomContentViewBounds.size.height = min(zoomContentViewBounds.height, zoomView?.bounds.height ?? 0)
             var zoomContentViewFrame = needViewController?.view.convert(zoomViewContentRect, to: nil) ?? CGRect.zero
             var zoomContentViewCenterInZoomView: CGPoint = JSCGPointGetCenterWithRect(zoomViewContentRect)
             if (zoomContentViewFrame.isEmpty) {

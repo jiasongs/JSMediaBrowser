@@ -49,7 +49,6 @@ public class ZoomImageView: ZoomBaseView {
             if self.image != nil {
                 self.imageView.image = self.image
                 self.imageView.js_frameApplyTransform = CGRect.init(origin: CGPoint.zero, size: self.image?.size ?? CGSize.zero)
-                
                 self.revertZooming()
             }
         }
@@ -121,8 +120,7 @@ extension ZoomImageView {
         }
         let finalEnabledZoom: Bool = self.finalEnabledZoom
         let minimumZoomScale: CGFloat = self.minimumZoomScale
-        var maximumZoomScale: CGFloat = finalEnabledZoom ? self.maximumZoomScale : minimumZoomScale
-        maximumZoomScale = max(minimumZoomScale, maximumZoomScale)
+        let maximumZoomScale: CGFloat = max(finalEnabledZoom ? self.maximumZoomScale : minimumZoomScale, minimumZoomScale)
         let zoomScale: CGFloat = minimumZoomScale
         let shouldFireDidZoomingManual: Bool = zoomScale == self.scrollView?.zoomScale
         self.scrollView?.panGestureRecognizer.isEnabled = finalEnabledZoom
@@ -137,6 +135,7 @@ extension ZoomImageView {
         if (shouldFireDidZoomingManual) {
             self.handleDidEndZooming()
         }
+
         self.scrollView?.contentOffset = { () -> CGPoint in
             var x: CGFloat = self.scrollView?.contentOffset.x ?? 0
             var y: CGFloat = self.scrollView?.contentOffset.y ?? 0
