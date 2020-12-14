@@ -18,6 +18,9 @@ public protocol TransitionAnimatorDelegate: NSObjectProtocol {
     @objc weak var zoomView: UIView? { get }
     @objc weak var zoomContentView: UIView? { get }
     @objc var zoomContentViewRect: CGRect { get }
+    @objc weak var zoomScollView: UIScrollView? { get }
+    
+    func revertZooming() -> Void;
     
 }
 
@@ -25,7 +28,7 @@ public protocol TransitionAnimatorDelegate: NSObjectProtocol {
 class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
     @objc open weak var delegate: TransitionAnimatorDelegate?
-    @objc open var duration: TimeInterval = 0.25 + 1
+    @objc open var duration: TimeInterval = 0.25 + 0.25
     @objc open var presentingStyle: TransitioningStyle = .zoom {
         didSet {
             dismissingStyle = presentingStyle
@@ -58,14 +61,15 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             let needViewController = isPresenting ? toViewController : fromViewController
             if !sourceRect.isEmpty {
                 sourceRect = needViewController?.view.convert(sourceRect, from: nil) ?? CGRect.zero
-            } else if sourceView != nil {
-                sourceRect = needViewController?.view.convert(sourceView!.frame, from: sourceView!.superview) ?? CGRect.zero
+            } else if let sourceView = sourceView {
+                sourceRect = needViewController?.view.convert(sourceView.frame, from: sourceView.superview) ?? CGRect.zero
             }
             if (!sourceRect.isEmpty && !sourceRect.intersects(needViewController?.view.bounds ?? CGRect.zero)) {
                 sourceRect = CGRect.zero
             }
         }
-        style = style == .zoom && sourceRect.isEmpty ? .fade : style
+        let zoomContentViewRect = self.delegate?.zoomContentViewRect ?? CGRect.zero
+        style = style == .zoom && sourceRect.isEmpty && zoomContentViewRect.isEmpty ? .fade : style
         
         let containerView: UIView = transitionContext.containerView
         let fromView: UIView? = transitionContext.view(forKey: UITransitionContextViewKey.from)
@@ -76,15 +80,15 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         toView?.layoutIfNeeded()
         toView?.frame = containerView.bounds
         if (isPresenting) {
-            if toView != nil {
-                containerView.addSubview(toView!)
+            if let toView = toView {
+                containerView.addSubview(toView)
             }
             if shouldAppearanceTransitionManually {
                 presentingViewController?.beginAppearanceTransition(false, animated: true)
             }
         } else {
-            if toView != nil && fromView != nil {
-                containerView.insertSubview(toView!, belowSubview: fromView!)
+            if let toView = toView, let fromView = fromView {
+                containerView.insertSubview(toView, belowSubview: fromView)
             }
             presentingViewController?.beginAppearanceTransition(true, animated: true)
         }
@@ -113,6 +117,7 @@ extension TransitionAnimator {
         if style == .fade {
             needViewController?.view.alpha = isPresenting ? 0 : 1
         } else if style == .zoom {
+            self.delegate?.revertZooming()
             if isPresenting {
                 sourceView?.isHidden = true
             }
@@ -145,27 +150,37 @@ extension TransitionAnimator {
             } else {
                 maskToBounds = maskBounds
             }
-            
+
             let cornerRadius: CGFloat = self.delegate?.sourceCornerRadius ?? 0 / maskFinalRatio
             let fromCornerRadius = isPresenting ? cornerRadius : 0
             let toCornerRadius = isPresenting ? 0 : cornerRadius
             let cornerRadiusAnimation: CABasicAnimation = CABasicAnimation.init(keyPath: "cornerRadius")
             cornerRadiusAnimation.fromValue = fromCornerRadius
             cornerRadiusAnimation.toValue = toCornerRadius
-            
+
             let boundsAnimation: CABasicAnimation = CABasicAnimation.init(keyPath: "bounds")
             boundsAnimation.fromValue = NSValue.init(cgRect: JSCGRectMakeWithSize(maskFromBounds.size))
             boundsAnimation.toValue = NSValue.init(cgRect: JSCGRectMakeWithSize(maskToBounds.size))
-            
+
             let maskAnimation: CAAnimationGroup  = CAAnimationGroup.init()
             maskAnimation.duration = self.duration
             maskAnimation.timingFunction = CAMediaTimingFunction.init(name: .easeInEaseOut)
             maskAnimation.fillMode = .forwards
             maskAnimation.isRemovedOnCompletion = false
             maskAnimation.animations = [cornerRadiusAnimation, boundsAnimation]
-            self.maskLayer?.position = JSCGPointGetCenterWithRect(zoomContentViewBounds)// 不管怎样，mask 都是居中的
-            self.maskLayer?.add(maskAnimation, forKey: animationMaskGroupKey)
+            
+            var zzz = JSCGPointGetCenterWithRect(zoomContentViewBounds)
+            let zzzzz = zoomContentView?.convert(zoomContentViewBounds, to: zoomView) ?? CGRect.zero
+            if zzzzz.minY < 0 {
+                zzz.y = zzz.y + abs(zzzzz.minY)
+            }
             zoomContentView?.layer.mask = self.maskLayer
+            zoomContentView?.layer.mask?.position = zzz
+//            zoomContentView?.layer.mask?.frame = CGRect.init(x: 0, y: self.delegate?.zoomScollView?.contentOffset.y ?? 0, width: zoomContentViewBounds.width, height: zoomContentViewBounds.height)
+            zoomContentView?.layer.mask?.add(maskAnimation, forKey: animationMaskGroupKey)
+            
+            // 当 zoomContentView 被放大后，如果不去掉 clipToBounds，那么退出预览时，contentView 溢出的那部分内容就看不到
+//            zoomContentView?.clipsToBounds = false;
             
             let centerInZoomView: CGPoint = JSCGPointGetCenterWithRect(zoomView?.bounds ?? CGRect.zero)
             let horizontalRatio: CGFloat = sourceRect.width / zoomContentViewFrame.width
@@ -222,6 +237,8 @@ extension TransitionAnimator {
         let zoomView = self.delegate?.zoomView
         zoomView?.transform = CGAffineTransform.identity
         zoomView?.layer.removeAnimation(forKey: animationTransformKey)
+        
+        self.delegate?.zoomScollView?.clipsToBounds = true;
         
         self.maskLayer?.removeAnimation(forKey: animationMaskGroupKey)
         self.delegate?.zoomContentView?.layer.mask = nil

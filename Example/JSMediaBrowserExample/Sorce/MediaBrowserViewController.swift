@@ -248,4 +248,17 @@ extension MediaBrowserViewController: TransitionAnimatorDelegate {
         return CGRect.zero
     }
     
+    var zoomScollView: UIScrollView? {
+        if let imageCell = self.browserView?.currentMidiaCell as? ImageCell, imageCell.isKind(of: ImageCell.self) {
+            return imageCell.zoomImageView?.scrollView
+        }
+        return nil
+    }
+    
+    func revertZooming() -> Void {
+        if let imageCell = self.browserView?.currentMidiaCell as? ImageCell, imageCell.isKind(of: ImageCell.self) {
+            imageCell.zoomImageView?.revertZooming()
+        }
+    }
+    
 }

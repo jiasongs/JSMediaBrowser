@@ -45,10 +45,10 @@ public class ZoomImageView: ZoomBaseView {
             if isLivePhotoViewViewInitialized {
                 livePhotoView.isHidden = true
             }
-            self.imageView.isHidden = false
-            if self.image != nil {
-                self.imageView.image = self.image
-                self.imageView.js_frameApplyTransform = CGRect.init(origin: CGPoint.zero, size: self.image?.size ?? CGSize.zero)
+            if let image = self.image {
+                self.imageView.isHidden = false
+                self.imageView.image = image
+                self.imageView.js_frameApplyTransform = CGRect.init(origin: CGPoint.zero, size: image.size)
                 self.revertZooming()
             }
         }
@@ -59,10 +59,10 @@ public class ZoomImageView: ZoomBaseView {
             if isImageViewInitialized {
                 imageView.isHidden = true
             }
-            self.livePhotoView.isHidden = false
-            if self.livePhoto != nil {
-                self.livePhotoView.livePhoto = self.livePhoto
-                self.livePhotoView.js_frameApplyTransform = CGRect.init(origin: CGPoint.zero, size: self.livePhoto?.size ?? CGSize.zero)
+            if let livePhoto = self.livePhoto {
+                self.livePhotoView.isHidden = false
+                self.livePhotoView.livePhoto = livePhoto
+                self.livePhotoView.js_frameApplyTransform = CGRect.init(origin: CGPoint.zero, size: livePhoto.size)
                 self.revertZooming()
             }
         }
@@ -256,10 +256,10 @@ extension ZoomImageView {
             }
             let viewport: CGRect = self.finalViewportRect()
             var mediaSize: CGSize = CGSize.zero
-            if self.image != nil {
-                mediaSize = self.image!.size
-            } else if self.livePhoto != nil {
-                mediaSize = self.livePhoto!.size
+            if let image = self.image {
+                mediaSize = image.size
+            } else if let livePhoto = self.livePhoto {
+                mediaSize = livePhoto.size
             }
             var contentMode = self.contentMode
             var minScale: CGFloat = 1
