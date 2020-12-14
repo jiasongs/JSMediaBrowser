@@ -180,10 +180,10 @@ extension ZoomImageView {
     @objc open func zoom(to rect: CGRect, animated: Bool) -> Void {
         if (animated) {
             UIView.animate(withDuration: 0.25, delay: 0.0, options: UIView.AnimationOptions.curveEaseInOut, animations: {
-                self.scrollView?.zoom(to: rect, animated: animated)
+                self.scrollView?.zoom(to: rect, animated: false)
             }, completion: nil)
         } else {
-            self.scrollView?.zoom(to: rect, animated: animated)
+            self.scrollView?.zoom(to: rect, animated: false)
         }
     }
     
