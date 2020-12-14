@@ -155,8 +155,14 @@ extension ZoomImageView {
     @objc open func finalViewportRect() -> CGRect {
         var rect: CGRect = self.viewportRect
         if (rect.isEmpty && !self.bounds.isEmpty) {
-            let size: CGSize = CGSize.init(width: min(self.bounds.width, viewportRectMaxWidth), height: self.bounds.height)
-            rect = CGRect.init(x: (self.bounds.width - size.width) / 2, y: 0, width: size.width, height: size.height)
+            if let scrollView = self.scrollView {
+                if !scrollView.bounds.size.equalTo(self.bounds.size) {
+                    self.setNeedsLayout()
+                    self.layoutIfNeeded()
+                }
+                let size: CGSize = CGSize.init(width: min(scrollView.bounds.width, viewportRectMaxWidth), height: scrollView.bounds.height)
+                rect = CGRect.init(x: (scrollView.bounds.width - size.width) / 2, y: 0, width: size.width, height: size.height)
+            }
         }
         return rect
     }
@@ -216,7 +222,7 @@ extension ZoomImageView {
         if (self.bounds.isEmpty) {
             return
         }
-        self.scrollView?.js_frameApplyTransform = self.bounds
+        self.scrollView?.frame = self.bounds
     }
     
     open override var frame: CGRect {
