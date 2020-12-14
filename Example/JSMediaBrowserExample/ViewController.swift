@@ -17,6 +17,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = .black
         self.dataSource = ["https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=1466376595,3460773628&fm=26&gp=0.jpg",
                            "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=643903962,2695937018&fm=26&gp=0.jpg",
                            "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3121164654,816590068&fm=26&gp=0.jpg",
@@ -29,7 +30,7 @@ class ViewController: UIViewController {
         for item: String in self.dataSource {
             let button = QMUIButton.init()
 //            button.layer.cornerRadius = 10;
-            button.layer.masksToBounds = true;
+//            button.layer.masksToBounds = true;
             button.sd_setImage(with: URL.init(string: item)!, for: UIControl.State.normal, completed: nil)
             button.imageView?.contentMode = .scaleAspectFill
             button.addTarget(self, action: #selector(self.handleImageButtonEvent(sender:)), for: UIControl.Event.touchUpInside)
@@ -41,9 +42,10 @@ class ViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        let margins: UIEdgeInsets = UIEdgeInsets.init(top: QMUIHelper.safeAreaInsetsForDeviceWithNotch().top + self.qmui_navigationBarMaxYInViewCoordinator, left: 24 + self.view.qmui_safeAreaInsets.left, bottom: 24, right: 24 + self.view.qmui_safeAreaInsets.right);
+        
+        let margins: UIEdgeInsets = UIEdgeInsets.init(top: 70 + self.qmui_navigationBarMaxYInViewCoordinator, left: 24 + self.view.qmui_safeAreaInsets.left, bottom: 24, right: 24 + self.view.qmui_safeAreaInsets.right);
         let contentWidth: CGFloat = self.view.qmui_width - UIEdgeInsetsGetHorizontalValue(margins);
-        let column: Int = 3
+        let column: Int = self.view.qmui_width > 700 ? 8 : 3
         let horizontalValue: CGFloat = CGFloat((column - 1)) * UIEdgeInsetsGetHorizontalValue(self.floatLayoutView.itemMargins);
         let imgWith: CGFloat = contentWidth / CGFloat(column) - horizontalValue;
         self.floatLayoutView!.minimumItemSize = CGSize.init(width: imgWith, height: imgWith);
@@ -56,7 +58,7 @@ class ViewController: UIViewController {
         browser.browserView?.currentMediaIndex = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
         var sourceItems: Array<ImageEntity> = [];
         for (index, urlString) in self.dataSource.enumerated() {
-            let imageEntity = ImageEntity.init(sourceView: self.floatLayoutView.subviews[index], thumbImage: nil)
+            let imageEntity = ImageEntity.init(sourceView: self.floatLayoutView.subviews[index], sourceRect: CGRect.zero, thumbImage: nil)
             imageEntity.imageUrl = URL.init(string: urlString)
             imageEntity.sourceCornerRadius = self.floatLayoutView.subviews[index].layer.cornerRadius
             sourceItems.append(imageEntity)

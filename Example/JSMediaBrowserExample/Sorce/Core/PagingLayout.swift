@@ -43,7 +43,7 @@ extension PagingLayout {
                 itemSize = delegate.collectionView?(collectionView, layout: self, sizeForItemAt: IndexPath.init(item: 0, section: 0)) ?? CGSize.zero
             }
         }
-        self.finalItemSize = itemSize;
+        self.finalItemSize = itemSize
     }
     
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
@@ -54,9 +54,9 @@ extension PagingLayout {
         let centerX: CGFloat = (self.collectionView?.contentOffset.x ?? 0.0) + halfWidth
         for attribute in attributesArray {
             attribute.center = CGPoint.init(x: attribute.center.x + (attribute.center.x - centerX) / halfWidth * self.pageSpacing / 2, y: attribute.center.y)
-            attribute.size = self.finalItemSize;
+            attribute.size = self.finalItemSize
         }
-        return attributesArray;
+        return attributesArray
     }
     
     override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {

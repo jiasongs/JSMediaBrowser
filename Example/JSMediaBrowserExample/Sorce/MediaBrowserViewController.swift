@@ -24,7 +24,7 @@ enum TransitioningStyle: Int {
                 if item.isKind(of: ImageEntity.self) {
                     let loader: ImageLoaderEntity = ImageLoaderEntity.init()
                     loader.sourceItem = item
-                    loader.webImageMediator = nil;
+                    loader.webImageMediator = nil
                     array.append(loader)
                 }
             })
@@ -43,14 +43,14 @@ enum TransitioningStyle: Int {
         didSet {
             dismissingStyle = presentingStyle
             if let animator = transitioningAnimator as? TransitionAnimator, animator.isKind(of: TransitionAnimator.self) {
-                animator.presentingStyle = presentingStyle;
+                animator.presentingStyle = presentingStyle
             }
         }
     }
     @objc open var dismissingStyle: TransitioningStyle = .zoom {
         didSet {
             if let animator = transitioningAnimator as? TransitionAnimator, animator.isKind(of: TransitionAnimator.self) {
-                animator.dismissingStyle = dismissingStyle;
+                animator.dismissingStyle = dismissingStyle
             }
         }
     }
@@ -70,11 +70,11 @@ enum TransitioningStyle: Int {
     }
     
     func didInitialize() -> Void {
-        self.automaticallyAdjustsScrollViewInsets = false;
+        self.automaticallyAdjustsScrollViewInsets = false
         
-        self.modalPresentationStyle = .custom;
-        self.modalPresentationCapturesStatusBarAppearance = true;
-        self.transitioningDelegate = self;
+        self.modalPresentationStyle = .custom
+        self.modalPresentationCapturesStatusBarAppearance = true
+        self.transitioningDelegate = self
         
         transitioningAnimator = TransitionAnimator.init()
         browserView = MediaBrowserView.init()
@@ -100,9 +100,9 @@ extension MediaBrowserViewController {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.init(white: 0, alpha: 0)
         if let browserView = self.browserView {
-            browserView.delegate = self;
-            browserView.dataSource = self;
-            browserView.gestureDelegate = self;
+            browserView.delegate = self
+            browserView.dataSource = self
+            browserView.gestureDelegate = self
             self.view.addSubview(browserView)
             
             browserView.registerClass(ImageCell.self, forCellWithReuseIdentifier: imageCellIdentifier)
@@ -111,7 +111,7 @@ extension MediaBrowserViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        browserView?.js_frameApplyTransform = self.view.bounds;
+        browserView?.js_frameApplyTransform = self.view.bounds
     }
     
     override func viewWillAppear(_ animated: Bool) {

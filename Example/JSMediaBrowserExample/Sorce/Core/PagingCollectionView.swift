@@ -20,13 +20,13 @@ class PagingCollectionView: UICollectionView {
     }
     
     func didInitialize() -> Void {
-        self.backgroundColor = UIColor.init(white: 0, alpha: 0);
-        self.showsHorizontalScrollIndicator = false;
-        self.showsVerticalScrollIndicator = false;
-        self.scrollsToTop = false;
-        self.delaysContentTouches = false;
-        self.decelerationRate = .fast;
-        self.isPagingEnabled = true;
+        self.backgroundColor = UIColor.init(white: 0, alpha: 0)
+        self.showsHorizontalScrollIndicator = false
+        self.showsVerticalScrollIndicator = false
+        self.scrollsToTop = false
+        self.delaysContentTouches = false
+        self.decelerationRate = .fast
+        self.isPagingEnabled = true
         if #available(iOS 11.0, *) {
             self.contentInsetAdjustmentBehavior = .never
         }

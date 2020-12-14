@@ -69,7 +69,7 @@ public class MediaBrowserView: UIView {
         self.longPressGesture?.minimumPressDuration = 1
         self.addGestureRecognizer(self.longPressGesture!)
         
-        self.dismissingGesture = UIPanGestureRecognizer.init(target: self, action: #selector(self.handleDismissingGesture(gesture:)));
+        self.dismissingGesture = UIPanGestureRecognizer.init(target: self, action: #selector(self.handleDismissingGesture(gesture:)))
         self.dismissingGesture?.delegate = self
         self.addGestureRecognizer(self.dismissingGesture!)
         
@@ -112,9 +112,9 @@ extension MediaBrowserView {
     }
     
     @objc open func resetDismissingGesture() -> Void {
-        self.gestureBeganLocation = CGPoint.zero;
+        self.gestureBeganLocation = CGPoint.zero
         UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseInOut, animations: {
-            self.currentMidiaCell?.transform = CGAffineTransform.identity;
+            self.currentMidiaCell?.transform = CGAffineTransform.identity
             self.backgroundColor = self.backgroundColor?.withAlphaComponent(1.0)
         }, completion: nil)
     }
@@ -252,10 +252,10 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
         case .changed:
             if let midiaCell = self.currentMidiaCell {
                 let location: CGPoint = gesture.location(in: self)
-                let horizontalDistance: CGFloat = location.x - self.gestureBeganLocation.x;
-                var verticalDistance: CGFloat = location.y - self.gestureBeganLocation.y;
+                let horizontalDistance: CGFloat = location.x - self.gestureBeganLocation.x
+                var verticalDistance: CGFloat = location.y - self.gestureBeganLocation.y
                 let height: NSNumber = NSNumber.init(value: Float(self.bounds.height / 2))
-                var ratio: CGFloat = 1.0;
+                var ratio: CGFloat = 1.0
                 var alpha: CGFloat = 1.0
                 if (verticalDistance > 0) {
                     // 往下拉的话，图片缩小，但图片移动距离与手指移动距离保持一致
@@ -263,20 +263,20 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
                     alpha = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.2], extrapolateLeft: .clamp, extrapolateRight: .clamp)
                 } else {
                     // 往上拉的话，图片不缩小，但手指越往上移动，图片将会越难被拖走
-                    let a: CGFloat = self.gestureBeganLocation.y + 200;// 后面这个加数越大，拖动时会越快达到不怎么拖得动的状态
-                    let b: CGFloat = 1 - pow((a - abs(verticalDistance)) / a, 2);
-                    let c: CGFloat = self.bounds.height / 2;
-                    verticalDistance = -c * b;
+                    let a: CGFloat = self.gestureBeganLocation.y + 200// 后面这个加数越大，拖动时会越快达到不怎么拖得动的状态
+                    let b: CGFloat = 1 - pow((a - abs(verticalDistance)) / a, 2)
+                    let c: CGFloat = self.bounds.height / 2
+                    verticalDistance = -c * b
                 }
                 let transform = CGAffineTransform.init(translationX: horizontalDistance, y: verticalDistance).scaledBy(x: ratio, y: ratio)
-                midiaCell.transform = transform;
+                midiaCell.transform = transform
                 self.backgroundColor = backgroundColor?.withAlphaComponent(alpha)
                 self.toggleDismissingGestureDelegate(gesture, verticalDistance: verticalDistance)
             }
             break
         case .ended:
             let location: CGPoint = gesture.location(in: self)
-            let verticalDistance: CGFloat = location.y - self.gestureBeganLocation.y;
+            let verticalDistance: CGFloat = location.y - self.gestureBeganLocation.y
             self.endDismissingGesture(gesture, verticalDistance: verticalDistance)
             break
         default:
@@ -297,7 +297,7 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
     
     private func endDismissingGesture(_ gesture: UIPanGestureRecognizer, verticalDistance: CGFloat) -> Void {
         if self.toggleDismissingGestureDelegate(gesture, verticalDistance: verticalDistance) {
-            self.gestureBeganLocation = CGPoint.zero;
+            self.gestureBeganLocation = CGPoint.zero
         } else {
             self.resetDismissingGesture()
         }

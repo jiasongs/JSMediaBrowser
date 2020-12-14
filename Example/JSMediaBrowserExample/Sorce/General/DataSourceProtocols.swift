@@ -21,8 +21,7 @@ public protocol SourceProtocol: NSObjectProtocol {
     var sourceCornerRadius: CGFloat { get set }
     var thumbImage: UIImage? { get set }
     
-    init(sourceRect: CGRect, thumbImage: UIImage?)
-    init<T: UIView>(sourceView: T?, thumbImage: UIImage?)
+    init<T: UIView>(sourceView: T?, sourceRect: CGRect, thumbImage: UIImage?)
     
 }
 

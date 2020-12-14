@@ -32,7 +32,7 @@ public class ZoomImageView: ZoomBaseView {
     }()
     
     @objc public var viewportRect: CGRect = CGRect.zero
-    @objc public var viewportRectMaxWidth: CGFloat = 700;
+    @objc public var viewportRectMaxWidth: CGFloat = 700
     
     @objc public var maximumZoomScale: CGFloat = 2.0 {
         didSet {
@@ -72,7 +72,7 @@ public class ZoomImageView: ZoomBaseView {
     @objc public var enabledZoom: Bool = true
     
     public override func didInitialize(frame: CGRect) -> Void {
-        super.didInitialize(frame: frame);
+        super.didInitialize(frame: frame)
         self.contentMode = .center
         
         self.scrollView = UIScrollView.init(frame: CGRect.init(origin: CGPoint.zero, size: frame.size))
@@ -80,8 +80,8 @@ public class ZoomImageView: ZoomBaseView {
         self.scrollView?.showsVerticalScrollIndicator = false
         self.scrollView?.minimumZoomScale = 0
         self.scrollView?.maximumZoomScale = self.maximumZoomScale
-        self.scrollView?.scrollsToTop = false;
-        self.scrollView?.delaysContentTouches = false;
+        self.scrollView?.scrollsToTop = false
+        self.scrollView?.delaysContentTouches = false
         self.scrollView?.delegate = self
         if #available(iOS 11.0, *) {
             self.scrollView?.contentInsetAdjustmentBehavior = .never
@@ -239,7 +239,7 @@ extension ZoomImageView {
     private var finalEnabledZoom: Bool {
         var enabledZoom: Bool = self.enabledZoom
         if self.contentView == nil {
-            enabledZoom = false;
+            enabledZoom = false
         }
         return enabledZoom
     }
@@ -262,9 +262,9 @@ extension ZoomImageView {
             let scaleY: CGFloat = viewport.height / mediaSize.height
             if let image = self.image {
                 let radio: CGFloat = image.size.height / image.size.width
-                let finalHeight: CGFloat = image.size.width > viewport.width ? viewport.width * radio : image.size.height;
+                let finalHeight: CGFloat = image.size.width > viewport.width ? viewport.width * radio : image.size.height
                 if (finalHeight > viewport.height) {
-                    contentMode = .scaleAspectFill;
+                    contentMode = .scaleAspectFill
                 }
             }
             if (contentMode == .scaleAspectFit) {
