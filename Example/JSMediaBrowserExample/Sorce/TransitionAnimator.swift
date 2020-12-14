@@ -132,25 +132,7 @@ extension TransitionAnimator {
                 }
                 zoomContentViewCenterInZoomView = JSCGPointGetCenterWithRect(zoomContentViewFrame)
             }
-            let centerInZoomView: CGPoint = JSCGPointGetCenterWithRect(zoomView?.bounds ?? CGRect.zero)
-            let horizontalRatio: CGFloat = sourceRect.width / zoomContentViewFrame.width
-            let verticalRatio: CGFloat = sourceRect.height / zoomContentViewFrame.height
-            let finalRatio: CGFloat = max(horizontalRatio, verticalRatio)
-            
-            var fromTransform: CGAffineTransform = CGAffineTransform.identity
-            var toTransform: CGAffineTransform = CGAffineTransform.identity
-            var transform: CGAffineTransform = CGAffineTransform.init(scaleX: finalRatio, y: finalRatio)
-            
-            let contentViewCenterAfterScale: CGPoint = CGPoint.init(x: centerInZoomView.x + (zoomContentViewCenterInZoomView.x - centerInZoomView.x) * finalRatio, y: centerInZoomView.y + (zoomContentViewCenterInZoomView.y - centerInZoomView.y) * finalRatio)
-            let translationAfterScale: CGSize = CGSize.init(width: sourceRect.midX - contentViewCenterAfterScale.x, height: sourceRect.midY - contentViewCenterAfterScale.y)
-            transform = transform.concatenating(CGAffineTransform.init(translationX: translationAfterScale.width, y: translationAfterScale.height))
-            
-            if (isPresenting) {
-                fromTransform = transform
-            } else {
-                toTransform = transform
-            }
-            
+         
             var maskFromBounds: CGRect = zoomContentViewBounds
             var maskToBounds: CGRect = zoomContentViewBounds
             var maskBounds: CGRect = maskFromBounds
@@ -185,9 +167,25 @@ extension TransitionAnimator {
             self.maskLayer?.add(maskAnimation, forKey: animationMaskGroupKey)
             zoomContentView?.layer.mask = self.maskLayer
             
+            let centerInZoomView: CGPoint = JSCGPointGetCenterWithRect(zoomView?.bounds ?? CGRect.zero)
+            let horizontalRatio: CGFloat = sourceRect.width / zoomContentViewFrame.width
+            let verticalRatio: CGFloat = sourceRect.height / zoomContentViewFrame.height
+            let finalRatio: CGFloat = max(horizontalRatio, verticalRatio)
+            
+            var fromTransform: CGAffineTransform = CGAffineTransform.identity
+            var toTransform: CGAffineTransform = CGAffineTransform.identity
+            var transform: CGAffineTransform = CGAffineTransform.init(scaleX: finalRatio, y: finalRatio)
+            
+            let contentViewCenterAfterScale: CGPoint = CGPoint.init(x: centerInZoomView.x + (zoomContentViewCenterInZoomView.x - centerInZoomView.x) * finalRatio, y: centerInZoomView.y + (zoomContentViewCenterInZoomView.y - centerInZoomView.y) * finalRatio)
+            let translationAfterScale: CGSize = CGSize.init(width: sourceRect.midX - contentViewCenterAfterScale.x, height: sourceRect.midY - contentViewCenterAfterScale.y)
+            transform = transform.concatenating(CGAffineTransform.init(translationX: translationAfterScale.width, y: translationAfterScale.height))
+            
             if (isPresenting) {
+                fromTransform = transform
                 zoomView?.transform = fromTransform
                 contentView?.backgroundColor = UIColor.init(white: 0, alpha: 0)
+            } else {
+                toTransform = transform
             }
             
             let transformAnimation: CABasicAnimation = CABasicAnimation.init(keyPath: "transform")
