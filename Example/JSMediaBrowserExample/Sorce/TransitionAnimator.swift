@@ -25,7 +25,7 @@ public protocol TransitionAnimatorDelegate: NSObjectProtocol {
 class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
     @objc open weak var delegate: TransitionAnimatorDelegate?
-    @objc open var duration: TimeInterval = 0.25
+    @objc open var duration: TimeInterval = 0.25 + 1
     @objc open var presentingStyle: TransitioningStyle = .zoom {
         didSet {
             dismissingStyle = presentingStyle
@@ -120,6 +120,7 @@ extension TransitionAnimator {
             let zoomView = self.delegate?.zoomView
             let zoomViewContentRect = self.delegate?.zoomContentViewRect ?? CGRect.zero
             let zoomContentView = self.delegate?.zoomContentView
+            let zoomContentViewBounds = zoomContentView?.bounds ?? CGRect.zero
             var zoomContentViewFrame = needViewController?.view.convert(zoomViewContentRect, to: nil) ?? CGRect.zero
             var zoomContentViewCenterInZoomView: CGPoint = JSCGPointGetCenterWithRect(zoomViewContentRect)
             if (zoomContentViewFrame.isEmpty) {
@@ -147,8 +148,8 @@ extension TransitionAnimator {
                 toTransform = transform
             }
             
-            var maskFromBounds: CGRect = zoomContentView?.bounds ?? CGRect.zero
-            var maskToBounds: CGRect = zoomContentView?.bounds ?? CGRect.zero
+            var maskFromBounds: CGRect = zoomContentViewBounds
+            var maskToBounds: CGRect = zoomContentViewBounds
             var maskBounds: CGRect = maskFromBounds
             let maskHorizontalRatio: CGFloat = sourceRect.width / maskBounds.width
             let maskVerticalRatio: CGFloat = sourceRect.height / maskBounds.height
@@ -177,7 +178,7 @@ extension TransitionAnimator {
             maskAnimation.fillMode = .forwards
             maskAnimation.isRemovedOnCompletion = false
             maskAnimation.animations = [cornerRadiusAnimation, boundsAnimation]
-            self.maskLayer?.position = JSCGPointGetCenterWithRect(zoomContentView?.bounds ?? CGRect.zero)// 不管怎样，mask 都是居中的
+            self.maskLayer?.position = JSCGPointGetCenterWithRect(zoomContentViewBounds)// 不管怎样，mask 都是居中的
             self.maskLayer?.add(maskAnimation, forKey: animationMaskGroupKey)
             zoomContentView?.layer.mask = self.maskLayer
             
