@@ -68,9 +68,7 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
                 sourceRect = CGRect.zero
             }
         }
-        let zoomContentViewRect = self.delegate?.zoomContentViewRect ?? CGRect.zero
-        style = style == .zoom && sourceRect.isEmpty && zoomContentViewRect.isEmpty ? .fade : style
-        
+       
         let containerView: UIView = transitionContext.containerView
         let fromView: UIView? = transitionContext.view(forKey: UITransitionContextViewKey.from)
         fromView?.setNeedsLayout()
@@ -92,6 +90,9 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             }
             presentingViewController?.beginAppearanceTransition(true, animated: true)
         }
+        
+        let zoomContentViewRect = self.delegate?.zoomContentViewRect ?? CGRect.zero
+        style = style == .zoom && (sourceRect.isEmpty || zoomContentViewRect.isEmpty) ? .fade : style
         
         self.handleAnimationEntering(style: style, isPresenting: isPresenting, fromViewController: fromViewController, toViewController: toViewController, sourceView: sourceView, sourceRect: sourceRect)
         UIView.animate(withDuration: self.duration, delay: 0, options: AnimationOptionsCurveOut) {
