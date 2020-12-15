@@ -113,7 +113,7 @@ extension MediaBrowserView {
     
     @objc open func resetDismissingGesture() -> Void {
         self.gestureBeganLocation = CGPoint.zero
-        UIView.animate(withDuration: 0.25, delay: 0, options: UIView.AnimationOptions.curveEaseInOut, animations: {
+        UIView.animate(withDuration: 0.25, delay: 0, options: AnimationOptionsCurveOut, animations: {
             self.currentMidiaCell?.transform = CGAffineTransform.identity
             self.backgroundColor = self.backgroundColor?.withAlphaComponent(1.0)
         }, completion: nil)

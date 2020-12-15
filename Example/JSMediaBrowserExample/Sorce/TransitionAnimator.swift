@@ -94,7 +94,7 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         }
         
         self.handleAnimationEntering(style: style, isPresenting: isPresenting, fromViewController: fromViewController, toViewController: toViewController, sourceView: sourceView, sourceRect: sourceRect)
-        UIView.animate(withDuration: self.duration, delay: 0, options: UIView.AnimationOptions.curveEaseInOut) {
+        UIView.animate(withDuration: self.duration, delay: 0, options: AnimationOptionsCurveOut) {
             self.handleAnimationProcessing(style: style, isPresenting: isPresenting, fromViewController: fromViewController, toViewController: toViewController, sourceView: sourceView)
         } completion: { (finished) in
             presentingViewController?.endAppearanceTransition()
