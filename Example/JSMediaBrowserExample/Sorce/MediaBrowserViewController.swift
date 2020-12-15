@@ -111,13 +111,25 @@ extension MediaBrowserViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        browserView?.js_frameApplyTransform = self.view.bounds
+        if let browserView = self.browserView {
+            browserView.js_frameApplyTransform = self.view.bounds
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        browserView?.reloadData()
-        browserView?.collectionView?.layoutIfNeeded()
+        if let browserView = self.browserView {
+            browserView.reloadData()
+            browserView.collectionView?.layoutIfNeeded()
+        }
+    }
+    
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
+    override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+        return .fade
     }
     
 }
@@ -173,12 +185,18 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     }
     
     @objc func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, dismissing gestureRecognizer: UIPanGestureRecognizer, verticalDistance: CGFloat) {
-        if gestureRecognizer.state == .ended {
+        switch gestureRecognizer.state {
+        case .changed:
+            break
+        case .ended:
             if (verticalDistance > mediaBrowserView.bounds.height / 2 / 3) {
                 self.hide(animated: true)
             } else {
                 mediaBrowserView.resetDismissingGesture()
             }
+            break
+        default:
+            break
         }
     }
     

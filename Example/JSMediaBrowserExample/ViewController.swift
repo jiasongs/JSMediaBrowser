@@ -67,4 +67,12 @@ class ViewController: UIViewController {
         browser.show(from: self, animated: true)
     }
     
+    override var prefersStatusBarHidden: Bool {
+        return false
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return UIStatusBarStyle.lightContent
+    }
+    
 }
