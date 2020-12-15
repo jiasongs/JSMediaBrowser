@@ -1,6 +1,8 @@
 platform :ios, '10.0'
 use_frameworks! :linkage => :static
 
+source 'https://github.com/CocoaPods/Specs.git'
+
 def pod_Common
   pod 'JSMediaBrowser', :path => '..'
   pod 'QMUIKit', '~> 4.2.1' 
