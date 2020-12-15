@@ -225,7 +225,7 @@ extension ZoomImageView {
         if (self.bounds.isEmpty) {
             return
         }
-        self.scrollView?.frame = self.bounds
+        self.scrollView?.js_frameApplyTransform = self.bounds
     }
     
     open override var frame: CGRect {

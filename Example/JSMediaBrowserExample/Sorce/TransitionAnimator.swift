@@ -118,10 +118,9 @@ extension TransitionAnimator {
         if style == .fade {
             needViewController?.view.alpha = isPresenting ? 0 : 1
         } else if style == .zoom {
-            self.delegate?.revertZooming()
-            if isPresenting {
-                sourceView?.isHidden = true
-            }
+//            self.delegate?.revertZooming()
+            sourceView?.isHidden = true
+            
             let contentView = self.delegate?.contentView
             let zoomView = self.delegate?.zoomView
             var zoomViewContentRect = self.delegate?.zoomContentViewRect ?? CGRect.zero
@@ -171,10 +170,10 @@ extension TransitionAnimator {
             maskAnimation.animations = [cornerRadiusAnimation, boundsAnimation]
             
             var zzz = JSCGPointGetCenterWithRect(zoomContentViewBounds)
-            let zzzzz = zoomContentView?.convert(zoomContentViewBounds, to: zoomView) ?? CGRect.zero
-            if zzzzz.minY < 0 {
-                zzz.y = zzz.y + abs(zzzzz.minY)
-            }
+//            let zzzzz = zoomContentView?.convert(zoomContentViewBounds, to: zoomView) ?? CGRect.zero
+//            if zzzzz.minY < 0 {
+//                zzz.y = zzz.y + abs(zzzzz.minY)
+//            }
             zoomContentView?.layer.mask = self.maskLayer
             zoomContentView?.layer.mask?.position = zzz
 //            zoomContentView?.layer.mask?.frame = CGRect.init(x: 0, y: self.delegate?.zoomScollView?.contentOffset.y ?? 0, width: zoomContentViewBounds.width, height: zoomContentViewBounds.height)
@@ -232,9 +231,8 @@ extension TransitionAnimator {
         needViewController?.view.alpha = 1
         
         // for zoom
-        if !isPresenting {
-            sourceView?.isHidden = false
-        }
+        sourceView?.isHidden = false
+        
         let zoomView = self.delegate?.zoomView
         zoomView?.transform = CGAffineTransform.identity
         zoomView?.layer.removeAnimation(forKey: animationTransformKey)
