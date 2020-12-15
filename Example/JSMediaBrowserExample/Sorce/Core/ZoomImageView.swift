@@ -136,20 +136,20 @@ extension ZoomImageView {
             self.handleDidEndZooming()
         }
 
-        self.scrollView?.contentOffset = { () -> CGPoint in
-            var x: CGFloat = self.scrollView?.contentOffset.x ?? 0
-            var y: CGFloat = self.scrollView?.contentOffset.y ?? 0
+        if let scrollView = self.scrollView {
+            var x: CGFloat = scrollView.contentOffset.x
+            var y: CGFloat = scrollView.contentOffset.y
             let viewport: CGRect = self.finalViewportRect()
             if let contentView = self.contentView, !viewport.isEmpty {
                 if (viewport.width < contentView.frame.width) {
                     x = contentView.frame.width / 2 - viewport.width / 2 - viewport.minX
                 }
                 if (viewport.height < contentView.frame.height) {
-                    y = 0
+                    y = -scrollView.contentInset.top
                 }
             }
-            return CGPoint.init(x: x, y: y)
-        }()
+            scrollView.setContentOffset(CGPoint(x: x, y: y), animated: false)
+        }
     }
     
     @objc open func finalViewportRect() -> CGRect {
@@ -160,8 +160,11 @@ extension ZoomImageView {
                     self.setNeedsLayout()
                     self.layoutIfNeeded()
                 }
+                let safeAreaInsets: UIEdgeInsets = JSCoreHelper.safeAreaInsetsForDeviceWithNotch()
+                let top = safeAreaInsets.top
+                let bottom = safeAreaInsets.bottom
                 let size: CGSize = CGSize.init(width: min(scrollView.bounds.width, viewportRectMaxWidth), height: scrollView.bounds.height)
-                rect = CGRect.init(x: (scrollView.bounds.width - size.width) / 2, y: 0, width: size.width, height: size.height)
+                rect = CGRect.init(x: (scrollView.bounds.width - size.width) / 2, y: top, width: size.width, height: size.height - top - bottom)
             }
         }
         return rect
