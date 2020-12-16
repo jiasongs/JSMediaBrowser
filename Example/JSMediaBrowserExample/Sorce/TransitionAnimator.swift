@@ -95,7 +95,7 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         style = style == .zoom && (sourceRect.isEmpty || zoomContentViewRect.isEmpty) ? .fade : style
         
         self.handleAnimationEntering(style: style, isPresenting: isPresenting, fromViewController: fromViewController, toViewController: toViewController, sourceView: sourceView, sourceRect: sourceRect)
-        UIView.animate(withDuration: self.duration, delay: 0, options: AnimationOptionsCurveOut) {
+        UIView.animate(withDuration: self.duration, delay: 0, options: UIView.AnimationOptions.curveEaseInOut) {
             self.handleAnimationProcessing(style: style, isPresenting: isPresenting, fromViewController: fromViewController, toViewController: toViewController, sourceView: sourceView)
         } completion: { (finished) in
             presentingViewController?.endAppearanceTransition()
@@ -119,6 +119,7 @@ extension TransitionAnimator {
             needViewController?.view.alpha = isPresenting ? 0 : 1
         } else if style == .zoom {
             self.delegate?.revertZooming()
+            
             sourceView?.isHidden = true
             
             let contentView = self.delegate?.contentView
@@ -181,7 +182,7 @@ extension TransitionAnimator {
                 eeee = JSCGRectApplyAffineTransformWithAnchorPoint(zoomContentView.frame, zoomContentView.transform, zoomContentView.layer.anchorPoint)
             }
             zoomContentView?.layer.mask = self.maskLayer
-            zoomContentView?.layer.mask?.bounds = CGRect(x: 0, y: 0, width: zoomContentView?.frame.width ?? 0, height: zoomContentView?.frame.height ?? 0)
+            zoomContentView?.layer.mask?.bounds = CGRect(x: 0, y: 0, width: zoomContentViewBounds.width ?? 0, height: zoomContentViewBounds.height ?? 0)
             let chazhi = (zoomContentView?.frame.width ?? 0) - (zoomContentView?.frame.width ?? 0) / (zoomContentView?.transform.a ?? 1)
             let chazhi2 = (zoomContentView?.frame.height ?? 0) - (zoomContentView?.frame.height ?? 0) / (zoomContentView?.transform.d ?? 1)
             
