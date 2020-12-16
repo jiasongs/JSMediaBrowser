@@ -176,7 +176,7 @@ extension TransitionAnimator {
 //            }
             self.maskLayer?.borderWidth = 5
             zoomContentView?.layer.mask = self.maskLayer
-            zoomContentView?.layer.mask?.frame = CGRect(x: 0, y: 0, width: zoomContentViewFrame.width, height: zoomContentViewFrame.height)
+            zoomContentView?.layer.mask?.bounds = CGRect(x: 0, y: 0, width: zoomContentViewFrame.width, height: zoomContentViewFrame.height)
             zoomContentView?.layer.mask?.position = zzz
 //            zoomContentView?.layer.mask?.frame = CGRect.init(x: 0, y: self.delegate?.zoomScollView?.contentOffset.y ?? 0, width: zoomContentViewBounds.width, height: zoomContentViewBounds.height)
             zoomContentView?.layer.mask?.add(maskAnimation, forKey: animationMaskGroupKey)
