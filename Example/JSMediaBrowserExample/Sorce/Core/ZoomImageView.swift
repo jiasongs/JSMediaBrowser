@@ -196,7 +196,7 @@ extension ZoomImageView {
         let gesturePoint: CGPoint = gestureRecognizer.location(in: gestureRecognizer.view)
         // 如果图片被压缩了，则第一次放大到原图大小，第二次放大到最大倍数
         if (scrollView.zoomScale >= scrollView.maximumZoomScale) {
-            self.setZoom(scale: scrollView.minimumZoomScale, animated: true)
+            self.setZoom(scale: scrollView.minimumZoomScale, animated: animated)
         } else {
             var newZoomScale: CGFloat = 0
             if (scrollView.zoomScale < 1) {

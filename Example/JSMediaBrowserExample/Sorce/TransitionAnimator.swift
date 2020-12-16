@@ -28,7 +28,7 @@ public protocol TransitionAnimatorDelegate: NSObjectProtocol {
 class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
     @objc open weak var delegate: TransitionAnimatorDelegate?
-    @objc open var duration: TimeInterval = 0.25 + 2
+    @objc open var duration: TimeInterval = 0.25
     @objc open var presentingStyle: TransitioningStyle = .zoom {
         didSet {
             dismissingStyle = presentingStyle
@@ -44,7 +44,7 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         super.init()
         self.maskLayer = CALayer.init()
         self.maskLayer?.js_removeDefaultAnimations()
-        self.maskLayer?.backgroundColor = UIColor.clear.cgColor
+        self.maskLayer?.backgroundColor = UIColor.white.cgColor
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
@@ -118,7 +118,7 @@ extension TransitionAnimator {
         if style == .fade {
             needViewController?.view.alpha = isPresenting ? 0 : 1
         } else if style == .zoom {
-//            self.delegate?.revertZooming()
+            self.delegate?.revertZooming()
             sourceView?.isHidden = true
             
             let contentView = self.delegate?.contentView
@@ -170,14 +170,23 @@ extension TransitionAnimator {
             maskAnimation.animations = [cornerRadiusAnimation, boundsAnimation]
             
             var zzz = JSCGPointGetCenterWithRect(CGRect(x: 0, y: 0, width: zoomContentViewFrame.width, height: zoomContentViewFrame.height))
-//            let zzzzz = zoomContentView?.convert(zoomContentViewBounds, to: zoomView) ?? CGRect.zero
+            let zzzzz = zoomContentView?.convert(zoomContentViewBounds, to: zoomView) ?? CGRect.zero
 //            if zzzzz.minY < 0 {
 //                zzz.y = zzz.y + abs(zzzzz.minY)
 //            }
             self.maskLayer?.borderWidth = 5
+            
+            var eeee: CGRect = CGRect()
+            if let zoomContentView = zoomContentView {
+                eeee = JSCGRectApplyAffineTransformWithAnchorPoint(zoomContentView.frame, zoomContentView.transform, zoomContentView.layer.anchorPoint)
+            }
             zoomContentView?.layer.mask = self.maskLayer
-            zoomContentView?.layer.mask?.bounds = CGRect(x: 0, y: 0, width: zoomContentViewFrame.width, height: zoomContentViewFrame.height)
-            zoomContentView?.layer.mask?.position = zzz
+            zoomContentView?.layer.mask?.bounds = CGRect(x: 0, y: 0, width: zoomContentView?.frame.width ?? 0, height: zoomContentView?.frame.height ?? 0)
+            let chazhi = (zoomContentView?.frame.width ?? 0) - (zoomContentView?.frame.width ?? 0) / (zoomContentView?.transform.a ?? 1)
+            let chazhi2 = (zoomContentView?.frame.height ?? 0) - (zoomContentView?.frame.height ?? 0) / (zoomContentView?.transform.d ?? 1)
+            
+            zoomContentView?.layer.mask?.position = CGPoint(x: zzz.x - chazhi / 2, y: zzz.y - chazhi2 / 2)
+//            zoomContentView?.layer.mask?.position = CGPoint(x: eeee.minX + eeee.width / 2 - 500 / 2, y: eeee.minY + eeee.height / 2 - 332 / 2)
 //            zoomContentView?.layer.mask?.frame = CGRect.init(x: 0, y: self.delegate?.zoomScollView?.contentOffset.y ?? 0, width: zoomContentViewBounds.width, height: zoomContentViewBounds.height)
             zoomContentView?.layer.mask?.add(maskAnimation, forKey: animationMaskGroupKey)
             
@@ -205,13 +214,13 @@ extension TransitionAnimator {
                 toTransform = transform
             }
             
-//            let transformAnimation: CABasicAnimation = CABasicAnimation.init(keyPath: "transform")
-//            transformAnimation.toValue = NSValue.init(caTransform3D: CATransform3DMakeAffineTransform(toTransform))
-//            transformAnimation.duration = self.duration
-//            transformAnimation.timingFunction = CAMediaTimingFunction.init(name: .easeInEaseOut)
-//            transformAnimation.fillMode = .forwards
-//            transformAnimation.isRemovedOnCompletion = false
-//            zoomView?.layer.add(transformAnimation, forKey: animationTransformKey)
+            let transformAnimation: CABasicAnimation = CABasicAnimation.init(keyPath: "transform")
+            transformAnimation.toValue = NSValue.init(caTransform3D: CATransform3DMakeAffineTransform(toTransform))
+            transformAnimation.duration = self.duration
+            transformAnimation.timingFunction = CAMediaTimingFunction.init(name: .easeInEaseOut)
+            transformAnimation.fillMode = .forwards
+            transformAnimation.isRemovedOnCompletion = false
+            zoomView?.layer.add(transformAnimation, forKey: animationTransformKey)
         }
     }
     
