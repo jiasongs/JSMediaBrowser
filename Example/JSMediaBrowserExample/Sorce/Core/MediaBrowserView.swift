@@ -20,6 +20,15 @@ public class MediaBrowserView: UIView {
     @objc open var dismissingGesture: UIPanGestureRecognizer?
     @objc open var dismissingGestureEnabled: Bool = true
     
+    @objc open var dimmingView: UIView? {
+        didSet {
+            if let dimmingView = self.dimmingView {
+                dimmingView.removeFromSuperview()
+                self.insertSubview(dimmingView, at: 0)
+                self.setNeedsLayout()
+            }
+        }
+    }
     @objc private(set) var collectionView: PagingCollectionView?
     @objc private(set) var collectionViewLayout: PagingLayout?
     
@@ -47,7 +56,9 @@ public class MediaBrowserView: UIView {
     }
     
     func didInitialize(frame: CGRect) -> Void {
-        self.backgroundColor = .black
+        self.dimmingView = UIView()
+        self.dimmingView?.backgroundColor = .black
+        
         self.collectionViewLayout = PagingLayout()
         self.collectionView = PagingCollectionView(frame: frame, collectionViewLayout: self.collectionViewLayout!)
         self.collectionView?.delegate = self
@@ -69,7 +80,7 @@ public class MediaBrowserView: UIView {
         self.longPressGesture?.minimumPressDuration = 1
         self.addGestureRecognizer(self.longPressGesture!)
         
-        self.dismissingGesture = UIPanGestureRecognizer(target: self, action: #selector(self.handleDismissingGesture(gesture:)))
+        self.dismissingGesture = UIPanGestureRecognizer(target: self, action: #selector(self.handleDismissingGesture))
         self.dismissingGesture?.delegate = self
         self.addGestureRecognizer(self.dismissingGesture!)
         
@@ -115,7 +126,7 @@ extension MediaBrowserView {
         self.gestureBeganLocation = CGPoint.zero
         UIView.animate(withDuration: 0.25, delay: 0, options: AnimationOptionsCurveOut, animations: {
             self.currentMidiaCell?.transform = CGAffineTransform.identity
-            self.backgroundColor = self.backgroundColor?.withAlphaComponent(1.0)
+            self.dimmingView?.alpha = 1.0
         }, completion: nil)
     }
     
@@ -125,16 +136,21 @@ extension MediaBrowserView {
     
     open override func layoutSubviews() {
         super.layoutSubviews()
-        guard let collectionView = self.collectionView  else { return }
-        let isCollectionViewSizeChanged = !collectionView.bounds.size.equalTo(self.bounds.size)
-        if isCollectionViewSizeChanged {
-            self.isChangingCollectionViewBounds = true
-            self.collectionViewLayout?.invalidateLayout()
-            self.collectionView?.frame = self.bounds
-            if let numberOfItems = self.collectionView?.numberOfItems(inSection: 0), self.currentMediaIndex < numberOfItems {
-                self.collectionView?.scrollToItem(at: IndexPath(item: self.currentMediaIndex, section: 0), at: .centeredHorizontally, animated: false)
+        if let dimmingView = self.dimmingView {
+            dimmingView.frame = self.bounds
+        }
+        if let collectionView = self.collectionView {
+            let isSizeChanged = !collectionView.bounds.size.equalTo(self.bounds.size)
+            if isSizeChanged {
+                self.isChangingCollectionViewBounds = true
+                self.collectionViewLayout?.invalidateLayout()
+                self.collectionView?.frame = self.bounds
+                let numberOfItems = collectionView.numberOfItems(inSection: 0)
+                if self.currentMediaIndex < numberOfItems {
+                    collectionView.scrollToItem(at: IndexPath(item: self.currentMediaIndex, section: 0), at: .centeredHorizontally, animated: false)
+                }
+                self.isChangingCollectionViewBounds = false
             }
-            self.isChangingCollectionViewBounds = false
         }
     }
     
@@ -270,7 +286,7 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
                 }
                 let transform = CGAffineTransform(translationX: horizontalDistance, y: verticalDistance).scaledBy(x: ratio, y: ratio)
                 midiaCell.transform = transform
-                self.backgroundColor = backgroundColor?.withAlphaComponent(alpha)
+                self.dimmingView?.alpha = alpha
                 self.toggleDismissingGestureDelegate(gesture, verticalDistance: verticalDistance)
             }
             break

@@ -15,6 +15,7 @@ public protocol TransitionAnimatorDelegate: NSObjectProtocol {
     @objc weak var sourceView: UIView? { get }
     @objc var sourceCornerRadius: CGFloat { get }
     @objc weak var contentView: UIView? { get }
+    @objc weak var dimmingView: UIView? { get }
     @objc weak var zoomView: UIView? { get }
     @objc weak var zoomContentView: UIView? { get }
     @objc var zoomContentViewRect: CGRect { get }
@@ -210,7 +211,7 @@ extension TransitionAnimator {
             if (isPresenting) {
                 fromTransform = transform
                 zoomView?.transform = fromTransform
-                contentView?.backgroundColor = UIColor(white: 0, alpha: 0)
+                self.delegate?.dimmingView?.alpha = 0.0
             } else {
                 toTransform = transform
             }
@@ -230,9 +231,8 @@ extension TransitionAnimator {
         if style == .fade {
             needViewController?.view.alpha = isPresenting ? 1 : 0
         } else if style == .zoom {
-            if let contentView = self.delegate?.contentView {
-                let color: UIColor = contentView.backgroundColor?.withAlphaComponent(1) ?? UIColor(white: 0, alpha: 0)
-                contentView.backgroundColor = isPresenting ? color : UIColor(white: 0, alpha: 0)
+            if let dimmingView = self.delegate?.dimmingView {
+                dimmingView.alpha = isPresenting ? 1.0 : 0.0
             }
         }
     }

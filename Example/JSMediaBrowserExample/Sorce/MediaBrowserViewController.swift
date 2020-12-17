@@ -245,6 +245,10 @@ extension MediaBrowserViewController: TransitionAnimatorDelegate {
         return self.browserView
     }
     
+    var dimmingView: UIView? {
+        return self.browserView?.dimmingView
+    }
+    
     var zoomView: UIView? {
         if let cell = self.browserView?.currentMidiaCell {
             return cell
