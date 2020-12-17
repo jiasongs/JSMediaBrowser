@@ -19,10 +19,10 @@ enum TransitioningStyle: Int {
     @objc open var browserView: MediaBrowserView?
     @objc open var sourceItems: Array<BaseEntity>? {
         didSet {
-            var array: Array<BaseLoaderEntity> = Array.init()
+            var array: Array<BaseLoaderEntity> = Array()
             sourceItems?.forEach({ (item) in
                 if item.isKind(of: ImageEntity.self) {
-                    let loader: ImageLoaderEntity = ImageLoaderEntity.init()
+                    let loader: ImageLoaderEntity = ImageLoaderEntity()
                     loader.sourceItem = item
                     loader.webImageMediator = nil
                     array.append(loader)
@@ -76,8 +76,8 @@ enum TransitioningStyle: Int {
         self.modalPresentationCapturesStatusBarAppearance = true
         self.transitioningDelegate = self
         
-        transitioningAnimator = TransitionAnimator.init()
-        browserView = MediaBrowserView.init()
+        transitioningAnimator = TransitionAnimator()
+        browserView = MediaBrowserView()
     }
     
 }
@@ -98,7 +98,7 @@ extension MediaBrowserViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor.init(white: 0, alpha: 0)
+        self.view.backgroundColor = UIColor(white: 0, alpha: 0)
         if let browserView = self.browserView {
             browserView.delegate = self
             browserView.dataSource = self
@@ -142,7 +142,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     
     func mediaBrowserView(_ browserView: MediaBrowserView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var cell: BaseCell?
-        guard let loaderItem = loaderItems?[indexPath.item] else { return UICollectionViewCell.init() }
+        guard let loaderItem = loaderItems?[indexPath.item] else { return UICollectionViewCell() }
         if let loaderItem = loaderItem as? ImageLoaderEntity, let sourceItem = loaderItem.sourceItem, sourceItem.isKind(of: ImageEntity.self) {
             cell = browserView.dequeueReusableCell(withReuseIdentifier: imageCellIdentifier, for: indexPath) as? BaseCell
             cell?.updateCell(loaderEntity: loaderItem, at: indexPath)

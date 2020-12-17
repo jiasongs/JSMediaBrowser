@@ -48,28 +48,28 @@ public class MediaBrowserView: UIView {
     
     func didInitialize(frame: CGRect) -> Void {
         self.backgroundColor = .black
-        self.collectionViewLayout = PagingLayout.init()
-        self.collectionView = PagingCollectionView.init(frame: frame, collectionViewLayout: self.collectionViewLayout!)
+        self.collectionViewLayout = PagingLayout()
+        self.collectionView = PagingCollectionView(frame: frame, collectionViewLayout: self.collectionViewLayout!)
         self.collectionView?.delegate = self
         self.collectionView?.dataSource = self
         self.addSubview(self.collectionView!)
         
-        self.singleTapGesture = UITapGestureRecognizer.init(target: self, action: #selector(self.handleSingleTapGesture))
+        self.singleTapGesture = UITapGestureRecognizer(target: self, action: #selector(self.handleSingleTapGesture))
         self.singleTapGesture?.delegate = self
         self.singleTapGesture?.numberOfTapsRequired = 1
         self.singleTapGesture?.numberOfTouchesRequired = 1
         self.addGestureRecognizer(self.singleTapGesture!)
         
-        self.doubleTapGesture = UITapGestureRecognizer.init(target: self, action: #selector(self.handleDoubleTapGesture))
+        self.doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(self.handleDoubleTapGesture))
         self.doubleTapGesture?.numberOfTapsRequired = 2
         self.doubleTapGesture?.numberOfTouchesRequired = 1
         self.addGestureRecognizer(self.doubleTapGesture!)
         
-        self.longPressGesture = UILongPressGestureRecognizer.init(target: self, action: #selector(self.handleLongPressGesture))
+        self.longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(self.handleLongPressGesture))
         self.longPressGesture?.minimumPressDuration = 1
         self.addGestureRecognizer(self.longPressGesture!)
         
-        self.dismissingGesture = UIPanGestureRecognizer.init(target: self, action: #selector(self.handleDismissingGesture(gesture:)))
+        self.dismissingGesture = UIPanGestureRecognizer(target: self, action: #selector(self.handleDismissingGesture(gesture:)))
         self.dismissingGesture?.delegate = self
         self.addGestureRecognizer(self.dismissingGesture!)
         
@@ -87,7 +87,7 @@ extension MediaBrowserView {
         self.reloadData()
         guard let numberOfItems = self.collectionView?.numberOfItems(inSection: 0) else { return }
         if index < numberOfItems {
-            self.collectionView?.scrollToItem(at: IndexPath.init(item: self.currentMediaIndex, section: 0), at: .centeredHorizontally, animated: animated)
+            self.collectionView?.scrollToItem(at: IndexPath(item: self.currentMediaIndex, section: 0), at: .centeredHorizontally, animated: animated)
             self.collectionView?.layoutIfNeeded()
         }
     }
@@ -101,12 +101,12 @@ extension MediaBrowserView {
     }
     
     @objc open func dequeueReusableCell(withReuseIdentifier identifier: String, for indexPath: IndexPath) -> UICollectionViewCell {
-        return self.collectionView?.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) ?? UICollectionViewCell.init()
+        return self.collectionView?.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) ?? UICollectionViewCell()
     }
     
     @objc open var currentMidiaCell: UICollectionViewCell? {
         get {
-            let indexPath = IndexPath.init(item: self.currentMediaIndex, section: 0)
+            let indexPath = IndexPath(item: self.currentMediaIndex, section: 0)
             return self.collectionView?.cellForItem(at: indexPath)
         }
     }
@@ -132,7 +132,7 @@ extension MediaBrowserView {
             self.collectionViewLayout?.invalidateLayout()
             self.collectionView?.frame = self.bounds
             if let numberOfItems = self.collectionView?.numberOfItems(inSection: 0), self.currentMediaIndex < numberOfItems {
-                self.collectionView?.scrollToItem(at: IndexPath.init(item: self.currentMediaIndex, section: 0), at: .centeredHorizontally, animated: false)
+                self.collectionView?.scrollToItem(at: IndexPath(item: self.currentMediaIndex, section: 0), at: .centeredHorizontally, animated: false)
             }
             self.isChangingCollectionViewBounds = false
         }
@@ -147,7 +147,7 @@ extension MediaBrowserView: UICollectionViewDataSource {
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        return self.dataSource?.mediaBrowserView(self, cellForItemAt: indexPath) ?? UICollectionViewCell.init()
+        return self.dataSource?.mediaBrowserView(self, cellForItemAt: indexPath) ?? UICollectionViewCell()
     }
     
 }
@@ -195,7 +195,7 @@ extension MediaBrowserView: UIScrollViewDelegate {
         let betweenOrEqual =  { (minimumValue: CGFloat, value: CGFloat, maximumValue: CGFloat) -> Bool in
             return minimumValue <= value && value <= maximumValue
         }
-        let pageWidth: CGFloat = self.collectionView(collectionView, layout: collectionViewLayout, sizeForItemAt: IndexPath.init(item: 0, section: 0)).width
+        let pageWidth: CGFloat = self.collectionView(collectionView, layout: collectionViewLayout, sizeForItemAt: IndexPath(item: 0, section: 0)).width
         let pageHorizontalMargin: CGFloat = collectionViewLayout.pageSpacing
         let contentOffsetX: CGFloat = collectionView.contentOffset.x
         var index: CGFloat = contentOffsetX / (pageWidth + pageHorizontalMargin)
@@ -254,7 +254,7 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
                 let location: CGPoint = gesture.location(in: self)
                 let horizontalDistance: CGFloat = location.x - self.gestureBeganLocation.x
                 var verticalDistance: CGFloat = location.y - self.gestureBeganLocation.y
-                let height: NSNumber = NSNumber.init(value: Float(self.bounds.height / 2))
+                let height: NSNumber = NSNumber(value: Float(self.bounds.height / 2))
                 var ratio: CGFloat = 1.0
                 var alpha: CGFloat = 1.0
                 if (verticalDistance > 0) {
@@ -268,7 +268,7 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
                     let c: CGFloat = self.bounds.height / 2
                     verticalDistance = -c * b
                 }
-                let transform = CGAffineTransform.init(translationX: horizontalDistance, y: verticalDistance).scaledBy(x: ratio, y: ratio)
+                let transform = CGAffineTransform(translationX: horizontalDistance, y: verticalDistance).scaledBy(x: ratio, y: ratio)
                 midiaCell.transform = transform
                 self.backgroundColor = backgroundColor?.withAlphaComponent(alpha)
                 self.toggleDismissingGestureDelegate(gesture, verticalDistance: verticalDistance)

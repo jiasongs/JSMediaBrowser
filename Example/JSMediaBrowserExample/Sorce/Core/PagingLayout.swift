@@ -40,20 +40,20 @@ extension PagingLayout {
         if let layoutDelegate = collectionView.delegate {
             if layoutDelegate.responds(to: #selector(UICollectionViewDelegateFlowLayout.collectionView(_:layout:sizeForItemAt:))) {
                 let delegate = layoutDelegate as! UICollectionViewDelegateFlowLayout
-                itemSize = delegate.collectionView?(collectionView, layout: self, sizeForItemAt: IndexPath.init(item: 0, section: 0)) ?? CGSize.zero
+                itemSize = delegate.collectionView?(collectionView, layout: self, sizeForItemAt: IndexPath(item: 0, section: 0)) ?? CGSize.zero
             }
         }
         self.finalItemSize = itemSize
     }
     
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        var attributesArray = Array<UICollectionViewLayoutAttributes>.init()
+        var attributesArray = Array<UICollectionViewLayoutAttributes>()
         let superAttributesArray: Array<UICollectionViewLayoutAttributes> = super.layoutAttributesForElements(in: rect)?.map(){ $0.copy() as! UICollectionViewLayoutAttributes } ?? []
         attributesArray.append(contentsOf: superAttributesArray)
         let halfWidth: CGFloat = self.finalItemSize.width / 2.0
         let centerX: CGFloat = (self.collectionView?.contentOffset.x ?? 0.0) + halfWidth
         for attribute in attributesArray {
-            attribute.center = CGPoint.init(x: attribute.center.x + (attribute.center.x - centerX) / halfWidth * self.pageSpacing / 2, y: attribute.center.y)
+            attribute.center = CGPoint(x: attribute.center.x + (attribute.center.x - centerX) / halfWidth * self.pageSpacing / 2, y: attribute.center.y)
             attribute.size = self.finalItemSize
         }
         return attributesArray

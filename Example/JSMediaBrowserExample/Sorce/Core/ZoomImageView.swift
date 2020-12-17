@@ -16,7 +16,7 @@ public class ZoomImageView: ZoomBaseView {
     private var isImageViewInitialized: Bool = false
     @objc private(set) lazy var imageView: UIImageView = {
         isImageViewInitialized = true
-        let imageView = UIImageView.init()
+        let imageView = UIImageView()
         imageView.isHidden = true
         scrollView?.addSubview(imageView)
         return imageView
@@ -25,7 +25,7 @@ public class ZoomImageView: ZoomBaseView {
     private var isLivePhotoViewViewInitialized: Bool = false
     @objc private(set) lazy var livePhotoView: PHLivePhotoView = {
         isLivePhotoViewViewInitialized = true
-        let livePhotoView = PHLivePhotoView.init()
+        let livePhotoView = PHLivePhotoView()
         livePhotoView.isHidden = true
         scrollView?.addSubview(livePhotoView)
         return livePhotoView
@@ -48,7 +48,7 @@ public class ZoomImageView: ZoomBaseView {
             if let image = self.image {
                 self.imageView.isHidden = false
                 self.imageView.image = image
-                self.imageView.js_frameApplyTransform = CGRect.init(origin: CGPoint.zero, size: image.size)
+                self.imageView.js_frameApplyTransform = CGRect(origin: CGPoint.zero, size: image.size)
                 self.revertZooming()
             }
         }
@@ -62,7 +62,7 @@ public class ZoomImageView: ZoomBaseView {
             if let livePhoto = self.livePhoto {
                 self.livePhotoView.isHidden = false
                 self.livePhotoView.livePhoto = livePhoto
-                self.livePhotoView.js_frameApplyTransform = CGRect.init(origin: CGPoint.zero, size: livePhoto.size)
+                self.livePhotoView.js_frameApplyTransform = CGRect(origin: CGPoint.zero, size: livePhoto.size)
                 self.revertZooming()
             }
         }
@@ -74,7 +74,7 @@ public class ZoomImageView: ZoomBaseView {
         super.didInitialize(frame: frame)
         self.contentMode = .center
         
-        self.scrollView = UIScrollView.init(frame: CGRect.init(origin: CGPoint.zero, size: frame.size))
+        self.scrollView = UIScrollView(frame: CGRect(origin: CGPoint.zero, size: frame.size))
         self.scrollView?.showsHorizontalScrollIndicator = false
         self.scrollView?.showsVerticalScrollIndicator = false
         self.scrollView?.minimumZoomScale = 0
@@ -129,7 +129,7 @@ extension ZoomImageView {
         self.scrollView?.maximumZoomScale = maximumZoomScale
         /// 重置Frame
         if let contentView = self.contentView {
-            contentView.frame = CGRect.init(x: 0, y: 0, width: contentView.frame.width, height: contentView.frame.height)
+            contentView.frame = CGRect(x: 0, y: 0, width: contentView.frame.width, height: contentView.frame.height)
         }
         self.setZoom(scale: zoomScale, animated: false)
         if (shouldFireDidZoomingManual) {
@@ -163,8 +163,8 @@ extension ZoomImageView {
                 let safeAreaInsets: UIEdgeInsets = JSCoreHelper.safeAreaInsetsForDeviceWithNotch()
                 let top = safeAreaInsets.top
                 let bottom = safeAreaInsets.bottom
-                let size: CGSize = CGSize.init(width: min(scrollView.bounds.width, viewportRectMaxWidth), height: scrollView.bounds.height)
-                rect = CGRect.init(x: (scrollView.bounds.width - size.width) / 2, y: top, width: size.width, height: size.height - top - bottom)
+                let size: CGSize = CGSize(width: min(scrollView.bounds.width, viewportRectMaxWidth), height: scrollView.bounds.height)
+                rect = CGRect(x: (scrollView.bounds.width - size.width) / 2, y: top, width: size.width, height: size.height - top - bottom)
             }
         }
         return rect

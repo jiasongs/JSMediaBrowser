@@ -64,7 +64,7 @@ enum Shape: Int {
     }
     
     func didInitialize() -> Void {
-        self.backgroundColor = UIColor.init(white: 0, alpha: 0)
+        self.backgroundColor = UIColor(white: 0, alpha: 0)
         self.tintColor = UIColor.red
         self.borderWidth = 1.0
         self.borderInset = 3.0
@@ -127,7 +127,7 @@ class PieProgressLayer: CALayer {
     
     override func action(forKey event: String) -> CAAction? {
         if event == #keyPath(progress) && shouldChangeProgressWithAnimation {
-            let animation: CABasicAnimation = CABasicAnimation.init(keyPath: event)
+            let animation: CABasicAnimation = CABasicAnimation(keyPath: event)
             animation.fromValue = self.presentation()?.value(forKey: event)
             animation.duration = self.progressAnimationDuration
             return animation
