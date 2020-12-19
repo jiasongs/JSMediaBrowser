@@ -195,7 +195,7 @@ extension MediaBrowserView: UIScrollViewDelegate {
             return
         }
         if let delegate = self.delegate, delegate.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:didScrollTo:))) {
-            delegate.mediaBrowserView?(self, didScrollTo: self.currentMediaIndex)
+            delegate.mediaBrowserView?(self, didScrollTo: IndexPath(item: self.currentMediaIndex, section: 0))
         }
     }
     
@@ -227,8 +227,10 @@ extension MediaBrowserView: UIScrollViewDelegate {
                 self.isNeededScrollToItem = false
                 self.currentMediaIndex = Int(index)
                 self.isNeededScrollToItem = true
-                if let delegate = self.delegate, delegate.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:willScrollHalfTo:))) {
-                    self.delegate?.mediaBrowserView?(self, willScrollHalfTo: Int(index))
+                if let delegate = self.delegate, delegate.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:willScrollHalf:toIndexPath:))) {
+                    let fromIndexPath = IndexPath(item: Int(round(self.previousIndexWhenScrolling)), section: 0)
+                    let toIndexPath = IndexPath(item: Int(index), section: 0)
+                    delegate.mediaBrowserView?(self, willScrollHalf: fromIndexPath, toIndexPath: toIndexPath)
                 }
             }
         }

@@ -104,7 +104,7 @@ extension MediaBrowserViewController {
             browserView.dataSource = self
             browserView.gestureDelegate = self
             self.view.addSubview(browserView)
-            
+            /// 注册Cell
             browserView.registerClass(ImageCell.self, forCellWithReuseIdentifier: imageCellIdentifier)
         }
     }
@@ -158,11 +158,21 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
         if let imageCell = cell as? ImageCell, imageCell.isKind(of: ImageCell.self) {
             imageCell.zoomImageView?.revertZooming()
         }
+        
     }
     
     func mediaBrowserView(_ browserView: MediaBrowserView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if let imageCell = cell as? ImageCell, imageCell.isKind(of: ImageCell.self) {
             imageCell.zoomImageView?.revertZooming()
+        }
+    }
+    
+    func mediaBrowserView(_ browserView: MediaBrowserView, willScrollHalf fromIndexPath: IndexPath, toIndexPath: IndexPath) {
+        if let loaderEntity = loaderItems?[fromIndexPath.item], let sourceItem = loaderEntity.sourceItem {
+            sourceItem.sourceView?.isHidden = false
+        }
+        if let loaderEntity = loaderItems?[toIndexPath.item], let sourceItem = loaderEntity.sourceItem {
+            sourceItem.sourceView?.isHidden = true
         }
     }
     
@@ -282,7 +292,7 @@ extension MediaBrowserViewController: TransitionAnimatorDelegate {
             guard let zoomImageView = imageCell.zoomImageView else { return }
             guard let scrollView = zoomImageView.scrollView else { return }
             zoomImageView.setZoom(scale: scrollView.minimumZoomScale, animated: true)
-//            zoomImageView.revertZooming()
+            //            zoomImageView.revertZooming()
         }
     }
     

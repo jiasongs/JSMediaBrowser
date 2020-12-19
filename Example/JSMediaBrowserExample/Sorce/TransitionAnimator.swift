@@ -243,7 +243,9 @@ extension TransitionAnimator {
         needViewController?.view.alpha = 1
         
         // for zoom
-        sourceView?.isHidden = false
+        if !isPresenting {
+            sourceView?.isHidden = false
+        }
         
         let zoomView = self.delegate?.zoomView
         zoomView?.transform = CGAffineTransform.identity
