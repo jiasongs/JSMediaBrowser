@@ -123,6 +123,7 @@ extension TransitionAnimator {
             
             sourceView?.isHidden = true
             
+            let dimmingView = self.delegate?.dimmingView
             let contentView = self.delegate?.contentView
             let zoomView = self.delegate?.zoomView
             var zoomViewContentRect = self.delegate?.zoomContentViewRect ?? CGRect.zero
@@ -211,7 +212,7 @@ extension TransitionAnimator {
             if (isPresenting) {
                 fromTransform = transform
                 zoomView?.transform = fromTransform
-                self.delegate?.dimmingView?.alpha = 0.0
+                dimmingView?.alpha = 0.0
             } else {
                 toTransform = transform
             }
