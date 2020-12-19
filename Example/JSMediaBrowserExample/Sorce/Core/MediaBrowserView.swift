@@ -274,12 +274,10 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
                 var ratio: CGFloat = 1.0
                 var alpha: CGFloat = 1.0
                 if (verticalDistance > 0) {
-                    // 往下拉的话，图片缩小，但图片移动距离与手指移动距离保持一致
                     ratio = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.5], extrapolateLeft: .clamp, extrapolateRight: .clamp)
                     alpha = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.2], extrapolateLeft: .clamp, extrapolateRight: .clamp)
                 } else {
-                    // 往上拉的话，图片不缩小，但手指越往上移动，图片将会越难被拖走
-                    let a: CGFloat = self.gestureBeganLocation.y + 200// 后面这个加数越大，拖动时会越快达到不怎么拖得动的状态
+                    let a: CGFloat = self.gestureBeganLocation.y + 200
                     let b: CGFloat = 1 - pow((a - abs(verticalDistance)) / a, 2)
                     let c: CGFloat = self.bounds.height / 2
                     verticalDistance = -c * b
