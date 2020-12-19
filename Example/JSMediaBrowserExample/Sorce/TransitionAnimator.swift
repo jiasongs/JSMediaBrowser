@@ -21,7 +21,7 @@ public protocol TransitionAnimatorDelegate: NSObjectProtocol {
     @objc var zoomContentViewRect: CGRect { get }
     @objc weak var zoomScollView: UIScrollView? { get }
     
-    func revertZooming() -> Void;
+    func revertMinimumZoomScale() -> Void;
     
 }
 
@@ -47,7 +47,7 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         self.maskLayer?.masksToBounds = false
         self.maskLayer?.isDoubleSided = false
         self.maskLayer?.js_removeDefaultAnimations()
-        self.maskLayer?.backgroundColor = UIColor.white.cgColor
+        self.maskLayer?.backgroundColor = UIColor.clear.cgColor
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
@@ -121,7 +121,7 @@ extension TransitionAnimator {
         if style == .fade {
             needViewController?.view.alpha = isPresenting ? 0 : 1
         } else if style == .zoom {
-            self.delegate?.revertZooming()
+            self.delegate?.revertMinimumZoomScale()
             
             sourceView?.isHidden = true
             
@@ -192,7 +192,7 @@ extension TransitionAnimator {
             if let zoomContentView = zoomContentView {
                 eeee = JSCGRectApplyAffineTransformWithAnchorPoint(zoomContentView.bounds, zoomContentView.transform, zoomContentView.layer.anchorPoint)
             }
-            zoomContentView?.layer.mask = self.maskLayer
+//            zoomContentView?.layer.mask = self.maskLayer
 //            zoomContentView?.layer.mask?.bounds = CGRect(x: 0, y: 0, width: zzzzz.width ?? 0, height: zzzzz.height ?? 0)
 //            zoomContentView?.layer.mask?.position = JSCGPointGetCenterWithRect(zoomContentView!.layer.mask!.bounds)
             let chazhi = (zzzzz.width ?? 0) - (zzzzz.width ?? 0) / (zoomContentView?.transform.a ?? 1)

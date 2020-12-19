@@ -287,7 +287,7 @@ extension MediaBrowserViewController: TransitionAnimatorDelegate {
         return nil
     }
     
-    func revertZooming() -> Void {
+    func revertMinimumZoomScale() -> Void {
         if let imageCell = self.browserView?.currentMidiaCell as? ImageCell, imageCell.isKind(of: ImageCell.self) {
             guard let zoomImageView = imageCell.zoomImageView else { return }
             zoomImageView.setZoom(scale: zoomImageView.finalMinimumZoomScale, animated: true)
