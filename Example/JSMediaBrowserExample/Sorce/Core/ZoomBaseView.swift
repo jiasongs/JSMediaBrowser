@@ -27,19 +27,19 @@ public class ZoomBaseView: UIView {
 
 extension ZoomBaseView {
     
-    @objc public var containerView: UIView? {
+    @objc open var containerView: UIView? {
         get {
             return nil
         }
     }
     
-    @objc public var contentView: UIView? {
+    @objc open var contentView: UIView? {
         get {
             return nil
         }
     }
     
-    @objc open func contentViewRectInZoomView() -> CGRect {
+    @objc open var contentViewRectInZoomView: CGRect {
         guard let contentView = self.contentView else {
             return CGRect.zero
         }

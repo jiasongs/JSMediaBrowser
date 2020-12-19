@@ -44,6 +44,8 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     override init() {
         super.init()
         self.maskLayer = CALayer()
+        self.maskLayer?.masksToBounds = false
+        self.maskLayer?.isDoubleSided = false
         self.maskLayer?.js_removeDefaultAnimations()
         self.maskLayer?.backgroundColor = UIColor.white.cgColor
     }
@@ -119,20 +121,26 @@ extension TransitionAnimator {
         if style == .fade {
             needViewController?.view.alpha = isPresenting ? 0 : 1
         } else if style == .zoom {
-//            self.delegate?.revertZooming()
+            self.delegate?.revertZooming()
             
             sourceView?.isHidden = true
             
             let dimmingView = self.delegate?.dimmingView
             let contentView = self.delegate?.contentView
             let zoomView = self.delegate?.zoomView
+            
             var zoomViewContentRect = self.delegate?.zoomContentViewRect ?? CGRect.zero
             zoomViewContentRect.origin.y = max(zoomViewContentRect.minY, 0)
             zoomViewContentRect.size.height = min(zoomViewContentRect.height, zoomView?.frame.height ?? 0)
+            
             let zoomContentView = self.delegate?.zoomContentView
+         
             var zoomContentViewBounds = zoomContentView?.bounds ?? CGRect.zero
             zoomContentViewBounds.size.height = min(zoomContentViewBounds.height, zoomView?.bounds.height ?? 0)
+            
             var zoomContentViewFrame = needViewController?.view.convert(zoomViewContentRect, to: nil) ?? CGRect.zero
+            zoomContentViewFrame.size.height = min(zoomContentViewFrame.height, zoomView?.bounds.height ?? 0)
+            
             var zoomContentViewCenterInZoomView: CGPoint = JSCGPointGetCenterWithRect(zoomViewContentRect)
             if (zoomContentViewFrame.isEmpty) {
                 if let zoomView = self.delegate?.zoomView {
@@ -150,6 +158,7 @@ extension TransitionAnimator {
             maskBounds = JSCGRectMakeWithSize(CGSize(width: sourceRect.width / maskFinalRatio, height: sourceRect.height / maskFinalRatio))
             if (isPresenting) {
                 maskFromBounds = maskBounds
+                maskToBounds.size.height = min(maskToBounds.height, zoomView!.bounds.height)
             } else {
                 maskToBounds = maskBounds
             }
@@ -181,25 +190,31 @@ extension TransitionAnimator {
             
             var eeee: CGRect = CGRect()
             if let zoomContentView = zoomContentView {
-                eeee = JSCGRectApplyAffineTransformWithAnchorPoint(zoomContentView.frame, zoomContentView.transform, zoomContentView.layer.anchorPoint)
+                eeee = JSCGRectApplyAffineTransformWithAnchorPoint(zoomContentView.bounds, zoomContentView.transform, zoomContentView.layer.anchorPoint)
             }
             zoomContentView?.layer.mask = self.maskLayer
-            zoomContentView?.layer.mask?.bounds = CGRect(x: 0, y: 0, width: zoomContentViewBounds.width ?? 0, height: zoomContentViewBounds.height ?? 0)
-            let chazhi = (zoomContentView?.frame.width ?? 0) - (zoomContentView?.frame.width ?? 0) / (zoomContentView?.transform.a ?? 1)
-            let chazhi2 = (zoomContentView?.frame.height ?? 0) - (zoomContentView?.frame.height ?? 0) / (zoomContentView?.transform.d ?? 1)
-            
-            zoomContentView?.layer.mask?.position = CGPoint(x: zzz.x - chazhi / 2, y: zzz.y - chazhi2 / 2)
-//            zoomContentView?.layer.mask?.position = CGPoint(x: eeee.minX + eeee.width / 2 - 500 / 2, y: eeee.minY + eeee.height / 2 - 332 / 2)
+//            zoomContentView?.layer.mask?.bounds = CGRect(x: 0, y: 0, width: zzzzz.width ?? 0, height: zzzzz.height ?? 0)
+//            zoomContentView?.layer.mask?.position = JSCGPointGetCenterWithRect(zoomContentView!.layer.mask!.bounds)
+            let chazhi = (zzzzz.width ?? 0) - (zzzzz.width ?? 0) / (zoomContentView?.transform.a ?? 1)
+            let chazhi2 = (zzzzz.height ?? 0) - (zzzzz.height ?? 0) / (zoomContentView?.transform.d ?? 1)
+//            zoomContentView?.layer.mask?.position = CGPoint(x: zzz.x - chazhi / 2, y: zzz.y - chazhi2 / 2)
+//            eeee.origin.y = eeee.origin.y + 100;
+//            eeee.size.height = eeee.size.height - 100;
+//            eeee.size.height = 2300;
+//            eeee.origin.y = 550
+            eeee.size.height = min(eeee.size.height, zoomView!.bounds.height)
+            zoomContentView?.layer.mask?.frame = eeee
+//            zoomContentView?.layer.mask?.position = CGPoin .t(x: eeee.minX + eeee.width / 2 - 500 / 2, y: eeee.minY + eeee.height / 2 - 332 / 2)
 //            zoomContentView?.layer.mask?.frame = CGRect(x: 0, y: self.delegate?.zoomScollView?.contentOffset.y ?? 0, width: zoomContentViewBounds.width, height: zoomContentViewBounds.height)
             zoomContentView?.layer.mask?.add(maskAnimation, forKey: animationMaskGroupKey)
             
             // 当 zoomContentView 被放大后，如果不去掉 clipToBounds，那么退出预览时，contentView 溢出的那部分内容就看不到
 //            zoomContentView?.clipsToBounds = false;
             
-            let centerInZoomView: CGPoint = JSCGPointGetCenterWithRect(zoomView?.bounds ?? CGRect.zero)
             let horizontalRatio: CGFloat = sourceRect.width / zoomContentViewFrame.width
             let verticalRatio: CGFloat = sourceRect.height / zoomContentViewFrame.height
             let finalRatio: CGFloat = max(horizontalRatio, verticalRatio)
+            let centerInZoomView: CGPoint = JSCGPointGetCenterWithRect(zoomView?.bounds ?? CGRect.zero)
             
             var fromTransform: CGAffineTransform = CGAffineTransform.identity
             var toTransform: CGAffineTransform = CGAffineTransform.identity
@@ -252,7 +267,7 @@ extension TransitionAnimator {
         zoomView?.transform = CGAffineTransform.identity
         zoomView?.layer.removeAnimation(forKey: animationTransformKey)
         
-        self.delegate?.zoomScollView?.clipsToBounds = true;
+//        self.delegate?.zoomScollView?.clipsToBounds = true;
         
         self.maskLayer?.removeAnimation(forKey: animationMaskGroupKey)
         self.delegate?.zoomContentView?.layer.mask = nil

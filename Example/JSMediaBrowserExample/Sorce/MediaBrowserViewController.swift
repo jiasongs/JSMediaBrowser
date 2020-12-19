@@ -275,7 +275,7 @@ extension MediaBrowserViewController: TransitionAnimatorDelegate {
     
     var zoomContentViewRect: CGRect {
         if let imageCell = self.browserView?.currentMidiaCell as? ImageCell, imageCell.isKind(of: ImageCell.self) {
-            return imageCell.zoomImageView?.contentViewRectInZoomView() ?? CGRect.zero
+            return imageCell.zoomImageView?.contentViewRectInZoomView ?? CGRect.zero
         }
         return CGRect.zero
     }
@@ -290,9 +290,8 @@ extension MediaBrowserViewController: TransitionAnimatorDelegate {
     func revertZooming() -> Void {
         if let imageCell = self.browserView?.currentMidiaCell as? ImageCell, imageCell.isKind(of: ImageCell.self) {
             guard let zoomImageView = imageCell.zoomImageView else { return }
-            guard let scrollView = zoomImageView.scrollView else { return }
-            zoomImageView.setZoom(scale: scrollView.minimumZoomScale, animated: true)
-            //            zoomImageView.revertZooming()
+            zoomImageView.setZoom(scale: zoomImageView.finalMinimumZoomScale, animated: true)
+            zoomImageView.revertContentOffset(animated: false)
         }
     }
     

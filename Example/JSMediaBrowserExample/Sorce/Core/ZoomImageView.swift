@@ -110,49 +110,11 @@ extension ZoomImageView {
         }
     }
     
-    @objc open override func contentViewRectInZoomView() -> CGRect {
-        return super.contentViewRectInZoomView()
+    @objc open override var contentViewRectInZoomView: CGRect {
+        return super.contentViewRectInZoomView
     }
     
-    @objc open func revertZooming() -> Void {
-        if (self.bounds.isEmpty) {
-            return
-        }
-        let finalEnabledZoom: Bool = self.finalEnabledZoom
-        let minimumZoomScale: CGFloat = self.minimumZoomScale
-        let maximumZoomScale: CGFloat = max(finalEnabledZoom ? self.maximumZoomScale : minimumZoomScale, minimumZoomScale)
-        let zoomScale: CGFloat = minimumZoomScale
-        let shouldFireDidZoomingManual: Bool = zoomScale == self.scrollView?.zoomScale
-        self.scrollView?.panGestureRecognizer.isEnabled = finalEnabledZoom
-        self.scrollView?.pinchGestureRecognizer?.isEnabled = finalEnabledZoom
-        self.scrollView?.minimumZoomScale = minimumZoomScale
-        self.scrollView?.maximumZoomScale = maximumZoomScale
-        /// 重置Frame
-        if let contentView = self.contentView {
-            contentView.frame = CGRect(x: 0, y: 0, width: contentView.frame.width, height: contentView.frame.height)
-        }
-        self.setZoom(scale: zoomScale, animated: false)
-        if (shouldFireDidZoomingManual) {
-            self.handleDidEndZooming()
-        }
-
-        if let scrollView = self.scrollView {
-            var x: CGFloat = scrollView.contentOffset.x
-            var y: CGFloat = scrollView.contentOffset.y
-            let viewport: CGRect = self.finalViewportRect()
-            if let contentView = self.contentView, !viewport.isEmpty {
-                if (viewport.width < contentView.frame.width) {
-                    x = contentView.frame.width / 2 - viewport.width / 2 - viewport.minX
-                }
-                if (viewport.height < contentView.frame.height) {
-                    y = -scrollView.contentInset.top
-                }
-            }
-            scrollView.setContentOffset(CGPoint(x: x, y: y), animated: false)
-        }
-    }
-    
-    @objc open func finalViewportRect() -> CGRect {
+    @objc open var finalViewportRect: CGRect {
         var rect: CGRect = self.viewportRect
         if (rect.isEmpty && !self.bounds.isEmpty) {
             if let scrollView = self.scrollView {
@@ -168,6 +130,96 @@ extension ZoomImageView {
             }
         }
         return rect
+    }
+    
+    @objc open var finalEnabledZoom: Bool {
+        var enabledZoom: Bool = self.enabledZoom
+        if self.contentView == nil {
+            enabledZoom = false
+        }
+        return enabledZoom
+    }
+    
+    @objc open var finalMinimumZoomScale: CGFloat {
+        get {
+            if self.image == nil && self.livePhoto == nil {
+                return 1
+            }
+            let viewport: CGRect = self.finalViewportRect
+            var mediaSize: CGSize = CGSize.zero
+            if let image = self.image {
+                mediaSize = image.size
+            } else if let livePhoto = self.livePhoto {
+                mediaSize = livePhoto.size
+            }
+            var contentMode = self.contentMode
+            var minScale: CGFloat = 1
+            let scaleX: CGFloat = viewport.width / mediaSize.width
+            let scaleY: CGFloat = viewport.height / mediaSize.height
+            if let image = self.image {
+                let radio: CGFloat = image.size.height / image.size.width
+                let finalHeight: CGFloat = image.size.width > viewport.width ? viewport.width * radio : image.size.height
+                if (finalHeight > viewport.height) {
+                    contentMode = .scaleAspectFill
+                }
+            }
+            if (contentMode == .scaleAspectFit) {
+                minScale = min(scaleX, scaleY)
+            } else if (contentMode == .scaleAspectFill) {
+                minScale = max(scaleX, scaleY)
+            } else if (contentMode == .center) {
+                if (scaleX >= 1 && scaleY >= 1) {
+                    minScale = 1
+                } else {
+                    minScale = min(scaleX, scaleY)
+                }
+            }
+            return minScale
+        }
+    }
+    
+    @objc open func revertZooming() -> Void {
+        if (self.bounds.isEmpty) {
+            return
+        }
+        let finalEnabledZoom: Bool = self.finalEnabledZoom
+        let minimumZoomScale: CGFloat = self.finalMinimumZoomScale
+        let maximumZoomScale: CGFloat = max(finalEnabledZoom ? self.maximumZoomScale : minimumZoomScale, minimumZoomScale)
+        let zoomScale: CGFloat = minimumZoomScale
+        let shouldFireDidZoomingManual: Bool = zoomScale == self.scrollView?.zoomScale
+        self.scrollView?.panGestureRecognizer.isEnabled = finalEnabledZoom
+        self.scrollView?.pinchGestureRecognizer?.isEnabled = finalEnabledZoom
+        self.scrollView?.minimumZoomScale = minimumZoomScale
+        self.scrollView?.maximumZoomScale = maximumZoomScale
+        /// 重置Frame
+        if let contentView = self.contentView {
+            contentView.frame = CGRect(x: 0, y: 0, width: contentView.frame.width, height: contentView.frame.height)
+        }
+        /// 重置ZoomScale
+        self.setZoom(scale: zoomScale, animated: false)
+        /// 手动触发一次缩放
+        if (shouldFireDidZoomingManual) {
+            self.handleDidEndZooming()
+        }
+        /// 重置ContentOffset
+        self.revertContentOffset(animated: false)
+    }
+    
+    @objc open func revertContentOffset(animated: Bool) -> Void {
+        if let scrollView = self.scrollView {
+            var x: CGFloat = scrollView.contentOffset.x
+            var y: CGFloat = scrollView.contentOffset.y
+            let viewport: CGRect = self.finalViewportRect
+            if let contentView = self.contentView, !viewport.isEmpty {
+                if (viewport.width < contentView.frame.width) {
+                    x = contentView.frame.width / 2 - viewport.width / 2 - viewport.minX
+                }
+                if (viewport.height < contentView.frame.height) {
+                    y = -scrollView.contentInset.top
+                }
+            }
+            scrollView.setContentOffset(CGPoint(x: x, y: y), animated: animated)
+        }
     }
     
     @objc open func setZoom(scale: CGFloat, animated: Bool) -> Void {
@@ -244,59 +296,13 @@ extension ZoomImageView {
         }
     }
     
-    private var finalEnabledZoom: Bool {
-        var enabledZoom: Bool = self.enabledZoom
-        if self.contentView == nil {
-            enabledZoom = false
-        }
-        return enabledZoom
-    }
-    
-    private var minimumZoomScale: CGFloat {
-        get {
-            if self.image == nil && self.livePhoto == nil {
-                return 1
-            }
-            let viewport: CGRect = self.finalViewportRect()
-            var mediaSize: CGSize = CGSize.zero
-            if let image = self.image {
-                mediaSize = image.size
-            } else if let livePhoto = self.livePhoto {
-                mediaSize = livePhoto.size
-            }
-            var contentMode = self.contentMode
-            var minScale: CGFloat = 1
-            let scaleX: CGFloat = viewport.width / mediaSize.width
-            let scaleY: CGFloat = viewport.height / mediaSize.height
-            if let image = self.image {
-                let radio: CGFloat = image.size.height / image.size.width
-                let finalHeight: CGFloat = image.size.width > viewport.width ? viewport.width * radio : image.size.height
-                if (finalHeight > viewport.height) {
-                    contentMode = .scaleAspectFill
-                }
-            }
-            if (contentMode == .scaleAspectFit) {
-                minScale = min(scaleX, scaleY)
-            } else if (contentMode == .scaleAspectFill) {
-                minScale = max(scaleX, scaleY)
-            } else if (contentMode == .center) {
-                if (scaleX >= 1 && scaleY >= 1) {
-                    minScale = 1
-                } else {
-                    minScale = min(scaleX, scaleY)
-                }
-            }
-            return minScale
-        }
-    }
-    
     private func handleDidEndZooming() -> Void {
         guard let contentView = self.contentView else { return }
         guard let scrollView = self.scrollView else { return }
-        let viewport: CGRect = self.finalViewportRect()
+        let viewport: CGRect = self.finalViewportRect
         // 强制 layout 以确保下面的一堆计算依赖的都是最新的 frame 的值
         self.layoutIfNeeded()
-        let contentViewFrame: CGRect = self.contentViewRectInZoomView()
+        let contentViewFrame: CGRect = self.contentViewRectInZoomView
         var contentInset: UIEdgeInsets = UIEdgeInsets.zero
         contentInset.top = viewport.minY
         contentInset.left = viewport.minX
