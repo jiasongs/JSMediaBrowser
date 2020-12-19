@@ -130,16 +130,16 @@ extension TransitionAnimator {
             let zoomView = self.delegate?.zoomView
             
             var zoomViewContentRect = self.delegate?.zoomContentViewRect ?? CGRect.zero
-            zoomViewContentRect.origin.y = max(zoomViewContentRect.minY, 0)
-            zoomViewContentRect.size.height = min(zoomViewContentRect.height, zoomView?.frame.height ?? 0)
+//            zoomViewContentRect.origin.y = max(zoomViewContentRect.minY, 0)
+//            zoomViewContentRect.size.height = min(zoomViewContentRect.height, zoomView?.frame.height ?? 0)
             
             let zoomContentView = self.delegate?.zoomContentView
          
             var zoomContentViewBounds = zoomContentView?.bounds ?? CGRect.zero
-            zoomContentViewBounds.size.height = min(zoomContentViewBounds.height, zoomView?.bounds.height ?? 0)
+//            zoomContentViewBounds.size.height = min(zoomContentViewBounds.height, zoomView?.bounds.height ?? 0)
             
             var zoomContentViewFrame = needViewController?.view.convert(zoomViewContentRect, to: nil) ?? CGRect.zero
-            zoomContentViewFrame.size.height = min(zoomContentViewFrame.height, zoomView?.bounds.height ?? 0)
+//            zoomContentViewFrame.size.height = min(zoomContentViewFrame.height, zoomView?.bounds.height ?? 0)
             
             var zoomContentViewCenterInZoomView: CGPoint = JSCGPointGetCenterWithRect(zoomViewContentRect)
             if (zoomContentViewFrame.isEmpty) {
@@ -192,7 +192,7 @@ extension TransitionAnimator {
             if let zoomContentView = zoomContentView {
                 eeee = JSCGRectApplyAffineTransformWithAnchorPoint(zoomContentView.bounds, zoomContentView.transform, zoomContentView.layer.anchorPoint)
             }
-//            zoomContentView?.layer.mask = self.maskLayer
+            zoomContentView?.layer.mask = self.maskLayer
 //            zoomContentView?.layer.mask?.bounds = CGRect(x: 0, y: 0, width: zzzzz.width ?? 0, height: zzzzz.height ?? 0)
 //            zoomContentView?.layer.mask?.position = JSCGPointGetCenterWithRect(zoomContentView!.layer.mask!.bounds)
             let chazhi = (zzzzz.width ?? 0) - (zzzzz.width ?? 0) / (zoomContentView?.transform.a ?? 1)
@@ -232,13 +232,13 @@ extension TransitionAnimator {
                 toTransform = transform
             }
             
-            let transformAnimation: CABasicAnimation = CABasicAnimation(keyPath: "transform")
-            transformAnimation.toValue = NSValue(caTransform3D: CATransform3DMakeAffineTransform(toTransform))
-            transformAnimation.duration = self.duration
-            transformAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-            transformAnimation.fillMode = .forwards
-            transformAnimation.isRemovedOnCompletion = false
-            zoomView?.layer.add(transformAnimation, forKey: animationTransformKey)
+//            let transformAnimation: CABasicAnimation = CABasicAnimation(keyPath: "transform")
+//            transformAnimation.toValue = NSValue(caTransform3D: CATransform3DMakeAffineTransform(toTransform))
+//            transformAnimation.duration = self.duration
+//            transformAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+//            transformAnimation.fillMode = .forwards
+//            transformAnimation.isRemovedOnCompletion = false
+//            zoomView?.layer.add(transformAnimation, forKey: animationTransformKey)
         }
     }
     
@@ -264,7 +264,7 @@ extension TransitionAnimator {
         }
         
         let zoomView = self.delegate?.zoomView
-        zoomView?.transform = CGAffineTransform.identity
+//        zoomView?.transform = CGAffineTransform.identity
         zoomView?.layer.removeAnimation(forKey: animationTransformKey)
         
 //        self.delegate?.zoomScollView?.clipsToBounds = true;

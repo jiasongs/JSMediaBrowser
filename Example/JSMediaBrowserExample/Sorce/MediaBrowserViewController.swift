@@ -21,7 +21,7 @@ enum TransitioningStyle: Int {
         didSet {
             var array: Array<BaseLoaderEntity> = Array()
             sourceItems?.forEach({ (item) in
-                if item.isKind(of: ImageEntity.self) {
+                if let _ = item as? ImageEntity {
                     let loader: ImageLoaderEntity = ImageLoaderEntity()
                     loader.sourceItem = item
                     loader.webImageMediator = nil
@@ -34,7 +34,7 @@ enum TransitioningStyle: Int {
     
     @objc open var transitioningAnimator: UIViewControllerAnimatedTransitioning? {
         didSet {
-            if let animator = transitioningAnimator as? TransitionAnimator, animator.isKind(of: TransitionAnimator.self) {
+            if let animator = transitioningAnimator as? TransitionAnimator {
                 animator.delegate = self
             }
         }
@@ -42,14 +42,14 @@ enum TransitioningStyle: Int {
     @objc open var presentingStyle: TransitioningStyle = .zoom {
         didSet {
             dismissingStyle = presentingStyle
-            if let animator = transitioningAnimator as? TransitionAnimator, animator.isKind(of: TransitionAnimator.self) {
+            if let animator = transitioningAnimator as? TransitionAnimator {
                 animator.presentingStyle = presentingStyle
             }
         }
     }
     @objc open var dismissingStyle: TransitioningStyle = .zoom {
         didSet {
-            if let animator = transitioningAnimator as? TransitionAnimator, animator.isKind(of: TransitionAnimator.self) {
+            if let animator = transitioningAnimator as? TransitionAnimator {
                 animator.dismissingStyle = dismissingStyle
             }
         }
@@ -143,7 +143,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     func mediaBrowserView(_ browserView: MediaBrowserView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var cell: BaseCell?
         guard let loaderItem = loaderItems?[indexPath.item] else { return UICollectionViewCell() }
-        if let loaderItem = loaderItem as? ImageLoaderEntity, let sourceItem = loaderItem.sourceItem, sourceItem.isKind(of: ImageEntity.self) {
+        if let loaderItem = loaderItem as? ImageLoaderEntity, let _ = loaderItem.sourceItem as? ImageEntity {
             cell = browserView.dequeueReusableCell(withReuseIdentifier: imageCellIdentifier, for: indexPath) as? BaseCell
             cell?.updateCell(loaderEntity: loaderItem, at: indexPath)
         }
@@ -155,14 +155,14 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
 extension MediaBrowserViewController: MediaBrowserViewDelegate {
     
     func mediaBrowserView(_ browserView: MediaBrowserView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if let imageCell = cell as? ImageCell, imageCell.isKind(of: ImageCell.self) {
+        if let imageCell = cell as? ImageCell {
             imageCell.zoomImageView?.revertZooming()
         }
         
     }
     
     func mediaBrowserView(_ browserView: MediaBrowserView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if let imageCell = cell as? ImageCell, imageCell.isKind(of: ImageCell.self) {
+        if let imageCell = cell as? ImageCell {
             imageCell.zoomImageView?.revertZooming()
         }
     }
@@ -185,7 +185,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     }
     
     @objc func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, doubleTouch gestureRecognizer: UITapGestureRecognizer) {
-        if let imageCell = mediaBrowserView.currentMidiaCell as? ImageCell, imageCell.isKind(of: ImageCell.self) {
+        if let imageCell = mediaBrowserView.currentMidiaCell as? ImageCell {
             imageCell.zoomImageView?.zoom(from: gestureRecognizer, animated: true)
         }
     }
@@ -267,28 +267,28 @@ extension MediaBrowserViewController: TransitionAnimatorDelegate {
     }
     
     var zoomContentView: UIView? {
-        if let imageCell = self.browserView?.currentMidiaCell as? ImageCell, imageCell.isKind(of: ImageCell.self) {
+        if let imageCell = self.browserView?.currentMidiaCell as? ImageCell {
             return imageCell.zoomImageView?.contentView
         }
         return nil
     }
     
     var zoomContentViewRect: CGRect {
-        if let imageCell = self.browserView?.currentMidiaCell as? ImageCell, imageCell.isKind(of: ImageCell.self) {
+        if let imageCell = self.browserView?.currentMidiaCell as? ImageCell {
             return imageCell.zoomImageView?.contentViewRectInZoomView ?? CGRect.zero
         }
         return CGRect.zero
     }
     
     var zoomScollView: UIScrollView? {
-        if let imageCell = self.browserView?.currentMidiaCell as? ImageCell, imageCell.isKind(of: ImageCell.self) {
+        if let imageCell = self.browserView?.currentMidiaCell as? ImageCell {
             return imageCell.zoomImageView?.scrollView
         }
         return nil
     }
     
     func revertMinimumZoomScale() -> Void {
-        if let imageCell = self.browserView?.currentMidiaCell as? ImageCell, imageCell.isKind(of: ImageCell.self) {
+        if let imageCell = self.browserView?.currentMidiaCell as? ImageCell {
             guard let zoomImageView = imageCell.zoomImageView else { return }
             zoomImageView.setZoom(scale: zoomImageView.finalMinimumZoomScale, animated: true)
             zoomImageView.revertContentOffset(animated: false)

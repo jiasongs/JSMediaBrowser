@@ -305,7 +305,7 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
         if let delegate = self.gestureDelegate, delegate.responds(to: #selector(MediaBrowserViewGestureDelegate.mediaBrowserView(_:gestureRecognizer:shouldReceive:))) {
             return delegate.mediaBrowserView?(self, gestureRecognizer: gestureRecognizer, shouldReceive: touch) ?? true
         }
-        if let touchView = touch.view, touchView.isKind(of: UISlider.self) {
+        if let _ = touch.view as? UISlider {
             return false
         }
         return true

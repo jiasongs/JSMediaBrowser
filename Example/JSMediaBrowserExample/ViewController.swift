@@ -58,10 +58,12 @@ class ViewController: UIViewController {
         browser.browserView?.currentMediaIndex = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
         var sourceItems: Array<ImageEntity> = [];
         for (index, urlString) in self.dataSource.enumerated() {
-            let imageEntity = ImageEntity(sourceView: self.floatLayoutView.subviews[index], sourceRect: CGRect.zero, thumbImage: nil)
-            imageEntity.imageUrl = URL(string: urlString)
-            imageEntity.sourceCornerRadius = self.floatLayoutView.subviews[index].layer.cornerRadius
-            sourceItems.append(imageEntity)
+            if let button: QMUIButton = self.floatLayoutView.subviews[index] as? QMUIButton {
+                let imageEntity = ImageEntity(sourceView: button, sourceRect: CGRect.zero, thumbImage: button.image(for: .normal))
+                imageEntity.imageUrl = URL(string: urlString)
+                imageEntity.sourceCornerRadius = button.layer.cornerRadius
+                sourceItems.append(imageEntity)
+            }
          }
         browser.sourceItems = sourceItems
         browser.show(from: self, animated: true)
