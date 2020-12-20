@@ -251,10 +251,6 @@ extension MediaBrowserViewController: TransitionAnimatorDelegate {
         return 0
     }
     
-    var contentView: UIView? {
-        return self.browserView
-    }
-    
     var dimmingView: UIView? {
         return self.browserView?.dimmingView
     }
@@ -271,28 +267,6 @@ extension MediaBrowserViewController: TransitionAnimatorDelegate {
             return imageCell.zoomImageView?.contentView
         }
         return nil
-    }
-    
-    var zoomContentViewRect: CGRect {
-        if let imageCell = self.browserView?.currentMidiaCell as? ImageCell {
-            return imageCell.zoomImageView?.contentViewRectInZoomView ?? CGRect.zero
-        }
-        return CGRect.zero
-    }
-    
-    var zoomScollView: UIScrollView? {
-        if let imageCell = self.browserView?.currentMidiaCell as? ImageCell {
-            return imageCell.zoomImageView?.scrollView
-        }
-        return nil
-    }
-    
-    func revertMinimumZoomScale() -> Void {
-        if let imageCell = self.browserView?.currentMidiaCell as? ImageCell {
-            guard let zoomImageView = imageCell.zoomImageView else { return }
-            zoomImageView.setZoom(scale: zoomImageView.finalMinimumZoomScale, animated: true)
-            zoomImageView.revertContentOffset(animated: false)
-        }
     }
     
 }

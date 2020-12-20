@@ -14,14 +14,9 @@ public protocol TransitionAnimatorDelegate: NSObjectProtocol {
     @objc var sourceRect: CGRect { get }
     @objc weak var sourceView: UIView? { get }
     @objc var sourceCornerRadius: CGFloat { get }
-    @objc weak var contentView: UIView? { get }
     @objc weak var dimmingView: UIView? { get }
     @objc weak var zoomView: UIView? { get }
     @objc weak var zoomContentView: UIView? { get }
-    @objc var zoomContentViewRect: CGRect { get }
-    @objc weak var zoomScollView: UIScrollView? { get }
-    
-    func revertMinimumZoomScale() -> Void;
     
 }
 
@@ -29,7 +24,7 @@ public protocol TransitionAnimatorDelegate: NSObjectProtocol {
 class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
     @objc open weak var delegate: TransitionAnimatorDelegate?
-    @objc open var duration: TimeInterval = 0.25 + 1
+    @objc open var duration: TimeInterval = 0.3
     @objc open var presentingStyle: TransitioningStyle = .zoom {
         didSet {
             dismissingStyle = presentingStyle
@@ -37,19 +32,14 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     }
     @objc open var dismissingStyle: TransitioningStyle = .zoom
     
-    private var animationTransformKey: String = "TransformKey"
-    private var animationMaskGroupKey: String = "MaskGroupKey"
-    private var maskLayer: CALayer?
+    private var animationGroupKey: String = "GroupKey"
     private var imageView: UIImageView?
     
     override init() {
         super.init()
-        self.maskLayer = CALayer()
-        self.maskLayer?.js_removeDefaultAnimations()
-        self.maskLayer?.backgroundColor = UIColor.white.cgColor
-        
-        self.imageView = UIImageView()
-        self.imageView?.backgroundColor = .red
+        imageView = UIImageView()
+        imageView?.contentMode = .scaleAspectFill
+        imageView?.clipsToBounds = true
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
@@ -96,8 +86,8 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             presentingViewController?.beginAppearanceTransition(true, animated: true)
         }
         
-        let zoomContentViewRect = self.delegate?.zoomContentViewRect ?? CGRect.zero
-        style = style == .zoom && (sourceRect.isEmpty || zoomContentViewRect.isEmpty) ? .fade : style
+        let zoomContentViewFrame = self.delegate?.zoomContentView?.frame ?? CGRect.zero
+        style = style == .zoom && (sourceRect.isEmpty || zoomContentViewFrame.isEmpty) ? .fade : style
         
         self.handleAnimationEntering(style: style, isPresenting: isPresenting, fromViewController: fromViewController, toViewController: toViewController, sourceView: sourceView, sourceRect: sourceRect)
         UIView.animate(withDuration: self.duration, delay: 0, options: UIView.AnimationOptions.curveEaseInOut) {
@@ -123,139 +113,55 @@ extension TransitionAnimator {
         if style == .fade {
             needViewController?.view.alpha = isPresenting ? 0 : 1
         } else if style == .zoom {
-
-            sourceView?.isHidden = true
-            
             let dimmingView = self.delegate?.dimmingView
-            let contentView = self.delegate?.contentView
             let zoomView = self.delegate?.zoomView
-            
-            var zoomViewContentRect = self.delegate?.zoomContentViewRect ?? CGRect.zero
-//            zoomViewContentRect.origin.y = max(zoomViewContentRect.minY, 0)
-//            zoomViewContentRect.size.height = min(zoomViewContentRect.height, zoomView?.frame.height ?? 0)
-            
             let zoomContentView = self.delegate?.zoomContentView
-            
-            zoomContentView?.isHidden = true
-            
-            let image = UIImage.qmui_image(with: zoomContentView!.bounds.size, opaque: false, scale: 0) { (context) in
-                zoomContentView?.layer.render(in: context)
+            let zoomContentViewFrame = zoomContentView?.frame ?? CGRect.zero
+            let zoomContentViewFrameInView = needViewController?.view.convert(zoomContentViewFrame, from: zoomContentView?.superview) ?? CGRect.zero
+            let zoomContentViewBoundsInView = CGRect(origin: CGPoint.zero, size: zoomContentViewFrameInView.size)
+            /// 截取image
+            UIGraphicsBeginImageContextWithOptions(zoomContentViewBoundsInView.size, false, 0)
+            zoomContentView?.drawHierarchy(in: zoomContentViewBoundsInView, afterScreenUpdates: true)
+            imageView?.image = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+            /// 添加imageView
+            if let imageView = self.imageView {
+                imageView.removeFromSuperview()
+                needViewController?.view.addSubview(imageView)
             }
-            
-            self.imageView?.image = image
-            
+            /// 设置下Frame
+            imageView?.frame = isPresenting ? sourceRect : zoomContentViewFrameInView
+            /// 计算position
+            let sourceCenter = CGPoint(x: sourceRect.midX, y: sourceRect.midY)
+            let zoomContentViewCenterInView = CGPoint(x: zoomContentViewFrameInView.midX, y: zoomContentViewFrameInView.midY)
+            let positionAnimation: CABasicAnimation = CABasicAnimation(keyPath: "position")
+            positionAnimation.fromValue = NSValue(cgPoint: isPresenting ? sourceCenter : zoomContentViewCenterInView)
+            positionAnimation.toValue = NSValue(cgPoint: isPresenting ? zoomContentViewCenterInView : sourceCenter)
+            /// 计算bounds
+            let sourceBounds = CGRect(origin: CGPoint.zero, size: sourceRect.size)
+            let boundsAnimation: CABasicAnimation = CABasicAnimation(keyPath: "bounds")
+            boundsAnimation.fromValue = NSValue(cgRect: isPresenting ? sourceBounds : zoomContentViewBoundsInView)
+            boundsAnimation.toValue = NSValue(cgRect: isPresenting ? zoomContentViewBoundsInView : sourceBounds)
+            /// 计算cornerRadius
+            let cornerRadius: CGFloat = self.delegate?.sourceCornerRadius ?? 0
+            let cornerRadiusAnimation: CABasicAnimation = CABasicAnimation(keyPath: "cornerRadius")
+            cornerRadiusAnimation.fromValue = isPresenting ? cornerRadius : 0
+            cornerRadiusAnimation.toValue = isPresenting ? 0 : cornerRadius
+            /// 添加组动画
+            let groupAnimation: CAAnimationGroup  = CAAnimationGroup()
+            groupAnimation.duration = self.duration
+            groupAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+            groupAnimation.fillMode = .forwards
+            groupAnimation.isRemovedOnCompletion = false
+            groupAnimation.animations = [positionAnimation, boundsAnimation, cornerRadiusAnimation]
+            imageView?.layer.add(groupAnimation, forKey: animationGroupKey)
+            /// 遮罩
             if (isPresenting) {
                 dimmingView?.alpha = 0.0
             }
-            
-//            self.delegate?.revertMinimumZoomScale()
-            //            var zoomContentViewBounds = zoomContentView?.bounds ?? CGRect.zero
-            //            zoomContentViewBounds.size.height = min(zoomContentViewBounds.height, zoomView?.bounds.height ?? 0)
-            //
-            //            var zoomContentViewFrame = needViewController?.view.convert(zoomViewContentRect, to: nil) ?? CGRect.zero
-            //            zoomContentViewFrame.size.height = min(zoomContentViewFrame.height, zoomView?.bounds.height ?? 0)
-            //
-            //            var zoomContentViewCenterInZoomView: CGPoint = JSCGPointGetCenterWithRect(zoomViewContentRect)
-            //            if (zoomContentViewFrame.isEmpty) {
-            //                if let zoomView = self.delegate?.zoomView {
-            //                    zoomContentViewFrame = needViewController?.view.convert(zoomView.frame, from: zoomView.superview) ?? CGRect.zero
-            //                }
-            //                zoomContentViewCenterInZoomView = JSCGPointGetCenterWithRect(zoomContentViewFrame)
-            //            }
-            //
-            //            var maskFromBounds: CGRect = zoomContentViewBounds
-            //            var maskToBounds: CGRect = zoomContentViewBounds
-            //            var maskBounds: CGRect = maskFromBounds
-            //            let maskHorizontalRatio: CGFloat = sourceRect.width / maskBounds.width
-            //            let maskVerticalRatio: CGFloat = sourceRect.height / maskBounds.height
-            //            let maskFinalRatio: CGFloat = max(maskHorizontalRatio, maskVerticalRatio)
-            //            maskBounds = JSCGRectMakeWithSize(CGSize(width: sourceRect.width / maskFinalRatio, height: sourceRect.height / maskFinalRatio))
-            //            if (isPresenting) {
-            //                maskFromBounds = maskBounds
-            ////                maskToBounds.size.height = min(maskToBounds.height, zoomView!.bounds.height)
-            //            } else {
-            //                maskToBounds = maskBounds
-            //            }
-            //
-            //            let cornerRadius: CGFloat = self.delegate?.sourceCornerRadius ?? 0 / maskFinalRatio
-            //            let fromCornerRadius = isPresenting ? cornerRadius : 0
-            //            let toCornerRadius = isPresenting ? 0 : cornerRadius
-            //            let cornerRadiusAnimation: CABasicAnimation = CABasicAnimation(keyPath: "cornerRadius")
-            //            cornerRadiusAnimation.fromValue = fromCornerRadius
-            //            cornerRadiusAnimation.toValue = toCornerRadius
-            //
-            //            let boundsAnimation: CABasicAnimation = CABasicAnimation(keyPath: "bounds")
-            //            boundsAnimation.fromValue = NSValue(cgRect: JSCGRectMakeWithSize(maskFromBounds.size))
-            //            boundsAnimation.toValue = NSValue(cgRect: JSCGRectMakeWithSize(maskToBounds.size))
-            //
-            //            let maskAnimation: CAAnimationGroup  = CAAnimationGroup()
-            //            maskAnimation.duration = self.duration
-            //            maskAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-            //            maskAnimation.fillMode = .forwards
-            //            maskAnimation.isRemovedOnCompletion = false
-            //            maskAnimation.animations = [cornerRadiusAnimation, boundsAnimation]
-            //
-            //            var zzz = JSCGPointGetCenterWithRect(CGRect(x: 0, y: 0, width: zoomContentViewFrame.width, height: zoomContentViewFrame.height))
-            //            let zzzzz = zoomContentView?.convert(zoomContentViewBounds, to: zoomView) ?? CGRect.zero
-            ////            if zzzzz.minY < 0 {
-            ////                zzz.y = zzz.y + abs(zzzzz.minY)
-            ////            }
-            //            self.maskLayer?.borderWidth = 5
-            //
-            //            var eeee: CGRect = CGRect()
-            //            if let zoomContentView = zoomContentView {
-            //                eeee = JSCGRectApplyAffineTransformWithAnchorPoint(zoomContentViewFrame, zoomContentView.transform, zoomContentView.layer.anchorPoint)
-            //            }
-            //            zoomContentView?.layer.mask = self.maskLayer
-            ////            zoomContentView?.layer.mask?.bounds = CGRect(x: 0, y: 0, width: zzzzz.width ?? 0, height: zzzzz.height ?? 0)
-            ////            zoomContentView?.layer.mask?.position = JSCGPointGetCenterWithRect(zoomContentView!.layer.mask!.bounds)
-            //            let chazhi = (zzzzz.width ?? 0) - (zzzzz.width ?? 0) / (zoomContentView?.transform.a ?? 1)
-            //            let chazhi2 = (zzzzz.height ?? 0) - (zzzzz.height ?? 0) / (zoomContentView?.transform.d ?? 1)
-            ////            zoomContentView?.layer.mask?.position = CGPoint(x: zzz.x - chazhi / 2, y: zzz.y - chazhi2 / 2)
-            ////            eeee.origin.y = eeee.origin.y + 100;
-            ////            eeee.size.height = eeee.size.height - 100;
-            ////            eeee.size.height = 2300;
-            ////            eeee.origin.y = 47
-            ////            eeee.size.height = 840-500
-            ////            zoomContentView?.layer.mask?.frame = zoomContentViewFrame
-            //            print("\(eeee)")
-            ////            zoomContentView?.layer.mask?.position = CGPoint(x: 345, y: 743)
-            ////            zoomContentView?.layer.mask?.position = CGPoin .t(x: eeee.minX + eeee.width / 2 - 500 / 2, y: eeee.minY + eeee.height / 2 - 332 / 2)
-            ////            zoomContentView?.layer.mask?.frame = CGRect(x: 0, y: self.delegate?.zoomScollView?.contentOffset.y ?? 0, width: zoomContentViewBounds.width, height: zoomContentViewBounds.height)
-            //            zoomContentView?.layer.mask?.frame =  isPresenting ? CGRect(x: 0, y: 0, width: maskToBounds.width, height: maskToBounds.height) : CGRect(x: 0, y: 0, width: maskFromBounds.width, height: maskFromBounds.height)
-            //            zoomContentView?.layer.mask?.add(maskAnimation, forKey: animationMaskGroupKey)
-            //
-            //            // 当 zoomContentView 被放大后，如果不去掉 clipToBounds，那么退出预览时，contentView 溢出的那部分内容就看不到
-            ////            zoomContentView?.clipsToBounds = false;
-            //
-            //            let horizontalRatio: CGFloat = sourceRect.width / zoomContentViewFrame.width
-            //            let verticalRatio: CGFloat = sourceRect.height / zoomContentViewFrame.height
-            //            let finalRatio: CGFloat = max(horizontalRatio, verticalRatio)
-            //            let centerInZoomView: CGPoint = JSCGPointGetCenterWithRect(zoomView?.bounds ?? CGRect.zero)
-            //
-            //            var fromTransform: CGAffineTransform = CGAffineTransform.identity
-            //            var toTransform: CGAffineTransform = CGAffineTransform.identity
-            //            var transform: CGAffineTransform = CGAffineTransform(scaleX: finalRatio, y: finalRatio)
-            //
-            //            let contentViewCenterAfterScale: CGPoint = CGPoint(x: centerInZoomView.x + (zoomContentViewCenterInZoomView.x - centerInZoomView.x) * finalRatio, y: centerInZoomView.y + (zoomContentViewCenterInZoomView.y - centerInZoomView.y) * finalRatio)
-            //            let translationAfterScale: CGSize = CGSize(width: sourceRect.midX - contentViewCenterAfterScale.x, height: sourceRect.midY - contentViewCenterAfterScale.y)
-            //            transform = transform.concatenating(CGAffineTransform(translationX: translationAfterScale.width, y: translationAfterScale.height))
-            //
-            //            if (isPresenting) {
-            //                fromTransform = transform
-            //                zoomView?.transform = fromTransform
-            //                dimmingView?.alpha = 0.0
-            //            } else {
-            //                toTransform = transform
-            //            }
-            //
-            //            let transformAnimation: CABasicAnimation = CABasicAnimation(keyPath: "transform")
-            //            transformAnimation.toValue = NSValue(caTransform3D: CATransform3DMakeAffineTransform(toTransform))
-            //            transformAnimation.duration = self.duration
-            //            transformAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-            //            transformAnimation.fillMode = .forwards
-            //            transformAnimation.isRemovedOnCompletion = false
-            //            zoomView?.layer.add(transformAnimation, forKey: animationTransformKey)
+            /// 隐藏
+            zoomView?.isHidden = true
+            sourceView?.isHidden = true
         }
     }
     
@@ -272,29 +178,18 @@ extension TransitionAnimator {
     
     func handleAnimationCompletion(style: TransitioningStyle, isPresenting: Bool, fromViewController: UIViewController?, toViewController: UIViewController?, sourceView: UIView?) -> Void {
         let needViewController = isPresenting ? fromViewController : toViewController
-        // for fade
-        needViewController?.view.alpha = 1
-        
-        // for zoom
-        if !isPresenting {
-            sourceView?.isHidden = false
+        if style == .fade {
+            needViewController?.view.alpha = 1
+        } else if style == .zoom {
+            if !isPresenting {
+                sourceView?.isHidden = false
+            }
+            imageView?.removeFromSuperview()
+            imageView?.layer.removeAnimation(forKey: animationGroupKey)
+            imageView?.image = nil // 释放资源
+            
+            delegate?.zoomView?.isHidden = false
         }
-        
-        imageView?.removeFromSuperview()
-        imageView?.transform = CGAffineTransform.identity
-        imageView?.image = nil
-        
-        let zoomContentView = self.delegate?.zoomContentView
-        zoomContentView?.isHidden = false
-        
-        let zoomView = self.delegate?.zoomView
-        zoomView?.transform = CGAffineTransform.identity
-        zoomView?.layer.removeAnimation(forKey: animationTransformKey)
-        
-        //        self.delegate?.zoomScollView?.clipsToBounds = true;
-        
-        self.maskLayer?.removeAnimation(forKey: animationMaskGroupKey)
-        self.delegate?.zoomContentView?.layer.mask = nil
     }
     
 }
