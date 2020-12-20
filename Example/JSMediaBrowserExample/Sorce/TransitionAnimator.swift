@@ -14,6 +14,7 @@ public protocol TransitionAnimatorDelegate: NSObjectProtocol {
     @objc var sourceRect: CGRect { get }
     @objc weak var sourceView: UIView? { get }
     @objc var sourceCornerRadius: CGFloat { get }
+    @objc var thumbImage: UIImage? { get }
     @objc weak var dimmingView: UIView? { get }
     @objc weak var zoomView: UIView? { get }
     @objc weak var zoomContentView: UIView? { get }
@@ -119,6 +120,23 @@ extension TransitionAnimator {
             let zoomContentViewFrame = zoomContentView?.frame ?? CGRect.zero
             let zoomContentViewFrameInView = needViewController?.view.convert(zoomContentViewFrame, from: zoomContentView?.superview) ?? CGRect.zero
             let zoomContentViewBoundsInView = CGRect(origin: CGPoint.zero, size: zoomContentViewFrameInView.size)
+            /// 遮罩
+            if (isPresenting) {
+                dimmingView?.alpha = 0.0
+            }
+            /// 判断是否截取image
+            if let thumbImage = self.delegate?.thumbImage {
+                imageView?.image = thumbImage
+            } else {
+                /// 没有传thumbImage的时候再截图, 避免消耗资源, 转制版可能有些问题,
+                UIGraphicsBeginImageContextWithOptions(zoomContentViewBoundsInView.size, false, 0)
+                zoomContentView?.drawHierarchy(in: zoomContentViewBoundsInView, afterScreenUpdates: true)
+                imageView?.image = UIGraphicsGetImageFromCurrentImageContext();
+                UIGraphicsEndImageContext();
+            }
+            /// 隐藏相关视图
+            zoomView?.isHidden = true
+            sourceView?.isHidden = true
             /// 添加imageView
             if let imageView = self.imageView {
                 imageView.removeFromSuperview()
@@ -126,11 +144,6 @@ extension TransitionAnimator {
             }
             /// 设置下Frame
             imageView?.frame = isPresenting ? sourceRect : zoomContentViewFrameInView
-            /// 截取image
-            UIGraphicsBeginImageContextWithOptions(zoomContentViewBoundsInView.size, false, 0)
-            zoomContentView?.drawHierarchy(in: zoomContentViewBoundsInView, afterScreenUpdates: true)
-            imageView?.image = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
             /// 计算position
             let sourceCenter = CGPoint(x: sourceRect.midX, y: sourceRect.midY)
             let zoomContentViewCenterInView = CGPoint(x: zoomContentViewFrameInView.midX, y: zoomContentViewFrameInView.midY)
@@ -155,13 +168,6 @@ extension TransitionAnimator {
             groupAnimation.isRemovedOnCompletion = false
             groupAnimation.animations = [positionAnimation, boundsAnimation, cornerRadiusAnimation]
             imageView?.layer.add(groupAnimation, forKey: animationGroupKey)
-            /// 遮罩
-            if (isPresenting) {
-                dimmingView?.alpha = 0.0
-            }
-            /// 隐藏
-            zoomView?.isHidden = true
-            sourceView?.isHidden = true
         }
     }
     

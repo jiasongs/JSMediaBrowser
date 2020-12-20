@@ -29,7 +29,10 @@ open class ImageCell: BaseCell {
         guard let loaderEntity = loaderEntity as? ImageLoaderEntity else { return }
         if let sourceItem: ImageEntity = loaderEntity.sourceItem as? ImageEntity {
             if let imageURL = sourceItem.imageUrl {
-                self.zoomImageView?.sd_internalSetImage(with: imageURL, placeholderImage: nil, options: SDWebImageOptions(rawValue: 0), context: nil, setImageBlock: nil, progress: nil, completed: { (image, data, errot, cache, bool, url) in
+                self.zoomImageView?.sd_internalSetImage(with: imageURL, placeholderImage: sourceItem.thumbImage, options: SDWebImageOptions(rawValue: 0), context: nil, setImageBlock: { (image, imageData, cacheType, imageURL) in
+                    self.zoomImageView?.image = image
+                }, progress: nil, completed: { (image, data, errot, cache, bool, url) in
+                    sourceItem.image = image
                     self.zoomImageView?.image = image;
                 })
 //                loaderEntity.webImageMediator?.loadImage(url:imageURL, progress: { (receivedSize, expectedSize) in

@@ -251,6 +251,13 @@ extension MediaBrowserViewController: TransitionAnimatorDelegate {
         return 0
     }
     
+    var thumbImage: UIImage? {
+        if let sourceItem: ImageEntity = self.sourceItems?[browserView?.currentMediaIndex ?? 0] as? ImageEntity {
+            return (sourceItem.image != nil) ? sourceItem.image : sourceItem.thumbImage
+        }
+        return nil
+    }
+    
     var dimmingView: UIView? {
         return self.browserView?.dimmingView
     }
