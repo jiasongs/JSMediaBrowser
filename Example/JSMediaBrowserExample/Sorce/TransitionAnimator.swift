@@ -24,7 +24,7 @@ public protocol TransitionAnimatorDelegate: NSObjectProtocol {
 class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
     @objc open weak var delegate: TransitionAnimatorDelegate?
-    @objc open var duration: TimeInterval = 0.3
+    @objc open var duration: TimeInterval = 0.28
     @objc open var presentingStyle: TransitioningStyle = .zoom {
         didSet {
             dismissingStyle = presentingStyle
@@ -119,11 +119,6 @@ extension TransitionAnimator {
             let zoomContentViewFrame = zoomContentView?.frame ?? CGRect.zero
             let zoomContentViewFrameInView = needViewController?.view.convert(zoomContentViewFrame, from: zoomContentView?.superview) ?? CGRect.zero
             let zoomContentViewBoundsInView = CGRect(origin: CGPoint.zero, size: zoomContentViewFrameInView.size)
-            /// 截取image
-            UIGraphicsBeginImageContextWithOptions(zoomContentViewBoundsInView.size, false, 0)
-            zoomContentView?.drawHierarchy(in: zoomContentViewBoundsInView, afterScreenUpdates: true)
-            imageView?.image = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
             /// 添加imageView
             if let imageView = self.imageView {
                 imageView.removeFromSuperview()
@@ -131,6 +126,11 @@ extension TransitionAnimator {
             }
             /// 设置下Frame
             imageView?.frame = isPresenting ? sourceRect : zoomContentViewFrameInView
+            /// 截取image
+            UIGraphicsBeginImageContextWithOptions(zoomContentViewBoundsInView.size, false, 0)
+            zoomContentView?.drawHierarchy(in: zoomContentViewBoundsInView, afterScreenUpdates: true)
+            imageView?.image = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
             /// 计算position
             let sourceCenter = CGPoint(x: sourceRect.midX, y: sourceRect.midY)
             let zoomContentViewCenterInView = CGPoint(x: zoomContentViewFrameInView.midX, y: zoomContentViewFrameInView.midY)
