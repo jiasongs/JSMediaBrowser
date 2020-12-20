@@ -44,6 +44,7 @@ public class ZoomImageView: ZoomBaseView {
         didSet {
             if isLivePhotoViewViewInitialized {
                 livePhotoView.isHidden = true
+                livePhotoView.livePhoto = nil
             }
             if let image = self.image {
                 self.imageView.isHidden = false
@@ -58,6 +59,7 @@ public class ZoomImageView: ZoomBaseView {
         didSet {
             if isImageViewInitialized {
                 imageView.isHidden = true
+                imageView.image = nil
             }
             if let livePhoto = self.livePhoto {
                 self.livePhotoView.isHidden = false
