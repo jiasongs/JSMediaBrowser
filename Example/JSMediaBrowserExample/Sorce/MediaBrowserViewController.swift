@@ -9,7 +9,7 @@ import UIKit
 import JSCoreKit
 
 @objc(MediaBrowserViewControllerTransitioningStyle)
-enum TransitioningStyle: Int {
+public enum TransitioningStyle: Int {
     case zoom
     case fade
 }

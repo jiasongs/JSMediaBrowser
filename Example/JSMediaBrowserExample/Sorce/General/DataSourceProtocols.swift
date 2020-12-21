@@ -9,9 +9,14 @@ import UIKit
 
 @objc public protocol CellProtocol: NSObjectProtocol {
     
-    func updateCell(loaderEntity: LoaderProtocol, at index: Int);
-    func updateLoading(receivedSize: Int, expectedSize: Int);
+    func updateCell(loaderEntity: LoaderProtocol, at index: Int)
     
+//    func willLoad()
+//    func downloadProgress()
+//    func completed()
+//    public var willLoadBlock: willLoadBlock?
+//    public var downloadProgressBlock: DownloadProgressBlock?
+//    public var completedBlock: CompletedBlock?
 }
 
 @objc public protocol SourceProtocol: NSObjectProtocol {
@@ -25,14 +30,28 @@ import UIKit
     
 }
 
+public typealias willLoadBlock = () -> Void
+public typealias DownloadProgressBlock = (_ receivedSize: Int, _ expectedSize: Int) -> Void
+public typealias CompletedBlock = (_ data: Any?, _ error: Error?, _ finished: Bool) -> Void
+
+@objc public enum LoaderState: Int {
+    case none
+    case start
+    case loading
+    case end
+}
+
 @objc public protocol LoaderProtocol: NSObjectProtocol {
     
     var sourceItem: SourceProtocol? { get set }
+    var state: LoaderState { get set }
     var progress: Progress? { get set }
     var error: Error? { get set }
+    var willLoadBlock: willLoadBlock! { get set }
+    var downloadProgressBlock: DownloadProgressBlock! { get set }
+    var completedBlock: CompletedBlock! { get set }
     
-//    var progress: (_ receivedSize: Int, _ expectedSize: Int) -> Void?
-    
+    func request() -> Void
     
 }
 
@@ -42,17 +61,12 @@ import UIKit
     
 }
 
-public typealias WebImageMediatorProgress = (_ receivedSize: Int, _ expectedSize: Int) -> Void
-public typealias WebImageMediatorCompleted = (_ image: UIImage, _ error: Error, _ finished: Bool) -> Void
-
 @objc public protocol WebImageMediatorProtocol: NSObjectProtocol {
     
     @discardableResult
-    func loadImage(url: URL, progress: WebImageMediatorProgress, completed: WebImageMediatorCompleted) -> Any?
+    func loadImage(url: URL?, progress: DownloadProgressBlock?, completed: CompletedBlock?) -> Any?
     @discardableResult
-    func cancelLoadImage(any: Any) -> Bool
-    @discardableResult
-    func cancelAll() -> Bool
+    func cancelLoadImage(with data: Any) -> Bool
     
 }
 
