@@ -15,7 +15,7 @@ open class BaseEntity: NSObject, SourceProtocol {
     public var sourceCornerRadius: CGFloat = 0
     public var thumbImage: UIImage?
         
-    public required init<T>(sourceView: T?, sourceRect: CGRect, thumbImage: UIImage?) where T : UIView {
+    public required init(sourceView: UIView?, sourceRect: CGRect, thumbImage: UIImage?) {
         self.sourceView = sourceView;
         self.thumbImage = thumbImage;
     }

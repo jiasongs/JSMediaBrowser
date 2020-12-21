@@ -19,13 +19,19 @@ open class ImageCell: BaseCell {
         contentView.addSubview(zoomImageView!)
     }
     
+    open override func prepareForReuse() -> Void {
+        super.prepareForReuse()
+        zoomImageView?.image = nil
+        zoomImageView?.livePhoto = nil
+    }
+    
     open override func layoutSubviews() {
         super.layoutSubviews()
         zoomImageView?.js_frameApplyTransform = self.contentView.bounds
     }
     
-    public override func updateCell<T: LoaderProtocol>(loaderEntity: T, at indexPath: IndexPath) {
-        super.updateCell(loaderEntity: loaderEntity, at: indexPath)
+    public override func updateCell(loaderEntity: LoaderProtocol, at index: Int) {
+        super.updateCell(loaderEntity: loaderEntity, at: index)
         guard let loaderEntity = loaderEntity as? ImageLoaderEntity else { return }
         if let sourceItem: ImageEntity = loaderEntity.sourceItem as? ImageEntity {
             if let imageURL = sourceItem.imageUrl {

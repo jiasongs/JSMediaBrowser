@@ -98,7 +98,8 @@ extension MediaBrowserView {
         self.reloadData()
         guard let numberOfItems = self.collectionView?.numberOfItems(inSection: 0) else { return }
         if index < numberOfItems {
-            self.collectionView?.scrollToItem(at: IndexPath(item: self.currentMediaIndex, section: 0), at: .centeredHorizontally, animated: animated)
+            let indexPath = IndexPath(item: self.currentMediaIndex, section: 0)
+            self.collectionView?.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: animated)
             self.collectionView?.layoutIfNeeded()
         }
     }
@@ -111,7 +112,8 @@ extension MediaBrowserView {
         self.collectionView?.register(cellClass, forCellWithReuseIdentifier: identifier)
     }
     
-    @objc open func dequeueReusableCell(withReuseIdentifier identifier: String, for indexPath: IndexPath) -> UICollectionViewCell {
+    @objc open func dequeueReusableCell(withReuseIdentifier identifier: String, for index: Int) -> UICollectionViewCell {
+        let indexPath = IndexPath(item: index, section: 0)
         return self.collectionView?.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) ?? UICollectionViewCell()
     }
     
@@ -147,7 +149,8 @@ extension MediaBrowserView {
                 self.collectionView?.frame = self.bounds
                 let numberOfItems = collectionView.numberOfItems(inSection: 0)
                 if self.currentMediaIndex < numberOfItems {
-                    collectionView.scrollToItem(at: IndexPath(item: self.currentMediaIndex, section: 0), at: .centeredHorizontally, animated: false)
+                    let indexPath = IndexPath(item: self.currentMediaIndex, section: 0)
+                    collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
                 }
                 self.isChangingCollectionViewBounds = false
             }
@@ -163,7 +166,7 @@ extension MediaBrowserView: UICollectionViewDataSource {
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        return self.dataSource?.mediaBrowserView(self, cellForItemAt: indexPath) ?? UICollectionViewCell()
+        return self.dataSource?.mediaBrowserView(self, cellForItemAt: indexPath.item) ?? UICollectionViewCell()
     }
     
 }
@@ -176,13 +179,13 @@ extension MediaBrowserView: UICollectionViewDelegateFlowLayout {
     
     public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if let delegate = self.delegate, delegate.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:willDisplay:forItemAt:))) {
-            delegate.mediaBrowserView?(self, willDisplay: cell, forItemAt: indexPath)
+            delegate.mediaBrowserView?(self, willDisplay: cell, forItemAt: indexPath.item)
         }
     }
     
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if let delegate = self.delegate, delegate.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:didEndDisplaying:forItemAt:))) {
-            delegate.mediaBrowserView?(self, didEndDisplaying: cell, forItemAt: indexPath)
+            delegate.mediaBrowserView?(self, didEndDisplaying: cell, forItemAt: indexPath.item)
         }
     }
     
@@ -195,7 +198,7 @@ extension MediaBrowserView: UIScrollViewDelegate {
             return
         }
         if let delegate = self.delegate, delegate.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:didScrollTo:))) {
-            delegate.mediaBrowserView?(self, didScrollTo: IndexPath(item: self.currentMediaIndex, section: 0))
+            delegate.mediaBrowserView?(self, didScrollTo: self.currentMediaIndex)
         }
     }
     
@@ -227,10 +230,10 @@ extension MediaBrowserView: UIScrollViewDelegate {
                 self.isNeededScrollToItem = false
                 self.currentMediaIndex = Int(index)
                 self.isNeededScrollToItem = true
-                if let delegate = self.delegate, delegate.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:willScrollHalf:toIndexPath:))) {
-                    let fromIndexPath = IndexPath(item: Int(round(self.previousIndexWhenScrolling)), section: 0)
-                    let toIndexPath = IndexPath(item: Int(index), section: 0)
-                    delegate.mediaBrowserView?(self, willScrollHalf: fromIndexPath, toIndexPath: toIndexPath)
+                if let delegate = self.delegate, delegate.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:willScrollHalf:toIndex:))) {
+                    let fromIndex = Int(round(self.previousIndexWhenScrolling))
+                    let toIndex = Int(index)
+                    delegate.mediaBrowserView?(self, willScrollHalf: fromIndex, toIndex: toIndex)
                 }
             }
         }

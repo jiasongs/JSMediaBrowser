@@ -200,7 +200,6 @@
 				7A23CDBB2582020A004B4033 /* Sorce */,
 				7A23CD5A2581F365004B4033 /* AppDelegate.swift */,
 				7A23CD5E2581F365004B4033 /* ViewController.swift */,
-				7A0633492585DC1200DADA21 /* DefaultWebImageMediator.swift */,
 				7AEF5DCC25837379006550CE /* OCExampleViewController.h */,
 				7AEF5DCD25837379006550CE /* OCExampleViewController.m */,
 				7AEF5DCA25837379006550CE /* JSMediaBrowserExample-Bridging-Header.h */,
@@ -221,6 +220,7 @@
 				7A0A4A5D2584FE5A00512729 /* General */,
 				7AEF5D8B2583240F006550CE /* MediaBrowserViewController.swift */,
 				7A0A4A64258506AE00512729 /* TransitionAnimator.swift */,
+				7A0633492585DC1200DADA21 /* DefaultWebImageMediator.swift */,
 			);
 			path = Sorce;
 			sourceTree = "<group>";

@@ -24,7 +24,7 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
         
     }
     
-    public func updateCell<T: LoaderProtocol>(loaderEntity: T, at indexPath: IndexPath) {
+    public func updateCell(loaderEntity: LoaderProtocol, at index: Int) {
         
     }
     

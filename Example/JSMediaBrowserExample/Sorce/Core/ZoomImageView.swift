@@ -22,9 +22,9 @@ public class ZoomImageView: ZoomBaseView {
         return imageView
     }()
     
-    private var isLivePhotoViewViewInitialized: Bool = false
+    private var isLivePhotoViewInitialized: Bool = false
     @objc private(set) lazy var livePhotoView: PHLivePhotoView = {
-        isLivePhotoViewViewInitialized = true
+        isLivePhotoViewInitialized = true
         let livePhotoView = PHLivePhotoView()
         livePhotoView.isHidden = true
         scrollView?.addSubview(livePhotoView)
@@ -42,31 +42,33 @@ public class ZoomImageView: ZoomBaseView {
     
     @objc public weak var image: UIImage? {
         didSet {
-            if isLivePhotoViewViewInitialized {
+            if image == nil && !isImageViewInitialized {
+                return
+            }
+            if isLivePhotoViewInitialized {
                 livePhotoView.isHidden = true
                 livePhotoView.livePhoto = nil
             }
-            if let image = self.image {
-                self.imageView.isHidden = false
-                self.imageView.image = image
-                self.imageView.js_frameApplyTransform = CGRect(origin: CGPoint.zero, size: image.size)
-                self.revertZooming()
-            }
+            self.imageView.isHidden = false
+            self.imageView.image = image
+            self.imageView.js_frameApplyTransform = CGRect(origin: CGPoint.zero, size: image?.size ?? CGSize.zero)
+            self.revertZooming()
         }
     }
     
     @objc public weak var livePhoto: PHLivePhoto? {
         didSet {
+            if livePhoto == nil && !isLivePhotoViewInitialized {
+                return
+            }
             if isImageViewInitialized {
                 imageView.isHidden = true
                 imageView.image = nil
             }
-            if let livePhoto = self.livePhoto {
-                self.livePhotoView.isHidden = false
-                self.livePhotoView.livePhoto = livePhoto
-                self.livePhotoView.js_frameApplyTransform = CGRect(origin: CGPoint.zero, size: livePhoto.size)
-                self.revertZooming()
-            }
+            self.livePhotoView.isHidden = false
+            self.livePhotoView.livePhoto = livePhoto
+            self.livePhotoView.js_frameApplyTransform = CGRect(origin: CGPoint.zero, size: livePhoto?.size ?? CGSize.zero)
+            self.revertZooming()
         }
     }
     
@@ -105,7 +107,7 @@ extension ZoomImageView {
             if (isImageViewInitialized && !imageView.isHidden) {
                 return imageView
             }
-            if (isLivePhotoViewViewInitialized && !livePhotoView.isHidden) {
+            if (isLivePhotoViewInitialized && !livePhotoView.isHidden) {
                 return livePhotoView
             }
             return nil

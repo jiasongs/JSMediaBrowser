@@ -17,14 +17,14 @@ enum TransitioningStyle: Int {
 @objc class MediaBrowserViewController: UIViewController {
     
     @objc open var browserView: MediaBrowserView?
-    @objc open var sourceItems: Array<BaseEntity>? {
+    @objc open var sourceItems: Array<SourceProtocol>? {
         didSet {
             var array: Array<BaseLoaderEntity> = Array()
             sourceItems?.forEach({ (item) in
                 if let _ = item as? ImageEntity {
                     let loader: ImageLoaderEntity = ImageLoaderEntity()
                     loader.sourceItem = item
-                    loader.webImageMediator = nil
+                    loader.webImageMediator = DefaultWebImageMediator()
                     array.append(loader)
                 }
             })
@@ -140,12 +140,12 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         return loaderItems?.count ?? 0
     }
     
-    func mediaBrowserView(_ browserView: MediaBrowserView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func mediaBrowserView(_ browserView: MediaBrowserView, cellForItemAt index: Int) -> UICollectionViewCell {
         var cell: BaseCell?
-        guard let loaderItem = loaderItems?[indexPath.item] else { return UICollectionViewCell() }
+        guard let loaderItem = loaderItems?[index] else { return UICollectionViewCell() }
         if let loaderItem = loaderItem as? ImageLoaderEntity, let _ = loaderItem.sourceItem as? ImageEntity {
-            cell = browserView.dequeueReusableCell(withReuseIdentifier: imageCellIdentifier, for: indexPath) as? BaseCell
-            cell?.updateCell(loaderEntity: loaderItem, at: indexPath)
+            cell = browserView.dequeueReusableCell(withReuseIdentifier: imageCellIdentifier, for: index) as? BaseCell
+            cell?.updateCell(loaderEntity: loaderItem, at: index)
         }
         return cell!
     }
@@ -154,24 +154,11 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
 
 extension MediaBrowserViewController: MediaBrowserViewDelegate {
     
-    func mediaBrowserView(_ browserView: MediaBrowserView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if let imageCell = cell as? ImageCell {
-            imageCell.zoomImageView?.revertZooming()
-        }
-        
-    }
-    
-    func mediaBrowserView(_ browserView: MediaBrowserView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if let imageCell = cell as? ImageCell {
-            imageCell.zoomImageView?.revertZooming()
-        }
-    }
-    
-    func mediaBrowserView(_ browserView: MediaBrowserView, willScrollHalf fromIndexPath: IndexPath, toIndexPath: IndexPath) {
-        if let loaderEntity = loaderItems?[fromIndexPath.item], let sourceItem = loaderEntity.sourceItem {
+    func mediaBrowserView(_ browserView: MediaBrowserView, willScrollHalf fromIndex: Int, toIndex: Int) {
+        if let loaderEntity = loaderItems?[fromIndex], let sourceItem = loaderEntity.sourceItem {
             sourceItem.sourceView?.isHidden = false
         }
-        if let loaderEntity = loaderItems?[toIndexPath.item], let sourceItem = loaderEntity.sourceItem {
+        if let loaderEntity = loaderItems?[toIndex], let sourceItem = loaderEntity.sourceItem {
             sourceItem.sourceView?.isHidden = true
         }
     }

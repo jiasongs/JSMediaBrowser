@@ -7,40 +7,45 @@
 
 import UIKit
 
-public protocol CellProtocol: NSObjectProtocol {
+@objc public protocol CellProtocol: NSObjectProtocol {
     
-    func updateCell<T: LoaderProtocol>(loaderEntity: T, at indexPath: IndexPath);
+    func updateCell(loaderEntity: LoaderProtocol, at index: Int);
     func updateLoading(receivedSize: Int, expectedSize: Int);
     
 }
 
-public protocol SourceProtocol: NSObjectProtocol {
+@objc public protocol SourceProtocol: NSObjectProtocol {
     
     var sourceRect: CGRect { get set }
     var sourceView: UIView? { get set }
     var sourceCornerRadius: CGFloat { get set }
     var thumbImage: UIImage? { get set }
     
-    init<T: UIView>(sourceView: T?, sourceRect: CGRect, thumbImage: UIImage?)
+    init(sourceView: UIView?, sourceRect: CGRect, thumbImage: UIImage?)
     
 }
 
-public protocol LoaderProtocol: NSObjectProtocol {
+@objc public protocol LoaderProtocol: NSObjectProtocol {
     
     var sourceItem: SourceProtocol? { get set }
+    var progress: Progress? { get set }
+    var error: Error? { get set }
+    
+//    var progress: (_ receivedSize: Int, _ expectedSize: Int) -> Void?
+    
     
 }
 
-public protocol ImageLoaderProtocol: LoaderProtocol {
+@objc public protocol ImageLoaderProtocol: LoaderProtocol {
     
     var webImageMediator: WebImageMediatorProtocol? { get set }
     
 }
 
-public typealias WebImageMediatorProgress = ((_ receivedSize: Int, _ expectedSize: Int) -> Void)
-public typealias WebImageMediatorCompleted = ((_ image: UIImage, _ error: Error, _ finished: Bool) -> Void)
+public typealias WebImageMediatorProgress = (_ receivedSize: Int, _ expectedSize: Int) -> Void
+public typealias WebImageMediatorCompleted = (_ image: UIImage, _ error: Error, _ finished: Bool) -> Void
 
-public protocol WebImageMediatorProtocol: NSObjectProtocol {
+@objc public protocol WebImageMediatorProtocol: NSObjectProtocol {
     
     @discardableResult
     func loadImage(url: URL, progress: WebImageMediatorProgress, completed: WebImageMediatorCompleted) -> Any?

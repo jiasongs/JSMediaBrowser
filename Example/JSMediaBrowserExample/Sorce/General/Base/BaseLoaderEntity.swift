@@ -11,6 +11,7 @@ import UIKit
 open class BaseLoaderEntity: NSObject, LoaderProtocol {
     
     public var sourceItem: SourceProtocol?
+    public var progress: Progress?
+    public var error: Error?
     
-
 }
