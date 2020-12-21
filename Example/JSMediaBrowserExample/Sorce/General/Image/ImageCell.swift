@@ -35,9 +35,9 @@ open class ImageCell: BaseCell {
         guard let loaderEntity = loaderEntity as? ImageLoaderEntity else { return }
         if let sourceItem = loaderEntity.sourceItem as? ImageEntity {
             if sourceItem.image != nil {
-                self.zoomImageView?.image = sourceItem.image;
+                self.zoomImageView?.image = sourceItem.image
             } else if sourceItem.thumbImage != nil {
-                self.zoomImageView?.image = sourceItem.thumbImage;
+                self.zoomImageView?.image = sourceItem.thumbImage
             }
         }
         loaderEntity.request()

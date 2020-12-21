@@ -26,7 +26,7 @@ class ImageLoaderEntity: BaseLoaderEntity, ImageLoaderProtocol {
         self.token = self.webImageMediator?.loadImage(url: sourceItem.imageUrl, progress: { (receivedSize: Int, expectedSize: Int) in
             self.state = .loading
             self.progress?.completedUnitCount = Int64(receivedSize)
-            self.progress?.totalUnitCount = Int64(expectedSize);
+            self.progress?.totalUnitCount = Int64(expectedSize)
             if let downloadProgress = self.downloadProgressBlock {
                 downloadProgress(receivedSize, expectedSize)
             }

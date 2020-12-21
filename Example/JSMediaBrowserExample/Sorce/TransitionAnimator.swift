@@ -131,8 +131,8 @@ extension TransitionAnimator {
                 /// 没有传thumbImage的时候再截图, 避免消耗资源, 转制版可能有些问题,
                 UIGraphicsBeginImageContextWithOptions(zoomContentViewBoundsInView.size, false, 0)
                 zoomContentView?.drawHierarchy(in: zoomContentViewBoundsInView, afterScreenUpdates: true)
-                imageView?.image = UIGraphicsGetImageFromCurrentImageContext();
-                UIGraphicsEndImageContext();
+                imageView?.image = UIGraphicsGetImageFromCurrentImageContext()
+                UIGraphicsEndImageContext()
             }
             /// 隐藏相关视图
             zoomView?.isHidden = true
