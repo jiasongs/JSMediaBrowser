@@ -190,11 +190,11 @@ extension TransitionAnimator {
             if !isPresenting {
                 sourceView?.isHidden = false
             }
+            delegate?.zoomView?.isHidden = false
+            
             imageView?.removeFromSuperview()
             imageView?.layer.removeAnimation(forKey: animationGroupKey)
             imageView?.image = nil // 释放资源
-            
-            delegate?.zoomView?.isHidden = false
         }
     }
     

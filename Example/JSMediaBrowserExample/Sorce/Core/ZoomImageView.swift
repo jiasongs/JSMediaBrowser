@@ -244,10 +244,9 @@ extension ZoomImageView {
         }
     }
     
-    @objc open func zoom(from gestureRecognizer: UIGestureRecognizer, animated: Bool) -> Void {
+    @objc open func zoom(to point: CGPoint, from view: UIView?, animated: Bool) -> Void {
         guard let scrollView = self.scrollView else { return }
         guard let cententView = self.contentView else { return }
-        let gesturePoint: CGPoint = gestureRecognizer.location(in: gestureRecognizer.view)
         // 如果图片被压缩了，则第一次放大到原图大小，第二次放大到最大倍数
         if (scrollView.zoomScale >= scrollView.maximumZoomScale) {
             self.setZoom(scale: scrollView.minimumZoomScale, animated: animated)
@@ -260,7 +259,7 @@ extension ZoomImageView {
                 // 如果当前显示原图，则放大到最大的大小
                 newZoomScale = scrollView.maximumZoomScale
             }
-            let tapPoint: CGPoint = cententView.convert(gesturePoint, from: gestureRecognizer.view)
+            let tapPoint: CGPoint = cententView.convert(point, from: view)
             var zoomRect: CGRect = CGRect.zero
             zoomRect.size.width = scrollView.bounds.width / newZoomScale
             zoomRect.size.height = scrollView.bounds.height / newZoomScale

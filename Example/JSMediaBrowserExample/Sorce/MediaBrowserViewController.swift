@@ -186,7 +186,8 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     
     @objc func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, doubleTouch gestureRecognizer: UITapGestureRecognizer) {
         if let imageCell = mediaBrowserView.currentMidiaCell as? ImageCell {
-            imageCell.zoomImageView?.zoom(from: gestureRecognizer, animated: true)
+            let gesturePoint: CGPoint = gestureRecognizer.location(in: gestureRecognizer.view)
+            imageCell.zoomImageView?.zoom(to: gesturePoint, from: gestureRecognizer.view, animated: true)
         }
     }
     
