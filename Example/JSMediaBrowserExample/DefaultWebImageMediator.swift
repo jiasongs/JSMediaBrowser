@@ -10,25 +10,25 @@ import SDWebImage
 
 @objc(MediaBrowserViewDefaultWebImageMediator)
 class DefaultWebImageMediator: NSObject, WebImageMediatorProtocol {
-
-    func loadImage(url: URL?, progress: WebImageMediatorDownloadProgress?, completed: WebImageMediatorCompleted?) -> Any? {
-        return SDWebImageManager.shared.loadImage(with: url, options: (SDWebImageOptions.refreshCached)) { (receivedSize: Int, expectedSize: Int, targetURL) in
-            if let progress = progress, receivedSize > 0, expectedSize > 0 {
-                progress(Int64(receivedSize), Int64(expectedSize))
+    
+    func setImage(for view: UIView?, url: URL?, thumbImage: UIImage?, setImageBlock: WebImageMediatorSetImageBlock?, progress: WebImageMediatorDownloadProgress?, completed: WebImageMediatorCompleted?) {
+        view?.sd_internalSetImage(with: url, placeholderImage: thumbImage, options: SDWebImageOptions.retryFailed, context: nil, setImageBlock: { (image: UIImage?, data: Data?, cacheType: SDImageCacheType, targetUrl: URL?) in
+            if let setImageBlock = setImageBlock {
+                setImageBlock(image, data)
             }
-        } completed: { (image, data, error, cacheType, finished, targetURL) in
-            if let completed = completed {
-                completed(image, error, finished)
+        }, progress: { (receivedSize: Int, expectedSize: Int, targetUrl: URL?) in
+            if let progressBlock = progress {
+                progressBlock(Int64(receivedSize), Int64(expectedSize))
             }
-        }
+        }, completed: { (image: UIImage?, data: Data?, error: Error?, cacheType: SDImageCacheType, finished: Bool, url: URL?) in
+            if let completedBlock = completed {
+                completedBlock(image, data, error, finished)
+            }
+        })
     }
     
-    func cancelLoadImage(with data: Any) -> Bool {
-        if let token = data as? SDWebImageCombinedOperation {
-            token.cancel()
-            return true
-        }
-        return false
+    func cancelImageRequest(for view: UIView?) {
+        view?.sd_cancelCurrentImageLoad()
     }
     
 }

@@ -24,9 +24,18 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
     }
     
     open func didInitialize() -> Void {
-        self.pieProgressView = PieProgressView()
-        self.pieProgressView?.isHidden = true
-        self.contentView.addSubview(self.pieProgressView!)
+        pieProgressView = PieProgressView()
+        pieProgressView?.tintColor = .white
+        contentView.addSubview(self.pieProgressView!)
+    }
+    
+    open override func prepareForReuse() -> Void {
+        super.prepareForReuse()
+        if let pieProgressView = self.pieProgressView {
+            contentView.bringSubviewToFront(pieProgressView)
+        }
+        pieProgressView?.isHidden = false
+        pieProgressView?.progress = 0.0
     }
     
     open override func layoutSubviews() {
@@ -37,18 +46,10 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
     }
     
     public func updateCell(loaderEntity: LoaderProtocol, at index: Int) {
-        loaderEntity.willBecomeDownloadBlock = { [weak self] (loader) in
-            self?.loaderEntityWillBecomeDownload(loader)
-        }
-        loaderEntity.downloadProgressBlock = { [weak self] (loader, progress: Progress?) -> Void in
-            self?.loaderEntity(loader, didReceive: progress)
-        }
-        loaderEntity.completedBlock = { [weak self] (loader, data: Any?, error: Error?, finished: Bool) -> Void in
-            self?.loaderEntity(loader, didCompletion: data, error: error, finished: finished)
-        }
+        
     }
     
-    public func loaderEntityWillBecomeDownload(_ loaderEntity: LoaderProtocol) {
+    public func loaderEntityRequestPrepare(_ loaderEntity: LoaderProtocol) {
         self.pieProgressView?.isHidden = false
     }
     
@@ -58,7 +59,7 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
         }
     }
     
-    public func loaderEntity(_ loaderEntity: LoaderProtocol, didCompletion data: Any?, error: Error?, finished: Bool) {
+    public func loaderEntity(_ loaderEntity: LoaderProtocol, didCompleted data: Any?, error: Error?, finished: Bool) {
         self.pieProgressView?.isHidden = true
     }
     

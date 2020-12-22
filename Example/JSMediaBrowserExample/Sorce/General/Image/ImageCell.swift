@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import SDWebImage
 
 @objc(MediaBrowserImageCell)
 open class ImageCell: BaseCell {
@@ -39,14 +38,26 @@ open class ImageCell: BaseCell {
             } else if sourceItem.thumbImage != nil {
                 self.zoomImageView?.image = sourceItem.thumbImage
             }
-        }
-        loaderEntity.request()
-    }
-    
-    public override func loaderEntity(_ loaderEntity: LoaderProtocol, didCompletion data: Any?, error: Error?, finished: Bool) {
-        super.loaderEntity(loaderEntity, didCompletion: data, error: error, finished: finished)
-        if let image = data as? UIImage {
-            self.zoomImageView?.image = image
+            self.pieProgressView?.isHidden = false
+            loaderEntity.webImageMediator?.setImage(for: zoomImageView, url: sourceItem.imageUrl, thumbImage: sourceItem.thumbImage, setImageBlock: { (image: UIImage?, imageData: Data?) in
+                self.zoomImageView?.image = image
+            }, progress: { (receivedSize: Int64, expectedSize: Int64) in
+                DispatchQueue.main.async {
+                    if receivedSize > 0 && expectedSize > 0 {
+                        let progress: Float = Float(receivedSize) / Float(expectedSize)
+                        self.pieProgressView?.setProgress(progress, animated: true)
+                    }
+                }
+            }, completed: { (image: UIImage?, imageData: Data?, error: Error?, finished: Bool) in
+                DispatchQueue.main.async {
+                    self.pieProgressView?.isHidden = true
+                    if error == nil && image != nil {
+                        self.zoomImageView?.image = image
+                    }
+                }
+            })
+        } else {
+            print("12121213")
         }
     }
     

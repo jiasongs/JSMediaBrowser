@@ -14,7 +14,7 @@ open class BaseLoaderEntity: NSObject, LoaderProtocol {
     public var state: LoaderState = .none
     public var progress: Progress?
     public var error: Error?
-    public var willBecomeDownloadBlock: WillBecomeDownloadBlock?
+    public var prepareBlock: PrepareBlock?
     public var downloadProgressBlock: DownloadProgressBlock?
     public var completedBlock: CompletedBlock?
     
@@ -24,11 +24,13 @@ open class BaseLoaderEntity: NSObject, LoaderProtocol {
     }
     
     open func didInitialize() -> Void {
-        self.progress = Progress(totalUnitCount: 0)
+        self.progress = Progress.current()
     }
     
-    public func request() -> Void {
-        
+    public func request(prepare: PrepareBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) -> Void {
+        self.prepareBlock = prepare
+        self.downloadProgressBlock = downloadProgress
+        self.completedBlock = completed
     }
     
 }
