@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7A03EFF82591BE530029C59F /* data.json in Resources */ = {isa = PBXBuildFile; fileRef = 7A03EFF72591BE530029C59F /* data.json */; };
+		7A03EFF92591BE530029C59F /* data.json in Resources */ = {isa = PBXBuildFile; fileRef = 7A03EFF72591BE530029C59F /* data.json */; };
 		7A06334A2585DC1200DADA21 /* DefaultWebImageMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0633492585DC1200DADA21 /* DefaultWebImageMediator.swift */; };
 		7A06334B2585DC1200DADA21 /* DefaultWebImageMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0633492585DC1200DADA21 /* DefaultWebImageMediator.swift */; };
 		7A0A4A222584EAC400512729 /* ImageEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0A4A212584EAC400512729 /* ImageEntity.swift */; };
@@ -62,6 +64,7 @@
 /* Begin PBXFileReference section */
 		05CE0DCC7E9D19C545FB46B6 /* Pods-JSMediaBrowserExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JSMediaBrowserExample.release.xcconfig"; path = "Target Support Files/Pods-JSMediaBrowserExample/Pods-JSMediaBrowserExample.release.xcconfig"; sourceTree = "<group>"; };
 		2CA5FEFE7F71BC6264231527 /* Pods-JSMediaBrowserExampleMacOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JSMediaBrowserExampleMacOS.debug.xcconfig"; path = "Target Support Files/Pods-JSMediaBrowserExampleMacOS/Pods-JSMediaBrowserExampleMacOS.debug.xcconfig"; sourceTree = "<group>"; };
+		7A03EFF72591BE530029C59F /* data.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = data.json; sourceTree = "<group>"; };
 		7A0633492585DC1200DADA21 /* DefaultWebImageMediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultWebImageMediator.swift; sourceTree = "<group>"; };
 		7A0A4A212584EAC400512729 /* ImageEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEntity.swift; sourceTree = "<group>"; };
 		7A0A4A282584EDC200512729 /* BaseLoaderEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseLoaderEntity.swift; sourceTree = "<group>"; };
@@ -201,6 +204,7 @@
 				7A0633492585DC1200DADA21 /* DefaultWebImageMediator.swift */,
 				7A23CD5A2581F365004B4033 /* AppDelegate.swift */,
 				7A23CD5E2581F365004B4033 /* ViewController.swift */,
+				7A03EFF72591BE530029C59F /* data.json */,
 				7AEF5DCC25837379006550CE /* OCExampleViewController.h */,
 				7AEF5DCD25837379006550CE /* OCExampleViewController.m */,
 				7AEF5DCA25837379006550CE /* JSMediaBrowserExample-Bridging-Header.h */,
@@ -331,6 +335,7 @@
 				7A23CD672581F367004B4033 /* LaunchScreen.storyboard in Resources */,
 				7A23CD642581F367004B4033 /* Assets.xcassets in Resources */,
 				7A23CD622581F365004B4033 /* Main.storyboard in Resources */,
+				7A03EFF82591BE530029C59F /* data.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -341,6 +346,7 @@
 				7A23CD7A2581F3C1004B4033 /* LaunchScreen.storyboard in Resources */,
 				7A23CD7B2581F3C1004B4033 /* Assets.xcassets in Resources */,
 				7A23CD7C2581F3C1004B4033 /* Main.storyboard in Resources */,
+				7A03EFF92591BE530029C59F /* data.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

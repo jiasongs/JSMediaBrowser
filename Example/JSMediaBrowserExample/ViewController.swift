@@ -17,20 +17,19 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        SDImageCache.shared.clearMemory()
+        SDImageCache.shared.clearDisk(onCompletion: nil)
         self.view.backgroundColor = .black
-        self.dataSource = ["https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=1466376595,3460773628&fm=26&gp=0.jpg",
-                           "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=643903962,2695937018&fm=26&gp=0.jpg",
-                           "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3121164654,816590068&fm=26&gp=0.jpg",
-                           "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=622096340,3782403238&fm=26&gp=0.jpg",
-                           "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=349365238,2569710698&fm=26&gp=0.jpg",
-                           "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1566929321,2427730641&fm=26&gp=0.jpg",
-                           "https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1607418626&di=8c9d107764f8873ca1f22997094abeac&src=http://b-ssl.duitang.com/uploads/item/201807/13/20180713120020_umtgg.thumb.700_0.jpg"]
+        if let data = try? Data(contentsOf: NSURL.fileURL(withPath: Bundle.main.path(forResource: "data", ofType: "json") ?? "")) {
+            let array = try? JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.fragmentsAllowed) as? Array<String>
+            self.dataSource = array ?? []
+        }
         self.floatLayoutView = QMUIFloatLayoutView()
         self.floatLayoutView!.itemMargins = UIEdgeInsets(top: QMUIHelper.pixelOne(), left: QMUIHelper.pixelOne(), bottom: 0, right: 0);
         for item: String in self.dataSource {
             let button = QMUIButton()
-//            button.layer.cornerRadius = 10;
-//            button.layer.masksToBounds = true;
+            //            button.layer.cornerRadius = 10;
+            //            button.layer.masksToBounds = true;
             button.sd_setImage(with: URL(string: item)!, for: UIControl.State.normal, completed: nil)
             button.imageView?.contentMode = .scaleAspectFill
             button.addTarget(self, action: #selector(self.handleImageButtonEvent(sender:)), for: UIControl.Event.touchUpInside)
@@ -65,7 +64,7 @@ class ViewController: UIViewController {
                 imageEntity.sourceCornerRadius = button.layer.cornerRadius
                 sourceItems.append(imageEntity)
             }
-         }
+        }
         browser.sourceItems = sourceItems
         browser.show(from: self, animated: true)
     }

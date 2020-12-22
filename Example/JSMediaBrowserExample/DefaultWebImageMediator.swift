@@ -12,8 +12,8 @@ import SDWebImage
 class DefaultWebImageMediator: NSObject, WebImageMediatorProtocol {
 
     func loadImage(url: URL?, progress: WebImageMediatorDownloadProgress?, completed: WebImageMediatorCompleted?) -> Any? {
-        return SDWebImageManager.shared.loadImage(with: url, options: SDWebImageOptions.refreshCached) { (receivedSize: Int, expectedSize: Int, targetURL) in
-            if let progress = progress {
+        return SDWebImageManager.shared.loadImage(with: url, options: (SDWebImageOptions.refreshCached)) { (receivedSize: Int, expectedSize: Int, targetURL) in
+            if let progress = progress, receivedSize > 0, expectedSize > 0 {
                 progress(Int64(receivedSize), Int64(expectedSize))
             }
         } completed: { (image, data, error, cacheType, finished, targetURL) in
