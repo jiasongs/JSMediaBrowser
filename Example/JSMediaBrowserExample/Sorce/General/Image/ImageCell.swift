@@ -41,17 +41,12 @@ open class ImageCell: BaseCell {
             }
         }
         loaderEntity.request()
-        loaderEntity.willLoadBlock = {
-            self.pieProgressView?.isHidden = false
-        }
-        loaderEntity.downloadProgressBlock = { (receivedSize: Int, expectedSize: Int) -> Void in
-            self.pieProgressView?.setProgress(Float(receivedSize / expectedSize), animated: true)
-        }
-        loaderEntity.completedBlock = { (data: Any?, error: Error?, finished: Bool) -> Void in
-            self.pieProgressView?.isHidden = true
-//            if let image = data as? UIImage {
-//                sourceItem.image = image
-//            }
+    }
+    
+    public override func loaderEntity(_ loaderEntity: LoaderProtocol, didCompletion data: Any?, error: Error?, finished: Bool) {
+        super.loaderEntity(loaderEntity, didCompletion: data, error: error, finished: finished)
+        if let image = data as? UIImage {
+            self.zoomImageView?.image = image
         }
     }
     

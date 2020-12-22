@@ -59,7 +59,8 @@ class ViewController: UIViewController {
         var sourceItems: Array<ImageEntity> = [];
         for (index, urlString) in self.dataSource.enumerated() {
             if let button: QMUIButton = self.floatLayoutView.subviews[index] as? QMUIButton {
-                let imageEntity = ImageEntity(sourceView: button, sourceRect: CGRect.zero, thumbImage: button.image(for: .normal))
+                // button.image(for: .normal)
+                let imageEntity = ImageEntity(sourceView: button, sourceRect: CGRect.zero, thumbImage: nil)
                 imageEntity.imageUrl = URL(string: urlString)
                 imageEntity.sourceCornerRadius = button.layer.cornerRadius
                 sourceItems.append(imageEntity)

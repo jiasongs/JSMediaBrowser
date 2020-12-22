@@ -63,6 +63,7 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             if (!sourceRect.isEmpty && !sourceRect.intersects(needViewController?.view.bounds ?? CGRect.zero)) {
                 sourceRect = CGRect.zero
             }
+            sourceView?.isHidden = true
         }
         
         let containerView: UIView = transitionContext.containerView
@@ -86,7 +87,7 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             }
             presentingViewController?.beginAppearanceTransition(true, animated: true)
         }
-        
+    
         let zoomContentViewFrame = self.delegate?.zoomContentView?.frame ?? CGRect.zero
         style = style == .zoom && (sourceRect.isEmpty || zoomContentViewFrame.isEmpty) ? .fade : style
         
@@ -136,7 +137,6 @@ extension TransitionAnimator {
             }
             /// 隐藏相关视图
             zoomView?.isHidden = true
-            sourceView?.isHidden = true
             /// 添加imageView
             if let imageView = self.imageView {
                 imageView.removeFromSuperview()
@@ -187,14 +187,14 @@ extension TransitionAnimator {
         if style == .fade {
             needViewController?.view.alpha = 1
         } else if style == .zoom {
-            if !isPresenting {
-                sourceView?.isHidden = false
-            }
             delegate?.zoomView?.isHidden = false
             
             imageView?.removeFromSuperview()
             imageView?.layer.removeAnimation(forKey: animationGroupKey)
             imageView?.image = nil // 释放资源
+        }
+        if !isPresenting {
+            sourceView?.isHidden = false
         }
     }
     

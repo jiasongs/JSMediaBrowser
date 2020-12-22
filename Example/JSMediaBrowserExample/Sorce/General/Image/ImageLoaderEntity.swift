@@ -19,24 +19,28 @@ class ImageLoaderEntity: BaseLoaderEntity, ImageLoaderProtocol {
             return
         }
         guard let sourceItem = self.sourceItem as? ImageEntity else { return }
-        if let willLoadBlock = self.willLoadBlock {
-            willLoadBlock()
-        }
         self.state = .start
-        self.token = self.webImageMediator?.loadImage(url: sourceItem.imageUrl, progress: { (receivedSize: Int, expectedSize: Int) in
-            self.state = .loading
-            self.progress?.completedUnitCount = Int64(receivedSize)
-            self.progress?.totalUnitCount = Int64(expectedSize)
-            if let downloadProgress = self.downloadProgressBlock {
-                downloadProgress(receivedSize, expectedSize)
+        if let willBecomeDownloadBlock = self.willBecomeDownloadBlock {
+            willBecomeDownloadBlock(self)
+        }
+        self.token = self.webImageMediator?.loadImage(url: sourceItem.imageUrl, progress: { (receivedSize: Int64, expectedSize: Int64) in
+            DispatchQueue.main.async {
+                self.state = .loading
+                self.progress?.completedUnitCount = Int64(receivedSize)
+                self.progress?.totalUnitCount = Int64(expectedSize)
+                if let downloadProgress = self.downloadProgressBlock {
+                    downloadProgress(self, self.progress)
+                }
             }
         }, completed: { (data: Any?, error: Error?, finished: Bool) in
-            self.state = .end
-            if let image = data as? UIImage {
-                sourceItem.image = image
-            }
-            if let completedBlock = self.completedBlock {
-                completedBlock(data, error, finished)
+            DispatchQueue.main.async {
+                self.state = .end
+                if let image = data as? UIImage {
+                    sourceItem.image = image
+                }
+                if let completedBlock = self.completedBlock {
+                    completedBlock(self, data, error, finished)
+                }
             }
         })
     }

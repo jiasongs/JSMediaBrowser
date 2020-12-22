@@ -11,12 +11,10 @@ import UIKit
     
     func updateCell(loaderEntity: LoaderProtocol, at index: Int)
     
-//    func willLoad()
-//    func downloadProgress()
-//    func completed()
-//    public var willLoadBlock: willLoadBlock?
-//    public var downloadProgressBlock: DownloadProgressBlock?
-//    public var completedBlock: CompletedBlock?
+    func loaderEntityWillBecomeDownload(_ loaderEntity: LoaderProtocol)
+    func loaderEntity(_ loaderEntity: LoaderProtocol, didReceive progress: Progress?)
+    func loaderEntity(_ loaderEntity: LoaderProtocol, didCompletion data: Any?, error: Error?, finished: Bool)
+    
 }
 
 @objc public protocol SourceProtocol: NSObjectProtocol {
@@ -30,9 +28,9 @@ import UIKit
     
 }
 
-public typealias willLoadBlock = () -> Void
-public typealias DownloadProgressBlock = (_ receivedSize: Int, _ expectedSize: Int) -> Void
-public typealias CompletedBlock = (_ data: Any?, _ error: Error?, _ finished: Bool) -> Void
+public typealias WillBecomeDownloadBlock = (_ loader: LoaderProtocol) -> Void
+public typealias DownloadProgressBlock = (_ loader: LoaderProtocol, _ progress: Progress?) -> Void
+public typealias CompletedBlock = (_ loader: LoaderProtocol, _ data: Any?, _ error: Error?, _ finished: Bool) -> Void
 
 @objc public enum LoaderState: Int {
     case none
@@ -47,9 +45,9 @@ public typealias CompletedBlock = (_ data: Any?, _ error: Error?, _ finished: Bo
     var state: LoaderState { get set }
     var progress: Progress? { get set }
     var error: Error? { get set }
-    var willLoadBlock: willLoadBlock! { get set }
-    var downloadProgressBlock: DownloadProgressBlock! { get set }
-    var completedBlock: CompletedBlock! { get set }
+    var willBecomeDownloadBlock: WillBecomeDownloadBlock? { get set }
+    var downloadProgressBlock: DownloadProgressBlock? { get set }
+    var completedBlock: CompletedBlock? { get set }
     
     func request() -> Void
     
@@ -61,10 +59,13 @@ public typealias CompletedBlock = (_ data: Any?, _ error: Error?, _ finished: Bo
     
 }
 
+public typealias WebImageMediatorDownloadProgress = (_ receivedSize: Int64, _ expectedSize: Int64) -> Void
+public typealias WebImageMediatorCompleted = (_ data: Any?, _ error: Error?, _ finished: Bool) -> Void
+
 @objc public protocol WebImageMediatorProtocol: NSObjectProtocol {
     
     @discardableResult
-    func loadImage(url: URL?, progress: DownloadProgressBlock?, completed: CompletedBlock?) -> Any?
+    func loadImage(url: URL?, progress: WebImageMediatorDownloadProgress?, completed: WebImageMediatorCompleted?) -> Any?
     @discardableResult
     func cancelLoadImage(with data: Any) -> Bool
     

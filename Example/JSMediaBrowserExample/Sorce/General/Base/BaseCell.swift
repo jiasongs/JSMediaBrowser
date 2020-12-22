@@ -10,6 +10,7 @@ import UIKit
 @objc(MediaBrowserBaseCell)
 open class BaseCell: UICollectionViewCell, CellProtocol {
     
+    
     public var pieProgressView: PieProgressView?
     
     override init(frame: CGRect) {
@@ -36,6 +37,29 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
     }
     
     public func updateCell(loaderEntity: LoaderProtocol, at index: Int) {
+        loaderEntity.willBecomeDownloadBlock = { [weak self] (loader) in
+            self?.loaderEntityWillBecomeDownload(loader)
+        }
+        loaderEntity.downloadProgressBlock = { [weak self] (loader, progress: Progress?) -> Void in
+            self?.loaderEntity(loader, didReceive: progress)
+        }
+        loaderEntity.completedBlock = { [weak self] (loader, data: Any?, error: Error?, finished: Bool) -> Void in
+            self?.loaderEntity(loader, didCompletion: data, error: error, finished: finished)
+        }
+    }
+    
+    public func loaderEntityWillBecomeDownload(_ loaderEntity: LoaderProtocol) {
+        self.pieProgressView?.isHidden = false
+    }
+    
+    public func loaderEntity(_ loaderEntity: LoaderProtocol, didReceive progress: Progress?) {
+        if let progress = progress {
+            self.pieProgressView?.setProgress(Float(progress.completedUnitCount / progress.totalUnitCount), animated: true)
+        }
+    }
+    
+    public func loaderEntity(_ loaderEntity: LoaderProtocol, didCompletion data: Any?, error: Error?, finished: Bool) {
+        self.pieProgressView?.isHidden = true
     }
     
 }

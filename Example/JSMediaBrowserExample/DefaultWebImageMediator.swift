@@ -11,10 +11,10 @@ import SDWebImage
 @objc(MediaBrowserViewDefaultWebImageMediator)
 class DefaultWebImageMediator: NSObject, WebImageMediatorProtocol {
 
-    func loadImage(url: URL?, progress: DownloadProgressBlock?, completed: CompletedBlock?) -> Any? {
-        return SDWebImageManager.shared.loadImage(with: url, options: SDWebImageOptions(rawValue: 0)) { (receivedSize, expectedSize, targetURL) in
+    func loadImage(url: URL?, progress: WebImageMediatorDownloadProgress?, completed: WebImageMediatorCompleted?) -> Any? {
+        return SDWebImageManager.shared.loadImage(with: url, options: SDWebImageOptions.refreshCached) { (receivedSize: Int, expectedSize: Int, targetURL) in
             if let progress = progress {
-                progress(receivedSize, expectedSize)
+                progress(Int64(receivedSize), Int64(expectedSize))
             }
         } completed: { (image, data, error, cacheType, finished, targetURL) in
             if let completed = completed {

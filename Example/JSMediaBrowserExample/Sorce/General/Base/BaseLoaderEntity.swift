@@ -14,7 +14,7 @@ open class BaseLoaderEntity: NSObject, LoaderProtocol {
     public var state: LoaderState = .none
     public var progress: Progress?
     public var error: Error?
-    public var willLoadBlock: willLoadBlock?
+    public var willBecomeDownloadBlock: WillBecomeDownloadBlock?
     public var downloadProgressBlock: DownloadProgressBlock?
     public var completedBlock: CompletedBlock?
     
