@@ -26,6 +26,8 @@ public enum TransitioningStyle: Int {
                     loader.sourceItem = item
                     if let buildBlock = self.buildWebImageMediatorBlock {
                         loader.webImageMediator = buildBlock(self, item)
+                    } else if let webImageMediatorClass: WebImageMediatorProtocol = MediaBrowserAppearance.appearance.webImageMediatorClass {
+                        loader.webImageMediator = webImageMediatorClass()
                     }
                     array.append(loader)
                 }

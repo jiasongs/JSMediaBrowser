@@ -9,8 +9,8 @@ import UIKit
 
 @objc open class MediaBrowserAppearance: NSObject {
     
-    static let appearance = MediaBrowserAppearance()
+    @objc public static let appearance = MediaBrowserAppearance()
     
-   
+    @objc open var webImageMediatorClass: AnyClass<WebImageMediatorProtocol>?
     
 }

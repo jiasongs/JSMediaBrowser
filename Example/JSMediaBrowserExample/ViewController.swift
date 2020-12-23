@@ -16,10 +16,20 @@ class ViewController: UIViewController {
     var floatLayoutView: QMUIFloatLayoutView!
     var dataSource: Array<String> = []
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibName, bundle: nibBundleOrNil)
         SDImageCache.shared.clearMemory()
         SDImageCache.shared.clearDisk(onCompletion: nil)
+        MediaBrowserAppearance.appearance
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
         self.view.backgroundColor = .black
         if let data = try? Data(contentsOf: NSURL.fileURL(withPath: Bundle.main.path(forResource: "data", ofType: "json") ?? "")) {
             let array = try? JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.fragmentsAllowed) as? Array<String>
