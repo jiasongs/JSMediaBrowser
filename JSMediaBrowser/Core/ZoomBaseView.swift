@@ -1,25 +1,25 @@
 //
 //  ZoomBaseView.swift
-//  JSMediaBrowserExample
+//  JSMediaBrowser
 //
 //  Created by jiasong on 2020/12/11.
 //
 
 import UIKit
 
-public class ZoomBaseView: UIView {
+open class ZoomBaseView: UIView {
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
         self.didInitialize(frame: frame)
     }
     
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         super.init(coder: coder)
         self.didInitialize(frame: CGRect.zero)
     }
     
-    public func didInitialize(frame: CGRect) -> Void {
+    func didInitialize(frame: CGRect) -> Void {
         
     }
     

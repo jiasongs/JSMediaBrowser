@@ -1,6 +1,6 @@
 //
 //  MediaBrowserView.swift
-//  JSMediaBrowserExample
+//  JSMediaBrowser
 //
 //  Created by jiasong on 2020/12/10.
 //
@@ -8,7 +8,7 @@
 import UIKit
 import JSCoreKit
 
-public class MediaBrowserView: UIView {
+open class MediaBrowserView: UIView {
     
     @objc public weak var dataSource: MediaBrowserViewDataSource?
     @objc public weak var delegate: MediaBrowserViewDelegate?
@@ -50,7 +50,7 @@ public class MediaBrowserView: UIView {
         self.didInitialize(frame: frame)
     }
     
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         super.init(coder: coder)
         self.didInitialize(frame: CGRect.zero)
     }

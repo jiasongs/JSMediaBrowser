@@ -7,6 +7,7 @@
 
 import UIKit
 import SDWebImage
+import JSMediaBrowser
 
 @objc(MediaBrowserViewDefaultWebImageMediator)
 class DefaultWebImageMediator: NSObject, WebImageMediatorProtocol {

@@ -1,6 +1,6 @@
 //
 //  BaseCell.swift
-//  JSMediaBrowserExample
+//  JSMediaBrowser
 //
 //  Created by jiasong on 2020/12/12.
 //
@@ -9,7 +9,6 @@ import UIKit
 
 @objc(MediaBrowserBaseCell)
 open class BaseCell: UICollectionViewCell, CellProtocol {
-    
     
     public var pieProgressView: PieProgressView?
     
@@ -46,21 +45,41 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
     }
     
     public func updateCell(loaderEntity: LoaderProtocol, at index: Int) {
+        self.pieProgressView?.isHidden = false
+        loaderEntity.request(for: self.contentView) { [weak self](loader: LoaderProtocol, object: Any?, data: Data?) in
+            self?.loaderEntity(loader, setData: object, data: data)
+        } downloadProgress: { [weak self](loader: LoaderProtocol, progress: Progress?) in
+            self?.loaderEntity(loader, didReceive: progress)
+        } completed: { [weak self](loader: LoaderProtocol, object: Any?, data: Data?, error: Error?, finished: Bool) in
+            self?.loaderEntity(loader, didCompleted: object, data: data, error: error, finished: finished)
+        }
+    }
+    
+    public func loaderEntity(_ loaderEntity: LoaderProtocol, setData object: Any?, data: Data?) {
         
     }
     
-    public func loaderEntityRequestPrepare(_ loaderEntity: LoaderProtocol) {
-        self.pieProgressView?.isHidden = false
-    }
-    
     public func loaderEntity(_ loaderEntity: LoaderProtocol, didReceive progress: Progress?) {
+        if let pieProgressView = self.pieProgressView, pieProgressView.isHidden {
+            pieProgressView.isHidden = true
+        }
         if let progress = progress {
             self.pieProgressView?.setProgress(Float(progress.fractionCompleted), animated: true)
         }
     }
     
-    public func loaderEntity(_ loaderEntity: LoaderProtocol, didCompleted data: Any?, error: Error?, finished: Bool) {
-        self.pieProgressView?.isHidden = true
+    public func loaderEntity(_ loaderEntity: LoaderProtocol, didCompleted object: Any?, data: Data?, error: Error?, finished: Bool) {
+        if error != nil {
+            /// 显示错误图
+            return
+        }
+        if object != nil {
+            self.pieProgressView?.isHidden = true
+        }
+    }
+    
+    deinit {
+        
     }
     
 }

@@ -1,6 +1,6 @@
 //
 //  MediaBrowserImageEntity.swift
-//  JSMediaBrowserExample
+//  JSMediaBrowser
 //
 //  Created by jiasong on 2020/12/12.
 //

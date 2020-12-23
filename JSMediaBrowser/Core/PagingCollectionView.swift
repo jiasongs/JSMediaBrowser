@@ -1,20 +1,20 @@
 //
 //  PagingCollectionView.swift
-//  JSMediaBrowserExample
+//  JSMediaBrowser
 //
 //  Created by jiasong on 2020/12/10.
 //
 
 import UIKit
 
-class PagingCollectionView: UICollectionView {
+open class PagingCollectionView: UICollectionView {
     
     override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: layout)
         self.didInitialize()
     }
     
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         super.init(coder: coder)
         self.didInitialize()
     }

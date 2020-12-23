@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         #if !targetEnvironment(macCatalyst)
-        NSObject.addClassNames(toWhitelist: ["JSMediaBrowserExample.MediaBrowserViewController"])
+//        NSObject.addClassNames(toWhitelist: ["JSMediaBrowserExample.MediaBrowserViewController"])
         #endif
         return true
     }

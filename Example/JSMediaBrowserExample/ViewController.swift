@@ -9,6 +9,7 @@ import UIKit
 import QMUIKit
 import SDWebImage
 import SnapKit
+import JSMediaBrowser
 
 class ViewController: UIViewController {
     
@@ -54,12 +55,14 @@ class ViewController: UIViewController {
     
     @objc func handleImageButtonEvent(sender: QMUIButton) -> Void {
         let browser: MediaBrowserViewController = MediaBrowserViewController()
+        browser.buildWebImageMediatorBlock = { (browserVC: MediaBrowserViewController, sourceItem: SourceProtocol) -> WebImageMediatorProtocol in
+            return DefaultWebImageMediator()
+        }
         browser.browserView?.currentMediaIndex = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
         var sourceItems: Array<ImageEntity> = [];
         for (index, urlString) in self.dataSource.enumerated() {
             if let button: QMUIButton = self.floatLayoutView.subviews[index] as? QMUIButton {
-                // button.image(for: .normal)
-                let imageEntity = ImageEntity(sourceView: button, sourceRect: CGRect.zero, thumbImage: nil)
+                let imageEntity = ImageEntity(sourceView: button, sourceRect: CGRect.zero, thumbImage: button.image(for: .normal))
                 imageEntity.imageUrl = URL(string: urlString)
                 imageEntity.sourceCornerRadius = button.layer.cornerRadius
                 sourceItems.append(imageEntity)

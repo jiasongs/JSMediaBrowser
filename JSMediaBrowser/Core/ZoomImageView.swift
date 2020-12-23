@@ -1,6 +1,6 @@
 //
 //  ZoomImageView.swift
-//  JSMediaBrowserExample
+//  JSMediaBrowser
 //
 //  Created by jiasong on 2020/12/10.
 //
@@ -9,7 +9,7 @@ import UIKit
 import PhotosUI
 import JSCoreKit
 
-public class ZoomImageView: ZoomBaseView {
+open class ZoomImageView: ZoomBaseView {
     
     @objc private(set) var scrollView: UIScrollView?
     
@@ -74,7 +74,7 @@ public class ZoomImageView: ZoomBaseView {
     
     @objc public var enabledZoom: Bool = true
     
-    public override func didInitialize(frame: CGRect) -> Void {
+    override func didInitialize(frame: CGRect) -> Void {
         super.didInitialize(frame: frame)
         self.contentMode = .center
         

@@ -1,6 +1,6 @@
 //
 //  BaseLoaderEntity.swift
-//  JSMediaBrowserExample
+//  JSMediaBrowser
 //
 //  Created by jiasong on 2020/12/12.
 //
@@ -14,9 +14,6 @@ open class BaseLoaderEntity: NSObject, LoaderProtocol {
     public var state: LoaderState = .none
     public var progress: Progress?
     public var error: Error?
-    public var prepareBlock: PrepareBlock?
-    public var downloadProgressBlock: DownloadProgressBlock?
-    public var completedBlock: CompletedBlock?
     
     public override init() {
         super.init()
@@ -24,13 +21,18 @@ open class BaseLoaderEntity: NSObject, LoaderProtocol {
     }
     
     open func didInitialize() -> Void {
-        self.progress = Progress.current()
+        self.progress = Progress(totalUnitCount: -1)
     }
     
-    public func request(prepare: PrepareBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) -> Void {
-        self.prepareBlock = prepare
-        self.downloadProgressBlock = downloadProgress
-        self.completedBlock = completed
+    public func request(for view: UIView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) {
+        self.state = .start
+        self.error = nil
+        self.progress?.completedUnitCount = 0
+        self.progress?.totalUnitCount = -1
+    }
+    
+    public func cancelRequest(for view: UIView) {
+        
     }
     
 }

@@ -1,13 +1,13 @@
 //
 //  PagingLayout.swift
-//  JSMediaBrowserExample
+//  JSMediaBrowser
 //
 //  Created by jiasong on 2020/12/10.
 //
 
 import UIKit
 
-class PagingLayout: UICollectionViewFlowLayout {
+open class PagingLayout: UICollectionViewFlowLayout {
     
     @objc public var pageSpacing: CGFloat = 10
     private var finalItemSize: CGSize = CGSize.zero
@@ -17,7 +17,7 @@ class PagingLayout: UICollectionViewFlowLayout {
         self.didInitialize()
     }
     
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         super.init(coder: coder)
         self.didInitialize()
     }
@@ -33,7 +33,7 @@ class PagingLayout: UICollectionViewFlowLayout {
 
 extension PagingLayout {
     
-    override func prepare() {
+    open override func prepare() {
         super.prepare()
         var itemSize: CGSize = self.itemSize
         guard let collectionView = self.collectionView else { return }
@@ -45,7 +45,7 @@ extension PagingLayout {
         self.finalItemSize = itemSize
     }
     
-    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+    open override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         var attributesArray: Array<UICollectionViewLayoutAttributes> = Array()
         let superAttributesArray: Array<UICollectionViewLayoutAttributes> = super.layoutAttributesForElements(in: rect) ?? []
         let halfWidth: CGFloat = self.finalItemSize.width / 2.0
@@ -60,7 +60,7 @@ extension PagingLayout {
         return attributesArray
     }
     
-    override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
+    open override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
         return true
     }
     
