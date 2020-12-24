@@ -244,18 +244,18 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
 
 extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     
-    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, singleTouch gestureRecognizer: UITapGestureRecognizer) {
+    public func mediaBrowserView(_ browserView: MediaBrowserView, singleTouch gestureRecognizer: UITapGestureRecognizer) {
         self.hide(animated: true)
     }
     
-    @objc public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, doubleTouch gestureRecognizer: UITapGestureRecognizer) {
-        if let imageCell = mediaBrowserView.currentPageCell as? ImageCell {
+    @objc public func mediaBrowserView(_ browserView: MediaBrowserView, doubleTouch gestureRecognizer: UITapGestureRecognizer) {
+        if let imageCell = browserView.currentPageCell as? ImageCell {
             let gesturePoint: CGPoint = gestureRecognizer.location(in: gestureRecognizer.view)
             imageCell.zoomImageView?.zoom(to: gesturePoint, from: gestureRecognizer.view, animated: true)
         }
     }
     
-    @objc public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, longPress gestureRecognizer: UILongPressGestureRecognizer) {
+    @objc public func mediaBrowserView(_ browserView: MediaBrowserView, longPress gestureRecognizer: UILongPressGestureRecognizer) {
         for toolView in self.toolViews {
             if toolView.responds(to: #selector(ToolViewProtocol.didLongPress(for:gestureRecognizer:))) {
                 toolView.didLongPress?(for: self, gestureRecognizer: gestureRecognizer)
@@ -263,15 +263,15 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
         }
     }
     
-    @objc public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, dismissing gestureRecognizer: UIPanGestureRecognizer, verticalDistance: CGFloat) {
+    @objc public func mediaBrowserView(_ browserView: MediaBrowserView, dismissing gestureRecognizer: UIPanGestureRecognizer, verticalDistance: CGFloat) {
         switch gestureRecognizer.state {
         case .changed:
             break
         case .ended:
-            if (verticalDistance > mediaBrowserView.bounds.height / 2 / 3) {
+            if (verticalDistance > browserView.bounds.height / 2 / 3) {
                 self.hide(animated: true)
             } else {
-                mediaBrowserView.resetDismissingGesture()
+                browserView.resetDismissingGesture()
             }
             break
         default:
@@ -327,7 +327,7 @@ extension MediaBrowserViewController: TransitionAnimatorDelegate {
         return nil
     }
     
-    public var animatorToolViews: Array<UIView>? {
+    public var animatorViews: Array<UIView>? {
         return self.toolViews
     }
     

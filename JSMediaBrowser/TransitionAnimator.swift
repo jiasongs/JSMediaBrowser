@@ -15,7 +15,7 @@ public protocol TransitionAnimatorDelegate: NSObjectProtocol {
     @objc weak var sourceView: UIView? { get }
     @objc var sourceCornerRadius: CGFloat { get }
     @objc var thumbImage: UIImage? { get }
-    @objc var animatorToolViews: Array<UIView>? { get }
+    @objc var animatorViews: Array<UIView>? { get }
     @objc weak var dimmingView: UIView? { get }
     @objc weak var zoomView: UIView? { get }
     @objc weak var zoomContentView: UIView? { get }
@@ -113,7 +113,7 @@ extension TransitionAnimator {
     
     func handleAnimationEntering(style: TransitioningStyle, isPresenting: Bool, fromViewController: UIViewController?, toViewController: UIViewController?, sourceView: UIView?, sourceRect: CGRect) -> Void {
         let needViewController = isPresenting ? toViewController : fromViewController
-        if let toolViews = self.delegate?.animatorToolViews {
+        if let toolViews = self.delegate?.animatorViews {
             for view in toolViews {
                 view.alpha = isPresenting ? 0 : 1
             }
@@ -179,7 +179,7 @@ extension TransitionAnimator {
     
     func handleAnimationProcessing(style: TransitioningStyle, isPresenting: Bool, fromViewController: UIViewController?, toViewController: UIViewController?, sourceView: UIView?) -> Void {
         let needViewController = isPresenting ? toViewController : fromViewController
-        if let toolViews = self.delegate?.animatorToolViews {
+        if let toolViews = self.delegate?.animatorViews {
             for view in toolViews {
                 view.alpha = isPresenting ? 1 : 0
             }
@@ -195,7 +195,7 @@ extension TransitionAnimator {
     
     func handleAnimationCompletion(style: TransitioningStyle, isPresenting: Bool, fromViewController: UIViewController?, toViewController: UIViewController?, sourceView: UIView?) -> Void {
         let needViewController = isPresenting ? fromViewController : toViewController
-        if let toolViews = self.delegate?.animatorToolViews {
+        if let toolViews = self.delegate?.animatorViews {
             for view in toolViews {
                 view.alpha = 1
             }
