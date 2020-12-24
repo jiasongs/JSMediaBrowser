@@ -10,10 +10,10 @@ import JSCoreKit
 
 open class MediaBrowserView: UIView {
     
-    @objc public weak var dataSource: MediaBrowserViewDataSource?
-    @objc public weak var delegate: MediaBrowserViewDelegate?
-    
+    @objc open weak var dataSource: MediaBrowserViewDataSource?
+    @objc open weak var delegate: MediaBrowserViewDelegate?
     @objc open weak var gestureDelegate: MediaBrowserViewGestureDelegate?
+    
     @objc open var singleTapGesture: UITapGestureRecognizer?
     @objc open var doubleTapGesture: UITapGestureRecognizer?
     @objc open var longPressGesture: UILongPressGestureRecognizer?

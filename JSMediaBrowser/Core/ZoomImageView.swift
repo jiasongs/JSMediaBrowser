@@ -216,7 +216,7 @@ extension ZoomImageView {
             let viewport: CGRect = self.finalViewportRect
             if let contentView = self.contentView, !viewport.isEmpty {
                 if (viewport.width < contentView.frame.width) {
-                    x = contentView.frame.width / 2 - viewport.width / 2 - viewport.minX
+                    x = (contentView.frame.width - viewport.width) / 2 - viewport.minX
                 }
                 if (viewport.height < contentView.frame.height) {
                     y = -scrollView.contentInset.top
