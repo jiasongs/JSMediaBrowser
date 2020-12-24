@@ -100,6 +100,7 @@ extension MediaBrowserView {
         if index < numberOfItems {
             let indexPath = IndexPath(item: self.currentPage, section: 0)
             self.collectionView?.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: animated)
+            self.collectionView?.setNeedsLayout()
             self.collectionView?.layoutIfNeeded()
         }
     }
@@ -279,7 +280,7 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
                 var ratio: CGFloat = 1.0
                 var alpha: CGFloat = 1.0
                 if (verticalDistance > 0) {
-                    ratio = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.5], extrapolateLeft: .clamp, extrapolateRight: .clamp)
+                    ratio = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.4], extrapolateLeft: .clamp, extrapolateRight: .clamp)
                     alpha = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.2], extrapolateLeft: .clamp, extrapolateRight: .clamp)
                 } else {
                     let a: CGFloat = self.gestureBeganLocation.y + 200
