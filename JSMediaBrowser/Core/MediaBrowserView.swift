@@ -234,6 +234,7 @@ extension MediaBrowserView: UIScrollViewDelegate {
                 if let delegate = self.delegate, delegate.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:willScrollHalf:toIndex:))) {
                     let fromIndex = Int(round(self.previousIndexWhenScrolling))
                     let toIndex = Int(index)
+                    print("fromIndex: \(fromIndex) toIndex:\(toIndex)")
                     delegate.mediaBrowserView?(self, willScrollHalf: fromIndex, toIndex: toIndex)
                 }
             }
