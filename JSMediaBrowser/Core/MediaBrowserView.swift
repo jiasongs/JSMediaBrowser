@@ -32,10 +32,10 @@ open class MediaBrowserView: UIView {
     @objc private(set) var collectionView: PagingCollectionView?
     @objc private(set) var collectionViewLayout: PagingLayout?
     
-    @objc public var currentMediaIndex: Int = 0 {
+    @objc public var currentPage: Int = 0 {
         didSet {
             if isNeededScrollToItem {
-                self.setCurrentMedia(index: self.currentMediaIndex, animated: false)
+                self.setCurrentPage(self.currentPage, animated: false)
             }
         }
     }
@@ -91,14 +91,14 @@ open class MediaBrowserView: UIView {
 
 extension MediaBrowserView {
     
-    @objc open func setCurrentMedia(index: Int, animated: Bool) -> Void {
+    @objc open func setCurrentPage(_ index: Int, animated: Bool) -> Void {
         self.isNeededScrollToItem = false
-        self.currentMediaIndex = index
+        self.currentPage = index
         self.isNeededScrollToItem = true
         self.reloadData()
         guard let numberOfItems = self.collectionView?.numberOfItems(inSection: 0) else { return }
         if index < numberOfItems {
-            let indexPath = IndexPath(item: self.currentMediaIndex, section: 0)
+            let indexPath = IndexPath(item: self.currentPage, section: 0)
             self.collectionView?.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: animated)
             self.collectionView?.layoutIfNeeded()
         }
@@ -117,9 +117,9 @@ extension MediaBrowserView {
         return self.collectionView?.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) ?? UICollectionViewCell()
     }
     
-    @objc open var currentMidiaCell: UICollectionViewCell? {
+    @objc open var currentPageCell: UICollectionViewCell? {
         get {
-            let indexPath = IndexPath(item: self.currentMediaIndex, section: 0)
+            let indexPath = IndexPath(item: self.currentPage, section: 0)
             return self.collectionView?.cellForItem(at: indexPath)
         }
     }
@@ -127,7 +127,7 @@ extension MediaBrowserView {
     @objc open func resetDismissingGesture() -> Void {
         self.gestureBeganLocation = CGPoint.zero
         UIView.animate(withDuration: 0.25, delay: 0, options: AnimationOptionsCurveOut, animations: {
-            self.currentMidiaCell?.transform = CGAffineTransform.identity
+            self.currentPageCell?.transform = CGAffineTransform.identity
             self.dimmingView?.alpha = 1.0
         }, completion: nil)
     }
@@ -148,8 +148,8 @@ extension MediaBrowserView {
                 self.collectionViewLayout?.invalidateLayout()
                 self.collectionView?.frame = self.bounds
                 let numberOfItems = collectionView.numberOfItems(inSection: 0)
-                if self.currentMediaIndex < numberOfItems {
-                    let indexPath = IndexPath(item: self.currentMediaIndex, section: 0)
+                if self.currentPage < numberOfItems {
+                    let indexPath = IndexPath(item: self.currentPage, section: 0)
                     collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
                 }
                 self.isChangingCollectionViewBounds = false
@@ -198,7 +198,7 @@ extension MediaBrowserView: UIScrollViewDelegate {
             return
         }
         if let delegate = self.delegate, delegate.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:didScrollTo:))) {
-            delegate.mediaBrowserView?(self, didScrollTo: self.currentMediaIndex)
+            delegate.mediaBrowserView?(self, didScrollTo: self.currentPage)
         }
     }
     
@@ -228,7 +228,7 @@ extension MediaBrowserView: UIScrollViewDelegate {
             index = round(index)
             if 0 <= index && Int(index) < collectionView.numberOfItems(inSection: 0) {
                 self.isNeededScrollToItem = false
-                self.currentMediaIndex = Int(index)
+                self.currentPage = Int(index)
                 self.isNeededScrollToItem = true
                 if let delegate = self.delegate, delegate.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:willScrollHalf:toIndex:))) {
                     let fromIndex = Int(round(self.previousIndexWhenScrolling))
@@ -271,7 +271,7 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
             self.toggleDismissingGestureDelegate(gesture, verticalDistance: 0)
             break
         case .changed:
-            if let midiaCell = self.currentMidiaCell {
+            if let midiaCell = self.currentPageCell {
                 let location: CGPoint = gesture.location(in: self)
                 let horizontalDistance: CGFloat = location.x - self.gestureBeganLocation.x
                 var verticalDistance: CGFloat = location.y - self.gestureBeganLocation.y

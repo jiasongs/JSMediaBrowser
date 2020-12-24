@@ -17,14 +17,21 @@ class ViewController: UIViewController {
     var dataSource: Array<String> = []
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        super.init(nibName: nibName, bundle: nibBundleOrNil)
-        SDImageCache.shared.clearMemory()
-        SDImageCache.shared.clearDisk(onCompletion: nil)
-        MediaBrowserAppearance.appearance
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: coder)
+        SDImageCache.shared.clearMemory()
+        SDImageCache.shared.clearDisk(onCompletion: nil)
+        /// 设置全局Block
+        MediaBrowserAppearance.appearance.buildWebImageMediatorBlock = { (browserVC: MediaBrowserViewController, sourceItem: SourceProtocol) -> WebImageMediatorProtocol in
+            return DefaultWebImageMediator()
+        }
+        MediaBrowserAppearance.appearance.buildToolViewsBlock = { (browserVC: MediaBrowserViewController) -> Array<UIView & ToolViewProtocol> in
+            let page: PageControl = PageControl.init()
+            return [page]
+        }
     }
     
     override func viewDidLoad() {
@@ -47,7 +54,6 @@ class ViewController: UIViewController {
             self.floatLayoutView!.addSubview(button)
         }
         self.view.addSubview(floatLayoutView!)
-        
     }
     
     override func viewDidLayoutSubviews() {
@@ -65,10 +71,7 @@ class ViewController: UIViewController {
     
     @objc func handleImageButtonEvent(sender: QMUIButton) -> Void {
         let browser: MediaBrowserViewController = MediaBrowserViewController()
-        browser.buildWebImageMediatorBlock = { (browserVC: MediaBrowserViewController, sourceItem: SourceProtocol) -> WebImageMediatorProtocol in
-            return DefaultWebImageMediator()
-        }
-        browser.browserView?.currentMediaIndex = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
+        browser.browserView?.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
         var sourceItems: Array<ImageEntity> = [];
         for (index, urlString) in self.dataSource.enumerated() {
             if let button: QMUIButton = self.floatLayoutView.subviews[index] as? QMUIButton {

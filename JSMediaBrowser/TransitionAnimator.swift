@@ -15,6 +15,7 @@ public protocol TransitionAnimatorDelegate: NSObjectProtocol {
     @objc weak var sourceView: UIView? { get }
     @objc var sourceCornerRadius: CGFloat { get }
     @objc var thumbImage: UIImage? { get }
+    @objc var animatorToolViews: Array<UIView>? { get }
     @objc weak var dimmingView: UIView? { get }
     @objc weak var zoomView: UIView? { get }
     @objc weak var zoomContentView: UIView? { get }
@@ -112,6 +113,11 @@ extension TransitionAnimator {
     
     func handleAnimationEntering(style: TransitioningStyle, isPresenting: Bool, fromViewController: UIViewController?, toViewController: UIViewController?, sourceView: UIView?, sourceRect: CGRect) -> Void {
         let needViewController = isPresenting ? toViewController : fromViewController
+        if let toolViews = self.delegate?.animatorToolViews {
+            for view in toolViews {
+                view.alpha = isPresenting ? 0 : 1
+            }
+        }
         if style == .fade {
             needViewController?.view.alpha = isPresenting ? 0 : 1
         } else if style == .zoom {
@@ -173,6 +179,11 @@ extension TransitionAnimator {
     
     func handleAnimationProcessing(style: TransitioningStyle, isPresenting: Bool, fromViewController: UIViewController?, toViewController: UIViewController?, sourceView: UIView?) -> Void {
         let needViewController = isPresenting ? toViewController : fromViewController
+        if let toolViews = self.delegate?.animatorToolViews {
+            for view in toolViews {
+                view.alpha = isPresenting ? 1 : 0
+            }
+        }
         if style == .fade {
             needViewController?.view.alpha = isPresenting ? 1 : 0
         } else if style == .zoom {
@@ -184,6 +195,11 @@ extension TransitionAnimator {
     
     func handleAnimationCompletion(style: TransitioningStyle, isPresenting: Bool, fromViewController: UIViewController?, toViewController: UIViewController?, sourceView: UIView?) -> Void {
         let needViewController = isPresenting ? fromViewController : toViewController
+        if let toolViews = self.delegate?.animatorToolViews {
+            for view in toolViews {
+                view.alpha = 1
+            }
+        }
         if style == .fade {
             needViewController?.view.alpha = 1
         } else if style == .zoom {

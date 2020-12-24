@@ -11,6 +11,7 @@ import UIKit
 open class BaseCell: UICollectionViewCell, CellProtocol {
     
     public var pieProgressView: PieProgressView?
+    public var progressTintColor: UIColor?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -24,7 +25,7 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
     
     open func didInitialize() -> Void {
         pieProgressView = PieProgressView()
-        pieProgressView?.tintColor = .white
+        pieProgressView?.tintColor = progressTintColor ?? .white
         contentView.addSubview(self.pieProgressView!)
     }
     

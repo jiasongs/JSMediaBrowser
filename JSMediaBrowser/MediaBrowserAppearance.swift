@@ -7,10 +7,15 @@
 
 import UIKit
 
+public typealias BuildWebImageMediatorBlock = (MediaBrowserViewController, SourceProtocol) -> WebImageMediatorProtocol
+public typealias BuildToolViewsBlock = (MediaBrowserViewController) -> Array<UIView & ToolViewProtocol>
+
 @objc open class MediaBrowserAppearance: NSObject {
     
     @objc public static let appearance = MediaBrowserAppearance()
     
-    @objc open var webImageMediatorClass: AnyClass<WebImageMediatorProtocol>?
+    @objc public var buildWebImageMediatorBlock: BuildWebImageMediatorBlock?
+    @objc open var buildToolViewsBlock: BuildToolViewsBlock?
+    @objc open var progressTintColor: UIColor?
     
 }
