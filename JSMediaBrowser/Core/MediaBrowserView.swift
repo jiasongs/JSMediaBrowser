@@ -34,6 +34,10 @@ open class MediaBrowserView: UIView {
     
     @objc public var currentPage: Int = 0 {
         didSet {
+            let isFirstDidScroll: Bool = self.previousIndexWhenScrolling == 0
+            if isFirstDidScroll {
+                self.previousIndexWhenScrolling = CGFloat(oldValue)
+            }
             if isNeededScrollToItem {
                 self.setCurrentPage(self.currentPage, animated: false)
             }
@@ -98,7 +102,7 @@ extension MediaBrowserView {
         self.reloadData()
         guard let numberOfItems = self.collectionView?.numberOfItems(inSection: 0) else { return }
         if index < numberOfItems {
-            let indexPath = IndexPath(item: self.currentPage, section: 0)
+            let indexPath = IndexPath(item: index, section: 0)
             self.collectionView?.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: animated)
             self.collectionView?.setNeedsLayout()
             self.collectionView?.layoutIfNeeded()
@@ -215,31 +219,29 @@ extension MediaBrowserView: UIScrollViewDelegate {
         let betweenOrEqual =  { (minimumValue: CGFloat, value: CGFloat, maximumValue: CGFloat) -> Bool in
             return minimumValue <= value && value <= maximumValue
         }
+        let isFirstDidScroll: Bool = self.previousIndexWhenScrolling == 0
         let pageWidth: CGFloat = self.collectionView(collectionView, layout: collectionViewLayout, sizeForItemAt: IndexPath(item: 0, section: 0)).width
         let pageHorizontalMargin: CGFloat = collectionViewLayout.pageSpacing
         let contentOffsetX: CGFloat = collectionView.contentOffset.x
-        var index: CGFloat = contentOffsetX / (pageWidth + pageHorizontalMargin)
-        let isFirstDidScroll: Bool = self.previousIndexWhenScrolling == 0
-        let fastToRight: Bool = (floor(index) - floor(self.previousIndexWhenScrolling) >= 1.0) && (floor(index) - self.previousIndexWhenScrolling > 0.5)
-        let turnPageToRight: Bool = fastToRight || betweenOrEqual(self.previousIndexWhenScrolling, floor(index) + 0.5, index)
-        let fastToLeft: Bool = (floor(self.previousIndexWhenScrolling) - floor(index) >= 1.0) && (self.previousIndexWhenScrolling - ceil(index) > 0.5)
-        let turnPageToLeft: Bool = fastToLeft || betweenOrEqual(index, floor(index) + 0.5, self.previousIndexWhenScrolling)
+        let pageOffsetX: CGFloat = contentOffsetX / (pageWidth + pageHorizontalMargin)
+        let fastToRight: Bool = (floor(pageOffsetX) - floor(self.previousIndexWhenScrolling) >= 1.0) && (floor(pageOffsetX) - self.previousIndexWhenScrolling > 0.5)
+        let turnPageToRight: Bool = fastToRight || betweenOrEqual(self.previousIndexWhenScrolling, floor(pageOffsetX) + 0.5, pageOffsetX)
+        let fastToLeft: Bool = (floor(self.previousIndexWhenScrolling) - floor(pageOffsetX) >= 1.0) && (self.previousIndexWhenScrolling - ceil(pageOffsetX) > 0.5)
+        let turnPageToLeft: Bool = fastToLeft || betweenOrEqual(pageOffsetX, floor(pageOffsetX) + 0.5, self.previousIndexWhenScrolling)
         
-        if !isFirstDidScroll && (turnPageToRight || turnPageToLeft) {
-            index = round(index)
-            if 0 <= index && Int(index) < collectionView.numberOfItems(inSection: 0) {
+        if (turnPageToRight || turnPageToLeft) {
+            let previousIndex: Int = isFirstDidScroll ? self.currentPage : Int(round(self.previousIndexWhenScrolling))
+            let index: Int = Int(round(pageOffsetX))
+            if index >= 0 && index < collectionView.numberOfItems(inSection: 0) {
                 self.isNeededScrollToItem = false
-                self.currentPage = Int(index)
+                self.currentPage = index
                 self.isNeededScrollToItem = true
                 if let delegate = self.delegate, delegate.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:willScrollHalf:toIndex:))) {
-                    let fromIndex = Int(round(self.previousIndexWhenScrolling))
-                    let toIndex = Int(index)
-                    print("fromIndex: \(fromIndex) toIndex:\(toIndex)")
-                    delegate.mediaBrowserView?(self, willScrollHalf: fromIndex, toIndex: toIndex)
+                    delegate.mediaBrowserView?(self, willScrollHalf: previousIndex, toIndex: index)
                 }
             }
         }
-        self.previousIndexWhenScrolling = index
+        self.previousIndexWhenScrolling = pageOffsetX
     }
     
 }
