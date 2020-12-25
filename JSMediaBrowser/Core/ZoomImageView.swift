@@ -123,7 +123,6 @@ extension ZoomImageView {
         if (rect.isEmpty && !self.bounds.isEmpty) {
             if let scrollView = self.scrollView {
                 if !scrollView.bounds.size.equalTo(self.bounds.size) {
-                    self.setNeedsLayout()
                     self.layoutIfNeeded()
                 }
                 let safeAreaInsets: UIEdgeInsets = JSCoreHelper.safeAreaInsetsForDeviceWithNotch()
@@ -307,7 +306,6 @@ extension ZoomImageView {
         guard let scrollView = self.scrollView else { return }
         let viewport: CGRect = self.finalViewportRect
         // 强制 layout 以确保下面的一堆计算依赖的都是最新的 frame 的值
-        self.setNeedsLayout()
         self.layoutIfNeeded()
         let contentViewFrame: CGRect = self.contentViewRectInZoomView
         var contentInset: UIEdgeInsets = UIEdgeInsets.zero
