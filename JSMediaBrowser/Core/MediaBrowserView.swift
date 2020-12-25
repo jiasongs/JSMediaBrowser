@@ -101,9 +101,8 @@ extension MediaBrowserView {
             if index < numberOfItems {
                 let indexPath = IndexPath(item: index, section: 0)
                 collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: animated)
-                if !self.isChangingCollectionViewBounds {
-                    collectionView.layoutIfNeeded()
-                }
+                /// 立即滚动
+                collectionView.layoutIfNeeded()
             }
         }
         self.isNeededScrollToItem = false

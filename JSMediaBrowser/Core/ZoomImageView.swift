@@ -304,9 +304,8 @@ extension ZoomImageView {
     private func handleDidEndZooming() -> Void {
         guard let contentView = self.contentView else { return }
         guard let scrollView = self.scrollView else { return }
-        let viewport: CGRect = self.finalViewportRect
-        // 强制 layout 以确保下面的一堆计算依赖的都是最新的 frame 的值
         self.layoutIfNeeded()
+        let viewport: CGRect = self.finalViewportRect
         let contentViewFrame: CGRect = self.contentViewRectInZoomView
         var contentInset: UIEdgeInsets = UIEdgeInsets.zero
         contentInset.top = viewport.minY
