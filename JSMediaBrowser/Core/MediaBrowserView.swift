@@ -93,10 +93,6 @@ extension MediaBrowserView {
     
     @objc open func setCurrentPage(_ index: Int, animated: Bool) -> Void {
         if let collectionView = self.collectionView {
-            /// 先更新Frame和数据
-            collectionView.setNeedsLayout()
-            collectionView.layoutIfNeeded()
-            self.reloadData()
             /// 第一次产生滚动的时候, 需要赋值当前的偏移量
             if self.previousPageOffsetRatio == 0 {
                 self.previousPageOffsetRatio = self.pageOffsetRatio
@@ -105,6 +101,9 @@ extension MediaBrowserView {
             if index < numberOfItems {
                 let indexPath = IndexPath(item: index, section: 0)
                 collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: animated)
+                if !self.isChangingCollectionViewBounds {
+                    collectionView.layoutIfNeeded()
+                }
             }
         }
         self.isNeededScrollToItem = false
