@@ -127,10 +127,13 @@ extension ZoomImageView {
                     self.layoutIfNeeded()
                 }
                 let safeAreaInsets: UIEdgeInsets = JSCoreHelper.safeAreaInsetsForDeviceWithNotch()
-                let top = safeAreaInsets.top
-                let bottom = safeAreaInsets.bottom
                 let size: CGSize = CGSize(width: min(scrollView.bounds.width, viewportRectMaxWidth), height: scrollView.bounds.height)
-                rect = CGRect(x: (scrollView.bounds.width - size.width) / 2, y: top, width: size.width, height: size.height - top - bottom)
+                let offsetX = (scrollView.bounds.width - size.width) / 2
+                let top = safeAreaInsets.top
+                let left = max(safeAreaInsets.left, offsetX)
+                let bottom = safeAreaInsets.bottom
+                let right = safeAreaInsets.right
+                rect = CGRect(x: left, y: top, width: min(size.width, scrollView.bounds.width - left - right), height: size.height - top - bottom)
             }
         }
         return rect
