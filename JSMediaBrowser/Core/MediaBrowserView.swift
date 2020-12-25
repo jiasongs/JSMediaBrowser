@@ -273,7 +273,7 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
             self.toggleDismissingGestureDelegate(gesture, verticalDistance: 0)
             break
         case .changed:
-            if let midiaCell = self.currentPageCell {
+            if let pageCell = self.currentPageCell {
                 let location: CGPoint = gesture.location(in: self)
                 let horizontalDistance: CGFloat = location.x - self.gestureBeganLocation.x
                 var verticalDistance: CGFloat = location.y - self.gestureBeganLocation.y
@@ -290,7 +290,7 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
                     verticalDistance = -c * b
                 }
                 let transform = CGAffineTransform(translationX: horizontalDistance, y: verticalDistance).scaledBy(x: ratio, y: ratio)
-                midiaCell.transform = transform
+                pageCell.transform = transform
                 self.dimmingView?.alpha = alpha
                 self.toggleDismissingGestureDelegate(gesture, verticalDistance: verticalDistance)
             }
