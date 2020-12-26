@@ -90,6 +90,27 @@ open class MediaBrowserView: UIView {
 
 extension MediaBrowserView {
     
+    open override func layoutSubviews() {
+        super.layoutSubviews()
+        if let dimmingView = self.dimmingView {
+            dimmingView.frame = self.bounds
+        }
+        if let collectionView = self.collectionView {
+            if !collectionView.bounds.size.equalTo(self.bounds.size) {
+                self.isChangingCollectionViewFrame = true
+                /// 必须先 invalidateLayout，再更新 collectionView.frame，否则横竖屏旋转前后的图片不一致（因为 scrollViewDidScroll: 时 contentSize、contentOffset 那些是错的）
+                self.collectionViewLayout?.invalidateLayout()
+                self.collectionView?.frame = self.bounds
+                self.scrollToPage(at: self.currentPage, animated: false)
+                self.isChangingCollectionViewFrame = false
+            }
+        }
+    }
+    
+}
+
+extension MediaBrowserView {
+    
     @objc open func setCurrentPage(_ index: Int, animated: Bool) -> Void {
         /// iOS 14, 当isPagingEnabled为true, 若不刷新则无法滚动到相应Item
         /// https://stackoverflow.com/questions/41884645/uicollectionview-scroll-to-item-not-working-with-horizontal-direction
@@ -148,27 +169,6 @@ extension MediaBrowserView {
                 block()
             }
         }, completion: nil)
-    }
-    
-}
-
-extension MediaBrowserView {
-    
-    open override func layoutSubviews() {
-        super.layoutSubviews()
-        if let dimmingView = self.dimmingView {
-            dimmingView.frame = self.bounds
-        }
-        if let collectionView = self.collectionView {
-            if !collectionView.bounds.size.equalTo(self.bounds.size) {
-                self.isChangingCollectionViewFrame = true
-                /// 必须先 invalidateLayout，再更新 collectionView.frame，否则横竖屏旋转前后的图片不一致（因为 scrollViewDidScroll: 时 contentSize、contentOffset 那些是错的）
-                self.collectionViewLayout?.invalidateLayout()
-                self.collectionView?.frame = self.bounds
-                self.scrollToPage(at: self.currentPage, animated: false)
-                self.isChangingCollectionViewFrame = false
-            }
-        }
     }
     
 }
