@@ -67,7 +67,13 @@ class ViewController: UIViewController {
         let imgWith: CGFloat = contentWidth / CGFloat(column) - horizontalValue;
         self.floatLayoutView!.minimumItemSize = CGSize(width: imgWith, height: imgWith);
         self.floatLayoutView!.maximumItemSize = self.floatLayoutView!.minimumItemSize;
+        let oldSize: CGSize = self.floatLayoutView.bounds.size
         self.floatLayoutView!.frame = CGRect(x: margins.left, y: margins.top, width: contentWidth, height: QMUIViewSelfSizingHeight);
+        /// 前后Bounds相等时, 也需要刷新下内部子视图的布局, 不然可能会有Bug
+        if oldSize.equalTo(self.floatLayoutView.bounds.size) {
+            self.floatLayoutView.setNeedsLayout()
+            self.floatLayoutView.layoutIfNeeded()
+        }
     }
     
     @objc func handleImageButtonEvent(sender: QMUIButton) -> Void {

@@ -97,6 +97,34 @@ open class ZoomImageView: ZoomBaseView {
 
 extension ZoomImageView {
     
+    open override func layoutSubviews() {
+        super.layoutSubviews()
+        if (self.bounds.isEmpty) {
+            return
+        }
+        self.scrollView?.js_frameApplyTransform = self.bounds
+    }
+    
+    open override var frame: CGRect {
+        didSet {
+            if !oldValue.size.equalTo(self.frame.size) {
+                self.revertZooming()
+            }
+        }
+    }
+    
+    open override var contentMode: UIView.ContentMode {
+        didSet {
+            if oldValue != self.contentMode {
+                self.revertZooming()
+            }
+        }
+    }
+    
+}
+
+extension ZoomImageView {
+    
     @objc open override var containerView: UIView? {
         get {
             return self.scrollView
@@ -124,6 +152,7 @@ extension ZoomImageView {
         if (rect.isEmpty && !self.bounds.isEmpty) {
             if let scrollView = self.scrollView {
                 if !scrollView.bounds.size.equalTo(self.bounds.size) {
+                    self.setNeedsLayout()
                     self.layoutIfNeeded()
                 }
                 let safeAreaInsets: UIEdgeInsets = JSCoreHelper.safeAreaInsetsForDeviceWithNotch()
@@ -276,37 +305,10 @@ extension ZoomImageView {
         }
     }
     
-}
-
-extension ZoomImageView {
-    
-    open override func layoutSubviews() {
-        super.layoutSubviews()
-        if (self.bounds.isEmpty) {
-            return
-        }
-        self.scrollView?.js_frameApplyTransform = self.bounds
-    }
-    
-    open override var frame: CGRect {
-        didSet {
-            if !oldValue.size.equalTo(self.frame.size) {
-                self.revertZooming()
-            }
-        }
-    }
-    
-    open override var contentMode: UIView.ContentMode {
-        didSet {
-            if oldValue != self.contentMode {
-                self.revertZooming()
-            }
-        }
-    }
-    
     private func handleDidEndZooming() -> Void {
         guard let contentView = self.contentView else { return }
         guard let scrollView = self.scrollView else { return }
+        /// 不需要setNeedsLayout, 当没有标记时, 说明已经布局完毕, 当存在标记时才立刻调用layoutSubviews
         self.layoutIfNeeded()
         let viewport: CGRect = self.finalViewportRect
         let contentViewFrame: CGRect = self.contentViewRectInZoomView

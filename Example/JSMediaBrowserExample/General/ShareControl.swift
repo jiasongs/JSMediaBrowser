@@ -9,7 +9,7 @@ import UIKit
 import JSCoreKit
 import JSMediaBrowser
 
-class ShareControl: UIButton, ToolViewProtocol {
+@objc class ShareControl: UIButton, ToolViewProtocol {
     
     weak var browserViewController: MediaBrowserViewController?
     

@@ -29,7 +29,9 @@
             return [[MediaBrowserViewDefaultWebImageMediator alloc] init];
         };
         MediaBrowserAppearance.appearance.addToolViewsBlock = ^NSArray<UIView<MediaBrowserToolViewProtocol> *> *(MediaBrowserViewController *browserVC) {
-            return @[];
+            PageControl *pageControl = [[PageControl alloc] init];
+            ShareControl *shareControl = [[ShareControl alloc] init];
+            return @[pageControl, shareControl];
         };
     }
     return self;

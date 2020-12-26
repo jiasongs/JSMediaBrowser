@@ -9,7 +9,7 @@ import UIKit
 import JSCoreKit
 import JSMediaBrowser
 
-class PageControl: UIPageControl, ToolViewProtocol {
+@objc class PageControl: UIPageControl, ToolViewProtocol {
     
     weak var browserViewController: MediaBrowserViewController?
     

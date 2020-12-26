@@ -88,7 +88,7 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             }
             presentingViewController?.beginAppearanceTransition(true, animated: true)
         }
-    
+        
         let zoomContentViewFrame = self.delegate?.zoomContentView?.frame ?? CGRect.zero
         style = style == .zoom && (sourceRect.isEmpty || zoomContentViewFrame.isEmpty) ? .fade : style
         
@@ -196,7 +196,7 @@ extension TransitionAnimator {
     }
     
     func handleAnimationCompletion(style: TransitioningStyle, isPresenting: Bool, fromViewController: UIViewController?, toViewController: UIViewController?, sourceView: UIView?) -> Void {
-        let needViewController = isPresenting ? fromViewController : toViewController
+        let needViewController = isPresenting ? toViewController : fromViewController
         if style == .fade {
             needViewController?.view.alpha = 1
         } else if style == .zoom {
@@ -208,6 +208,8 @@ extension TransitionAnimator {
         }
         if !isPresenting {
             sourceView?.isHidden = false
+            /// 需要标记下刷新布局, 防止外部的sourceView因isHidden而产生奇怪的问题
+            toViewController?.view.setNeedsLayout()
         }
     }
     
