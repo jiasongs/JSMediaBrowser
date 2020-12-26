@@ -110,14 +110,12 @@
 			isa = PBXGroup;
 			children = (
 				7A23CD722581F3B2004B4033 /* JSMediaBrowserExample.entitlements */,
+				7A80A5B12597608A00E9927C /* General */,
+				7A80A5B22597609800E9927C /* Data */,
 				7A23CD5A2581F365004B4033 /* AppDelegate.swift */,
 				7A23CD5E2581F365004B4033 /* ViewController.swift */,
-				7A0633492585DC1200DADA21 /* DefaultWebImageMediator.swift */,
-				7A61E076259486FA001C58FA /* PageControl.swift */,
-				7A80A5AA25974B0100E9927C /* ShareControl.swift */,
 				7AEF5DCC25837379006550CE /* OCExampleViewController.h */,
 				7AEF5DCD25837379006550CE /* OCExampleViewController.m */,
-				7A03EFF72591BE530029C59F /* data.json */,
 				7AEF5DCA25837379006550CE /* JSMediaBrowserExample-Bridging-Header.h */,
 				7AEF5DCB25837379006550CE /* JSMediaBrowserExampleMacOS-Bridging-Header.h */,
 				7A23CD602581F365004B4033 /* Main.storyboard */,
@@ -127,6 +125,24 @@
 				7A23CD8C2581F58C004B4033 /* InfoMacOS.plist */,
 			);
 			path = JSMediaBrowserExample;
+			sourceTree = "<group>";
+		};
+		7A80A5B12597608A00E9927C /* General */ = {
+			isa = PBXGroup;
+			children = (
+				7A0633492585DC1200DADA21 /* DefaultWebImageMediator.swift */,
+				7A61E076259486FA001C58FA /* PageControl.swift */,
+				7A80A5AA25974B0100E9927C /* ShareControl.swift */,
+			);
+			path = General;
+			sourceTree = "<group>";
+		};
+		7A80A5B22597609800E9927C /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				7A03EFF72591BE530029C59F /* data.json */,
+			);
+			path = Data;
 			sourceTree = "<group>";
 		};
 		DDFE0E9035918ACBC753A628 /* Pods */ = {

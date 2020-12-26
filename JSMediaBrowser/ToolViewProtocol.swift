@@ -9,15 +9,13 @@ import UIKit
 
 @objc public protocol ToolViewProtocol: NSObjectProtocol  {
     
-    @objc func sourceItemsDidChange(for browserViewController: MediaBrowserViewController)
-    @objc func viewDidLoad(for browserViewController: MediaBrowserViewController)
+    @objc optional func sourceItemsDidChange(in viewController: MediaBrowserViewController)
     
-    @objc optional func viewDidLayoutSubviews(for browserViewController: MediaBrowserViewController)
-    @objc optional func viewWillAppear(for browserViewController: MediaBrowserViewController)
-    @objc optional func viewWillDisappear(for browserViewController: MediaBrowserViewController)
+    @objc func didAddToSuperview(in viewController: MediaBrowserViewController)
+    @objc optional func didLayoutSubviews(in viewController: MediaBrowserViewController)
     
-    @objc optional func willScrollHalf(for browserViewController: MediaBrowserViewController, fromIndex: Int, toIndex: Int)
-    @objc optional func didScrollTo(for browserViewController: MediaBrowserViewController, index: Int)
-    @objc optional func didLongPress(for browserViewController: MediaBrowserViewController, gestureRecognizer: UILongPressGestureRecognizer)
+    @objc optional func willScrollHalf(fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController)
+    @objc optional func didScrollTo(index: Int, in viewController: MediaBrowserViewController)
+    @objc optional func didLongPress(gestureRecognizer: UILongPressGestureRecognizer, in viewController: MediaBrowserViewController)
     
 }

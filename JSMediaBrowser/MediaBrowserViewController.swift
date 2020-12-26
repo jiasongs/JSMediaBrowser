@@ -34,7 +34,9 @@ public enum TransitioningStyle: Int {
             })
             loaderItems = array
             for toolView in self.toolViews {
-                toolView.sourceItemsDidChange(for: self)
+                if toolView.responds(to: #selector(ToolViewProtocol.sourceItemsDidChange(in:))) {
+                    toolView.sourceItemsDidChange?(in: self)
+                }
             }
         }
     }
@@ -61,7 +63,6 @@ public enum TransitioningStyle: Int {
             }
         }
     }
-    /// mark
     @objc open var addWebImageMediatorBlock: BuildWebImageMediatorBlock?
     @objc open var addToolViewsBlock: BuildToolViewsBlock?
     @objc open var progressTintColor: UIColor?
@@ -94,30 +95,6 @@ public enum TransitioningStyle: Int {
 
 extension MediaBrowserViewController {
     
-    @objc open func show(from sender: UIViewController, animated: Bool) {
-        sender.present(self, animated: animated, completion: nil)
-    }
-    
-    @objc open func hide(animated: Bool) {
-        self.dismiss(animated: animated, completion: nil)
-    }
-    
-    @objc open var toolViews: Array<UIView & ToolViewProtocol> {
-        get {
-            var resultArray = Array<UIView & ToolViewProtocol>()
-            for item in self.view.subviews.enumerated() {
-                if let subview = item.element as? (UIView & ToolViewProtocol) {
-                    resultArray.append(subview)
-                }
-            }
-            return resultArray
-        }
-    }
-    
-}
-
-extension MediaBrowserViewController {
-    
     open override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor(white: 0, alpha: 0)
@@ -136,11 +113,11 @@ extension MediaBrowserViewController {
         } else if let block = MediaBrowserAppearance.appearance.addToolViewsBlock {
             buildBlock = block
         }
-        if buildBlock != nil {
-            let toolViews: Array<UIView & ToolViewProtocol> = buildBlock!(self)
+        if let block = buildBlock {
+            let toolViews: Array<UIView & ToolViewProtocol> = block(self)
             for toolView in toolViews {
                 self.view.addSubview(toolView)
-                toolView.viewDidLoad(for: self)
+                toolView.didAddToSuperview(in: self)
             }
         }
     }
@@ -151,8 +128,8 @@ extension MediaBrowserViewController {
             browserView.js_frameApplyTransform = self.view.bounds
         }
         for toolView in self.toolViews {
-            if toolView.responds(to: #selector(ToolViewProtocol.viewDidLayoutSubviews(for:))) {
-                toolView.viewDidLayoutSubviews?(for: self)
+            if toolView.responds(to: #selector(ToolViewProtocol.didLayoutSubviews(in:))) {
+                toolView.didLayoutSubviews?(in: self)
             }
         }
     }
@@ -162,11 +139,6 @@ extension MediaBrowserViewController {
         if let browserView = self.browserView {
             browserView.reloadData()
             browserView.collectionView?.layoutIfNeeded()
-        }
-        for toolView in self.toolViews {
-            if toolView.responds(to: #selector(ToolViewProtocol.viewWillAppear(for:))) {
-                toolView.viewWillAppear?(for: self)
-            }
         }
     }
     
@@ -178,11 +150,6 @@ extension MediaBrowserViewController {
     open override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.setNeedsStatusBarAppearanceUpdate()
-        for toolView in self.toolViews {
-            if toolView.responds(to: #selector(ToolViewProtocol.viewWillDisappear(for:))) {
-                toolView.viewWillDisappear?(for: self)
-            }
-        }
     }
     
     open override var prefersStatusBarHidden: Bool {
@@ -191,6 +158,33 @@ extension MediaBrowserViewController {
     
     open override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
         return .fade
+    }
+    
+}
+
+extension MediaBrowserViewController {
+    
+    @objc open func show(from sender: UIViewController, animated: Bool) {
+        sender.present(self, animated: animated, completion: nil)
+    }
+    
+    @objc open func hide(animated: Bool) {
+        self.dismiss(animated: animated, completion: nil)
+    }
+    
+    @objc open var toolViews: Array<UIView & ToolViewProtocol> {
+        get {
+            if !self.isViewLoaded {
+                return []
+            }
+            var resultArray = Array<UIView & ToolViewProtocol>()
+            for item in self.view.subviews.enumerated() {
+                if let subview = item.element as? (UIView & ToolViewProtocol) {
+                    resultArray.append(subview)
+                }
+            }
+            return resultArray
+        }
     }
     
 }
@@ -228,16 +222,16 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
             sourceItem.sourceView?.isHidden = true
         }
         for toolView in self.toolViews {
-            if toolView.responds(to: #selector(ToolViewProtocol.willScrollHalf(for:fromIndex:toIndex:))) {
-                toolView.willScrollHalf?(for: self, fromIndex: fromIndex, toIndex: toIndex)
+            if toolView.responds(to: #selector(ToolViewProtocol.willScrollHalf(fromIndex:toIndex:in:))) {
+                toolView.willScrollHalf?(fromIndex: fromIndex, toIndex: toIndex, in: self)
             }
         }
     }
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, didScrollTo index: Int) {
         for toolView in self.toolViews {
-            if toolView.responds(to: #selector(ToolViewProtocol.didScrollTo(for:index:))) {
-                toolView.didScrollTo?(for: self, index: index)
+            if toolView.responds(to: #selector(ToolViewProtocol.didScrollTo(index:in:))) {
+                toolView.didScrollTo?(index: index, in: self)
             }
         }
     }
@@ -259,8 +253,8 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     
     @objc public func mediaBrowserView(_ browserView: MediaBrowserView, longPress gestureRecognizer: UILongPressGestureRecognizer) {
         for toolView in self.toolViews {
-            if toolView.responds(to: #selector(ToolViewProtocol.didLongPress(for:gestureRecognizer:))) {
-                toolView.didLongPress?(for: self, gestureRecognizer: gestureRecognizer)
+            if toolView.responds(to: #selector(ToolViewProtocol.didLongPress(gestureRecognizer:in:))) {
+                toolView.didLongPress?(gestureRecognizer: gestureRecognizer, in: self)
             }
         }
     }
@@ -295,7 +289,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     
 }
 
-extension MediaBrowserViewController: UIViewControllerTransitioningDelegate {
+extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, TransitionAnimatorDelegate {
     
     public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return self.transitioningAnimator
@@ -305,9 +299,7 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate {
         return self.transitioningAnimator
     }
     
-}
-
-extension MediaBrowserViewController: TransitionAnimatorDelegate {
+    /// mark: TransitionAnimatorDelegate
     
     public var sourceRect: CGRect {
         if let sourceItem = self.sourceItems?[browserView?.currentPage ?? 0] {

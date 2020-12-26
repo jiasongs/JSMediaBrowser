@@ -72,7 +72,6 @@ class ViewController: UIViewController {
     
     @objc func handleImageButtonEvent(sender: QMUIButton) -> Void {
         let browser: MediaBrowserViewController = MediaBrowserViewController()
-        browser.browserView?.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
         var sourceItems: Array<ImageEntity> = [];
         for (index, urlString) in self.dataSource.enumerated() {
             if let button: QMUIButton = self.floatLayoutView.subviews[index] as? QMUIButton {
@@ -83,6 +82,7 @@ class ViewController: UIViewController {
             }
         }
         browser.sourceItems = sourceItems
+        browser.browserView?.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
         browser.show(from: self, animated: true)
     }
     
