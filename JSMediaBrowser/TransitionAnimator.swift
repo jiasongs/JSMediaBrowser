@@ -115,7 +115,9 @@ extension TransitionAnimator {
         let needViewController = isPresenting ? toViewController : fromViewController
         if let toolViews = self.delegate?.animatorViews {
             for view in toolViews {
-                view.alpha = isPresenting ? 0 : 1
+                if isPresenting {
+                    view.alpha = 0.0
+                }
             }
         }
         if style == .fade {
@@ -195,11 +197,6 @@ extension TransitionAnimator {
     
     func handleAnimationCompletion(style: TransitioningStyle, isPresenting: Bool, fromViewController: UIViewController?, toViewController: UIViewController?, sourceView: UIView?) -> Void {
         let needViewController = isPresenting ? fromViewController : toViewController
-        if let toolViews = self.delegate?.animatorViews {
-            for view in toolViews {
-                view.alpha = 1
-            }
-        }
         if style == .fade {
             needViewController?.view.alpha = 1
         } else if style == .zoom {

@@ -25,12 +25,13 @@ class ViewController: UIViewController {
         SDImageCache.shared.clearMemory()
         SDImageCache.shared.clearDisk(onCompletion: nil)
         /// 设置全局Block
-        MediaBrowserAppearance.appearance.buildWebImageMediatorBlock = { (browserVC: MediaBrowserViewController, sourceItem: SourceProtocol) -> WebImageMediatorProtocol in
+        MediaBrowserAppearance.appearance.addWebImageMediatorBlock = { (browserVC: MediaBrowserViewController, sourceItem: SourceProtocol) -> WebImageMediatorProtocol in
             return DefaultWebImageMediator()
         }
-        MediaBrowserAppearance.appearance.buildToolViewsBlock = { (browserVC: MediaBrowserViewController) -> Array<UIView & ToolViewProtocol> in
-            let page: PageControl = PageControl.init()
-            return [page]
+        MediaBrowserAppearance.appearance.addToolViewsBlock = { (browserVC: MediaBrowserViewController) -> Array<UIView & ToolViewProtocol> in
+            let pageControl: PageControl = PageControl()
+            let shareControl: ShareControl = ShareControl()
+            return [pageControl, shareControl]
         }
     }
     

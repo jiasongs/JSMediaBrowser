@@ -14,8 +14,8 @@ public typealias BuildToolViewsBlock = (MediaBrowserViewController) -> Array<UIV
     
     @objc public static let appearance = MediaBrowserAppearance()
     
-    @objc public var buildWebImageMediatorBlock: BuildWebImageMediatorBlock?
-    @objc open var buildToolViewsBlock: BuildToolViewsBlock?
+    @objc public var addWebImageMediatorBlock: BuildWebImageMediatorBlock?
+    @objc open var addToolViewsBlock: BuildToolViewsBlock?
     @objc open var progressTintColor: UIColor?
     
 }

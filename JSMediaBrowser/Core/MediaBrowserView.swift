@@ -138,11 +138,14 @@ extension MediaBrowserView {
         }
     }
     
-    @objc open func resetDismissingGesture() -> Void {
+    @objc open func resetDismissingGesture(withAnimations animations: (() -> Void)?) -> Void {
         self.gestureBeganLocation = CGPoint.zero
         UIView.animate(withDuration: 0.25, delay: 0, options: AnimationOptionsCurveOut, animations: {
             self.currentPageCell?.transform = CGAffineTransform.identity
             self.dimmingView?.alpha = 1.0
+            if let block = animations {
+                block()
+            }
         }, completion: nil)
     }
     
@@ -310,7 +313,7 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
             self.endDismissingGesture(gesture, verticalDistance: verticalDistance)
             break
         default:
-            self.resetDismissingGesture()
+            self.resetDismissingGesture(withAnimations: nil)
             break
         }
     }
@@ -329,7 +332,7 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
         if self.toggleDismissingGestureDelegate(gesture, verticalDistance: verticalDistance) {
             self.gestureBeganLocation = CGPoint.zero
         } else {
-            self.resetDismissingGesture()
+            self.resetDismissingGesture(withAnimations: nil)
         }
     }
     

@@ -9,8 +9,8 @@ import UIKit
 
 @objc public protocol ToolViewProtocol: NSObjectProtocol  {
     
-    @objc func viewDidLoad(for browserViewController: MediaBrowserViewController)
     @objc func sourceItemsDidChange(for browserViewController: MediaBrowserViewController)
+    @objc func viewDidLoad(for browserViewController: MediaBrowserViewController)
     
     @objc optional func viewDidLayoutSubviews(for browserViewController: MediaBrowserViewController)
     @objc optional func viewWillAppear(for browserViewController: MediaBrowserViewController)

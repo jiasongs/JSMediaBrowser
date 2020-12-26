@@ -24,14 +24,10 @@ public enum TransitioningStyle: Int {
                 if let _ = item as? ImageEntity {
                     let loader: ImageLoaderEntity = ImageLoaderEntity()
                     loader.sourceItem = item
-                    var buildBlock: BuildWebImageMediatorBlock?
-                    if let block = self.buildWebImageMediatorBlock {
-                        buildBlock = block
-                    } else if let block = MediaBrowserAppearance.appearance.buildWebImageMediatorBlock {
-                        buildBlock = block
-                    }
-                    if buildBlock != nil {
-                        loader.webImageMediator = buildBlock!(self, item)
+                    if let block = self.addWebImageMediatorBlock {
+                        loader.webImageMediator = block(self, item)
+                    } else if let block = MediaBrowserAppearance.appearance.addWebImageMediatorBlock {
+                        loader.webImageMediator = block(self, item)
                     }
                     array.append(loader)
                 }
@@ -66,8 +62,8 @@ public enum TransitioningStyle: Int {
         }
     }
     /// mark
-    @objc open var buildWebImageMediatorBlock: BuildWebImageMediatorBlock?
-    @objc open var buildToolViewsBlock: BuildToolViewsBlock?
+    @objc open var addWebImageMediatorBlock: BuildWebImageMediatorBlock?
+    @objc open var addToolViewsBlock: BuildToolViewsBlock?
     @objc open var progressTintColor: UIColor?
     
     private var loaderItems: Array<LoaderProtocol>?
@@ -106,6 +102,18 @@ extension MediaBrowserViewController {
         self.dismiss(animated: animated, completion: nil)
     }
     
+    @objc open var toolViews: Array<UIView & ToolViewProtocol> {
+        get {
+            var resultArray = Array<UIView & ToolViewProtocol>()
+            for item in self.view.subviews.enumerated() {
+                if let subview = item.element as? (UIView & ToolViewProtocol) {
+                    resultArray.append(subview)
+                }
+            }
+            return resultArray
+        }
+    }
+    
 }
 
 extension MediaBrowserViewController {
@@ -123,9 +131,9 @@ extension MediaBrowserViewController {
         }
         /// 工具视图
         var buildBlock: BuildToolViewsBlock?
-        if let block = self.buildToolViewsBlock {
+        if let block = self.addToolViewsBlock {
             buildBlock = block
-        } else if let block = MediaBrowserAppearance.appearance.buildToolViewsBlock {
+        } else if let block = MediaBrowserAppearance.appearance.addToolViewsBlock {
             buildBlock = block
         }
         if buildBlock != nil {
@@ -187,22 +195,6 @@ extension MediaBrowserViewController {
     
 }
 
-extension MediaBrowserViewController {
-    
-    private var toolViews: Array<UIView & ToolViewProtocol> {
-        get {
-            var resultArray = Array<UIView & ToolViewProtocol>()
-            for item in self.view.subviews.enumerated() {
-                if let subview = item.element as? (UIView & ToolViewProtocol) {
-                    resultArray.append(subview)
-                }
-            }
-            return resultArray
-        }
-    }
-    
-}
-
 extension MediaBrowserViewController: MediaBrowserViewDataSource {
     
     public func numberOfMediaItemsInBrowserView(_ browserView: MediaBrowserView) -> Int {
@@ -214,7 +206,11 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         guard let loaderItem = loaderItems?[index] else { return UICollectionViewCell() }
         if let loaderItem = loaderItem as? ImageLoaderEntity, let _ = loaderItem.sourceItem as? ImageEntity {
             cell = browserView.dequeueReusableCell(withReuseIdentifier: imageCellIdentifier, for: index) as? BaseCell
-            cell?.progressTintColor = self.progressTintColor
+            if let tintColor = self.progressTintColor {
+                cell?.progressTintColor = tintColor
+            } else if let tintColor = MediaBrowserAppearance.appearance.progressTintColor {
+                cell?.progressTintColor = tintColor
+            }
             cell?.updateCell(loaderEntity: loaderItem, at: index)
         }
         return cell!
@@ -272,12 +268,24 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     @objc public func mediaBrowserView(_ browserView: MediaBrowserView, dismissing gestureRecognizer: UIPanGestureRecognizer, verticalDistance: CGFloat) {
         switch gestureRecognizer.state {
         case .changed:
+            var alpha: CGFloat = 1
+            let height: NSNumber = NSNumber(value: Float(browserView.bounds.height / 2))
+            if (verticalDistance > 0) {
+                alpha = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.2], extrapolateLeft: .clamp, extrapolateRight: .clamp)
+            }
+            for toolView in self.toolViews {
+                toolView.alpha = alpha
+            }
             break
         case .ended:
             if (verticalDistance > browserView.bounds.height / 2 / 3) {
                 self.hide(animated: true)
             } else {
-                browserView.resetDismissingGesture()
+                browserView.resetDismissingGesture(withAnimations: { () -> Void in
+                    for toolView in self.toolViews {
+                        toolView.alpha = 1.0
+                    }
+                })
             }
             break
         default:
