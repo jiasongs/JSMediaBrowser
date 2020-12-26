@@ -13,12 +13,6 @@ class PageControl: UIPageControl, ToolViewProtocol {
     
     weak var browserViewController: MediaBrowserViewController?
     
-    func sourceItemsDidChange(in viewController: MediaBrowserViewController) {
-        if let sourceItems = viewController.sourceItems {
-            self.numberOfPages = sourceItems.count
-        }
-    }
-    
     func didAddToSuperview(in viewController: MediaBrowserViewController) {
         self.browserViewController = viewController
         self.sourceItemsDidChange(in: viewController)
@@ -33,6 +27,12 @@ class PageControl: UIPageControl, ToolViewProtocol {
             make.bottom.equalTo(viewController.view.snp.bottom).offset(-bottom)
         }
         self.addTarget(self, action: #selector(self.handlePageControlEvent), for: .valueChanged)
+    }
+    
+    func sourceItemsDidChange(in viewController: MediaBrowserViewController) {
+        if let sourceItems = viewController.sourceItems {
+            self.numberOfPages = sourceItems.count
+        }
     }
     
     func willScrollHalf(fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController) {

@@ -10,9 +10,9 @@ import UIKit
 @objc(MediaBrowserImageLoaderEntity)
 open class ImageLoaderEntity: BaseLoaderEntity, ImageLoaderProtocol {
     
-    public var webImageMediator: WebImageMediatorProtocol?
+    @objc public var webImageMediator: WebImageMediatorProtocol?
     
-    public override func request(forView view: UIView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) {
+    @objc public override func request(forView view: UIView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) {
         super.request(forView: view, setDataBlock: setDataBlock, downloadProgress: downloadProgress, completed: completed)
         if let sourceItem = self.sourceItem as? ImageEntity {
             self.webImageMediator?.setImage(forView: view, url: sourceItem.imageUrl, thumbImage: sourceItem.thumbImage, setImageBlock: { (image: UIImage?, imageData: Data?) in

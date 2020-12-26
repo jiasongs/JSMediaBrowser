@@ -7,6 +7,7 @@
 
 import UIKit
 
+@objc(MediaBrowserZoomBaseView)
 open class ZoomBaseView: UIView {
     
     public override init(frame: CGRect) {

@@ -12,7 +12,7 @@
 #import "JSMediaBrowserExampleMacOS-Swift.h"
 #endif
 #import <SDWebImage.h>
-#import <JSMediaBrowser/JSMediaBrowser-Swift.h>
+#import <JSMediaBrowser-Swift.h>
 
 @interface OCExampleViewController ()
 
@@ -42,9 +42,15 @@
 
 - (void)handleImageButtonEvent:(UIButton *)sender {
     MediaBrowserViewController *browserVC = [[MediaBrowserViewController alloc] init];
-    browserVC.sourceItems = @[];
+    MediaBrowserImageEntity *imageEntity = [[MediaBrowserImageEntity alloc] initWithSourceView:nil sourceRect:CGRectZero thumbImage:nil];
+    imageEntity.image = nil;
+    browserVC.sourceItems = @[imageEntity];
     browserVC.browserView.currentPage = 0;
     [browserVC showFromViewController:self animated:YES];
+    
+    PieProgressView *progressView = [[PieProgressView alloc] init];
+    progressView.animationDuration = 0.3;
+    [self.view addSubview:progressView];
 }
 
 /*

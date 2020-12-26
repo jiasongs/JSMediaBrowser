@@ -10,8 +10,8 @@ import UIKit
 @objc(MediaBrowserBaseCell)
 open class BaseCell: UICollectionViewCell, CellProtocol {
     
-    public var pieProgressView: PieProgressView?
-    public var progressTintColor: UIColor?
+    @objc public var pieProgressView: PieProgressView?
+    @objc public var progressTintColor: UIColor?
     
     override init(frame: CGRect) {
         super.init(frame: frame)

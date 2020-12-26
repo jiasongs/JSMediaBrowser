@@ -22,19 +22,19 @@ public enum LoaderState: Int {
 @objc(MediaBrowserLoaderProtocol)
 public protocol LoaderProtocol: NSObjectProtocol {
     
-    var sourceItem: SourceProtocol? { get set }
-    var state: LoaderState { get set }
-    var progress: Progress? { get set }
-    var error: Error? { get set }
+    @objc var sourceItem: SourceProtocol? { get set }
+    @objc var state: LoaderState { get set }
+    @objc var progress: Progress? { get set }
+    @objc var error: Error? { get set }
     
-    func request(forView view: UIView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) -> Void
-    func cancelRequest(forView view: UIView)
+    @objc func request(forView view: UIView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) -> Void
+    @objc func cancelRequest(forView view: UIView)
     
 }
 
 @objc(MediaBrowserImageLoaderProtocol)
 public protocol ImageLoaderProtocol: LoaderProtocol {
     
-    var webImageMediator: WebImageMediatorProtocol? { get set }
+    @objc var webImageMediator: WebImageMediatorProtocol? { get set }
     
 }

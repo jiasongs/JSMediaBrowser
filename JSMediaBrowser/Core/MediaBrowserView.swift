@@ -8,7 +8,7 @@
 import UIKit
 import JSCoreKit
 
-open class MediaBrowserView: UIView {
+@objc open class MediaBrowserView: UIView {
     
     @objc open weak var dataSource: MediaBrowserViewDataSource?
     @objc open weak var delegate: MediaBrowserViewDelegate?

@@ -29,7 +29,7 @@ open class ImageCell: BaseCell {
         zoomImageView?.js_frameApplyTransform = self.contentView.bounds
     }
     
-    public override func updateCell(loaderEntity: LoaderProtocol, at index: Int) {
+    @objc public override func updateCell(loaderEntity: LoaderProtocol, at index: Int) {
         super.updateCell(loaderEntity: loaderEntity, at: index)
         if let sourceItem = loaderEntity.sourceItem as? ImageEntity {
             if sourceItem.image != nil {
@@ -40,14 +40,14 @@ open class ImageCell: BaseCell {
         }
     }
     
-    public override func loaderEntity(_ loaderEntity: LoaderProtocol, setData object: Any?, data: Data?) {
+    @objc public override func loaderEntity(_ loaderEntity: LoaderProtocol, setData object: Any?, data: Data?) {
         super.loaderEntity(loaderEntity, setData: object, data: data)
         if let image = object as? UIImage {
             self.zoomImageView?.image = image
         }
     }
     
-    public override func loaderEntity(_ loaderEntity: LoaderProtocol, didCompleted object: Any?, data: Data?, error: Error?, finished: Bool) {
+    @objc public override func loaderEntity(_ loaderEntity: LoaderProtocol, didCompleted object: Any?, data: Data?, error: Error?, finished: Bool) {
         super.loaderEntity(loaderEntity, didCompleted: object, data: data, error: error, finished: finished)
         if let image = object as? UIImage, error == nil {
             self.zoomImageView?.image = image

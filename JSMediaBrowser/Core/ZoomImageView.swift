@@ -9,6 +9,7 @@ import UIKit
 import PhotosUI
 import JSCoreKit
 
+@objc(MediaBrowserZoomImageView)
 open class ZoomImageView: ZoomBaseView {
     
     @objc private(set) var scrollView: UIScrollView?

@@ -20,9 +20,9 @@ public enum Shape: Int {
         return self.layer as? PieProgressLayer
     }
     
-    @objc open var progressAnimationDuration: CFTimeInterval = 0.5 {
+    @objc open var animationDuration: CFTimeInterval = 0.5 {
         didSet {
-            self.progressLayer?.progressAnimationDuration = progressAnimationDuration
+            self.progressLayer?.animationDuration = animationDuration
         }
     }
     @objc open var progress: Float = 0.0 {
@@ -74,7 +74,7 @@ public enum Shape: Int {
         self.borderInset = 3.0
         
         self.progress = 0.0
-        self.progressAnimationDuration = 0.3
+        self.animationDuration = 0.3
         
         self.layer.contentsScale = UIScreen.main.scale
         self.layer.setNeedsDisplay()
@@ -118,7 +118,7 @@ fileprivate class PieProgressLayer: CALayer {
     @NSManaged var lineWidth: CGFloat
     @NSManaged var shape: Shape
     @NSManaged var borderInset: CGFloat
-    var progressAnimationDuration: CFTimeInterval = 0.5
+    var animationDuration: CFTimeInterval = 0.5
     var shouldChangeProgressWithAnimation: Bool = true
     
     override class func needsDisplay(forKey key: String) -> Bool {
@@ -129,7 +129,7 @@ fileprivate class PieProgressLayer: CALayer {
         if event == #keyPath(progress) && shouldChangeProgressWithAnimation {
             let animation: CABasicAnimation = CABasicAnimation(keyPath: event)
             animation.fromValue = self.presentation()?.value(forKey: event)
-            animation.duration = self.progressAnimationDuration
+            animation.duration = self.animationDuration
             return animation
         }
         return super.action(forKey: event)
