@@ -162,8 +162,14 @@ extension MediaBrowserViewController {
         }
     }
     
+    open override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.setNeedsStatusBarAppearanceUpdate()
+    }
+    
     open override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        self.setNeedsStatusBarAppearanceUpdate()
         for toolView in self.toolViews {
             if toolView.responds(to: #selector(ToolViewProtocol.viewWillDisappear(for:))) {
                 toolView.viewWillDisappear?(for: self)

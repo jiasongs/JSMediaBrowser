@@ -40,7 +40,7 @@ open class MediaBrowserView: UIView {
         }
     }
     
-    private var isChangingCollectionViewBounds: Bool = false
+    private var isChangingCollectionViewFrame: Bool = false
     private var previousPageOffsetRatio: CGFloat = 0
     private var isNeededScrollToItem: Bool = true
     private var gestureBeganLocation: CGPoint = CGPoint.zero
@@ -92,8 +92,19 @@ open class MediaBrowserView: UIView {
 extension MediaBrowserView {
     
     @objc open func setCurrentPage(_ index: Int, animated: Bool) -> Void {
+        /// iOS 14, 当isPagingEnabled为true, 若不刷新则无法滚动到相应Item
+        /// https://stackoverflow.com/questions/41884645/uicollectionview-scroll-to-item-not-working-with-horizontal-direction
+        self.reloadData()
+        /// 滚动到指定位置
+        self.scrollToPage(at: index, animated: animated)
+        self.isNeededScrollToItem = false
+        self.currentPage = index
+        self.isNeededScrollToItem = true
+    }
+    
+    @objc open func scrollToPage(at index: Int, animated: Bool) -> Void {
         if let collectionView = self.collectionView {
-            /// 第一次产生滚动的时候, 需要赋值当前的偏移量
+            /// 第一次产生实际性滚动的时候, 需要赋值当前的偏移率
             if self.previousPageOffsetRatio == 0 {
                 self.previousPageOffsetRatio = self.pageOffsetRatio
             }
@@ -101,13 +112,10 @@ extension MediaBrowserView {
             if index < numberOfItems {
                 let indexPath = IndexPath(item: index, section: 0)
                 collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: animated)
-                /// 立即滚动
+                /// 立即滚动, 若不调用某些场景下可能无法滚动
                 collectionView.layoutIfNeeded()
             }
         }
-        self.isNeededScrollToItem = false
-        self.currentPage = index
-        self.isNeededScrollToItem = true
     }
     
     @objc open func reloadData() -> Void {
@@ -148,13 +156,13 @@ extension MediaBrowserView {
             dimmingView.frame = self.bounds
         }
         if let collectionView = self.collectionView {
-            let isSizeChanged = !collectionView.bounds.size.equalTo(self.bounds.size)
-            if isSizeChanged {
-                self.isChangingCollectionViewBounds = true
+            if !collectionView.bounds.size.equalTo(self.bounds.size) {
+                self.isChangingCollectionViewFrame = true
+                /// 必须先 invalidateLayout，再更新 collectionView.frame，否则横竖屏旋转前后的图片不一致（因为 scrollViewDidScroll: 时 contentSize、contentOffset 那些是错的）
                 self.collectionViewLayout?.invalidateLayout()
                 self.collectionView?.frame = self.bounds
-                self.setCurrentPage(self.currentPage, animated: false)
-                self.isChangingCollectionViewBounds = false
+                self.scrollToPage(at: self.currentPage, animated: false)
+                self.isChangingCollectionViewFrame = false
             }
         }
     }
@@ -215,7 +223,7 @@ extension MediaBrowserView: UIScrollViewDelegate {
     }
     
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView != self.collectionView || self.isChangingCollectionViewBounds {
+        if scrollView != self.collectionView || self.isChangingCollectionViewFrame {
             return
         }
         guard let collectionView = self.collectionView else { return }

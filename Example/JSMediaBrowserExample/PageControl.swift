@@ -42,7 +42,7 @@ class PageControl: UIPageControl, ToolViewProtocol {
     }
     
     @objc func handlePageControlEvent() -> Void {
-        self.browserViewController?.browserView?.currentPage = self.currentPage
+        self.browserViewController?.browserView?.setCurrentPage(self.currentPage, animated: false)
     }
 
 }
