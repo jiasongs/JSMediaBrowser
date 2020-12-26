@@ -18,7 +18,6 @@ open class MediaBrowserView: UIView {
     @objc open var doubleTapGesture: UITapGestureRecognizer?
     @objc open var longPressGesture: UILongPressGestureRecognizer?
     @objc open var dismissingGesture: UIPanGestureRecognizer?
-    @objc open var dismissingGestureEnabled: Bool = true
     
     @objc open var dimmingView: UIView? {
         didSet {
@@ -102,7 +101,8 @@ extension MediaBrowserView {
         self.isNeededScrollToItem = true
     }
     
-    @objc open func scrollToPage(at index: Int, animated: Bool) -> Void {
+    @objc(scrollToPageAtIndex:animated:)
+    open func scrollToPage(at index: Int, animated: Bool) -> Void {
         if let collectionView = self.collectionView {
             /// 第一次产生实际性滚动的时候, 需要赋值当前的偏移率
             if self.previousPageOffsetRatio == 0 {
@@ -126,7 +126,8 @@ extension MediaBrowserView {
         self.collectionView?.register(cellClass, forCellWithReuseIdentifier: identifier)
     }
     
-    @objc open func dequeueReusableCell(withReuseIdentifier identifier: String, for index: Int) -> UICollectionViewCell {
+    @objc(dequeueReusableCell:atIndex:)
+    open func dequeueReusableCell(withReuseIdentifier identifier: String, at index: Int) -> UICollectionViewCell {
         let indexPath = IndexPath(item: index, section: 0)
         return self.collectionView?.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) ?? UICollectionViewCell()
     }

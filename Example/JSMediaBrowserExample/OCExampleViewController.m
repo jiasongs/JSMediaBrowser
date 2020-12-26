@@ -11,6 +11,8 @@
 #else
 #import "JSMediaBrowserExampleMacOS-Swift.h"
 #endif
+#import <SDWebImage.h>
+#import <JSMediaBrowser/JSMediaBrowser-Swift.h>
 
 @interface OCExampleViewController ()
 
@@ -18,8 +20,31 @@
 
 @implementation OCExampleViewController
 
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
+        [[SDImageCache sharedImageCache] clearMemory];
+        [[SDImageCache sharedImageCache] clearDiskOnCompletion:nil];
+       
+        MediaBrowserAppearance.appearance.addWebImageMediatorBlock = ^id<MediaBrowserWebImageMediatorProtocol> _Nonnull(MediaBrowserViewController * browserVC, id<MediaBrowserSourceProtocol> sourceItem) {
+            return [[MediaBrowserViewDefaultWebImageMediator alloc] init];
+        };
+        MediaBrowserAppearance.appearance.addToolViewsBlock = ^NSArray<UIView<MediaBrowserToolViewProtocol> *> *(MediaBrowserViewController *browserVC) {
+            return @[];
+        };
+    }
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+}
+
+- (void)handleImageButtonEvent:(UIButton *)sender {
+    MediaBrowserViewController *browserVC = [[MediaBrowserViewController alloc] init];
+    browserVC.sourceItems = @[];
+    browserVC.browserView.currentPage = 0;
+    [browserVC showFromViewController:self animated:YES];
 }
 
 /*

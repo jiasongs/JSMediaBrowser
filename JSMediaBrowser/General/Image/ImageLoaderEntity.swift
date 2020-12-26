@@ -12,10 +12,10 @@ open class ImageLoaderEntity: BaseLoaderEntity, ImageLoaderProtocol {
     
     public var webImageMediator: WebImageMediatorProtocol?
     
-    public override func request(for view: UIView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) {
-        super.request(for: view, setDataBlock: setDataBlock, downloadProgress: downloadProgress, completed: completed)
+    public override func request(forView view: UIView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) {
+        super.request(forView: view, setDataBlock: setDataBlock, downloadProgress: downloadProgress, completed: completed)
         if let sourceItem = self.sourceItem as? ImageEntity {
-            self.webImageMediator?.setImage(for: view, url: sourceItem.imageUrl, thumbImage: sourceItem.thumbImage, setImageBlock: { (image: UIImage?, imageData: Data?) in
+            self.webImageMediator?.setImage(forView: view, url: sourceItem.imageUrl, thumbImage: sourceItem.thumbImage, setImageBlock: { (image: UIImage?, imageData: Data?) in
                 if let setDataBlock = setDataBlock {
                     setDataBlock(self, image, imageData)
                 }
@@ -43,8 +43,8 @@ open class ImageLoaderEntity: BaseLoaderEntity, ImageLoaderProtocol {
         }
     }
     
-    public override func cancelRequest(for view: UIView) {
-        self.webImageMediator?.cancelImageRequest(for: view)
+    public override func cancelRequest(forView view: UIView) {
+        self.webImageMediator?.cancelImageRequest(forView: view)
     }
     
 }

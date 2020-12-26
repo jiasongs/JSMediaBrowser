@@ -7,12 +7,19 @@
 
 import UIKit
 
-@objc public protocol CellProtocol: NSObjectProtocol {
+@objc(MediaBrowserCellProtocol)
+public protocol CellProtocol: NSObjectProtocol {
     
+    @objc(updateCell:atIndex:)
     func updateCell(loaderEntity: LoaderProtocol, at index: Int)
     
+    @objc(loaderEntity:setDataWithObject:data:)
     func loaderEntity(_ loaderEntity: LoaderProtocol, setData object: Any?, data: Data?)
+    
+    @objc(loaderEntity:didReceiveWithProgress:)
     func loaderEntity(_ loaderEntity: LoaderProtocol, didReceive progress: Progress?)
+    
+    @objc(loaderEntity:didCompletedWithObject:data:error:finished:)
     func loaderEntity(_ loaderEntity: LoaderProtocol, didCompleted object: Any?, data: Data?, error: Error?, finished: Bool)
     
 }

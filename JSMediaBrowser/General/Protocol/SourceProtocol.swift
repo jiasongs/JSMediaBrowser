@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  SourceProtocol.swift
 //  JSMediaBrowser
 //
 //  Created by jiasong on 2020/12/12.
@@ -7,7 +7,8 @@
 
 import UIKit
 
-@objc public protocol SourceProtocol: NSObjectProtocol {
+@objc(MediaBrowserSourceProtocol)
+public protocol SourceProtocol: NSObjectProtocol {
     
     var sourceRect: CGRect { get set }
     var sourceView: UIView? { get set }

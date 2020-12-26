@@ -24,14 +24,14 @@ open class BaseLoaderEntity: NSObject, LoaderProtocol {
         self.progress = Progress(totalUnitCount: -1)
     }
     
-    public func request(for view: UIView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) {
+    public func request(forView view: UIView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) {
         self.state = .start
         self.error = nil
         self.progress?.completedUnitCount = 0
         self.progress?.totalUnitCount = -1
     }
     
-    public func cancelRequest(for view: UIView) {
+    public func cancelRequest(forView view: UIView) {
         
     }
     

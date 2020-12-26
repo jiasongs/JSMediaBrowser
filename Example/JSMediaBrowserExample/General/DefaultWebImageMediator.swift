@@ -12,7 +12,7 @@ import JSMediaBrowser
 @objc(MediaBrowserViewDefaultWebImageMediator)
 class DefaultWebImageMediator: NSObject, WebImageMediatorProtocol {
     
-    func setImage(for view: UIView?, url: URL?, thumbImage: UIImage?, setImageBlock: WebImageMediatorSetImageBlock?, progress: WebImageMediatorDownloadProgress?, completed: WebImageMediatorCompleted?) {
+    func setImage(forView view: UIView?, url: URL?, thumbImage: UIImage?, setImageBlock: WebImageMediatorSetImageBlock?, progress: WebImageMediatorDownloadProgress?, completed: WebImageMediatorCompleted?) {
         view?.sd_internalSetImage(with: url, placeholderImage: thumbImage, options: SDWebImageOptions.retryFailed, context: nil, setImageBlock: { (image: UIImage?, data: Data?, cacheType: SDImageCacheType, targetUrl: URL?) in
             if let setImageBlock = setImageBlock {
                 setImageBlock(image, data)
@@ -28,7 +28,7 @@ class DefaultWebImageMediator: NSObject, WebImageMediatorProtocol {
         })
     }
     
-    func cancelImageRequest(for view: UIView?) {
+    func cancelImageRequest(forView view: UIView?) {
         view?.sd_cancelCurrentImageLoad()
     }
     

@@ -238,7 +238,8 @@ extension ZoomImageView {
         }
     }
     
-    @objc open func zoom(to rect: CGRect, animated: Bool) -> Void {
+    @objc(zoomToRect:animated:)
+    open func zoom(to rect: CGRect, animated: Bool) -> Void {
         if (animated) {
             UIView.animate(withDuration: 0.25, delay: 0.0, options: AnimationOptionsCurveOut, animations: {
                 self.scrollView?.zoom(to: rect, animated: false)
@@ -248,7 +249,8 @@ extension ZoomImageView {
         }
     }
     
-    @objc open func zoom(to point: CGPoint, from view: UIView?, animated: Bool) -> Void {
+    @objc(zoomToPoint:fromView:animated:)
+    open func zoom(to point: CGPoint, from view: UIView?, animated: Bool) -> Void {
         guard let scrollView = self.scrollView else { return }
         guard let cententView = self.contentView else { return }
         // 如果图片被压缩了，则第一次放大到原图大小，第二次放大到最大倍数

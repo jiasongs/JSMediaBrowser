@@ -164,7 +164,8 @@ extension MediaBrowserViewController {
 
 extension MediaBrowserViewController {
     
-    @objc open func show(from sender: UIViewController, animated: Bool) {
+    @objc(showFromViewController:animated:)
+    open func show(from sender: UIViewController, animated: Bool) {
         sender.present(self, animated: animated, completion: nil)
     }
     
@@ -199,7 +200,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         var cell: BaseCell?
         guard let loaderItem = loaderItems?[index] else { return UICollectionViewCell() }
         if let loaderItem = loaderItem as? ImageLoaderEntity, let _ = loaderItem.sourceItem as? ImageEntity {
-            cell = browserView.dequeueReusableCell(withReuseIdentifier: imageCellIdentifier, for: index) as? BaseCell
+            cell = browserView.dequeueReusableCell(withReuseIdentifier: imageCellIdentifier, at: index) as? BaseCell
             if let tintColor = self.progressTintColor {
                 cell?.progressTintColor = tintColor
             } else if let tintColor = MediaBrowserAppearance.appearance.progressTintColor {
