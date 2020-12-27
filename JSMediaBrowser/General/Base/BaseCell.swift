@@ -47,6 +47,7 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
     
     public func updateCell(loaderEntity: LoaderProtocol, at index: Int) {
         self.pieProgressView?.isHidden = false
+        loaderEntity.cancelRequest(forView: self.contentView)
         loaderEntity.request(forView: self.contentView) { [weak self](loader: LoaderProtocol, object: Any?, data: Data?) in
             self?.loaderEntity(loader, setData: object, data: data)
         } downloadProgress: { [weak self](loader: LoaderProtocol, progress: Progress?) in
@@ -65,6 +66,7 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
             pieProgressView.isHidden = true
         }
         if let progress = progress {
+            self.layoutIfNeeded()
             self.pieProgressView?.setProgress(Float(progress.fractionCompleted), animated: true)
         }
     }
@@ -77,10 +79,6 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
         if object != nil {
             self.pieProgressView?.isHidden = true
         }
-    }
-    
-    deinit {
-        
     }
     
 }

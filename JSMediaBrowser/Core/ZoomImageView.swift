@@ -14,7 +14,7 @@ open class ZoomImageView: ZoomBaseView {
     
     @objc weak var delegate: ZoomImageViewDelegate?
     
-    @objc private(set) var scrollView: UIScrollView?
+    @objc private(set) public var scrollView: UIScrollView?
     
     private var isImageViewInitialized: Bool = false
     @objc private(set) lazy var imageView: UIImageView = {

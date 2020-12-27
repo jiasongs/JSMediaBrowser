@@ -18,10 +18,6 @@ class ExampleViewController: UIViewController {
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-    }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
         SDImageCache.shared.clearMemory()
         SDImageCache.shared.clearDisk(onCompletion: nil)
         /// 设置全局Block
@@ -36,6 +32,10 @@ class ExampleViewController: UIViewController {
             let shareControl: ShareControl = ShareControl()
             return [pageControl, shareControl]
         }
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
     }
     
     override func viewDidLoad() {
