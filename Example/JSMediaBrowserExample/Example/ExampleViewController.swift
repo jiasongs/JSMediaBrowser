@@ -11,7 +11,7 @@ import SDWebImage
 import SnapKit
 import JSMediaBrowser
 
-class ViewController: UIViewController {
+class ExampleViewController: UIViewController {
     
     var floatLayoutView: QMUIFloatLayoutView!
     var dataSource: Array<String> = []

@@ -68,6 +68,7 @@ public enum TransitioningStyle: Int {
     @objc open var addLivePhotoViewInZoomViewBlock: BuildLivePhotoViewInZoomViewBlock?
     @objc open var addWebImageMediatorBlock: BuildWebImageMediatorBlock?
     @objc open var addToolViewsBlock: BuildToolViewsBlock?
+    @objc open var cellForItemAtIndexBlock: BuildCellBlock?
     @objc open var progressTintColor: UIColor?
     
     private var loaderItems: Array<LoaderProtocol>?
@@ -106,8 +107,13 @@ extension MediaBrowserViewController {
             browserView.dataSource = self
             browserView.gestureDelegate = self
             self.view.addSubview(browserView)
-            /// 注册Cell
-            browserView.registerClass(ImageCell.self, forCellWithReuseIdentifier: imageCellIdentifier)
+        }
+        /// 注册Cell
+        self.registerClass(ImageCell.self, forCellWithReuseIdentifier: imageCellIdentifier)
+        let reuseCellIdentifiers: Dictionary<Identifier, CellClassSting> = MediaBrowserAppearance.appearance.reuseCellIdentifiers
+        for (key, value) in reuseCellIdentifiers {
+            let cellClass: AnyClass = NSClassFromString(value) ?? UICollectionViewCell.self
+            self.registerClass(cellClass, forCellWithReuseIdentifier: key)
         }
         /// 工具视图
         var buildBlock: BuildToolViewsBlock?
@@ -191,6 +197,15 @@ extension MediaBrowserViewController {
         }
     }
     
+    @objc public func registerClass(_ cellClass: AnyClass, forCellWithReuseIdentifier identifier: String) -> Void {
+        self.browserView?.registerClass(cellClass, forCellWithReuseIdentifier: identifier)
+    }
+    
+    @objc(dequeueReusableCell:atIndex:)
+    open func dequeueReusableCell(withReuseIdentifier identifier: String, at index: Int) -> UICollectionViewCell {
+        return self.browserView?.dequeueReusableCell(withReuseIdentifier: identifier, at: index) ?? UICollectionViewCell()
+    }
+    
 }
 
 extension MediaBrowserViewController: MediaBrowserViewDataSource {
@@ -200,22 +215,28 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     }
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, cellForItemAt index: Int) -> UICollectionViewCell {
-        var cell: BaseCell?
-        guard let loaderItem = loaderItems?[index] else { return UICollectionViewCell() }
-        if let loaderItem = loaderItem as? ImageLoaderEntity, let _ = loaderItem.sourceItem as? ImageEntity {
-            cell = browserView.dequeueReusableCell(withReuseIdentifier: imageCellIdentifier, at: index) as? BaseCell
-            if let tintColor = self.progressTintColor {
-                cell?.progressTintColor = tintColor
-            } else if let tintColor = MediaBrowserAppearance.appearance.progressTintColor {
-                cell?.progressTintColor = tintColor
-            }
+        var cell: UICollectionViewCell!
+        if let block = self.cellForItemAtIndexBlock {
+            cell = block(self, index)
+        } else if let block = MediaBrowserAppearance.appearance.cellForItemAtIndexBlock {
+            cell = block(self, index)
+        }
+        if cell == nil, let loaderItem = loaderItems?[index] as? ImageLoaderEntity {
+            cell = browserView.dequeueReusableCell(withReuseIdentifier: imageCellIdentifier, at: index)
             /// 需要添加代理
             if let imageCell = cell as? ImageCell {
                 imageCell.zoomImageView?.delegate = self
             }
-            cell?.updateCell(loaderEntity: loaderItem, at: index)
+            if let baseCell = cell as? BaseCell {
+                if let tintColor = self.progressTintColor {
+                    baseCell.progressTintColor = tintColor
+                } else if let tintColor = MediaBrowserAppearance.appearance.progressTintColor {
+                    baseCell.progressTintColor = tintColor
+                }
+                baseCell.updateCell(loaderEntity: loaderItem, at: index)
+            }
         }
-        return cell!
+        return cell
     }
     
 }

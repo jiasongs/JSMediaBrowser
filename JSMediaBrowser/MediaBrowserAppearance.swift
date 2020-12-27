@@ -12,6 +12,10 @@ public typealias BuildImageViewInZoomViewBlock = (MediaBrowserViewController, Zo
 public typealias BuildLivePhotoViewInZoomViewBlock = (MediaBrowserViewController, ZoomImageView) -> PHLivePhotoView
 public typealias BuildWebImageMediatorBlock = (MediaBrowserViewController, SourceProtocol) -> WebImageMediatorProtocol
 public typealias BuildToolViewsBlock = (MediaBrowserViewController) -> Array<UIView & ToolViewProtocol>
+public typealias BuildCellBlock = (MediaBrowserViewController, Int) -> UICollectionViewCell?
+
+public typealias Identifier = String
+public typealias CellClassSting = String
 
 @objc open class MediaBrowserAppearance: NSObject {
     
@@ -21,7 +25,14 @@ public typealias BuildToolViewsBlock = (MediaBrowserViewController) -> Array<UIV
     @objc public var addLivePhotoViewInZoomViewBlock: BuildLivePhotoViewInZoomViewBlock?
     @objc public var addWebImageMediatorBlock: BuildWebImageMediatorBlock?
     @objc public var addToolViewsBlock: BuildToolViewsBlock?
+    @objc public var cellForItemAtIndexBlock: BuildCellBlock?
     
     @objc public var progressTintColor: UIColor?
+    
+    @objc lazy private(set) public var reuseCellIdentifiers: Dictionary<Identifier, CellClassSting> = Dictionary()
+    
+    @objc public func registerClass(_ cellClass: AnyClass, forCellWithReuseIdentifier identifier: String) -> Void {
+        self.reuseCellIdentifiers[identifier] = NSStringFromClass(cellClass)
+    }
     
 }

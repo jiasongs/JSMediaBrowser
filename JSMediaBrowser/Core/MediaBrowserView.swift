@@ -28,8 +28,8 @@ import JSCoreKit
             }
         }
     }
-    @objc private(set) var collectionView: PagingCollectionView?
-    @objc private(set) var collectionViewLayout: PagingLayout?
+    @objc private(set) open var collectionView: PagingCollectionView?
+    @objc private(set) open var collectionViewLayout: PagingLayout?
     
     @objc public var currentPage: Int = 0 {
         didSet {
@@ -144,7 +144,13 @@ extension MediaBrowserView {
     }
     
     @objc open func registerClass(_ cellClass: AnyClass, forCellWithReuseIdentifier identifier: String) -> Void {
-        self.collectionView?.register(cellClass, forCellWithReuseIdentifier: identifier)
+        let nibPath: String? = Bundle(for: cellClass).path(forResource: NSStringFromClass(cellClass), ofType: "nib")
+        if nibPath != nil {
+            let nib: UINib? = UINib(nibName: NSStringFromClass(cellClass), bundle: Bundle(for: cellClass))
+            self.collectionView?.register(nib, forCellWithReuseIdentifier: identifier)
+        } else {
+            self.collectionView?.register(cellClass, forCellWithReuseIdentifier: identifier)
+        }
     }
     
     @objc(dequeueReusableCell:atIndex:)
