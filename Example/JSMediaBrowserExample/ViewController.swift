@@ -40,7 +40,13 @@ class ViewController: UIViewController {
         
         self.view.backgroundColor = .black
         if let data = try? Data(contentsOf: NSURL.fileURL(withPath: Bundle.main.path(forResource: "data", ofType: "json") ?? "")) {
-            let array = try? JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.fragmentsAllowed) as? Array<String>
+            var array = try? JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.fragmentsAllowed) as? Array<String>
+            if let data1 = Bundle.main.path(forResource: "data1", ofType: "jpg") {
+                array?.append(URL(fileURLWithPath: data1).absoluteString)
+            }
+            if let data2 = Bundle.main.path(forResource: "data2", ofType: "gif") {
+                array?.append(URL(fileURLWithPath: data2).absoluteString)
+            }
             self.dataSource = array ?? []
         }
         self.floatLayoutView = QMUIFloatLayoutView()
