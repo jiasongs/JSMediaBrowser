@@ -26,7 +26,7 @@ class ViewController: UIViewController {
         SDImageCache.shared.clearDisk(onCompletion: nil)
         /// 设置全局Block
         MediaBrowserAppearance.appearance.addImageViewInZoomViewBlock = { (browserVC: MediaBrowserViewController, zoomImageView: ZoomImageView) -> UIImageView in
-            return SDAnimatedImageView()
+            return SDAnimatedImageView() // ImageView()
         }
         MediaBrowserAppearance.appearance.addWebImageMediatorBlock = { (browserVC: MediaBrowserViewController, sourceItem: SourceProtocol) -> WebImageMediatorProtocol in
             return DefaultWebImageMediator()
