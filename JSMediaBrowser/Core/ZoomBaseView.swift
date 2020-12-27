@@ -41,9 +41,7 @@ extension ZoomBaseView {
     }
     
     @objc open var contentViewRectInZoomView: CGRect {
-        guard let contentView = self.contentView else {
-            return CGRect.zero
-        }
+        guard let contentView = self.contentView else { return CGRect.zero }
         return self.convert(contentView.frame, from: contentView.superview)
     }
     

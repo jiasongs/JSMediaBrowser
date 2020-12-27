@@ -7,6 +7,7 @@
 
 import UIKit
 import JSCoreKit
+import PhotosUI
 
 @objc(MediaBrowserViewControllerTransitioningStyle)
 public enum TransitioningStyle: Int {
@@ -63,6 +64,8 @@ public enum TransitioningStyle: Int {
             }
         }
     }
+    @objc open var addImageViewInZoomViewBlock: BuildImageViewInZoomViewBlock?
+    @objc open var addLivePhotoViewInZoomViewBlock: BuildLivePhotoViewInZoomViewBlock?
     @objc open var addWebImageMediatorBlock: BuildWebImageMediatorBlock?
     @objc open var addToolViewsBlock: BuildToolViewsBlock?
     @objc open var progressTintColor: UIColor?
@@ -206,6 +209,10 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
             } else if let tintColor = MediaBrowserAppearance.appearance.progressTintColor {
                 cell?.progressTintColor = tintColor
             }
+            /// 需要添加代理
+            if let imageCell = cell as? ImageCell {
+                imageCell.zoomImageView?.delegate = self
+            }
             cell?.updateCell(loaderEntity: loaderItem, at: index)
         }
         return cell!
@@ -286,6 +293,34 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
         default:
             break
         }
+    }
+    
+}
+
+extension MediaBrowserViewController: ZoomImageViewDelegate {
+    
+    @objc public func zoomImageViewLazyBuildImageView(_ zoomImageView: ZoomImageView) -> UIImageView {
+        var imageView: UIImageView
+        if let block = self.addImageViewInZoomViewBlock {
+            imageView = block(self, zoomImageView)
+        } else if let block = MediaBrowserAppearance.appearance.addImageViewInZoomViewBlock {
+            imageView = block(self, zoomImageView)
+        } else {
+            imageView = UIImageView()
+        }
+        return imageView
+    }
+    
+    @objc public func zoomImageViewLazyBuildLivePhotoView(_ zoomImageView: ZoomImageView) -> PHLivePhotoView {
+        var livePhotoView: PHLivePhotoView
+        if let block = self.addLivePhotoViewInZoomViewBlock {
+            livePhotoView = block(self, zoomImageView)
+        } else if let block = MediaBrowserAppearance.appearance.addLivePhotoViewInZoomViewBlock {
+            livePhotoView = block(self, zoomImageView)
+        } else {
+            livePhotoView = PHLivePhotoView()
+        }
+        return livePhotoView
     }
     
 }

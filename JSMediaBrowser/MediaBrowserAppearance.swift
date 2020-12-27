@@ -6,7 +6,10 @@
 //
 
 import UIKit
+import PhotosUI
 
+public typealias BuildImageViewInZoomViewBlock = (MediaBrowserViewController, ZoomImageView) -> UIImageView
+public typealias BuildLivePhotoViewInZoomViewBlock = (MediaBrowserViewController, ZoomImageView) -> PHLivePhotoView
 public typealias BuildWebImageMediatorBlock = (MediaBrowserViewController, SourceProtocol) -> WebImageMediatorProtocol
 public typealias BuildToolViewsBlock = (MediaBrowserViewController) -> Array<UIView & ToolViewProtocol>
 
@@ -14,9 +17,11 @@ public typealias BuildToolViewsBlock = (MediaBrowserViewController) -> Array<UIV
     
     @objc public static let appearance = MediaBrowserAppearance()
     
+    @objc public var addImageViewInZoomViewBlock: BuildImageViewInZoomViewBlock?
+    @objc public var addLivePhotoViewInZoomViewBlock: BuildLivePhotoViewInZoomViewBlock?
     @objc public var addWebImageMediatorBlock: BuildWebImageMediatorBlock?
-    @objc open var addToolViewsBlock: BuildToolViewsBlock?
+    @objc public var addToolViewsBlock: BuildToolViewsBlock?
     
-    @objc open var progressTintColor: UIColor?
+    @objc public var progressTintColor: UIColor?
     
 }

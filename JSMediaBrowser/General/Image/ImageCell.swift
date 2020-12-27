@@ -22,6 +22,8 @@ open class ImageCell: BaseCell {
         super.prepareForReuse()
         zoomImageView?.image = nil
         zoomImageView?.livePhoto = nil
+        /// gif图停止动画
+        zoomImageView?.imageView.stopAnimating()
     }
     
     open override func layoutSubviews() {

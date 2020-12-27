@@ -15,7 +15,8 @@ class DefaultWebImageMediator: NSObject, WebImageMediatorProtocol {
     func setImage(forView view: UIView?, url: URL?, thumbImage: UIImage?, setImageBlock: WebImageMediatorSetImageBlock?, progress: WebImageMediatorDownloadProgress?, completed: WebImageMediatorCompleted?) {
         view?.sd_internalSetImage(with: url, placeholderImage: thumbImage, options: SDWebImageOptions.retryFailed, context: nil, setImageBlock: { (image: UIImage?, data: Data?, cacheType: SDImageCacheType, targetUrl: URL?) in
             if let setImageBlock = setImageBlock {
-                setImageBlock(image, data)
+                let animatedImage = data != nil ? SDAnimatedImage(data: data!) : image
+                setImageBlock(animatedImage, data)
             }
         }, progress: { (receivedSize: Int, expectedSize: Int, targetUrl: URL?) in
             if let progressBlock = progress {
@@ -23,7 +24,8 @@ class DefaultWebImageMediator: NSObject, WebImageMediatorProtocol {
             }
         }, completed: { (image: UIImage?, data: Data?, error: Error?, cacheType: SDImageCacheType, finished: Bool, url: URL?) in
             if let completedBlock = completed {
-                completedBlock(image, data, error, finished)
+                let animatedImage = data != nil ? SDAnimatedImage(data: data!) : image
+                completedBlock(animatedImage, data, error, finished)
             }
         })
     }

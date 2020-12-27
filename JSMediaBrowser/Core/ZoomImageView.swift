@@ -12,12 +12,19 @@ import JSCoreKit
 @objc(MediaBrowserZoomImageView)
 open class ZoomImageView: ZoomBaseView {
     
+    @objc weak var delegate: ZoomImageViewDelegate?
+    
     @objc private(set) var scrollView: UIScrollView?
     
     private var isImageViewInitialized: Bool = false
     @objc private(set) lazy var imageView: UIImageView = {
         isImageViewInitialized = true
-        let imageView = UIImageView()
+        var imageView: UIImageView
+        if let delegate = self.delegate, delegate.responds(to: #selector(ZoomImageViewDelegate.zoomImageViewLazyBuildImageView(_:))) {
+            imageView = delegate.zoomImageViewLazyBuildImageView!(self)
+        } else {
+            imageView = UIImageView()
+        }
         imageView.isHidden = true
         scrollView?.addSubview(imageView)
         return imageView
@@ -26,7 +33,12 @@ open class ZoomImageView: ZoomBaseView {
     private var isLivePhotoViewInitialized: Bool = false
     @objc private(set) lazy var livePhotoView: PHLivePhotoView = {
         isLivePhotoViewInitialized = true
-        let livePhotoView = PHLivePhotoView()
+        var livePhotoView: PHLivePhotoView
+        if let delegate = self.delegate, delegate.responds(to: #selector(ZoomImageViewDelegate.zoomImageViewLazyBuildLivePhotoView(_:))) {
+            livePhotoView = delegate.zoomImageViewLazyBuildLivePhotoView!(self)
+        } else {
+            livePhotoView = PHLivePhotoView()
+        }
         livePhotoView.isHidden = true
         scrollView?.addSubview(livePhotoView)
         return livePhotoView
@@ -149,21 +161,23 @@ extension ZoomImageView {
     
     @objc open var finalViewportRect: CGRect {
         var rect: CGRect = self.viewportRect
+        guard let scrollView = self.scrollView else { return rect }
+        if !scrollView.bounds.size.equalTo(self.bounds.size) {
+            self.setNeedsLayout()
+            self.layoutIfNeeded()
+        }
         if (rect.isEmpty && !self.bounds.isEmpty) {
-            if let scrollView = self.scrollView {
-                if !scrollView.bounds.size.equalTo(self.bounds.size) {
-                    self.setNeedsLayout()
-                    self.layoutIfNeeded()
-                }
-                let safeAreaInsets: UIEdgeInsets = JSCoreHelper.safeAreaInsetsForDeviceWithNotch()
-                let size: CGSize = CGSize(width: min(scrollView.bounds.width, viewportRectMaxWidth), height: scrollView.bounds.height)
-                let offsetX = (scrollView.bounds.width - size.width) / 2
-                let top = safeAreaInsets.top
-                let left = max(safeAreaInsets.left, offsetX)
-                let bottom = safeAreaInsets.bottom
-                let right = safeAreaInsets.right
-                rect = CGRect(x: left, y: top, width: min(size.width, scrollView.bounds.width - left - right), height: size.height - top - bottom)
-            }
+            let safeAreaInsets: UIEdgeInsets = JSCoreHelper.safeAreaInsetsForDeviceWithNotch()
+            let size: CGSize = CGSize(width: min(scrollView.bounds.width, viewportRectMaxWidth), height: scrollView.bounds.height)
+            let offsetX = (scrollView.bounds.width - size.width) / 2
+            let top = safeAreaInsets.top
+            let left = max(safeAreaInsets.left, offsetX)
+            let bottom = safeAreaInsets.bottom
+            let right = safeAreaInsets.right
+            rect = CGRect(x: left, y: top, width: min(size.width, scrollView.bounds.width - left - right), height: size.height - top - bottom)
+        }
+        if let delegate = self.delegate, delegate.responds(to: #selector(ZoomImageViewDelegate.zoomImageView(_:finalViewportRect:))) {
+            rect = delegate.zoomImageView!(self, finalViewportRect: rect)
         }
         return rect
     }
