@@ -19,6 +19,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         #if !targetEnvironment(macCatalyst)
         NSObject.addClassNames(toWhitelist: ["_UIPageControlContentView"])
         #endif
+        window = UIWindow.init(frame: UIScreen.main.bounds)
+        window?.rootViewController = ExampleViewController()
+        window?.makeKeyAndVisible()
         return true
     }
 
