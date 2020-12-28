@@ -218,6 +218,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 1220;
 				LastUpgradeCheck = 1220;
+				ORGANIZATIONNAME = jiasong;
 				TargetAttributes = {
 					7A23CD562581F365004B4033 = {
 						CreatedOnToolsVersion = 12.2;
@@ -229,7 +230,7 @@
 				};
 			};
 			buildConfigurationList = 7A23CD522581F365004B4033 /* Build configuration list for PBXProject "JSMediaBrowserExample" */;
-			compatibilityVersion = "Xcode 9.3";
+			compatibilityVersion = "Xcode 10.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (

@@ -61,10 +61,13 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             } else if let sourceView = sourceView {
                 sourceRect = needViewController?.view.convert(sourceView.frame, from: sourceView.superview) ?? CGRect.zero
             }
+            /// 判断sourceRect是否与needViewController.view相交
             if (!sourceRect.isEmpty && !sourceRect.intersects(needViewController?.view.bounds ?? CGRect.zero)) {
                 sourceRect = CGRect.zero
             }
-            sourceView?.isHidden = true
+            if !sourceRect.isEmpty {
+                sourceView?.isHidden = true
+            }
         }
         
         let containerView: UIView = transitionContext.containerView
