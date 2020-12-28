@@ -222,7 +222,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
             cell = block(self, index)
         }
         if cell == nil, let loaderItem = loaderItems?[index] as? ImageLoaderEntity {
-            cell = browserView.dequeueReusableCell(withReuseIdentifier: imageCellIdentifier, at: index)
+            cell = self.dequeueReusableCell(withReuseIdentifier: imageCellIdentifier, at: index)
             /// 需要添加代理
             if let imageCell = cell as? ImageCell {
                 imageCell.zoomImageView?.delegate = self

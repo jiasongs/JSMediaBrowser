@@ -93,10 +93,11 @@ import UIKit
         buttonSize.height = actionButton.sizeThatFits(buttonSize).height
         let subviewsHeight = imageViewSize.height + titleSize.height + subtitleSize.height + buttonSize.height
         let margin: CGFloat = 10.0
+        let buttonMarginTop: CGFloat = 15.0
         imageView.frame = CGRect(x: (self.frame.width - imageViewSize.width) / 2, y: (self.frame.height - subviewsHeight) / 2 - 40, width: imageViewSize.width, height: imageViewSize.height)
         titleLabel.frame = CGRect(origin: CGPoint(x: (self.frame.width - titleSize.width) / 2, y: imageView.frame.maxY + margin), size: titleSize)
         subtitleLabel.frame = CGRect(origin: CGPoint(x: (self.frame.width - subtitleSize.width) / 2, y: titleLabel.frame.maxY + margin), size: subtitleSize)
-        actionButton.frame = CGRect(origin: CGPoint(x: (self.frame.width - buttonSize.width) / 2, y: subtitleLabel.frame.maxY + margin + 5), size: buttonSize)
+        actionButton.frame = CGRect(origin: CGPoint(x: (self.frame.width - buttonSize.width) / 2, y: subtitleLabel.frame.maxY + buttonMarginTop), size: buttonSize)
     }
     
     @objc func handleAction(button: UIButton) -> Void {
