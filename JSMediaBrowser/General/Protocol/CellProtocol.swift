@@ -19,7 +19,7 @@ public protocol CellProtocol: NSObjectProtocol {
     @objc(loaderEntity:didReceiveWithProgress:)
     func loaderEntity(_ loaderEntity: LoaderProtocol, didReceive progress: Progress?)
     
-    @objc(loaderEntity:didCompletedWithObject:data:error:finished:)
-    func loaderEntity(_ loaderEntity: LoaderProtocol, didCompleted object: Any?, data: Data?, error: Error?, finished: Bool)
+    @objc(loaderEntity:didCompletedWithObject:data:error:cancelled:finished:)
+    func loaderEntity(_ loaderEntity: LoaderProtocol, didCompleted object: Any?, data: Data?, error: NSError?, cancelled: Bool, finished: Bool)
     
 }

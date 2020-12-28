@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import JSCoreKit
 
 @objc(MediaBrowserImageLoaderEntity)
 open class ImageLoaderEntity: BaseLoaderEntity, ImageLoaderProtocol {
@@ -22,21 +23,21 @@ open class ImageLoaderEntity: BaseLoaderEntity, ImageLoaderProtocol {
             }, progress: { (receivedSize: Int64, expectedSize: Int64) in
                 self.state = .loading
                 if let downloadProgress = downloadProgress {
-                    DispatchQueue.main.async {
+                    JSAsyncExecuteOnMainQueue {
                         self.progress?.completedUnitCount = receivedSize
                         self.progress?.totalUnitCount = expectedSize
                         downloadProgress(self, self.progress)
                     }
                 }
-            }, completed: { (image: UIImage?, imageData: Data?, error: Error?, finished: Bool) in
+            }, completed: { (image: UIImage?, imageData: Data?, error: NSError?, cancelled: Bool, finished: Bool) in
                 self.state = .end
                 self.error = error
                 if image != nil && error == nil && finished {
                     sourceItem.image = image
                 }
                 if let completed = completed {
-                    DispatchQueue.main.async {
-                        completed(self, image, imageData, error, finished)
+                    JSAsyncExecuteOnMainQueue {
+                        completed(self, image, imageData, error, cancelled, finished)
                     }
                 }
             })

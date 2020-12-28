@@ -13,5 +13,5 @@ Pod::Spec.new do |s|
   s.license      = "MIT"
   s.requires_arc = true
 
-  s.dependency 'JSCoreKit', '~> 0.1.3'
+  s.dependency 'JSCoreKit', '~> 0.1.5'
 end

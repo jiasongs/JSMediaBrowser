@@ -13,7 +13,7 @@ open class BaseLoaderEntity: NSObject, LoaderProtocol {
     public var sourceItem: SourceProtocol?
     public var state: LoaderState = .none
     public var progress: Progress?
-    public var error: Error?
+    public var error: NSError?
     
     public override init() {
         super.init()

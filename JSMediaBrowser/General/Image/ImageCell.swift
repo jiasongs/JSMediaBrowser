@@ -49,8 +49,8 @@ open class ImageCell: BaseCell {
         }
     }
     
-    @objc public override func loaderEntity(_ loaderEntity: LoaderProtocol, didCompleted object: Any?, data: Data?, error: Error?, finished: Bool) {
-        super.loaderEntity(loaderEntity, didCompleted: object, data: data, error: error, finished: finished)
+    @objc public override func loaderEntity(_ loaderEntity: LoaderProtocol, didCompleted object: Any?, data: Data?, error: NSError?, cancelled: Bool, finished: Bool) {
+        super.loaderEntity(loaderEntity, didCompleted: object, data: data, error: error, cancelled: cancelled, finished: finished)
         if let image = object as? UIImage, error == nil {
             self.zoomImageView?.image = image
         }

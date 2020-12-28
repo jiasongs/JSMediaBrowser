@@ -23,7 +23,11 @@ class DefaultWebImageMediator: NSObject, WebImageMediatorProtocol {
             }
         }, completed: { (image: UIImage?, data: Data?, error: Error?, cacheType: SDImageCacheType, finished: Bool, url: URL?) in
             if let completedBlock = completed {
-                completedBlock(image, data, error, finished)
+                var cancelled: Bool = false
+                if let error = error as NSError? {
+                    cancelled = error.code == SDWebImageError.cancelled.rawValue
+                }
+                completedBlock(image, data, error as NSError?, cancelled, finished)
             }
         })
     }
