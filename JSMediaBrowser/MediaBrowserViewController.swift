@@ -233,6 +233,11 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
                 } else if let tintColor = MediaBrowserAppearance.appearance.progressTintColor {
                     baseCell.progressTintColor = tintColor
                 }
+                baseCell.onEmptyPressAction = { [weak self] (cell: UICollectionViewCell) in
+                    if let indexPath: IndexPath = self?.browserView?.collectionView?.indexPath(for: cell) {
+                        self?.browserView?.collectionView?.reloadItems(at: [indexPath])
+                    }
+                }
                 baseCell.updateCell(loaderEntity: loaderItem, at: index)
             }
         }

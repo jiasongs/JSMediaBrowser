@@ -1,5 +1,5 @@
 //
-//  CommonDefines.swift
+//  MacroVariable.swift
 //  JSMediaBrowser
 //
 //  Created by jiasong on 2020/12/15.

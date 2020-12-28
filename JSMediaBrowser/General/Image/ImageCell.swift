@@ -16,6 +16,7 @@ open class ImageCell: BaseCell {
         super.didInitialize()
         zoomImageView = ZoomImageView()
         contentView.addSubview(zoomImageView!)
+        contentView.sendSubviewToBack(zoomImageView!)
     }
     
     open override func prepareForReuse() -> Void {
