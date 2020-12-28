@@ -246,15 +246,6 @@ extension MediaBrowserView: UIScrollViewDelegate {
         return pageOffsetRatio
     }
     
-    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        if scrollView != self.collectionView {
-            return
-        }
-        if let delegate = self.delegate, delegate.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:didScrollTo:))) {
-            delegate.mediaBrowserView?(self, didScrollTo: self.currentPage)
-        }
-    }
-    
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView != self.collectionView || self.isChangingCollectionViewFrame {
             return
@@ -282,6 +273,15 @@ extension MediaBrowserView: UIScrollViewDelegate {
             }
         }
         self.previousPageOffsetRatio = pageOffsetRatio
+    }
+    
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        if scrollView != self.collectionView {
+            return
+        }
+        if let delegate = self.delegate, delegate.responds(to: #selector(MediaBrowserViewDelegate.mediaBrowserView(_:didScrollTo:))) {
+            delegate.mediaBrowserView?(self, didScrollTo: self.currentPage)
+        }
     }
     
 }
