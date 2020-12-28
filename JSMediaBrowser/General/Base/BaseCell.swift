@@ -10,10 +10,11 @@ import UIKit
 @objc(MediaBrowserBaseCell)
 open class BaseCell: UICollectionViewCell, CellProtocol {
     
-    @objc public var pieProgressView: PieProgressView?
     @objc public var emptyView: EmptyView?
-    @objc public var progressTintColor: UIColor?
+    @objc public var pieProgressView: PieProgressView?
     @objc public var onEmptyPressAction: ((UICollectionViewCell) -> Void)?
+    @objc public var willShowEmptyViewBlock: ((UICollectionViewCell, EmptyView, NSError?) -> Void)?
+    @objc public var didCompleted: ((UICollectionViewCell, Any?, NSError?) -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -36,7 +37,7 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
         contentView.addSubview(emptyView!)
         
         pieProgressView = PieProgressView()
-        pieProgressView?.tintColor = progressTintColor ?? .white
+        pieProgressView?.tintColor = .white
         contentView.addSubview(self.pieProgressView!)
     }
     
@@ -86,14 +87,17 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
             pieProgressView?.isHidden = false
         } else {
             if error != nil {
-                /// 显示错误图
-                emptyView?.title = "错误"
-                emptyView?.subtitle = error?.localizedDescription
+                if let block = self.willShowEmptyViewBlock, let emptyView = self.emptyView {
+                    block(self, emptyView, error)
+                }
                 emptyView?.isHidden = false
             } else {
                 emptyView?.isHidden = true
             }
             pieProgressView?.isHidden = true
+        }
+        if let block = self.didCompleted {
+            block(self, object, error)
         }
     }
     

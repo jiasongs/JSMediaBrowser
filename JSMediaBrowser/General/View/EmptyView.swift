@@ -11,19 +11,18 @@ import UIKit
     
     @objc lazy open var imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.backgroundColor = .gray
         return imageView
     }()
     @objc lazy open var titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "显示错误"
+        label.font = UIFont.systemFont(ofSize: 16)
         label.textAlignment = .center
         label.textColor = .white
         return label
     }()
     @objc lazy open var subtitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "网络连接不畅， 建议重新刷新"
+        label.font = UIFont.systemFont(ofSize: 14)
         label.numberOfLines = 3
         label.textAlignment = .center
         label.textColor = .white
@@ -31,16 +30,20 @@ import UIKit
     }()
     @objc lazy open var actionButton: UIButton = {
         let button = UIButton()
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         button.setTitleColor(.white, for: UIControl.State.normal)
-        button.setTitle("重试", for: UIControl.State.normal)
         button.addTarget(self, action: #selector(self.handleAction(button:)), for: UIControl.Event.touchUpInside)
-        button.backgroundColor = .blue
         return button
     }()
     
     @objc open var image: UIImage? {
         didSet {
             imageView.image = image
+            self.setNeedsLayout()
+        }
+    }
+    @objc open var imageViewSize: CGSize = CGSize.zero {
+        didSet {
             self.setNeedsLayout()
         }
     }
@@ -84,20 +87,37 @@ import UIKit
     
     open override func layoutSubviews() {
         super.layoutSubviews()
-        let imageViewSize = CGSize(width: self.frame.width * 0.5, height: self.frame.width * 0.5)
-        var titleSize = CGSize(width: self.frame.width * 0.7, height: 0)
-        titleSize.height = titleLabel.sizeThatFits(titleSize).height
-        var subtitleSize = CGSize(width: titleSize.width * 0.8, height: 0)
-        subtitleSize.height = subtitleLabel.sizeThatFits(subtitleSize).height
-        var buttonSize = CGSize(width: subtitleSize.width * 0.7, height: 0)
-        buttonSize.height = actionButton.sizeThatFits(buttonSize).height
-        let subviewsHeight = imageViewSize.height + titleSize.height + subtitleSize.height + buttonSize.height
-        let margin: CGFloat = 10.0
+        var imageSize: CGSize = self.imageViewSize
+        if imageSize.equalTo(CGSize.zero) {
+            imageSize = CGSize(width: self.frame.width * 0.5, height: self.frame.width * 0.5)
+        }
+        if self.imageView.image == nil {
+            imageSize = CGSize.zero
+        }
+        var titleSize = CGSize(width: self.frame.width * 0.6, height: 0)
+        if let count = titleLabel.text?.count, count > 0 {
+            titleSize.height = titleLabel.sizeThatFits(titleSize).height
+        }
+        var subtitleSize = CGSize(width: self.frame.width * 0.8, height: 0)
+        if let count = subtitleLabel.text?.count, count > 0 {
+            subtitleSize.height = subtitleLabel.sizeThatFits(subtitleSize).height
+        }
+        var buttonSize = CGSize(width: subtitleSize.width * 0.6, height: 0)
+        if let count = actionButton.titleLabel?.text?.count, count > 0 {
+            buttonSize.height = actionButton.sizeThatFits(buttonSize).height
+        }
+        let margin: CGFloat = 12.0
         let buttonMarginTop: CGFloat = 15.0
-        imageView.frame = CGRect(x: (self.frame.width - imageViewSize.width) / 2, y: (self.frame.height - subviewsHeight) / 2 - 40, width: imageViewSize.width, height: imageViewSize.height)
+        let subviewsHeight = imageSize.height + titleSize.height + subtitleSize.height + buttonSize.height + margin * 2 + buttonMarginTop
+        imageView.frame = CGRect(x: (self.frame.width - imageSize.width) / 2, y: (self.frame.height - subviewsHeight) / 2, width: imageSize.width, height: imageSize.height)
         titleLabel.frame = CGRect(origin: CGPoint(x: (self.frame.width - titleSize.width) / 2, y: imageView.frame.maxY + margin), size: titleSize)
         subtitleLabel.frame = CGRect(origin: CGPoint(x: (self.frame.width - subtitleSize.width) / 2, y: titleLabel.frame.maxY + margin), size: subtitleSize)
         actionButton.frame = CGRect(origin: CGPoint(x: (self.frame.width - buttonSize.width) / 2, y: subtitleLabel.frame.maxY + buttonMarginTop), size: buttonSize)
+        
+        imageView.isHidden = imageSize.equalTo(CGSize.zero)
+        titleLabel.isHidden = titleSize.height == 0
+        subtitleLabel.isHidden = subtitleSize.height == 0
+        actionButton.isHidden = buttonSize.height == 0
     }
     
     @objc func handleAction(button: UIButton) -> Void {

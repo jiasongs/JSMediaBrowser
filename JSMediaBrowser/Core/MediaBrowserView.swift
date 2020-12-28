@@ -18,6 +18,7 @@ import JSCoreKit
     @objc open var doubleTapGesture: UITapGestureRecognizer?
     @objc open var longPressGesture: UILongPressGestureRecognizer?
     @objc open var dismissingGesture: UIPanGestureRecognizer?
+    @objc open var dismissingGestureEnabled: Bool = true
     
     @objc open var dimmingView: UIView? {
         didSet {
@@ -141,6 +142,28 @@ extension MediaBrowserView {
     
     @objc open func reloadData() -> Void {
         self.collectionView?.reloadData()
+    }
+    
+    @objc open func reloadItems(at indexs: Array<Int>) {
+        var indexPaths: Array<IndexPath> = []
+        for index in indexs {
+            indexPaths.append(IndexPath(item: index, section: 0))
+        }
+        self.collectionView?.reloadItems(at: indexPaths)
+    }
+    
+    @objc(indexForPageCell:)
+    open func index(for pageCell: UICollectionViewCell) -> Int {
+        if let indexPath: IndexPath = self.collectionView?.indexPath(for: pageCell) {
+            return indexPath.item
+        }
+        return NSNotFound
+    }
+    
+    @objc(pageCellForItemAtIndex:)
+    open func pageCellForItem(at index: Int) -> UICollectionViewCell? {
+        let indexPath: IndexPath = IndexPath(item: index, section: 0)
+        return self.collectionView?.cellForItem(at: indexPath)
     }
     
     @objc open func registerClass(_ cellClass: AnyClass, forCellWithReuseIdentifier identifier: String) -> Void {
@@ -323,6 +346,13 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
             self.resetDismissingGesture(withAnimations: nil)
             break
         }
+    }
+    
+    @objc public override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if gestureRecognizer == self.dismissingGesture {
+            return self.dismissingGestureEnabled
+        }
+        return true
     }
     
     @objc public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {

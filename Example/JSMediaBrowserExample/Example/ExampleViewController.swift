@@ -32,6 +32,18 @@ class ExampleViewController: UIViewController {
             let shareControl: ShareControl = ShareControl()
             return [pageControl, shareControl]
         }
+        MediaBrowserAppearance.appearance.configureCellBlock = { (browserVC: MediaBrowserViewController, cell: UICollectionViewCell, index: Int) in
+            if let cell = cell as? BaseCell {
+                if cell.pieProgressView?.tintColor != .white {
+                    cell.pieProgressView?.tintColor = .white
+                }
+            }
+        }
+        MediaBrowserAppearance.appearance.willShowEmptyViewBlock = { (browserVC: MediaBrowserViewController, cell: UICollectionViewCell, emptyView: EmptyView, error: NSError?) in
+            emptyView.image = UIImage(named: "picture_fail")
+            emptyView.imageViewSize = CGSize(width: 100, height: 100)
+            emptyView.title = error?.localizedDescription
+        }
     }
     
     required init?(coder: NSCoder) {

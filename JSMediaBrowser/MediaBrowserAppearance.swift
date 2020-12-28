@@ -13,6 +13,8 @@ public typealias BuildLivePhotoViewInZoomViewBlock = (MediaBrowserViewController
 public typealias BuildWebImageMediatorBlock = (MediaBrowserViewController, SourceProtocol) -> WebImageMediatorProtocol
 public typealias BuildToolViewsBlock = (MediaBrowserViewController) -> Array<UIView & ToolViewProtocol>
 public typealias BuildCellBlock = (MediaBrowserViewController, Int) -> UICollectionViewCell?
+public typealias ConfigureCellBlock = (MediaBrowserViewController, UICollectionViewCell, Int) -> Void
+public typealias WillShowEmptyViewBlock = (MediaBrowserViewController, UICollectionViewCell, EmptyView, NSError?) -> Void
 
 public typealias Identifier = String
 public typealias CellClassSting = String
@@ -26,8 +28,8 @@ public typealias CellClassSting = String
     @objc public var addWebImageMediatorBlock: BuildWebImageMediatorBlock?
     @objc public var addToolViewsBlock: BuildToolViewsBlock?
     @objc public var cellForItemAtIndexBlock: BuildCellBlock?
-    
-    @objc public var progressTintColor: UIColor?
+    @objc public var configureCellBlock: ConfigureCellBlock?
+    @objc public var willShowEmptyViewBlock: WillShowEmptyViewBlock?
     
     @objc lazy private(set) public var reuseCellIdentifiers: Dictionary<Identifier, CellClassSting> = Dictionary()
     
