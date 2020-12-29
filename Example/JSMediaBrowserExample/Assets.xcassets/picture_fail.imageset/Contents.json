@@ -5,11 +5,11 @@
       "scale" : "1x"
     },
     {
+      "filename" : "picture_fail.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "小胖车图片加载失败.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

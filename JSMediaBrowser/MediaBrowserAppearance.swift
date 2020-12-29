@@ -15,6 +15,7 @@ public typealias BuildToolViewsBlock = (MediaBrowserViewController) -> Array<UIV
 public typealias BuildCellBlock = (MediaBrowserViewController, Int) -> UICollectionViewCell?
 public typealias ConfigureCellBlock = (MediaBrowserViewController, UICollectionViewCell, Int) -> Void
 public typealias DisplayEmptyViewBlock = (MediaBrowserViewController, UICollectionViewCell, EmptyView, NSError) -> Void
+public typealias LongPressBlock = (MediaBrowserViewController) -> Void
 
 public typealias Identifier = String
 public typealias CellClassSting = String
@@ -30,6 +31,7 @@ public typealias CellClassSting = String
     @objc public var cellForItemAtIndexBlock: BuildCellBlock?
     @objc public var configureCellBlock: ConfigureCellBlock?
     @objc public var willDisplayEmptyViewBlock: DisplayEmptyViewBlock?
+    @objc public var onLongPressBlock: LongPressBlock?
     
     @objc lazy private(set) public var reuseCellIdentifiers: Dictionary<Identifier, CellClassSting> = Dictionary()
     

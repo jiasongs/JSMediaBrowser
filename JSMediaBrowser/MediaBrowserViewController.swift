@@ -71,6 +71,7 @@ public enum TransitioningStyle: Int {
     @objc open var cellForItemAtIndexBlock: BuildCellBlock?
     @objc open var configureCellBlock: ConfigureCellBlock?
     @objc open var willDisplayEmptyViewBlock: DisplayEmptyViewBlock?
+    @objc open var onLongPressBlock: LongPressBlock?
     
     private var loaderItems: Array<LoaderProtocol>?
     private var imageCellIdentifier = "ImageCell"
@@ -304,10 +305,10 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     }
     
     @objc public func mediaBrowserView(_ browserView: MediaBrowserView, longPress gestureRecognizer: UILongPressGestureRecognizer) {
-        for toolView in self.toolViews {
-            if toolView.responds(to: #selector(ToolViewProtocol.didLongPress(gestureRecognizer:in:))) {
-                toolView.didLongPress?(gestureRecognizer: gestureRecognizer, in: self)
-            }
+        if let block = self.onLongPressBlock {
+            block(self)
+        } else if let block = MediaBrowserAppearance.appearance.onLongPressBlock {
+            block(self)
         }
     }
     

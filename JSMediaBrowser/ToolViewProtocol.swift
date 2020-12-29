@@ -25,7 +25,4 @@ public protocol ToolViewProtocol: NSObjectProtocol  {
     @objc(didScrollToIndex:inViewController:)
     optional func didScrollTo(index: Int, in viewController: MediaBrowserViewController)
     
-    @objc(didLongPressWithGestureRecognizer:inViewController:)
-    optional func didLongPress(gestureRecognizer: UILongPressGestureRecognizer, in viewController: MediaBrowserViewController)
-    
 }

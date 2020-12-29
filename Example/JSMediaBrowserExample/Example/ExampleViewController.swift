@@ -43,6 +43,13 @@ class ExampleViewController: UIViewController {
             emptyView.image = UIImage(named: "picture_fail")
             emptyView.title = "\(String(describing: error.localizedDescription))"
         }
+        MediaBrowserAppearance.appearance.onLongPressBlock = { (browserVC: MediaBrowserViewController) in
+            if let currentPage: Int = browserVC.browserView?.currentPage, var sourceItems = browserVC.sourceItems {
+                sourceItems.remove(at: currentPage)
+                browserVC.sourceItems = sourceItems
+                browserVC.browserView?.reloadData()
+            }
+        }
     }
     
     required init?(coder: NSCoder) {

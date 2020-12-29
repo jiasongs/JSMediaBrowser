@@ -39,6 +39,12 @@ import JSCoreKit
             }
         }
     }
+    @objc public var totalUnitPage: Int {
+        if let numberOfItems = self.collectionView?.numberOfItems(inSection: 0) {
+            return numberOfItems
+        }
+        return 0
+    }
     
     private var isChangingCollectionViewFrame: Bool = false
     private var previousPageOffsetRatio: CGFloat = 0
@@ -130,8 +136,7 @@ extension MediaBrowserView {
             if self.previousPageOffsetRatio == 0 {
                 self.previousPageOffsetRatio = self.pageOffsetRatio
             }
-            let numberOfItems = collectionView.numberOfItems(inSection: 0)
-            if index < numberOfItems {
+            if index < self.totalUnitPage {
                 let indexPath = IndexPath(item: index, section: 0)
                 collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: animated)
                 /// 立即滚动, 若不调用某些场景下可能无法滚动
@@ -183,10 +188,8 @@ extension MediaBrowserView {
     }
     
     @objc open var currentPageCell: UICollectionViewCell? {
-        get {
-            let indexPath = IndexPath(item: self.currentPage, section: 0)
-            return self.collectionView?.cellForItem(at: indexPath)
-        }
+        let indexPath = IndexPath(item: self.currentPage, section: 0)
+        return self.collectionView?.cellForItem(at: indexPath)
     }
     
     @objc open func resetDismissingGesture(withAnimations animations: (() -> Void)?) -> Void {
@@ -250,7 +253,6 @@ extension MediaBrowserView: UIScrollViewDelegate {
         if scrollView != self.collectionView || self.isChangingCollectionViewFrame {
             return
         }
-        guard let collectionView = self.collectionView else { return }
         let betweenOrEqual =  { (minimumValue: CGFloat, value: CGFloat, maximumValue: CGFloat) -> Bool in
             return minimumValue <= value && value <= maximumValue
         }
@@ -261,9 +263,9 @@ extension MediaBrowserView: UIScrollViewDelegate {
         let turnPageToLeft: Bool = fastToLeft || betweenOrEqual(pageOffsetRatio, floor(pageOffsetRatio) + 0.5, self.previousPageOffsetRatio)
         
         if (turnPageToRight || turnPageToLeft) {
-            let previousIndex = Int(round(self.previousPageOffsetRatio))
+            let previousIndex = min(Int(round(self.previousPageOffsetRatio)), self.totalUnitPage - 1)
             let index = Int(round(pageOffsetRatio))
-            if index >= 0 && index < collectionView.numberOfItems(inSection: 0) {
+            if index >= 0 && index < self.totalUnitPage {
                 self.isNeededScrollToItem = false
                 self.currentPage = index
                 self.isNeededScrollToItem = true
