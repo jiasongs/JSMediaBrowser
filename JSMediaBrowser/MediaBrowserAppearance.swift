@@ -14,7 +14,7 @@ public typealias BuildWebImageMediatorBlock = (MediaBrowserViewController, Sourc
 public typealias BuildToolViewsBlock = (MediaBrowserViewController) -> Array<UIView & ToolViewProtocol>
 public typealias BuildCellBlock = (MediaBrowserViewController, Int) -> UICollectionViewCell?
 public typealias ConfigureCellBlock = (MediaBrowserViewController, UICollectionViewCell, Int) -> Void
-public typealias WillShowEmptyViewBlock = (MediaBrowserViewController, UICollectionViewCell, EmptyView, NSError?) -> Void
+public typealias DisplayEmptyViewBlock = (MediaBrowserViewController, UICollectionViewCell, EmptyView, NSError?) -> Void
 
 public typealias Identifier = String
 public typealias CellClassSting = String
@@ -29,7 +29,7 @@ public typealias CellClassSting = String
     @objc public var addToolViewsBlock: BuildToolViewsBlock?
     @objc public var cellForItemAtIndexBlock: BuildCellBlock?
     @objc public var configureCellBlock: ConfigureCellBlock?
-    @objc public var willShowEmptyViewBlock: WillShowEmptyViewBlock?
+    @objc public var willDisplayEmptyViewBlock: DisplayEmptyViewBlock?
     
     @objc lazy private(set) public var reuseCellIdentifiers: Dictionary<Identifier, CellClassSting> = Dictionary()
     

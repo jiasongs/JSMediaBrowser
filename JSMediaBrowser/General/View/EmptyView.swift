@@ -16,6 +16,7 @@ import UIKit
     @objc lazy open var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16)
+        label.numberOfLines = 2
         label.textAlignment = .center
         label.textColor = .white
         return label

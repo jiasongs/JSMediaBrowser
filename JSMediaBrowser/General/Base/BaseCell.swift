@@ -13,8 +13,8 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
     @objc public var emptyView: EmptyView?
     @objc public var pieProgressView: PieProgressView?
     @objc public var onEmptyPressAction: ((UICollectionViewCell) -> Void)?
-    @objc public var willShowEmptyViewBlock: ((UICollectionViewCell, EmptyView, NSError?) -> Void)?
-    @objc public var didCompleted: ((UICollectionViewCell, Any?, NSError?) -> Void)?
+    @objc public var willDisplayEmptyViewBlock: ((UICollectionViewCell, EmptyView, NSError?) -> Void)?
+    @objc public var didLoaderCompleted: ((UICollectionViewCell, Any?, NSError?) -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -54,7 +54,7 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
     open override func layoutSubviews() {
         super.layoutSubviews()
         emptyView?.frame = self.bounds
-        let progressSize = CGSize(width: min(self.bounds.width * 0.12, 100), height: min(self.bounds.width * 0.12, 100))
+        let progressSize = CGSize(width: min(self.bounds.width * 0.12, 120), height: min(self.bounds.width * 0.12, 120))
         let progressPoint = CGPoint(x: (self.bounds.width - progressSize.width) / 2, y: (self.bounds.height - progressSize.height) / 2)
         self.pieProgressView?.frame = CGRect(origin: progressPoint, size: progressSize)
     }
@@ -86,7 +86,7 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
             pieProgressView?.isHidden = false
         } else {
             if error != nil {
-                if let block = self.willShowEmptyViewBlock, let emptyView = self.emptyView {
+                if let block = self.willDisplayEmptyViewBlock, let emptyView = self.emptyView {
                     block(self, emptyView, error)
                 }
                 emptyView?.isHidden = false
@@ -95,7 +95,7 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
             }
             pieProgressView?.isHidden = true
         }
-        if let block = self.didCompleted {
+        if let block = self.didLoaderCompleted {
             block(self, object, error)
         }
     }

@@ -70,7 +70,7 @@ public enum TransitioningStyle: Int {
     @objc open var addToolViewsBlock: BuildToolViewsBlock?
     @objc open var cellForItemAtIndexBlock: BuildCellBlock?
     @objc open var configureCellBlock: ConfigureCellBlock?
-    @objc open var willShowEmptyViewBlock: WillShowEmptyViewBlock?
+    @objc open var willDisplayEmptyViewBlock: DisplayEmptyViewBlock?
     
     private var loaderItems: Array<LoaderProtocol>?
     private var imageCellIdentifier = "ImageCell"
@@ -229,24 +229,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
                 imageCell.zoomImageView?.delegate = self
             }
             if let baseCell = cell as? BaseCell {
-                baseCell.onEmptyPressAction = { [weak self] (cell: UICollectionViewCell) in
-                    if let index: Int = self?.browserView?.index(for: cell), index != NSNotFound {
-                        self?.browserView?.reloadItems(at: [index])
-                    }
-                }
-                baseCell.willShowEmptyViewBlock = { [weak self] (cell: UICollectionViewCell, emptyView: EmptyView, error: NSError?) in
-                    if let block = self?.willShowEmptyViewBlock, let strongSelf = self {
-                        block(strongSelf, cell, emptyView, error)
-                    } else if let block = MediaBrowserAppearance.appearance.willShowEmptyViewBlock, let strongSelf = self {
-                        block(strongSelf, cell, emptyView, error)
-                    }
-                }
-                self.browserView?.dismissingGestureEnabled = false
-                baseCell.didCompleted = { [weak self] (cell: UICollectionViewCell, object: Any?, error: NSError?) in
-                    if object != nil && error == nil {
-                        self?.browserView?.dismissingGestureEnabled = true
-                    }
-                }
+                self.addMonitorFor(baseCell: baseCell)
                 baseCell.updateCell(loaderEntity: loaderItem, at: index)
             }
         }
@@ -256,6 +239,27 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
             block(self, cell, index)
         }
         return cell
+    }
+    
+    private func addMonitorFor(baseCell cell: BaseCell) -> Void {
+        cell.onEmptyPressAction = { [weak self] (cell: UICollectionViewCell) in
+            if let index: Int = self?.browserView?.index(for: cell), index != NSNotFound {
+                self?.browserView?.reloadItems(at: [index])
+            }
+        }
+        cell.willDisplayEmptyViewBlock = { [weak self] (cell: UICollectionViewCell, emptyView: EmptyView, error: NSError?) in
+            if let block = self?.willDisplayEmptyViewBlock, let strongSelf = self {
+                block(strongSelf, cell, emptyView, error)
+            } else if let block = MediaBrowserAppearance.appearance.willDisplayEmptyViewBlock, let strongSelf = self {
+                block(strongSelf, cell, emptyView, error)
+            }
+        }
+        self.browserView?.dismissingGestureEnabled = false
+        cell.didLoaderCompleted = { [weak self] (cell: UICollectionViewCell, object: Any?, error: NSError?) in
+            if object != nil && error == nil {
+                self?.browserView?.dismissingGestureEnabled = true
+            }
+        }
     }
     
 }
