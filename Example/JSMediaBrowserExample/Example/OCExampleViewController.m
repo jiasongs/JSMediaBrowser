@@ -39,6 +39,10 @@
             ShareControl *shareControl = [[ShareControl alloc] init];
             return @[pageControl, shareControl];
         };
+        MediaBrowserAppearance.appearance.willDisplayEmptyViewBlock = ^(MediaBrowserViewController *browserVC, UICollectionViewCell *cell, EmptyView *emptyView, NSError *error) {
+            emptyView.image = [UIImage imageNamed:@"picture_fail"];
+            emptyView.title = [NSString stringWithFormat:@"%@", error.localizedDescription];
+        };
     }
     return self;
 }
@@ -85,7 +89,9 @@
     NSMutableArray *sourceItems = [NSMutableArray array];
     [self.dataSource enumerateObjectsUsingBlock:^(NSString *urlString, NSUInteger idx, BOOL * _Nonnull stop) {
         QMUIButton *button = [self.floatLayoutView.subviews objectAtIndex:idx];
-        MediaBrowserImageEntity *entity = [[MediaBrowserImageEntity alloc] initWithSourceView:button sourceRect:CGRectZero thumbImage:[button imageForState:UIControlStateNormal]];
+        MediaBrowserImageEntity *entity = [[MediaBrowserImageEntity alloc] initWithSourceView:button
+                                                                                   sourceRect:CGRectZero
+                                                                                   thumbImage:[button imageForState:UIControlStateNormal]];
         entity.imageUrl = [NSURL URLWithString:urlString];
         entity.sourceCornerRadius = button.layer.cornerRadius;
         [sourceItems addObject:entity];
