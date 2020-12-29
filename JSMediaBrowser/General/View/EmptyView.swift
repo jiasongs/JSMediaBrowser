@@ -90,16 +90,17 @@ import UIKit
         super.layoutSubviews()
         var imageSize: CGSize = self.imageViewSize
         if imageSize.equalTo(CGSize.zero) {
-            imageSize = CGSize(width: min(self.frame.width * 0.5, 150), height: min(self.frame.width * 0.5, 150))
+            let width = min(self.frame.width * 0.4, 120)
+            imageSize = CGSize(width: width, height: width)
         }
         if self.imageView.image == nil {
             imageSize = CGSize.zero
         }
-        var titleSize = CGSize(width: min(self.frame.width * 0.6, 200), height: 0)
+        var titleSize = CGSize(width: min(self.frame.width * 0.6, 280), height: 0)
         if let count = titleLabel.text?.count, count > 0 {
             titleSize.height = titleLabel.sizeThatFits(titleSize).height
         }
-        var subtitleSize = CGSize(width: min(self.frame.width * 0.8, 220), height: 0)
+        var subtitleSize = CGSize(width: min(self.frame.width * 0.75, 350), height: 0)
         if let count = subtitleLabel.text?.count, count > 0 {
             subtitleSize.height = subtitleLabel.sizeThatFits(subtitleSize).height
         }

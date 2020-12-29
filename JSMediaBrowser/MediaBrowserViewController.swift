@@ -247,7 +247,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
                 self?.browserView?.reloadItems(at: [index])
             }
         }
-        cell.willDisplayEmptyViewBlock = { [weak self] (cell: UICollectionViewCell, emptyView: EmptyView, error: NSError?) in
+        cell.willDisplayEmptyViewBlock = { [weak self] (cell: UICollectionViewCell, emptyView: EmptyView, error: NSError) in
             if let block = self?.willDisplayEmptyViewBlock, let strongSelf = self {
                 block(strongSelf, cell, emptyView, error)
             } else if let block = MediaBrowserAppearance.appearance.willDisplayEmptyViewBlock, let strongSelf = self {

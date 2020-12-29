@@ -13,7 +13,7 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
     @objc public var emptyView: EmptyView?
     @objc public var pieProgressView: PieProgressView?
     @objc public var onEmptyPressAction: ((UICollectionViewCell) -> Void)?
-    @objc public var willDisplayEmptyViewBlock: ((UICollectionViewCell, EmptyView, NSError?) -> Void)?
+    @objc public var willDisplayEmptyViewBlock: ((UICollectionViewCell, EmptyView, NSError) -> Void)?
     @objc public var didLoaderCompleted: ((UICollectionViewCell, Any?, NSError?) -> Void)?
     
     override init(frame: CGRect) {
@@ -54,7 +54,8 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
     open override func layoutSubviews() {
         super.layoutSubviews()
         emptyView?.frame = self.bounds
-        let progressSize = CGSize(width: min(self.bounds.width * 0.12, 120), height: min(self.bounds.width * 0.12, 120))
+        let width = min(self.bounds.width * 0.12, 86)
+        let progressSize = CGSize(width: width, height: width)
         let progressPoint = CGPoint(x: (self.bounds.width - progressSize.width) / 2, y: (self.bounds.height - progressSize.height) / 2)
         self.pieProgressView?.frame = CGRect(origin: progressPoint, size: progressSize)
     }
@@ -87,7 +88,7 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
         } else {
             if error != nil {
                 if let block = self.willDisplayEmptyViewBlock, let emptyView = self.emptyView {
-                    block(self, emptyView, error)
+                    block(self, emptyView, error!)
                 }
                 emptyView?.isHidden = false
             } else {

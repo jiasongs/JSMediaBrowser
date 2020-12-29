@@ -39,10 +39,9 @@ class ExampleViewController: UIViewController {
                 }
             }
         }
-        MediaBrowserAppearance.appearance.willDisplayEmptyViewBlock = { (browserVC: MediaBrowserViewController, cell: UICollectionViewCell, emptyView: EmptyView, error: NSError?) in
+        MediaBrowserAppearance.appearance.willDisplayEmptyViewBlock = { (browserVC: MediaBrowserViewController, cell: UICollectionViewCell, emptyView: EmptyView, error: NSError) in
             emptyView.image = UIImage(named: "picture_fail")
-            emptyView.imageViewSize = CGSize(width: 100, height: 100)
-            emptyView.title = error?.localizedDescription
+            emptyView.title = "\(String(describing: error.localizedDescription))"
         }
     }
     

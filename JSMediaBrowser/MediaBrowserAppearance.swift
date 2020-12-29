@@ -14,7 +14,7 @@ public typealias BuildWebImageMediatorBlock = (MediaBrowserViewController, Sourc
 public typealias BuildToolViewsBlock = (MediaBrowserViewController) -> Array<UIView & ToolViewProtocol>
 public typealias BuildCellBlock = (MediaBrowserViewController, Int) -> UICollectionViewCell?
 public typealias ConfigureCellBlock = (MediaBrowserViewController, UICollectionViewCell, Int) -> Void
-public typealias DisplayEmptyViewBlock = (MediaBrowserViewController, UICollectionViewCell, EmptyView, NSError?) -> Void
+public typealias DisplayEmptyViewBlock = (MediaBrowserViewController, UICollectionViewCell, EmptyView, NSError) -> Void
 
 public typealias Identifier = String
 public typealias CellClassSting = String
