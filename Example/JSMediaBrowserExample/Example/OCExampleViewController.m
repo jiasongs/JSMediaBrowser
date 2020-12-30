@@ -12,7 +12,7 @@
 #import "JSMediaBrowserExampleMacOS-Swift.h"
 #endif
 #import <SDWebImage.h>
-#import <JSMediaBrowser-Swift.h>
+#import <JSMediaBrowser.h>
 #import <QMUIKit.h>
 
 @interface OCExampleViewController ()
@@ -28,6 +28,7 @@
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
         [[SDImageCache sharedImageCache] clearMemory];
         [[SDImageCache sharedImageCache] clearDiskOnCompletion:nil];
+        /// 全局配置
         MediaBrowserAppearance.appearance.addImageViewInZoomViewBlock = ^UIImageView * _Nonnull(MediaBrowserViewController *browserVC, MediaBrowserZoomImageView *zoomImageView) {
             return [[SDAnimatedImageView alloc] init];
         };

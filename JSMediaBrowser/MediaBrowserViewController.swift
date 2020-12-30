@@ -72,6 +72,8 @@ public enum TransitioningStyle: Int {
     @objc open var configureCellBlock: ConfigureCellBlock?
     @objc open var willDisplayEmptyViewBlock: DisplayEmptyViewBlock?
     @objc open var onLongPressBlock: LongPressBlock?
+    @objc open var viewWillAppearBlock: ((MediaBrowserViewController) -> Void)?
+    @objc open var viewDidDisappearBlock: ((MediaBrowserViewController) -> Void)?
     
     private var loaderItems: Array<LoaderProtocol>?
     private var imageCellIdentifier = "ImageCell"
@@ -151,6 +153,9 @@ extension MediaBrowserViewController {
             browserView.reloadData()
             browserView.collectionView?.layoutIfNeeded()
         }
+        if let block = self.viewWillAppearBlock {
+            block(self)
+        }
     }
     
     open override func viewDidAppear(_ animated: Bool) {
@@ -161,6 +166,13 @@ extension MediaBrowserViewController {
     open override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.setNeedsStatusBarAppearanceUpdate()
+    }
+    
+    open override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if let block = self.viewDidDisappearBlock {
+            block(self)
+        }
     }
     
     open override var prefersStatusBarHidden: Bool {

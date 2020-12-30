@@ -8,10 +8,6 @@
 #ifndef JSMediaBrowser_h
 #define JSMediaBrowser_h
 
-#if __has_include(<JSMediaBrowser/JSMediaBrowser.h>)
-
-#else
-
-#endif /* __has_include */
+#import "JSMediaBrowser-Swift.h"
 
 #endif /* JSMediaBrowser_h */
