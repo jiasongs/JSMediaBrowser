@@ -319,9 +319,14 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     }
     
     @objc public func mediaBrowserView(_ browserView: MediaBrowserView, doubleTouch gestureRecognizer: UITapGestureRecognizer) {
-        if let imageCell = browserView.currentPageCell as? ImageCell {
-            let gesturePoint: CGPoint = gestureRecognizer.location(in: gestureRecognizer.view)
-            imageCell.zoomImageView?.zoom(to: gesturePoint, from: gestureRecognizer.view, animated: true)
+        if let imageCell = browserView.currentPageCell as? ImageCell, let zoomImageView = imageCell.zoomImageView {
+            // 如果图片被压缩了，则第一次放大到原图大小，第二次放大到最大倍数
+            if zoomImageView.zoomScale >= zoomImageView.maximumZoomScale {
+                zoomImageView.setZoom(scale: zoomImageView.finalMinimumZoomScale, animated: true)
+            } else {
+                let gesturePoint: CGPoint = gestureRecognizer.location(in: gestureRecognizer.view)
+                zoomImageView.zoom(to: gesturePoint, from: gestureRecognizer.view, animated: true)
+            }
         }
     }
     
@@ -346,7 +351,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
             }
             break
         case .ended:
-            if verticalDistance > browserView.bounds.height / 2 / 3 {
+            if verticalDistance > browserView.bounds.height / 4 {
                 self.hide(animated: true)
             } else {
                 browserView.resetDismissingGesture(withAnimations: { () -> Void in

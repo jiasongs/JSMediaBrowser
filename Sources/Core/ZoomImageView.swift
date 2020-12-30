@@ -49,7 +49,7 @@ open class ZoomImageView: ZoomBaseView {
     
     @objc public var maximumZoomScale: CGFloat = 2.0 {
         didSet {
-            scrollView?.maximumZoomScale = maximumZoomScale
+            self.scrollView?.maximumZoomScale = maximumZoomScale
         }
     }
     
@@ -220,7 +220,7 @@ extension ZoomImageView {
     }
     
     @objc open var finalMinimumZoomScale: CGFloat {
-        if self.image == nil && self.livePhoto == nil {
+        if self.contentView == nil || (self.image == nil && self.livePhoto == nil) {
             return 1
         }
         let viewport: CGRect = self.finalViewportRect
@@ -234,12 +234,9 @@ extension ZoomImageView {
         var minScale: CGFloat = 1
         let scaleX: CGFloat = viewport.width / mediaSize.width
         let scaleY: CGFloat = viewport.height / mediaSize.height
-        if let image = self.image {
-            let radio: CGFloat = image.size.height / image.size.width
-            let finalHeight: CGFloat = image.size.width > viewport.width ? viewport.width * radio : image.size.height
-            if finalHeight > viewport.height {
-                contentMode = .scaleAspectFill
-            }
+        let finalHeight: CGFloat = mediaSize.width > viewport.width ? viewport.width * (mediaSize.height / mediaSize.width) : mediaSize.height
+        if finalHeight > viewport.height {
+            contentMode = .scaleAspectFill
         }
         if contentMode == .scaleAspectFit {
             minScale = min(scaleX, scaleY)
@@ -299,6 +296,10 @@ extension ZoomImageView {
         }
     }
     
+    @objc open var zoomScale: CGFloat {
+        return self.scrollView?.zoomScale ?? 1
+    }
+    
     @objc open func setZoom(scale: CGFloat, animated: Bool) -> Void {
         if animated {
             UIView.animate(withDuration: 0.25, delay: 0.0, options: AnimationOptionsCurveOut, animations: {
@@ -309,6 +310,27 @@ extension ZoomImageView {
         }
     }
     
+    @objc(zoomToPoint:fromView:animated:)
+    open func zoom(to point: CGPoint, from view: UIView?, animated: Bool) -> Void {
+        guard let scrollView = self.scrollView else { return }
+        guard let cententView = self.contentView else { return }
+        var newZoomScale: CGFloat = 0
+        if scrollView.zoomScale < 1 {
+            /// 如果目前显示的大小比原图小，则放大到原图
+            newZoomScale = 1
+        } else {
+            /// 如果当前显示原图，则放大到最大的大小
+            newZoomScale = scrollView.maximumZoomScale
+        }
+        let tapPoint: CGPoint = cententView.convert(point, from: view)
+        var zoomRect: CGRect = CGRect.zero
+        zoomRect.size.width = scrollView.bounds.width / newZoomScale
+        zoomRect.size.height = scrollView.bounds.height / newZoomScale
+        zoomRect.origin.x = tapPoint.x - zoomRect.width / 2
+        zoomRect.origin.y = tapPoint.y - zoomRect.height / 2
+        self.zoom(to: zoomRect, animated: animated)
+    }
+    
     @objc(zoomToRect:animated:)
     open func zoom(to rect: CGRect, animated: Bool) -> Void {
         if animated {
@@ -317,32 +339,6 @@ extension ZoomImageView {
             }, completion: nil)
         } else {
             self.scrollView?.zoom(to: rect, animated: false)
-        }
-    }
-    
-    @objc(zoomToPoint:fromView:animated:)
-    open func zoom(to point: CGPoint, from view: UIView?, animated: Bool) -> Void {
-        guard let scrollView = self.scrollView else { return }
-        guard let cententView = self.contentView else { return }
-        // 如果图片被压缩了，则第一次放大到原图大小，第二次放大到最大倍数
-        if scrollView.zoomScale >= scrollView.maximumZoomScale {
-            self.setZoom(scale: scrollView.minimumZoomScale, animated: animated)
-        } else {
-            var newZoomScale: CGFloat = 0
-            if scrollView.zoomScale < 1 {
-                // 如果目前显示的大小比原图小，则放大到原图
-                newZoomScale = 1
-            } else {
-                // 如果当前显示原图，则放大到最大的大小
-                newZoomScale = scrollView.maximumZoomScale
-            }
-            let tapPoint: CGPoint = cententView.convert(point, from: view)
-            var zoomRect: CGRect = CGRect.zero
-            zoomRect.size.width = scrollView.bounds.width / newZoomScale
-            zoomRect.size.height = scrollView.bounds.height / newZoomScale
-            zoomRect.origin.x = tapPoint.x - zoomRect.width / 2
-            zoomRect.origin.y = tapPoint.y - zoomRect.height / 2
-            self.zoom(to: zoomRect, animated: animated)
         }
     }
     

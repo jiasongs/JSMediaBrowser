@@ -87,6 +87,8 @@ import JSCoreKit
         self.addGestureRecognizer(self.longPressGesture!)
         
         self.dismissingGesture = UIPanGestureRecognizer(target: self, action: #selector(self.handleDismissingGesture))
+        self.dismissingGesture?.minimumNumberOfTouches = 1
+        self.dismissingGesture?.maximumNumberOfTouches = 1
         self.dismissingGesture?.delegate = self
         self.addGestureRecognizer(self.dismissingGesture!)
         
