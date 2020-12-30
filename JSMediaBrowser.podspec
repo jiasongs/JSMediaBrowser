@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.swift_versions = ["4.2", "5.0"]
   s.source       = { :git => "https://github.com/jiasongs/JSMediaBrowser.git", :tag => "#{s.version}" }
   s.frameworks   = "Foundation", "UIKit", "CoreGraphics", "QuartzCore", "PhotosUI"
-  s.source_files = "JSMediaBrowser", "JSMediaBrowser/*.{swift,h,m}", "JSMediaBrowser/**/*.{swift,h,m}"
+  s.source_files = "Sources", "Sources/*.{swift,h,m}", "Sources/**/*.{swift,h,m}"
   s.license      = "MIT"
   s.requires_arc = true
 
