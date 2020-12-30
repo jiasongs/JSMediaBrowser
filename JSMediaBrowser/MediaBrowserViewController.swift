@@ -199,6 +199,15 @@ extension MediaBrowserViewController {
         }
     }
     
+    @objc open func toolViewForClass(_ viewClass: UIView.Type) -> UIView? {
+        for view in self.toolViews {
+            if view.isKind(of: viewClass) {
+                return view
+            }
+        }
+        return nil
+    }
+    
     @objc public func registerClass(_ cellClass: AnyClass, forCellWithReuseIdentifier identifier: String) -> Void {
         self.browserView?.registerClass(cellClass, forCellWithReuseIdentifier: identifier)
     }
