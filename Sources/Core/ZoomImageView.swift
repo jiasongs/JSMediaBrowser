@@ -14,10 +14,10 @@ open class ZoomImageView: ZoomBaseView {
     
     @objc weak var delegate: ZoomImageViewDelegate?
     
-    @objc private(set) public var scrollView: UIScrollView?
+    @objc private var scrollView: UIScrollView?
     
     private var isImageViewInitialized: Bool = false
-    @objc private(set) lazy var imageView: UIImageView = {
+    @objc private lazy var imageView: UIImageView = {
         isImageViewInitialized = true
         var imageView: UIImageView
         if let delegate = self.delegate, delegate.responds(to: #selector(ZoomImageViewDelegate.zoomImageViewLazyBuildImageView(_:))) {
@@ -31,7 +31,7 @@ open class ZoomImageView: ZoomBaseView {
     }()
     
     private var isLivePhotoViewInitialized: Bool = false
-    @objc private(set) lazy var livePhotoView: PHLivePhotoView = {
+    @objc private lazy var livePhotoView: PHLivePhotoView = {
         isLivePhotoViewInitialized = true
         var livePhotoView: PHLivePhotoView
         if let delegate = self.delegate, delegate.responds(to: #selector(ZoomImageViewDelegate.zoomImageViewLazyBuildLivePhotoView(_:))) {
@@ -59,8 +59,8 @@ open class ZoomImageView: ZoomBaseView {
                 return
             }
             if isLivePhotoViewInitialized {
-                livePhotoView.isHidden = true
-                livePhotoView.livePhoto = nil
+                self.livePhotoView.isHidden = true
+                self.livePhotoView.livePhoto = nil
             }
             self.imageView.isHidden = false
             self.imageView.image = image
@@ -75,8 +75,8 @@ open class ZoomImageView: ZoomBaseView {
                 return
             }
             if isImageViewInitialized {
-                imageView.isHidden = true
-                imageView.image = nil
+                self.imageView.isHidden = true
+                self.imageView.image = nil
             }
             self.livePhotoView.isHidden = false
             self.livePhotoView.livePhoto = livePhoto
@@ -111,7 +111,7 @@ extension ZoomImageView {
     
     open override func layoutSubviews() {
         super.layoutSubviews()
-        if (self.bounds.isEmpty) {
+        if self.bounds.isEmpty {
             return
         }
         self.scrollView?.js_frameApplyTransform = self.bounds
@@ -138,25 +138,54 @@ extension ZoomImageView {
 extension ZoomImageView {
     
     @objc open override var containerView: UIView? {
-        get {
-            return self.scrollView
-        }
+        return self.scrollView
     }
     
     @objc open override var contentView: UIView? {
-        get {
-            if (isImageViewInitialized && !imageView.isHidden) {
-                return imageView
-            }
-            if (isLivePhotoViewInitialized && !livePhotoView.isHidden) {
-                return livePhotoView
-            }
-            return nil
+        if self.isDisplayImageView {
+            return self.imageView
+        } else if self.isDisplayLivePhotoView {
+            return self.livePhotoView
         }
+        return nil
     }
     
     @objc open override var contentViewRectInZoomView: CGRect {
         return super.contentViewRectInZoomView
+    }
+    
+    @objc open var isDisplayImageView: Bool {
+        return isImageViewInitialized && !self.imageView.isHidden
+    }
+    
+    @objc open var isDisplayLivePhotoView: Bool {
+        return isLivePhotoViewInitialized && !self.livePhotoView.isHidden
+    }
+    
+    @objc var isAnimating: Bool {
+        if self.isDisplayImageView {
+            return self.imageView.isAnimating
+        } else if self.isDisplayLivePhotoView {
+            /// TODO
+            return true
+        }
+        return false
+    }
+    
+    @objc open func startAnimating() -> Void {
+        if self.isDisplayImageView {
+            self.imageView.startAnimating()
+        } else if self.isDisplayLivePhotoView {
+            self.livePhotoView.startPlayback(with: .full)
+        }
+    }
+    
+    @objc open func stopAnimating() -> Void {
+        if self.isDisplayImageView {
+            self.imageView.stopAnimating()
+        } else if self.isDisplayLivePhotoView {
+            self.livePhotoView.stopPlayback()
+        }
     }
     
     @objc open var finalViewportRect: CGRect {
@@ -166,7 +195,7 @@ extension ZoomImageView {
             self.setNeedsLayout()
             self.layoutIfNeeded()
         }
-        if (rect.isEmpty && !self.bounds.isEmpty) {
+        if rect.isEmpty && !self.bounds.isEmpty {
             let safeAreaInsets: UIEdgeInsets = JSCoreHelper.safeAreaInsetsForDeviceWithNotch()
             let size: CGSize = CGSize(width: min(scrollView.bounds.width, viewportRectMaxWidth), height: scrollView.bounds.height)
             let offsetX = (scrollView.bounds.width - size.width) / 2
@@ -191,45 +220,43 @@ extension ZoomImageView {
     }
     
     @objc open var finalMinimumZoomScale: CGFloat {
-        get {
-            if self.image == nil && self.livePhoto == nil {
-                return 1
-            }
-            let viewport: CGRect = self.finalViewportRect
-            var mediaSize: CGSize = CGSize.zero
-            if let image = self.image {
-                mediaSize = image.size
-            } else if let livePhoto = self.livePhoto {
-                mediaSize = livePhoto.size
-            }
-            var contentMode = self.contentMode
-            var minScale: CGFloat = 1
-            let scaleX: CGFloat = viewport.width / mediaSize.width
-            let scaleY: CGFloat = viewport.height / mediaSize.height
-            if let image = self.image {
-                let radio: CGFloat = image.size.height / image.size.width
-                let finalHeight: CGFloat = image.size.width > viewport.width ? viewport.width * radio : image.size.height
-                if (finalHeight > viewport.height) {
-                    contentMode = .scaleAspectFill
-                }
-            }
-            if (contentMode == .scaleAspectFit) {
-                minScale = min(scaleX, scaleY)
-            } else if (contentMode == .scaleAspectFill) {
-                minScale = max(scaleX, scaleY)
-            } else if (contentMode == .center) {
-                if (scaleX >= 1 && scaleY >= 1) {
-                    minScale = 1
-                } else {
-                    minScale = min(scaleX, scaleY)
-                }
-            }
-            return minScale
+        if self.image == nil && self.livePhoto == nil {
+            return 1
         }
+        let viewport: CGRect = self.finalViewportRect
+        var mediaSize: CGSize = CGSize.zero
+        if let image = self.image {
+            mediaSize = image.size
+        } else if let livePhoto = self.livePhoto {
+            mediaSize = livePhoto.size
+        }
+        var contentMode = self.contentMode
+        var minScale: CGFloat = 1
+        let scaleX: CGFloat = viewport.width / mediaSize.width
+        let scaleY: CGFloat = viewport.height / mediaSize.height
+        if let image = self.image {
+            let radio: CGFloat = image.size.height / image.size.width
+            let finalHeight: CGFloat = image.size.width > viewport.width ? viewport.width * radio : image.size.height
+            if finalHeight > viewport.height {
+                contentMode = .scaleAspectFill
+            }
+        }
+        if contentMode == .scaleAspectFit {
+            minScale = min(scaleX, scaleY)
+        } else if contentMode == .scaleAspectFill {
+            minScale = max(scaleX, scaleY)
+        } else if contentMode == .center {
+            if scaleX >= 1 && scaleY >= 1 {
+                minScale = 1
+            } else {
+                minScale = min(scaleX, scaleY)
+            }
+        }
+        return minScale
     }
     
     @objc open func revertZooming() -> Void {
-        if (self.bounds.isEmpty) {
+        if self.bounds.isEmpty {
             return
         }
         let finalEnabledZoom: Bool = self.finalEnabledZoom
@@ -248,7 +275,7 @@ extension ZoomImageView {
         /// 重置ZoomScale
         self.setZoom(scale: zoomScale, animated: false)
         /// 手动触发一次缩放
-        if (shouldFireDidZoomingManual) {
+        if shouldFireDidZoomingManual {
             self.handleDidEndZooming()
         }
         /// 重置ContentOffset
@@ -261,10 +288,10 @@ extension ZoomImageView {
             var y: CGFloat = scrollView.contentOffset.y
             let viewport: CGRect = self.finalViewportRect
             if let contentView = self.contentView, !viewport.isEmpty {
-                if (viewport.width < contentView.frame.width) {
+                if viewport.width < contentView.frame.width {
                     x = (contentView.frame.width - viewport.width) / 2 - viewport.minX
                 }
-                if (viewport.height < contentView.frame.height) {
+                if viewport.height < contentView.frame.height {
                     y = -scrollView.contentInset.top
                 }
             }
@@ -284,7 +311,7 @@ extension ZoomImageView {
     
     @objc(zoomToRect:animated:)
     open func zoom(to rect: CGRect, animated: Bool) -> Void {
-        if (animated) {
+        if animated {
             UIView.animate(withDuration: 0.25, delay: 0.0, options: AnimationOptionsCurveOut, animations: {
                 self.scrollView?.zoom(to: rect, animated: false)
             }, completion: nil)
@@ -298,11 +325,11 @@ extension ZoomImageView {
         guard let scrollView = self.scrollView else { return }
         guard let cententView = self.contentView else { return }
         // 如果图片被压缩了，则第一次放大到原图大小，第二次放大到最大倍数
-        if (scrollView.zoomScale >= scrollView.maximumZoomScale) {
+        if scrollView.zoomScale >= scrollView.maximumZoomScale {
             self.setZoom(scale: scrollView.minimumZoomScale, animated: animated)
         } else {
             var newZoomScale: CGFloat = 0
-            if (scrollView.zoomScale < 1) {
+            if scrollView.zoomScale < 1 {
                 // 如果目前显示的大小比原图小，则放大到原图
                 newZoomScale = 1
             } else {

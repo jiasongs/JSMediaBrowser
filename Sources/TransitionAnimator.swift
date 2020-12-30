@@ -62,7 +62,7 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
                 sourceRect = needViewController?.view.convert(sourceView.frame, from: sourceView.superview) ?? CGRect.zero
             }
             /// 判断sourceRect是否与needViewController.view相交
-            if (!sourceRect.isEmpty && !sourceRect.intersects(needViewController?.view.bounds ?? CGRect.zero)) {
+            if !sourceRect.isEmpty && !sourceRect.intersects(needViewController?.view.bounds ?? CGRect.zero) {
                 sourceRect = CGRect.zero
             }
             if !sourceRect.isEmpty {
@@ -78,7 +78,7 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         toView?.setNeedsLayout()
         toView?.layoutIfNeeded()
         toView?.frame = containerView.bounds
-        if (isPresenting) {
+        if isPresenting {
             if let toView = toView {
                 containerView.addSubview(toView)
             }
@@ -133,7 +133,7 @@ extension TransitionAnimator {
             let zoomContentViewFrameInView = needViewController?.view.convert(zoomContentViewFrame, from: zoomContentView?.superview) ?? CGRect.zero
             let zoomContentViewBoundsInView = CGRect(origin: CGPoint.zero, size: zoomContentViewFrameInView.size)
             /// 遮罩
-            if (isPresenting) {
+            if isPresenting {
                 dimmingView?.alpha = 0.0
             }
             /// 判断是否截取image

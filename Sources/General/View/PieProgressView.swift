@@ -136,7 +136,7 @@ fileprivate class PieProgressLayer: CALayer {
     }
     
     override func draw(in context: CGContext) {
-        if (self.bounds.isEmpty) {
+        if self.bounds.isEmpty {
             return
         }
         

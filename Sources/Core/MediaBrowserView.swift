@@ -262,7 +262,7 @@ extension MediaBrowserView: UIScrollViewDelegate {
         let fastToLeft: Bool = (floor(self.previousPageOffsetRatio) - floor(pageOffsetRatio) >= 1.0) && (self.previousPageOffsetRatio - ceil(pageOffsetRatio) > 0.5)
         let turnPageToLeft: Bool = fastToLeft || betweenOrEqual(pageOffsetRatio, floor(pageOffsetRatio) + 0.5, self.previousPageOffsetRatio)
         
-        if (turnPageToRight || turnPageToLeft) {
+        if  turnPageToRight || turnPageToLeft {
             let previousIndex = min(Int(round(self.previousPageOffsetRatio)), self.totalUnitPage - 1)
             let index = Int(round(pageOffsetRatio))
             if index >= 0 && index < self.totalUnitPage {
@@ -324,7 +324,7 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
                 let height: NSNumber = NSNumber(value: Float(self.bounds.height / 2))
                 var ratio: CGFloat = 1.0
                 var alpha: CGFloat = 1.0
-                if (verticalDistance > 0) {
+                if  verticalDistance > 0 {
                     ratio = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.4], extrapolateLeft: .clamp, extrapolateRight: .clamp)
                     alpha = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.2], extrapolateLeft: .clamp, extrapolateRight: .clamp)
                 } else {

@@ -338,7 +338,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
         case .changed:
             var alpha: CGFloat = 1
             let height: NSNumber = NSNumber(value: Float(browserView.bounds.height / 2))
-            if (verticalDistance > 0) {
+            if verticalDistance > 0 {
                 alpha = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.2], extrapolateLeft: .clamp, extrapolateRight: .clamp)
             }
             for toolView in self.toolViews {
@@ -346,7 +346,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
             }
             break
         case .ended:
-            if (verticalDistance > browserView.bounds.height / 2 / 3) {
+            if verticalDistance > browserView.bounds.height / 2 / 3 {
                 self.hide(animated: true)
             } else {
                 browserView.resetDismissingGesture(withAnimations: { () -> Void in

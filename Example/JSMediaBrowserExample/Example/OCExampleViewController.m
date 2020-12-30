@@ -12,7 +12,7 @@
 #import "JSMediaBrowserExampleMacOS-Swift.h"
 #endif
 #import <SDWebImage.h>
-#import <JSMediaBrowser.h>
+#import <JSMediaBrowser-Swift.h>
 #import <QMUIKit.h>
 
 @interface OCExampleViewController ()
@@ -53,8 +53,10 @@
     self.view.backgroundColor = UIColor.blackColor;
     NSData *data = [NSData dataWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"data" ofType:@"json"]];
     NSMutableArray *array = [[NSJSONSerialization JSONObjectWithData:data options:0 error:nil] mutableCopy];
-    [array addObject:[NSBundle.mainBundle pathForResource:@"data1" ofType:@"jpg"]];
-    [array addObject:[NSBundle.mainBundle pathForResource:@"data2" ofType:@"gif"]];
+    NSString *dataPath1 = [NSBundle.mainBundle pathForResource:@"data1" ofType:@"jpg"];
+    [array addObject:[NSURL fileURLWithPath:dataPath1].absoluteString];
+    NSString *dataPath2 = [NSBundle.mainBundle pathForResource:@"data2" ofType:@"gif"];
+    [array addObject:[NSURL fileURLWithPath:dataPath2].absoluteString];
     self.dataSource = array;
     
     self.floatLayoutView = [[QMUIFloatLayoutView alloc] init];
