@@ -84,7 +84,7 @@ public enum Shape: Int {
 
 extension PieProgressView {
     
-    @objc open func setProgress(_ progress: Float, animated: Bool) -> Void {
+    @objc open func setProgress(_ progress: Float, animated: Bool = true) -> Void {
         needSetProgress = false
         self.progress = fmax(0.0, fmin(1.0, progress))
         needSetProgress = true

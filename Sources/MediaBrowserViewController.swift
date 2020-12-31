@@ -187,13 +187,13 @@ extension MediaBrowserViewController {
 
 extension MediaBrowserViewController {
     
-    @objc(showFromViewController:animated:)
-    open func show(from sender: UIViewController, animated: Bool) {
-        sender.present(self, animated: animated, completion: nil)
+    @objc(showFromViewController:animated:completion:)
+    open func show(from sender: UIViewController, animated: Bool = true, completion: (() -> Void)? = nil) {
+        sender.present(self, animated: animated, completion: completion)
     }
     
-    @objc open func hide(animated: Bool) {
-        self.dismiss(animated: animated, completion: nil)
+    @objc open func hide(animated: Bool = true, completion: (() -> Void)? = nil) {
+        self.dismiss(animated: animated, completion: completion)
     }
     
     @objc open var toolViews: Array<UIView & ToolViewProtocol> {
@@ -315,16 +315,16 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
 extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, singleTouch gestureRecognizer: UITapGestureRecognizer) {
-        self.hide(animated: true)
+        self.hide()
     }
     
     @objc public func mediaBrowserView(_ browserView: MediaBrowserView, doubleTouch gestureRecognizer: UITapGestureRecognizer) {
         if let imageCell = browserView.currentPageCell as? ImageCell, let zoomImageView = imageCell.zoomImageView {
             if zoomImageView.zoomScale >= zoomImageView.maximumZoomScale {
-                zoomImageView.setZoom(scale: zoomImageView.finalMinimumZoomScale, animated: true)
+                zoomImageView.setZoom(scale: zoomImageView.finalMinimumZoomScale)
             } else {
                 let gesturePoint: CGPoint = gestureRecognizer.location(in: gestureRecognizer.view)
-                zoomImageView.zoom(to: gesturePoint, animated: true)
+                zoomImageView.zoom(to: gesturePoint)
             }
         }
     }
@@ -351,7 +351,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
             break
         case .ended:
             if verticalDistance > browserView.bounds.height / 4 {
-                self.hide(animated: true)
+                self.hide()
             } else {
                 browserView.resetDismissingGesture(withAnimations: { () -> Void in
                     for toolView in self.toolViews {

@@ -280,7 +280,7 @@ extension ZoomImageView {
         self.revertContentOffset(animated: false)
     }
     
-    @objc open func revertContentOffset(animated: Bool) -> Void {
+    @objc open func revertContentOffset(animated: Bool = true) -> Void {
         if let scrollView = self.scrollView {
             var x: CGFloat = scrollView.contentOffset.x
             var y: CGFloat = scrollView.contentOffset.y
@@ -301,7 +301,7 @@ extension ZoomImageView {
         return self.scrollView?.zoomScale ?? 1
     }
     
-    @objc open func setZoom(scale: CGFloat, animated: Bool) -> Void {
+    @objc open func setZoom(scale: CGFloat, animated: Bool = true) -> Void {
         if animated {
             UIView.animate(withDuration: 0.25, delay: 0.0, options: AnimationOptionsCurveOut, animations: {
                 self.scrollView?.zoomScale = scale
@@ -312,7 +312,7 @@ extension ZoomImageView {
     }
     
     @objc(zoomToPoint:animated:)
-    open func zoom(to point: CGPoint, animated: Bool) -> Void {
+    open func zoom(to point: CGPoint, animated: Bool = true) -> Void {
         guard let scrollView = self.scrollView else { return }
         guard let cententView = self.contentView else { return }
         var newZoomScale: CGFloat = 0
@@ -333,7 +333,7 @@ extension ZoomImageView {
     }
     
     @objc(zoomToRect:animated:)
-    open func zoom(to rect: CGRect, animated: Bool) -> Void {
+    open func zoom(to rect: CGRect, animated: Bool = true) -> Void {
         if animated {
             UIView.animate(withDuration: 0.25, delay: 0.0, options: AnimationOptionsCurveOut, animations: {
                 self.scrollView?.zoom(to: rect, animated: false)

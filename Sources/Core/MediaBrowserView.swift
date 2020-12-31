@@ -120,7 +120,7 @@ extension MediaBrowserView {
 
 extension MediaBrowserView {
     
-    @objc open func setCurrentPage(_ index: Int, animated: Bool) -> Void {
+    @objc open func setCurrentPage(_ index: Int, animated: Bool = true) -> Void {
         /// iOS 14, 当isPagingEnabled为true, 若不刷新则无法滚动到相应Item
         /// https://stackoverflow.com/questions/41884645/uicollectionview-scroll-to-item-not-working-with-horizontal-direction
         self.reloadData()
@@ -132,7 +132,7 @@ extension MediaBrowserView {
     }
     
     @objc(scrollToPageAtIndex:animated:)
-    open func scrollToPage(at index: Int, animated: Bool) -> Void {
+    open func scrollToPage(at index: Int, animated: Bool = true) -> Void {
         if let collectionView = self.collectionView {
             /// 第一次产生实际性滚动的时候, 需要赋值当前的偏移率
             if self.previousPageOffsetRatio == 0 {
@@ -195,7 +195,7 @@ extension MediaBrowserView {
         return self.collectionView?.cellForItem(at: indexPath)
     }
     
-    @objc open func resetDismissingGesture(withAnimations animations: (() -> Void)?) -> Void {
+    @objc open func resetDismissingGesture(withAnimations animations: (() -> Void)? = nil) -> Void {
         self.gestureBeganLocation = CGPoint.zero
         UIView.animate(withDuration: 0.25, delay: 0, options: AnimationOptionsCurveOut, animations: {
             self.currentPageCell?.transform = CGAffineTransform.identity
@@ -348,7 +348,7 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
             self.endDismissingGesture(gesture, verticalDistance: verticalDistance)
             break
         default:
-            self.resetDismissingGesture(withAnimations: nil)
+            self.resetDismissingGesture()
             break
         }
     }
@@ -374,7 +374,7 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
         if self.toggleDismissingGestureDelegate(gesture, verticalDistance: verticalDistance) {
             self.gestureBeganLocation = CGPoint.zero
         } else {
-            self.resetDismissingGesture(withAnimations: nil)
+            self.resetDismissingGesture()
         }
     }
     

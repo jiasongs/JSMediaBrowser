@@ -115,7 +115,7 @@ class ExampleViewController: UIViewController {
         }
         browser.sourceItems = sourceItems
         browser.browserView?.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
-        browser.show(from: self, animated: true)
+        browser.show(from: self)
     }
     
     override var prefersStatusBarHidden: Bool {

@@ -78,7 +78,7 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
     public func loaderEntity(_ loaderEntity: LoaderProtocol, didReceive progress: Progress?) {
         if let progress = progress {
             self.layoutIfNeeded()
-            pieProgressView?.setProgress(Float(progress.fractionCompleted), animated: true)
+            pieProgressView?.setProgress(Float(progress.fractionCompleted))
         }
     }
     
