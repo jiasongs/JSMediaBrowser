@@ -104,7 +104,7 @@ class ExampleViewController: UIViewController {
     
     @objc func handleImageButtonEvent(sender: QMUIButton) -> Void {
         let browser: MediaBrowserViewController = MediaBrowserViewController()
-        var sourceItems: Array<ImageEntity> = [];
+        var sourceItems: Array<ImageSourceProtocol> = [];
         for (index, urlString) in self.dataSource.enumerated() {
             if let button: QMUIButton = self.floatLayoutView.subviews[index] as? QMUIButton {
                 let imageEntity = ImageEntity(sourceView: button, sourceRect: CGRect.zero, thumbImage: button.image(for: .normal))

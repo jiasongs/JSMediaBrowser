@@ -19,3 +19,10 @@ public protocol SourceProtocol: NSObjectProtocol {
     
 }
 
+@objc(MediaBrowserImageSourceProtocol)
+public protocol ImageSourceProtocol: SourceProtocol {
+    
+    @objc  var image: UIImage? { get set }
+    @objc  var imageUrl: URL? { get set }
+   
+}

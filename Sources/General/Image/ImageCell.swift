@@ -33,7 +33,7 @@ open class ImageCell: BaseCell {
     
     @objc public override func updateCell(loaderEntity: LoaderProtocol, at index: Int) {
         super.updateCell(loaderEntity: loaderEntity, at: index)
-        if let sourceItem = loaderEntity.sourceItem as? ImageEntity {
+        if let sourceItem = loaderEntity.sourceItem as? ImageSourceProtocol {
             if sourceItem.image != nil {
                 self.zoomImageView?.image = sourceItem.image
             } else if sourceItem.thumbImage != nil {

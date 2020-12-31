@@ -20,9 +20,9 @@ public enum TransitioningStyle: Int {
     @objc open var browserView: MediaBrowserView?
     @objc open var sourceItems: Array<SourceProtocol>? {
         didSet {
-            var array: Array<BaseLoaderEntity> = Array()
+            var array: Array<ImageLoaderProtocol> = Array()
             sourceItems?.forEach({ (item) in
-                if let _ = item as? ImageEntity {
+                if let _ = item as? ImageSourceProtocol {
                     let loader: ImageLoaderEntity = ImageLoaderEntity()
                     loader.sourceItem = item
                     if let block = self.addWebImageMediatorBlock {
@@ -244,7 +244,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         } else if let block = MediaBrowserAppearance.appearance.cellForItemAtIndexBlock {
             cell = block(self, index)
         }
-        if cell == nil, let loaderItem = loaderItems?[index] as? ImageLoaderEntity {
+        if cell == nil, let loaderItem = loaderItems?[index] as? ImageLoaderProtocol {
             cell = self.dequeueReusableCell(withReuseIdentifier: imageCellIdentifier, at: index)
             /// 需要添加代理
             if let imageCell = cell as? ImageCell {
@@ -434,7 +434,7 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     }
     
     public var thumbImage: UIImage? {
-        if let sourceItem: ImageEntity = self.sourceItems?[browserView?.currentPage ?? 0] as? ImageEntity {
+        if let sourceItem = self.sourceItems?[browserView?.currentPage ?? 0] as? ImageSourceProtocol {
             return (sourceItem.image != nil) ? sourceItem.image : sourceItem.thumbImage
         }
         return nil

@@ -260,7 +260,7 @@ extension ZoomImageView {
         let minimumZoomScale: CGFloat = self.finalMinimumZoomScale
         let maximumZoomScale: CGFloat = max(finalEnabledZoom ? self.maximumZoomScale : minimumZoomScale, minimumZoomScale)
         let zoomScale: CGFloat = minimumZoomScale
-        let shouldFireDidZoomingManual: Bool = zoomScale == self.scrollView?.zoomScale
+        let shouldFireDidZoomingManual: Bool = zoomScale == self.zoomScale
         self.scrollView?.panGestureRecognizer.isEnabled = finalEnabledZoom
         self.scrollView?.pinchGestureRecognizer?.isEnabled = finalEnabledZoom
         self.scrollView?.minimumZoomScale = minimumZoomScale
@@ -315,12 +315,12 @@ extension ZoomImageView {
         guard let scrollView = self.scrollView else { return }
         guard let cententView = self.contentView else { return }
         var newZoomScale: CGFloat = 0
-        if scrollView.zoomScale < 1 {
+        if self.zoomScale < 1 {
             /// 如果目前显示的大小比原图小，则放大到原图
             newZoomScale = 1
         } else {
             /// 如果当前显示原图，则放大到最大的大小
-            newZoomScale = scrollView.maximumZoomScale
+            newZoomScale = self.maximumZoomScale
         }
         let tapPoint: CGPoint = cententView.convert(point, from: view)
         var zoomRect: CGRect = CGRect.zero
