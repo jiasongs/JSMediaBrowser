@@ -310,8 +310,8 @@ extension ZoomImageView {
         }
     }
     
-    @objc(zoomToPoint:fromView:animated:)
-    open func zoom(to point: CGPoint, from view: UIView?, animated: Bool) -> Void {
+    @objc(zoomToPoint:animated:)
+    open func zoom(to point: CGPoint, animated: Bool) -> Void {
         guard let scrollView = self.scrollView else { return }
         guard let cententView = self.contentView else { return }
         var newZoomScale: CGFloat = 0
@@ -322,7 +322,7 @@ extension ZoomImageView {
             /// 如果当前显示原图，则放大到最大的大小
             newZoomScale = self.maximumZoomScale
         }
-        let tapPoint: CGPoint = cententView.convert(point, from: view)
+        let tapPoint: CGPoint = cententView.convert(point, from: scrollView)
         var zoomRect: CGRect = CGRect.zero
         zoomRect.size.width = scrollView.bounds.width / newZoomScale
         zoomRect.size.height = scrollView.bounds.height / newZoomScale

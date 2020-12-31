@@ -266,7 +266,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     private func addMonitorFor(baseCell cell: BaseCell) -> Void {
         cell.onEmptyPressAction = { [weak self] (cell: UICollectionViewCell) in
             if let index: Int = self?.browserView?.index(for: cell), index != NSNotFound {
-                self?.browserView?.reloadItems(at: [index])
+                self?.browserView?.reloadPages(at: [index])
             }
         }
         cell.willDisplayEmptyViewBlock = { [weak self] (cell: UICollectionViewCell, emptyView: EmptyView, error: NSError) in
@@ -320,12 +320,11 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     
     @objc public func mediaBrowserView(_ browserView: MediaBrowserView, doubleTouch gestureRecognizer: UITapGestureRecognizer) {
         if let imageCell = browserView.currentPageCell as? ImageCell, let zoomImageView = imageCell.zoomImageView {
-            // 如果图片被压缩了，则第一次放大到原图大小，第二次放大到最大倍数
             if zoomImageView.zoomScale >= zoomImageView.maximumZoomScale {
                 zoomImageView.setZoom(scale: zoomImageView.finalMinimumZoomScale, animated: true)
             } else {
                 let gesturePoint: CGPoint = gestureRecognizer.location(in: gestureRecognizer.view)
-                zoomImageView.zoom(to: gesturePoint, from: gestureRecognizer.view, animated: true)
+                zoomImageView.zoom(to: gesturePoint, animated: true)
             }
         }
     }

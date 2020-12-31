@@ -151,7 +151,8 @@ extension MediaBrowserView {
         self.collectionView?.reloadData()
     }
     
-    @objc open func reloadItems(at indexs: Array<Int>) {
+    @objc(reloadPagesAtIndexs:)
+    open func reloadPages(at indexs: Array<Int>) {
         var indexPaths: Array<IndexPath> = []
         for index in indexs {
             indexPaths.append(IndexPath(item: index, section: 0))
