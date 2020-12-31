@@ -40,6 +40,7 @@ open class ZoomImageView: ZoomBaseView {
             livePhotoView = PHLivePhotoView()
         }
         livePhotoView.isHidden = true
+        livePhotoView.delegate = self
         scrollView?.addSubview(livePhotoView)
         return livePhotoView
     }()
@@ -84,6 +85,7 @@ open class ZoomImageView: ZoomBaseView {
             self.revertZooming()
         }
     }
+    private var isLivePhotoPlaying: Bool = false
     
     @objc public var enabledZoom: Bool = true
     
@@ -166,8 +168,7 @@ extension ZoomImageView {
         if self.isDisplayImageView {
             return self.imageView.isAnimating
         } else if self.isDisplayLivePhotoView {
-            /// TODO
-            return true
+            return self.isLivePhotoPlaying
         }
         return false
     }
@@ -376,6 +377,18 @@ extension ZoomImageView: UIScrollViewDelegate {
     
     public func scrollViewDidZoom(_ scrollView: UIScrollView) {
         self.handleDidEndZooming()
+    }
+    
+}
+
+extension ZoomImageView: PHLivePhotoViewDelegate {
+    
+    public func livePhotoView(_ livePhotoView: PHLivePhotoView, willBeginPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) {
+        self.isLivePhotoPlaying = true
+    }
+    
+    public func livePhotoView(_ livePhotoView: PHLivePhotoView, didEndPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) {
+        self.isLivePhotoPlaying = false
     }
     
 }
