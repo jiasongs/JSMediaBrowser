@@ -6,11 +6,7 @@
 //
 
 #import "OCExampleViewController.h"
-#if !TARGET_OS_MACCATALYST
 #import "JSMediaBrowserExample-Swift.h"
-#else
-#import "JSMediaBrowserExampleMacOS-Swift.h"
-#endif
 #import <SDWebImage.h>
 #import <JSMediaBrowser-Swift.h>
 #import <QMUIKit.h>

@@ -51,7 +51,6 @@
 		7A61E076259486FA001C58FA /* PageControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageControl.swift; sourceTree = "<group>"; };
 		7A80A5AA25974B0100E9927C /* ShareControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareControl.swift; sourceTree = "<group>"; };
 		7AEF5DCA25837379006550CE /* JSMediaBrowserExample-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "JSMediaBrowserExample-Bridging-Header.h"; sourceTree = "<group>"; };
-		7AEF5DCB25837379006550CE /* JSMediaBrowserExampleMacOS-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "JSMediaBrowserExampleMacOS-Bridging-Header.h"; sourceTree = "<group>"; };
 		7AEF5DCC25837379006550CE /* OCExampleViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OCExampleViewController.h; sourceTree = "<group>"; };
 		7AEF5DCD25837379006550CE /* OCExampleViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OCExampleViewController.m; sourceTree = "<group>"; };
 		7AF4196E25981013009E7FEE /* data1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = data1.jpg; sourceTree = "<group>"; };
@@ -119,7 +118,6 @@
 				7AF419922598439F009E7FEE /* Example */,
 				7A23CD5A2581F365004B4033 /* AppDelegate.swift */,
 				7AEF5DCA25837379006550CE /* JSMediaBrowserExample-Bridging-Header.h */,
-				7AEF5DCB25837379006550CE /* JSMediaBrowserExampleMacOS-Bridging-Header.h */,
 				7A23CD632581F367004B4033 /* Assets.xcassets */,
 				7A23CD652581F367004B4033 /* LaunchScreen.storyboard */,
 				7A23CD682581F367004B4033 /* Info.plist */,
@@ -605,7 +603,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.jiasong.JSMediaBrowserExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "JSMediaBrowserExample/JSMediaBrowserExampleMacOS-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "JSMediaBrowserExample/JSMediaBrowserExample-Bridging-Header.h";
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "JSMediaBrowserExample-Swift.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 2;
@@ -631,7 +630,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.jiasong.JSMediaBrowserExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "JSMediaBrowserExample/JSMediaBrowserExampleMacOS-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "JSMediaBrowserExample/JSMediaBrowserExample-Bridging-Header.h";
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "JSMediaBrowserExample-Swift.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 2;
 			};

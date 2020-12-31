@@ -16,7 +16,8 @@ open class ImageLoaderEntity: BaseLoaderEntity, ImageLoaderProtocol {
     @objc public override func request(forView view: UIView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) {
         super.request(forView: view, setDataBlock: setDataBlock, downloadProgress: downloadProgress, completed: completed)
         if let sourceItem = self.sourceItem as? ImageSourceProtocol {
-            self.webImageMediator?.setImage(forView: view, url: sourceItem.imageUrl, thumbImage: sourceItem.thumbImage, setImageBlock: { (image: UIImage?, imageData: Data?) in
+            let url: URL? = sourceItem.imageUrl != nil ? sourceItem.imageUrl : sourceItem.originalImageUrl
+            self.webImageMediator?.setImage(forView: view, url: url, thumbImage: sourceItem.thumbImage, setImageBlock: { (image: UIImage?, imageData: Data?) in
                 if let setDataBlock = setDataBlock {
                     setDataBlock(self, image, imageData)
                 }
