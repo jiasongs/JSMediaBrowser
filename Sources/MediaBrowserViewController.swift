@@ -20,7 +20,7 @@ public enum TransitioningStyle: Int {
     @objc open var browserView: MediaBrowserView?
     @objc open var sourceItems: Array<SourceProtocol>? {
         didSet {
-            var array: Array<ImageLoaderProtocol> = Array()
+            var array: Array<LoaderProtocol> = Array()
             sourceItems?.forEach({ (item) in
                 if let _ = item as? ImageSourceProtocol {
                     let loader: ImageLoaderEntity = ImageLoaderEntity()
@@ -30,6 +30,10 @@ public enum TransitioningStyle: Int {
                     } else if let block = MediaBrowserAppearance.appearance.addWebImageMediatorBlock {
                         loader.webImageMediator = block(self, item)
                     }
+                    array.append(loader)
+                } else if let _ = item as? VideoSourceProtocol {
+                    let loader: VideoLoaderEntity = VideoLoaderEntity()
+                    loader.sourceItem = item
                     array.append(loader)
                 }
             })
@@ -76,7 +80,8 @@ public enum TransitioningStyle: Int {
     @objc open var viewDidDisappearBlock: ((MediaBrowserViewController) -> Void)?
     
     private var loaderItems: Array<LoaderProtocol>?
-    private var imageCellIdentifier = "ImageCell"
+    private var imageCellIdentifier = "ImageCellIdentifier"
+    private var videoCellIdentifier = "VideoCellIdentifier"
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -114,6 +119,7 @@ extension MediaBrowserViewController {
         }
         /// 注册Cell
         self.registerClass(ImageCell.self, forCellWithReuseIdentifier: imageCellIdentifier)
+        self.registerClass(VideoCell.self, forCellWithReuseIdentifier: videoCellIdentifier)
         let reuseCellIdentifiers: Dictionary<Identifier, CellClassSting> = MediaBrowserAppearance.appearance.reuseCellIdentifiers
         for (key, value) in reuseCellIdentifiers {
             let cellClass: AnyClass = NSClassFromString(value) ?? UICollectionViewCell.self
@@ -254,6 +260,12 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
                 self.addMonitorFor(baseCell: baseCell)
                 baseCell.updateCell(loaderEntity: loaderItem, at: index)
             }
+        } else if cell == nil, let loaderItem = loaderItems?[index] as? VideoLoaderProtocol {
+            cell = self.dequeueReusableCell(withReuseIdentifier: videoCellIdentifier, at: index)
+            if let baseCell = cell as? BaseCell {
+                self.addMonitorFor(baseCell: baseCell)
+                baseCell.updateCell(loaderEntity: loaderItem, at: index)
+            }
         }
         if let block = self.configureCellBlock {
             block(self, cell, index)
@@ -276,10 +288,12 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
                 block(strongSelf, cell, emptyView, error)
             }
         }
-        self.browserView?.dismissingGestureEnabled = false
-        cell.didLoaderCompleted = { [weak self] (cell: UICollectionViewCell, object: Any?, error: NSError?) in
-            if object != nil && error == nil {
-                self?.browserView?.dismissingGestureEnabled = true
+        if let imageCell = cell as? ImageCell {
+            self.browserView?.dismissingGestureEnabled = false
+            imageCell.didLoaderCompleted = { [weak self] (cell: UICollectionViewCell, object: Any?, error: NSError?) in
+                if object != nil && error == nil {
+                    self?.browserView?.dismissingGestureEnabled = true
+                }
             }
         }
     }

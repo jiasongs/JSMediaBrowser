@@ -104,13 +104,19 @@ class ExampleViewController: UIViewController {
     
     @objc func handleImageButtonEvent(sender: QMUIButton) -> Void {
         let browser: MediaBrowserViewController = MediaBrowserViewController()
-        var sourceItems: Array<ImageSourceProtocol> = [];
+        var sourceItems: Array<SourceProtocol> = [];
         for (index, urlString) in self.dataSource.enumerated() {
             if let button: QMUIButton = self.floatLayoutView.subviews[index] as? QMUIButton {
-                let imageEntity = ImageEntity(sourceView: button, sourceRect: CGRect.zero, thumbImage: button.image(for: .normal))
-                imageEntity.imageUrl = URL(string: urlString)
-                imageEntity.sourceCornerRadius = button.layer.cornerRadius
-                sourceItems.append(imageEntity)
+                if urlString.contains("mp4") {
+                    let videoEntity = VideoEntity(sourceView: button, sourceRect: CGRect.zero, thumbImage: button.image(for: .normal))
+                    videoEntity.videoUrl = URL(string: urlString)
+                    sourceItems.append(videoEntity)
+                } else {
+                    let imageEntity = ImageEntity(sourceView: button, sourceRect: CGRect.zero, thumbImage: button.image(for: .normal))
+                    imageEntity.imageUrl = URL(string: urlString)
+                    imageEntity.sourceCornerRadius = button.layer.cornerRadius
+                    sourceItems.append(imageEntity)
+                }
             }
         }
         browser.sourceItems = sourceItems

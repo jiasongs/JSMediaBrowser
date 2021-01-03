@@ -38,3 +38,8 @@ public protocol ImageLoaderProtocol: LoaderProtocol {
     @objc var webImageMediator: WebImageMediatorProtocol? { get set }
     
 }
+
+@objc(MediaBrowserVideoLoaderProtocol)
+public protocol VideoLoaderProtocol: LoaderProtocol {
+    
+}

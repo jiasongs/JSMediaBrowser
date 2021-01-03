@@ -64,71 +64,25 @@ extension KingfisherWrapper where Base: UIView {
             completionHandler?(.failure(KingfisherError.imageSettingError(reason: .emptySource)))
             return nil
         }
+        let task = KingfisherManager.shared.retrieveImage(with: source, options: nil) { (receivedSize, expectedSize) in
+            
+        } downloadTaskUpdated: { (task: DownloadTask?) in
+            
+        } completionHandler: { (result: Result<RetrieveImageResult, KingfisherError>) in
+            CallbackQueue.mainCurrentOrAsync.execute {
+                
+                mutatingSelf.imageTask = nil
+                mutatingSelf.taskIdentifier = nil
 
-        var options = KingfisherParsedOptionsInfo(KingfisherManager.shared.defaultOptions + (options ?? []))
-
-        options.preloadAllAnimationData = true
-
-        if let block = progressBlock {
-//            options.onDataReceived = (options.onDataReceived ?? []) + [ImageLoadingProgressSideEffect(block)]
+                switch result {
+                case .success:
+                    completionHandler?(result)
+                case .failure:
+                    completionHandler?(result)
+                }
+            }
         }
-
-//        if let provider = ImageProgressiveProvider(options, refresh: { image in
-//            self.base.image = image
-//        }) {
-//            options.onDataReceived = (options.onDataReceived ?? []) + [provider]
-//        }
-//
-//        options.onDataReceived?.forEach {
-//            $0.onShouldApply = { issuedIdentifier == self.taskIdentifier }
-//        }
-//
-//        let task = KingfisherManager.shared.retrieveImage(
-//            with: source,
-//            options: options,
-//            downloadTaskUpdated: { mutatingSelf.imageTask = $0 },
-//            completionHandler: { result in
-//                CallbackQueue.mainCurrentOrAsync.execute {
-//                    maybeIndicator?.stopAnimatingView()
-//                    guard issuedIdentifier == self.taskIdentifier else {
-//                        let reason: KingfisherError.ImageSettingErrorReason
-//                        do {
-//                            let value = try result.get()
-//                            reason = .notCurrentSourceTask(result: value, error: nil, source: source)
-//                        } catch {
-//                            reason = .notCurrentSourceTask(result: nil, error: error, source: source)
-//                        }
-//                        let error = KingfisherError.imageSettingError(reason: reason)
-//                        completionHandler?(.failure(error))
-//                        return
-//                    }
-//
-//                    mutatingSelf.imageTask = nil
-//                    mutatingSelf.taskIdentifier = nil
-//
-//                    switch result {
-//                    case .success(let value):
-//                        guard self.needsTransition(options: options, cacheType: value.cacheType) else {
-//                            mutatingSelf.placeholder = nil
-//                            self.base.image = value.image
-//                            completionHandler?(result)
-//                            return
-//                        }
-//
-//                        self.makeTransition(image: value.image, transition: options.transition) {
-//                            completionHandler?(result)
-//                        }
-//
-//                    case .failure:
-//                        if let image = options.onFailureImage {
-//                            self.base.image = image
-//                        }
-//                        completionHandler?(result)
-//                    }
-//                }
-//            }
-//        )
-//        mutatingSelf.imageTask = task
+        mutatingSelf.imageTask = task
         return nil
     }
     

@@ -10,7 +10,7 @@ import PhotosUI
 import JSCoreKit
 
 @objc(MediaBrowserZoomImageView)
-open class ZoomImageView: ZoomBaseView {
+open class ZoomImageView: UIView {
     
     @objc weak var delegate: ZoomImageViewDelegate?
     
@@ -89,8 +89,17 @@ open class ZoomImageView: ZoomBaseView {
     
     @objc public var enabledZoom: Bool = true
     
-    override func didInitialize(frame: CGRect) -> Void {
-        super.didInitialize(frame: frame)
+    public override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.didInitialize(frame: frame)
+    }
+    
+    required public init?(coder: NSCoder) {
+        super.init(coder: coder)
+        self.didInitialize(frame: CGRect.zero)
+    }
+    
+    func didInitialize(frame: CGRect) -> Void {
         self.contentMode = .center
         
         self.scrollView = UIScrollView(frame: CGRect(origin: CGPoint.zero, size: frame.size))
@@ -139,11 +148,7 @@ extension ZoomImageView {
 
 extension ZoomImageView {
     
-    @objc open override var containerView: UIView? {
-        return self.scrollView
-    }
-    
-    @objc open override var contentView: UIView? {
+    @objc open var contentView: UIView? {
         if self.isDisplayImageView {
             return self.imageView
         } else if self.isDisplayLivePhotoView {
@@ -152,8 +157,9 @@ extension ZoomImageView {
         return nil
     }
     
-    @objc open override var contentViewRectInZoomView: CGRect {
-        return super.contentViewRectInZoomView
+    @objc open var contentViewRectInZoomView: CGRect {
+        guard let contentView = self.contentView else { return CGRect.zero }
+        return self.convert(contentView.frame, from: contentView.superview)
     }
     
     @objc open var isDisplayImageView: Bool {

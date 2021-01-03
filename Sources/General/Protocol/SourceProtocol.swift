@@ -27,3 +27,11 @@ public protocol ImageSourceProtocol: SourceProtocol {
     @objc var originalImageUrl: URL? { get set }
    
 }
+
+@objc(MediaBrowserVideoSourceProtocol)
+public protocol VideoSourceProtocol: SourceProtocol {
+    
+    @objc var videoUrl: URL? { get set }
+   
+}
+
