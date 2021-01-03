@@ -10,4 +10,8 @@ import UIKit
 @objc(MediaBrowserVideoPlayerViewDelegate)
 public protocol VideoPlayerViewDelegate: NSObjectProtocol {
     
+    @objc optional func videoPlayerView(_ videoPlayerView: VideoPlayerView, playbackProgress currentTime: CGFloat, totalDuration: CGFloat)
+    @objc optional func videoPlayerViewDidPlayToEndTime(_ videoPlayerView: VideoPlayerView)
+    @objc optional func videoPlayerView(_ videoPlayerView: VideoPlayerView, didFailed error: NSError)
+    
 }

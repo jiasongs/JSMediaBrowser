@@ -302,6 +302,12 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
 
 extension MediaBrowserViewController: MediaBrowserViewDelegate {
     
+    public func mediaBrowserView(_ browserView: MediaBrowserView, didEndDisplaying cell: UICollectionViewCell, forItemAt index: Int) {
+        if let videoCell = cell as? VideoCell {
+            videoCell.videoPlayerView?.reset()
+        }
+    }
+    
     public func mediaBrowserView(_ browserView: MediaBrowserView, willScrollHalf fromIndex: Int, toIndex: Int) {
         if let loaderEntity = loaderItems?[fromIndex], let sourceItem = loaderEntity.sourceItem {
             sourceItem.sourceView?.isHidden = false

@@ -11,6 +11,8 @@ import JSCoreKit
 
 open class VideoPlayerView: BaseMediaView {
     
+    @objc weak var delegate: VideoPlayerViewDelegate?
+    
     var url: URL? {
         didSet {
             if let url = self.url {
@@ -33,16 +35,14 @@ open class VideoPlayerView: BaseMediaView {
         }
         didSet {
             if self.playerItem != nil {
-                self.addObserverForPlayer()
                 self.player = AVPlayer(playerItem: playerItem)
+                self.addObserverForPlayer()
             }
         }
     }
     private(set) var player: AVPlayer? {
         didSet {
             if let player = self.player {
-                /// 初始化
-                let _ = self.playerView
                 self.playerLayer?.player = player;
                 self.playerLayer?.videoGravity = .resizeAspect
                 self.setNeedsLayout()
@@ -50,35 +50,56 @@ open class VideoPlayerView: BaseMediaView {
         }
     }
     
-    private var isPlayerViewInitialized = false
-    @objc lazy var playerView: AVPlayerView  = {
-        isPlayerViewInitialized = true
-        let playerView = AVPlayerView()
-        self.addSubview(playerView)
-        return playerView
-    }()
+    @objc open var playerView: AVPlayerView?
+    
     private var playerLayer: AVPlayerLayer? {
-        if isPlayerViewInitialized {
-            return self.playerView.layer as? AVPlayerLayer
-        }
-        return nil
+        return self.playerView?.layer as? AVPlayerLayer
     }
     
-    var currentTime: CGFloat {
+    open var currentTime: CGFloat {
         if let player = self.player {
             return CGFloat(CMTimeGetSeconds(player.currentTime()))
         }
         return 0
     }
-    private(set) var totalDuration: CGFloat = 0.0
+    private(set) open var totalDuration: CGFloat = 0.0
     
-    var isAutoPlay: Bool = true
+    open var rate: CGFloat {
+        get {
+            return CGFloat(self.player?.rate ?? 0.0)
+        }
+        set {
+            self.player?.rate = Float(newValue)
+        }
+    }
+    
+    open var isAutoPlay: Bool = true
+    
+    @objc var thumbImage: UIImage? {
+        didSet {
+            self.thumbImageView.image = thumbImage
+            self.thumbImageView.isHidden = thumbImage == nil
+            self.setNeedsLayout()
+        }
+    }
+    
+    private lazy var thumbImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        self.addSubview(imageView)
+        self.sendSubviewToBack(imageView)
+        return imageView
+    }()
     
     private var isAddObserverForPlayer: Bool = false
     private var isAddObserverForSystem: Bool = false
     
     override func didInitialize(frame: CGRect) -> Void {
         super.didInitialize(frame: frame)
+        self.playerView = AVPlayerView()
+        self.playerView?.contentMode = .scaleAspectFit
+        self.addSubview(self.playerView!)
         self.addObserverForSystem()
     }
     
@@ -93,8 +114,18 @@ extension VideoPlayerView {
     
     open override func layoutSubviews() {
         super.layoutSubviews()
-        if self.isPlayerViewInitialized {
-            self.playerView.frame = self.finalViewportRect
+        let viewport = self.finalViewportRect
+        self.playerView?.js_frameApplyTransform = viewport
+        if let image = self.thumbImage {
+            /// fit
+            let horizontalRatio: CGFloat = viewport.width / image.size.width;
+            let verticalRatio: CGFloat = viewport.height / image.size.height;
+            let ratio: CGFloat = min(horizontalRatio, verticalRatio);
+            let resizedSize: CGSize = CGSize(width: JSCGFlatSpecificScale(image.size.width * ratio, image.scale), height: JSCGFlatSpecificScale(image.size.height * ratio, image.scale))
+            var rect: CGRect = CGRect(origin: CGPoint.zero, size: resizedSize)
+            rect.origin.x = viewport.minX + (viewport.width - resizedSize.width) / 2.0
+            rect.origin.y = viewport.minY + (viewport.height - resizedSize.height) / 2.0
+            self.thumbImageView.js_frameApplyTransform = rect
         }
     }
     
@@ -107,16 +138,17 @@ extension VideoPlayerView {
     }
     
     @objc open override var contentView: UIView? {
-        if isPlayerViewInitialized {
-            return self.playerView
-        }
-        return nil
+        return self.playerView
     }
     
     @objc open override var contentViewRectInZoomView: CGRect {
         guard let contentView = self.contentView else { return CGRect.zero }
         guard let playerLayer = self.playerLayer else { return CGRect.zero }
-        return self.convert(playerLayer.videoRect, from: contentView.superview)
+        if playerLayer.isReadyForDisplay {
+            return self.convert(playerLayer.videoRect, from: contentView)
+        } else {
+            return self.convert(self.thumbImageView.frame, from: self.thumbImageView.superview)
+        }
     }
     
     open func play() -> Void {
@@ -128,7 +160,10 @@ extension VideoPlayerView {
     }
     
     open func reset() -> Void {
-        
+        self.pause()
+        self.playerItem = nil
+        self.player = nil
+        self.playerLayer?.player = nil
     }
     
     open func seek(to time: CGFloat, completionHandler: @escaping (Bool) -> Void) {
@@ -152,6 +187,12 @@ extension VideoPlayerView {
             self.playerItem?.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), options: .new, context: nil)
             self.playerItem?.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges), options: .new, context: nil)
             NotificationCenter.default.addObserver(self, selector: #selector(self.didPlayToEndTime), name: .AVPlayerItemDidPlayToEndTime, object: self.playerItem)
+            self.player?.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: DispatchQueue.main, using: { [weak self](time: CMTime) in
+                if let _ = self?.delegate {
+                    
+                }
+                print("正在播放：\(CMTimeGetSeconds(time))")
+            })
         }
     }
     
@@ -187,6 +228,8 @@ extension VideoPlayerView {
                     if self.isAutoPlay {
                         self.player?.play()
                     }
+                    /// 释放资源
+                    self.thumbImage = nil
                 }
             }
         } else if keyPath == #keyPath(AVPlayerItem.loadedTimeRanges) {
@@ -215,9 +258,9 @@ extension VideoPlayerView {
     
 }
 
-class AVPlayerView: UIView {
+open class AVPlayerView: UIView {
     
-    override class var layerClass: AnyClass {
+    open override class var layerClass: AnyClass {
         return AVPlayerLayer.self
     }
     

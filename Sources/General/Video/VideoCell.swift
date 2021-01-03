@@ -20,11 +20,8 @@ open class VideoCell: BaseCell {
     
     open override func prepareForReuse() -> Void {
         super.prepareForReuse()
-        videoPlayerView?.pause()
-        videoPlayerView?.playerItem = nil
-//        zoomImageView?.stopAnimating()
-//        zoomImageView?.image = nil
-//        zoomImageView?.livePhoto = nil
+        videoPlayerView?.reset()
+        videoPlayerView?.thumbImage = nil
     }
     
     open override func layoutSubviews() {
@@ -35,6 +32,7 @@ open class VideoCell: BaseCell {
     @objc public override func updateCell(loaderEntity: LoaderProtocol, at index: Int) {
         super.updateCell(loaderEntity: loaderEntity, at: index)
         if let sourceItem = loaderEntity.sourceItem as? VideoSourceProtocol {
+            self.videoPlayerView?.thumbImage = sourceItem.thumbImage
             if sourceItem.videoUrl != nil {
                 self.videoPlayerView?.url = sourceItem.videoUrl
             }
