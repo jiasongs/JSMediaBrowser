@@ -10,7 +10,7 @@ import PhotosUI
 import JSCoreKit
 
 @objc(MediaBrowserZoomImageView)
-open class ZoomImageView: UIView {
+open class ZoomImageView: BaseMediaView {
     
     @objc weak var delegate: ZoomImageViewDelegate?
     
@@ -44,9 +44,6 @@ open class ZoomImageView: UIView {
         scrollView?.addSubview(livePhotoView)
         return livePhotoView
     }()
-    
-    @objc public var viewportRect: CGRect = CGRect.zero
-    @objc public var viewportRectMaxWidth: CGFloat = 700
     
     @objc public var maximumZoomScale: CGFloat = 2.0 {
         didSet {
@@ -88,18 +85,9 @@ open class ZoomImageView: UIView {
     private var isLivePhotoPlaying: Bool = false
     
     @objc public var enabledZoom: Bool = true
-    
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.didInitialize(frame: frame)
-    }
-    
-    required public init?(coder: NSCoder) {
-        super.init(coder: coder)
-        self.didInitialize(frame: CGRect.zero)
-    }
-    
-    func didInitialize(frame: CGRect) -> Void {
+
+    override func didInitialize(frame: CGRect) -> Void {
+        super.didInitialize(frame: frame)
         self.contentMode = .center
         
         self.scrollView = UIScrollView(frame: CGRect(origin: CGPoint.zero, size: frame.size))
@@ -148,7 +136,11 @@ extension ZoomImageView {
 
 extension ZoomImageView {
     
-    @objc open var contentView: UIView? {
+    open override var containerView: UIView? {
+        return self.scrollView
+    }
+    
+    @objc open override var contentView: UIView? {
         if self.isDisplayImageView {
             return self.imageView
         } else if self.isDisplayLivePhotoView {
@@ -157,9 +149,17 @@ extension ZoomImageView {
         return nil
     }
     
-    @objc open var contentViewRectInZoomView: CGRect {
+    @objc open override var contentViewRectInZoomView: CGRect {
         guard let contentView = self.contentView else { return CGRect.zero }
         return self.convert(contentView.frame, from: contentView.superview)
+    }
+    
+    @objc open override var finalViewportRect: CGRect {
+        let rect = super.finalViewportRect
+        if let deleagte = self.delegate, deleagte.responds(to: #selector(ZoomImageViewDelegate.zoomImageView(_:finalViewportRect:))) {
+            return deleagte.zoomImageView!(self, finalViewportRect: rect)
+        }
+        return rect
     }
     
     @objc open var isDisplayImageView: Bool {
@@ -193,29 +193,6 @@ extension ZoomImageView {
         } else if self.isDisplayLivePhotoView {
             self.livePhotoView.stopPlayback()
         }
-    }
-    
-    @objc open var finalViewportRect: CGRect {
-        var rect: CGRect = self.viewportRect
-        guard let scrollView = self.scrollView else { return rect }
-        if !scrollView.bounds.size.equalTo(self.bounds.size) {
-            self.setNeedsLayout()
-            self.layoutIfNeeded()
-        }
-        if rect.isEmpty && !self.bounds.isEmpty {
-            let safeAreaInsets: UIEdgeInsets = JSCoreHelper.safeAreaInsetsForDeviceWithNotch()
-            let size: CGSize = CGSize(width: min(scrollView.bounds.width, viewportRectMaxWidth), height: scrollView.bounds.height)
-            let offsetX = (scrollView.bounds.width - size.width) / 2
-            let top = safeAreaInsets.top
-            let left = max(safeAreaInsets.left, offsetX)
-            let bottom = safeAreaInsets.bottom
-            let right = safeAreaInsets.right
-            rect = CGRect(x: left, y: top, width: min(size.width, scrollView.bounds.width - left - right), height: size.height - top - bottom)
-        }
-        if let delegate = self.delegate, delegate.responds(to: #selector(ZoomImageViewDelegate.zoomImageView(_:finalViewportRect:))) {
-            rect = delegate.zoomImageView!(self, finalViewportRect: rect)
-        }
-        return rect
     }
     
     @objc open var finalEnabledZoom: Bool {

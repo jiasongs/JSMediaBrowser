@@ -447,10 +447,22 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     }
     
     public var thumbImage: UIImage? {
-        if let sourceItem = self.sourceItems?[browserView?.currentPage ?? 0] as? ImageSourceProtocol {
+        let currentPage = self.browserView?.currentPage ?? 0
+        if let sourceItem = self.sourceItems?[currentPage] as? ImageSourceProtocol {
             return (sourceItem.image != nil) ? sourceItem.image : sourceItem.thumbImage
+        } else if let sourceItem = self.sourceItems?[currentPage] as? VideoSourceProtocol {
+            return sourceItem.thumbImage
         }
         return nil
+    }
+    
+    public var contentViewFrame: CGRect {
+        if let imageCell = self.browserView?.currentPageCell as? ImageCell {
+            return imageCell.zoomImageView?.contentViewRectInZoomView ?? CGRect.zero
+        } else if let videoCell = self.browserView?.currentPageCell as? VideoCell {
+            return videoCell.videoPlayerView?.contentViewRectInZoomView ?? CGRect.zero
+        }
+        return CGRect.zero
     }
     
     public var animatorViews: Array<UIView>? {
@@ -464,13 +476,6 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     public var zoomView: UIView? {
         if let cell = self.browserView?.currentPageCell {
             return cell
-        }
-        return nil
-    }
-    
-    public var zoomContentView: UIView? {
-        if let imageCell = self.browserView?.currentPageCell as? ImageCell {
-            return imageCell.zoomImageView?.contentView
         }
         return nil
     }

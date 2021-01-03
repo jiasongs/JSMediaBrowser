@@ -9,7 +9,7 @@ import UIKit
 import MediaPlayer
 import JSCoreKit
 
-open class VideoPlayerView: UIView {
+open class VideoPlayerView: BaseMediaView {
     
     var url: URL? {
         didSet {
@@ -51,7 +51,7 @@ open class VideoPlayerView: UIView {
     }
     
     private var isPlayerViewInitialized = false
-    lazy var playerView: AVPlayerView  = {
+    @objc lazy var playerView: AVPlayerView  = {
         isPlayerViewInitialized = true
         let playerView = AVPlayerView()
         self.addSubview(playerView)
@@ -74,21 +74,11 @@ open class VideoPlayerView: UIView {
     
     var isAutoPlay: Bool = true
     
-    
     private var isAddObserverForPlayer: Bool = false
     private var isAddObserverForSystem: Bool = false
     
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.didInitialize(frame: frame)
-    }
-    
-    required public init?(coder: NSCoder) {
-        super.init(coder: coder)
-        self.didInitialize(frame: CGRect.zero)
-    }
-    
-    func didInitialize(frame: CGRect) -> Void {
+    override func didInitialize(frame: CGRect) -> Void {
+        super.didInitialize(frame: frame)
         self.addObserverForSystem()
     }
     
@@ -104,31 +94,41 @@ extension VideoPlayerView {
     open override func layoutSubviews() {
         super.layoutSubviews()
         if self.isPlayerViewInitialized {
-            let safeAreaInsets: UIEdgeInsets = JSCoreHelper.safeAreaInsetsForDeviceWithNotch()
-            let size: CGSize = CGSize(width: min(self.bounds.width, 700), height: self.bounds.height)
-            let offsetX = (self.bounds.width - size.width) / 2
-            let top = safeAreaInsets.top
-            let left = max(safeAreaInsets.left, offsetX)
-            let bottom = safeAreaInsets.bottom
-            let right = safeAreaInsets.right
-            self.playerView.frame = CGRect(x: left, y: top, width: min(size.width, self.bounds.width - left - right), height: size.height - top - bottom)
+            self.playerView.frame = self.finalViewportRect
         }
     }
-
+    
 }
 
 extension VideoPlayerView {
     
+    @objc open override var containerView: UIView? {
+        return self
+    }
+    
+    @objc open override var contentView: UIView? {
+        if isPlayerViewInitialized {
+            return self.playerView
+        }
+        return nil
+    }
+    
+    @objc open override var contentViewRectInZoomView: CGRect {
+        guard let contentView = self.contentView else { return CGRect.zero }
+        guard let playerLayer = self.playerLayer else { return CGRect.zero }
+        return self.convert(playerLayer.videoRect, from: contentView.superview)
+    }
+    
     open func play() -> Void {
         self.player?.play()
     }
-
+    
     open func pause() -> Void {
         self.player?.pause()
     }
     
     open func reset() -> Void {
-        self.pause()
+        
     }
     
     open func seek(to time: CGFloat, completionHandler: @escaping (Bool) -> Void) {
@@ -210,7 +210,7 @@ extension VideoPlayerView {
     }
     
     @objc func applicationDidEnterBackground() -> Void {
-        
+        self.pause()
     }
     
 }

@@ -16,9 +16,9 @@ public protocol TransitionAnimatorDelegate: NSObjectProtocol {
     @objc var sourceCornerRadius: CGFloat { get }
     @objc var thumbImage: UIImage? { get }
     @objc var animatorViews: Array<UIView>? { get }
+    @objc var contentViewFrame: CGRect { get }
     @objc weak var dimmingView: UIView? { get }
     @objc weak var zoomView: UIView? { get }
-    @objc weak var zoomContentView: UIView? { get }
     
 }
 
@@ -92,8 +92,8 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             presentingViewController?.beginAppearanceTransition(true, animated: true)
         }
         
-        let zoomContentViewFrame = self.delegate?.zoomContentView?.frame ?? CGRect.zero
-        style = style == .zoom && (sourceRect.isEmpty || zoomContentViewFrame.isEmpty) ? .fade : style
+        let contentViewFrame = self.delegate?.contentViewFrame ?? CGRect.zero
+        style = style == .zoom && (sourceRect.isEmpty || contentViewFrame.isEmpty) ? .fade : style
         
         self.handleAnimationEntering(style: style, isPresenting: isPresenting, fromViewController: fromViewController, toViewController: toViewController, sourceView: sourceView, sourceRect: sourceRect)
         UIView.animate(withDuration: self.duration, delay: 0, options: UIView.AnimationOptions.curveEaseInOut) {
@@ -128,9 +128,8 @@ extension TransitionAnimator {
         } else if style == .zoom {
             let dimmingView = self.delegate?.dimmingView
             let zoomView = self.delegate?.zoomView
-            let zoomContentView = self.delegate?.zoomContentView
-            let zoomContentViewFrame = zoomContentView?.frame ?? CGRect.zero
-            let zoomContentViewFrameInView = needViewController?.view.convert(zoomContentViewFrame, from: zoomContentView?.superview) ?? CGRect.zero
+            let zoomContentViewFrame = self.delegate?.contentViewFrame ?? CGRect.zero
+            let zoomContentViewFrameInView = needViewController?.view.convert(zoomContentViewFrame, from: zoomView) ?? CGRect.zero
             let zoomContentViewBoundsInView = CGRect(origin: CGPoint.zero, size: zoomContentViewFrameInView.size)
             /// 遮罩
             if isPresenting {
@@ -139,12 +138,6 @@ extension TransitionAnimator {
             /// 判断是否截取image
             if let thumbImage = self.delegate?.thumbImage {
                 imageView?.image = thumbImage
-            } else {
-                /// 没有传thumbImage的时候再截图, 避免消耗资源, 转制版可能有些问题,
-                UIGraphicsBeginImageContextWithOptions(zoomContentViewBoundsInView.size, false, 0)
-                zoomContentView?.drawHierarchy(in: zoomContentViewBoundsInView, afterScreenUpdates: true)
-                imageView?.image = UIGraphicsGetImageFromCurrentImageContext()
-                UIGraphicsEndImageContext()
             }
             /// 隐藏相关视图
             zoomView?.isHidden = true

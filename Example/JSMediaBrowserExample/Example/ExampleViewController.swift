@@ -75,7 +75,11 @@ class ExampleViewController: UIViewController {
             let button = QMUIButton()
             //            button.layer.cornerRadius = 10;
             //            button.layer.masksToBounds = true;
-            button.sd_setImage(with: URL(string: item)!, for: UIControl.State.normal, completed: nil)
+            if item.contains("mp4") {
+                button.setImage(self.getVideoFirstImage(with: URL(string: item)!), for: .normal)
+            } else {
+                button.sd_setImage(with: URL(string: item)!, for: .normal, completed: nil)
+            }
             button.imageView?.contentMode = .scaleAspectFill
             button.addTarget(self, action: #selector(self.handleImageButtonEvent(sender:)), for: UIControl.Event.touchUpInside)
             self.floatLayoutView!.addSubview(button)
@@ -130,6 +134,18 @@ class ExampleViewController: UIViewController {
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return UIStatusBarStyle.lightContent
+    }
+    
+    func getVideoFirstImage(with url: URL) -> UIImage? {
+        let asset: AVURLAsset = AVURLAsset(url: url)
+        let gen = AVAssetImageGenerator(asset: asset)
+        let time = CMTimeMakeWithSeconds(0.0, preferredTimescale: 1)
+        var actualTime : CMTime = CMTimeMakeWithSeconds(0, preferredTimescale: 0)
+        let cgImage: CGImage? = try? gen.copyCGImage(at: time, actualTime: &actualTime)
+        if let cgImage = cgImage {
+            return UIImage(cgImage: cgImage)
+        }
+        return nil
     }
     
 }
