@@ -77,8 +77,8 @@ open class VideoPlayerView: BaseMediaView {
     
     @objc var thumbImage: UIImage? {
         didSet {
-            self.thumbImageView.image = thumbImage
-            self.thumbImageView.isHidden = thumbImage == nil
+            self.thumbImageView.image = self.thumbImage
+            self.thumbImageView.isHidden = self.thumbImage == nil
             self.setNeedsLayout()
         }
     }
@@ -94,6 +94,7 @@ open class VideoPlayerView: BaseMediaView {
     
     private var isAddObserverForPlayer: Bool = false
     private var isAddObserverForSystem: Bool = false
+    private var timeObserver: Any?
     
     override func didInitialize(frame: CGRect) -> Void {
         super.didInitialize(frame: frame)
@@ -117,7 +118,7 @@ extension VideoPlayerView {
         let viewport = self.finalViewportRect
         self.playerView?.js_frameApplyTransform = viewport
         if let image = self.thumbImage {
-            /// fit
+            /// scaleAspectFit
             let horizontalRatio: CGFloat = viewport.width / image.size.width;
             let verticalRatio: CGFloat = viewport.height / image.size.height;
             let ratio: CGFloat = min(horizontalRatio, verticalRatio);
@@ -144,11 +145,16 @@ extension VideoPlayerView {
     @objc open override var contentViewRectInZoomView: CGRect {
         guard let contentView = self.contentView else { return CGRect.zero }
         guard let playerLayer = self.playerLayer else { return CGRect.zero }
-        if playerLayer.isReadyForDisplay {
+        if self.isReadyForDisplay {
             return self.convert(playerLayer.videoRect, from: contentView)
         } else {
             return self.convert(self.thumbImageView.frame, from: self.thumbImageView.superview)
         }
+    }
+    
+    open var isReadyForDisplay: Bool {
+        guard let playerLayer = self.playerLayer else { return false }
+        return playerLayer.isReadyForDisplay
     }
     
     open func play() -> Void {
@@ -186,13 +192,14 @@ extension VideoPlayerView {
             self.isAddObserverForPlayer = true
             self.playerItem?.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), options: .new, context: nil)
             self.playerItem?.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges), options: .new, context: nil)
-            NotificationCenter.default.addObserver(self, selector: #selector(self.didPlayToEndTime), name: .AVPlayerItemDidPlayToEndTime, object: self.playerItem)
-            self.player?.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: DispatchQueue.main, using: { [weak self](time: CMTime) in
+            self.playerLayer?.addObserver(self, forKeyPath: #keyPath(AVPlayerLayer.isReadyForDisplay), options: .new, context: nil)
+            self.timeObserver = self.player?.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: DispatchQueue.main, using: { [weak self](time: CMTime) in
                 if let _ = self?.delegate {
                     
                 }
                 print("正在播放：\(CMTimeGetSeconds(time))")
             })
+            NotificationCenter.default.addObserver(self, selector: #selector(self.didPlayToEndTime), name: .AVPlayerItemDidPlayToEndTime, object: self.playerItem)
         }
     }
     
@@ -201,6 +208,10 @@ extension VideoPlayerView {
             self.isAddObserverForPlayer = false
             self.playerItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status))
             self.playerItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges))
+            self.playerLayer?.removeObserver(self, forKeyPath: #keyPath(AVPlayerLayer.isReadyForDisplay))
+            if let timeObserver = self.timeObserver  {
+                self.player?.removeTimeObserver(timeObserver)
+            }
             NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: self.playerItem)
         }
     }
@@ -228,10 +239,11 @@ extension VideoPlayerView {
                     if self.isAutoPlay {
                         self.player?.play()
                     }
-                    /// 释放资源
-                    self.thumbImage = nil
                 }
             }
+        } else if keyPath == #keyPath(AVPlayerLayer.isReadyForDisplay) {
+            /// 释放资源
+            self.thumbImage = nil
         } else if keyPath == #keyPath(AVPlayerItem.loadedTimeRanges) {
             if let loadedTimeRanges: Array<CMTimeRange> = change[NSKeyValueChangeKey.newKey] as? Array<CMTimeRange>, loadedTimeRanges.count > 0 {
                 // 获取缓冲区域

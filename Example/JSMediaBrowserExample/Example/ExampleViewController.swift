@@ -138,10 +138,11 @@ class ExampleViewController: UIViewController {
     
     func getVideoFirstImage(with url: URL) -> UIImage? {
         let asset: AVURLAsset = AVURLAsset(url: url)
-        let gen = AVAssetImageGenerator(asset: asset)
+        let generator = AVAssetImageGenerator(asset: asset)
+        generator.appliesPreferredTrackTransform = true;
         let time = CMTimeMakeWithSeconds(0.0, preferredTimescale: 1)
         var actualTime : CMTime = CMTimeMakeWithSeconds(0, preferredTimescale: 0)
-        let cgImage: CGImage? = try? gen.copyCGImage(at: time, actualTime: &actualTime)
+        let cgImage: CGImage? = try? generator.copyCGImage(at: time, actualTime: &actualTime)
         if let cgImage = cgImage {
             return UIImage(cgImage: cgImage)
         }
