@@ -13,8 +13,7 @@ open class ImageLoaderEntity: BaseLoaderEntity, ImageLoaderProtocol {
     
     @objc public var webImageMediator: WebImageMediatorProtocol?
     
-    @objc public override func request(forView view: UIView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) {
-        super.request(forView: view, setDataBlock: setDataBlock, downloadProgress: downloadProgress, completed: completed)
+    @objc public func request(forView view: UIView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) {
         if let sourceItem = self.sourceItem as? ImageSourceProtocol {
             let url: URL? = sourceItem.imageUrl != nil ? sourceItem.imageUrl : sourceItem.originalImageUrl
             self.webImageMediator?.setImage(forView: view, url: url, thumbImage: sourceItem.thumbImage, setImageBlock: { (image: UIImage?, imageData: Data?) in
@@ -22,7 +21,6 @@ open class ImageLoaderEntity: BaseLoaderEntity, ImageLoaderProtocol {
                     setDataBlock(self, image, imageData)
                 }
             }, progress: { (receivedSize: Int64, expectedSize: Int64) in
-                self.state = .loading
                 if let downloadProgress = downloadProgress {
                     JSAsyncExecuteOnMainQueue {
                         self.progress?.completedUnitCount = receivedSize
@@ -31,7 +29,6 @@ open class ImageLoaderEntity: BaseLoaderEntity, ImageLoaderProtocol {
                     }
                 }
             }, completed: { (image: UIImage?, imageData: Data?, error: NSError?, cancelled: Bool, finished: Bool) in
-                self.state = .end
                 self.error = error
                 if image != nil && error == nil && finished {
                     sourceItem.image = image
@@ -45,7 +42,7 @@ open class ImageLoaderEntity: BaseLoaderEntity, ImageLoaderProtocol {
         }
     }
     
-    public override func cancelRequest(forView view: UIView) {
+    public func cancelRequest(forView view: UIView) {
         self.webImageMediator?.cancelImageRequest(forView: view)
     }
     

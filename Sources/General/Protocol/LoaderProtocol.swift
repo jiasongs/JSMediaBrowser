@@ -11,24 +11,12 @@ public typealias SetDataBlock = (_ loader: LoaderProtocol, _ object: Any?, _ dat
 public typealias DownloadProgressBlock = (_ loader: LoaderProtocol, _ progress: Progress?) -> Void
 public typealias CompletedBlock = (_ loader: LoaderProtocol, _ object: Any?, _ data: Data?, _ error: NSError?, _ cancelled: Bool, _ finished: Bool) -> Void
 
-@objc(MediaBrowserLoaderState)
-public enum LoaderState: Int {
-    case none
-    case start
-    case loading
-    case end
-}
-
 @objc(MediaBrowserLoaderProtocol)
 public protocol LoaderProtocol: NSObjectProtocol {
     
     @objc var sourceItem: SourceProtocol? { get set }
-    @objc var state: LoaderState { get set }
     @objc var progress: Progress? { get set }
     @objc var error: NSError? { get set }
-    
-    @objc func request(forView view: UIView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) -> Void
-    @objc func cancelRequest(forView view: UIView)
     
 }
 
@@ -36,6 +24,9 @@ public protocol LoaderProtocol: NSObjectProtocol {
 public protocol ImageLoaderProtocol: LoaderProtocol {
     
     @objc var webImageMediator: WebImageMediatorProtocol? { get set }
+    
+    @objc func request(forView view: UIView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) -> Void
+    @objc func cancelRequest(forView view: UIView)
     
 }
 

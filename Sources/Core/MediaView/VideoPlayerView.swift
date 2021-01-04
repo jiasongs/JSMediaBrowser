@@ -6,10 +6,19 @@
 //
 
 import UIKit
-import MediaPlayer
+import AVKit
 import JSCoreKit
 
-open class VideoPlayerView: BaseMediaView {
+@objc public enum Stauts: Int {
+    case stopped = 0
+    case ready
+    case playing
+    case paused
+    case ended
+    case failed
+}
+
+@objc open class VideoPlayerView: BaseMediaView {
     
     @objc weak var delegate: VideoPlayerViewDelegate?
     
@@ -77,7 +86,25 @@ open class VideoPlayerView: BaseMediaView {
         }
     }
     
-    open var isAutoPlay: Bool = true
+    @objc open var isAutoPlay: Bool = true
+    
+    @objc open var status: Stauts = .stopped {
+        didSet {
+            if status == .ready {
+                if let delegate = self.delegate, delegate.responds(to: #selector(VideoPlayerViewDelegate.videoPlayerViewDidReadyForDisplay(_:))) {
+                    delegate.videoPlayerViewDidReadyForDisplay?(self)
+                }
+            } else if status == .failed {
+                if let delegate = self.delegate, delegate.responds(to: #selector(VideoPlayerViewDelegate.videoPlayerView(_:didFailed:))) {
+                    delegate.videoPlayerView?(self, didFailed: self.player?.error as NSError?)
+                }
+            } else if status == .ended || status == .stopped {
+                if let delegate = self.delegate, delegate.responds(to: #selector(VideoPlayerViewDelegate.videoPlayerViewDidPlayToEndTime(_:))) {
+                    delegate.videoPlayerViewDidPlayToEndTime?(self)
+                }
+            }
+        }
+    }
     
     @objc var thumbImage: UIImage? {
         didSet {
@@ -164,27 +191,36 @@ extension VideoPlayerView {
     
     open func play() -> Void {
         self.player?.play()
+        self.status = .playing
     }
     
     open func pause() -> Void {
         self.player?.pause()
+        self.status = .paused
     }
     
     open func reset() -> Void {
         self.pause()
+        self.seek(to: 0)
+    }
+    
+    open func releasePlayer() -> Void {
         self.playerItem = nil
         self.player = nil
         self.playerLayer?.player = nil
+        self.status = .stopped
     }
     
-    open func seek(to time: CGFloat) {
+    open func seek(to time: CGFloat, completionHandler: ((Bool) -> Void)? = nil) {
         guard let player = self.player else { return }
         let startTime: CMTime = CMTimeMakeWithSeconds(Float64(time), preferredTimescale: player.currentTime().timescale)
-        player.seek(to: CMTime(seconds: Double(startTime.value), preferredTimescale: CMTimeScale.zero), toleranceBefore: CMTimeMake(value: 1, timescale: 1000), toleranceAfter: CMTimeMake(value: 1, timescale: 1000), completionHandler: { (finished) in
-            if (finished) {
-                self.play()
-            }
-        })
+        if !CMTIME_IS_INDEFINITE(startTime) && !CMTIME_IS_INVALID(startTime) {
+            player.seek(to: startTime, toleranceBefore: CMTimeMake(value: 1, timescale: 1000), toleranceAfter: CMTimeMake(value: 1, timescale: 1000), completionHandler: { (finished) in
+                if let block = completionHandler {
+                    block(finished)
+                }
+            })
+        }
     }
     
 }
@@ -201,7 +237,17 @@ extension VideoPlayerView {
                         if let strongSelf = self, strongSelf.isAutoPlay {
                             strongSelf.player?.play()
                         }
+                    } else if playerItem.status == .failed {
+                        self?.status = .failed
                     }
+                })
+            )
+            /// isReadyForDisplay
+            self.playerObservers.append(
+                playerLayer.observe(\.isReadyForDisplay, options: .new, changeHandler: { [weak self](playerLayer: AVPlayerLayer, change) in
+                    self?.status = .ready
+                    /// 释放资源
+                    self?.thumbImage = nil
                 })
             )
             /// loadedTimeRanges
@@ -216,34 +262,25 @@ extension VideoPlayerView {
                         // 表示已经缓冲的时间
                         let durationSeconds: TimeInterval = CMTimeGetSeconds(timeRange.duration)
                         // 计算缓冲总时间
-                        let result: TimeInterval = startSeconds + durationSeconds
-                        print("开始:\(startSeconds), 持续:\(durationSeconds), 总时间: \(result)")
-                        print("视频的加载进度是 \(durationSeconds / Double(self?.totalDuration ?? 1) * 100)")
+                        let _: TimeInterval = startSeconds + durationSeconds
+                        if let _ = self?.delegate {
+                            
+                        }
                     }
-                })
-            )
-            /// isReadyForDisplay
-            self.playerObservers.append(
-                playerLayer.observe(\.isReadyForDisplay, options: .new, changeHandler: { [weak self](playerLayer: AVPlayerLayer, change) in
-                    /// 释放资源
-                    self?.thumbImage = nil
                 })
             )
             /// progress
             self.playerTimeObservers.append(
                 player.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: DispatchQueue.main, using: { [weak self](time: CMTime) in
-                    if let _ = self?.delegate {
-                        
+                    if let strongSelf = self, let delegate = strongSelf.delegate, delegate.responds(to: #selector(VideoPlayerViewDelegate.videoPlayerView(_:progress:totalDuration:))) {
+                        delegate.videoPlayerView?(strongSelf, progress: CGFloat(CMTimeGetSeconds(time)), totalDuration: strongSelf.totalDuration)
                     }
-                    print("正在播放：\(CMTimeGetSeconds(time))")
                 })
             )
             /// PlayToEndTime
             self.playerCenterObservers.append(
                 NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.playerItem, queue: OperationQueue.main) { [weak self](notification: Notification) in
-                    if let _ = self?.delegate {
-                        
-                    }
+                    self?.status = .ended
                 }
             )
         }
@@ -269,8 +306,10 @@ extension VideoPlayerView {
     
     func addObserverForSystem() -> Void {
         self.systemObservers.append(
-            NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: OperationQueue.main, using: { [weak self](notification: Notification) in
-                self?.pause()
+            NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: OperationQueue.main, using: { [weak self](notification: Notification) in
+                if let strongSelf = self, strongSelf.status == .playing {
+                    strongSelf.pause()
+                }
             })
         )
     }

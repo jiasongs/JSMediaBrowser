@@ -14,7 +14,7 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
     @objc public var pieProgressView: PieProgressView?
     @objc public var onEmptyPressAction: ((UICollectionViewCell) -> Void)?
     @objc public var willDisplayEmptyViewBlock: ((UICollectionViewCell, EmptyView, NSError) -> Void)?
-    @objc public var didLoaderCompleted: ((UICollectionViewCell, Any?, NSError?) -> Void)?
+    @objc public var didLoaderCompleted: ((UICollectionViewCell, NSError?) -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -53,7 +53,7 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
     
     open override func layoutSubviews() {
         super.layoutSubviews()
-        emptyView?.frame = self.bounds
+        self.emptyView?.frame = self.bounds
         let width = min(self.bounds.width * 0.12, 86)
         let progressSize = CGSize(width: width, height: width)
         let progressPoint = CGPoint(x: (self.bounds.width - progressSize.width) / 2, y: (self.bounds.height - progressSize.height) / 2)
@@ -61,28 +61,17 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
     }
     
     public func updateCell(loaderEntity: LoaderProtocol, at index: Int) {
-        loaderEntity.cancelRequest(forView: self.contentView)
-        loaderEntity.request(forView: self.contentView) { [weak self](loader: LoaderProtocol, object: Any?, data: Data?) in
-            self?.loaderEntity(loader, setData: object, data: data)
-        } downloadProgress: { [weak self](loader: LoaderProtocol, progress: Progress?) in
-            self?.loaderEntity(loader, didReceive: progress)
-        } completed: { [weak self](loader: LoaderProtocol, object: Any?, data: Data?, error: NSError?, cancelled: Bool, finished: Bool) in
-            self?.loaderEntity(loader, didCompleted: object, data: data, error: error, cancelled: cancelled, finished: finished)
-        }
-    }
-    
-    public func loaderEntity(_ loaderEntity: LoaderProtocol, setData object: Any?, data: Data?) {
         
     }
     
-    public func loaderEntity(_ loaderEntity: LoaderProtocol, didReceive progress: Progress?) {
+    public func didReceive(with progress: Progress?) {
         if let progress = progress {
             self.layoutIfNeeded()
-            pieProgressView?.setProgress(Float(progress.fractionCompleted))
+            self.pieProgressView?.setProgress(Float(progress.fractionCompleted))
         }
     }
     
-    public func loaderEntity(_ loaderEntity: LoaderProtocol, didCompleted object: Any?, data: Data?, error: NSError?, cancelled: Bool, finished: Bool) {
+    public func didCompleted(with error: NSError?, cancelled: Bool, finished: Bool) {
         if cancelled {
             pieProgressView?.isHidden = false
         } else {
@@ -97,7 +86,7 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
             pieProgressView?.isHidden = true
         }
         if let block = self.didLoaderCompleted {
-            block(self, object, error)
+            block(self, error)
         }
     }
     

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AVKit
 
 @objc(MediaBrowserSourceProtocol)
 public protocol SourceProtocol: NSObjectProtocol {
@@ -32,6 +33,7 @@ public protocol ImageSourceProtocol: SourceProtocol {
 public protocol VideoSourceProtocol: SourceProtocol {
     
     @objc var videoUrl: URL? { get set }
+    @objc var videoAsset: AVAsset? { get set }
    
 }
 

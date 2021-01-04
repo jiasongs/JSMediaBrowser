@@ -294,10 +294,15 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         }
         if let imageCell = cell as? ImageCell {
             self.browserView?.dismissingGestureEnabled = false
-            imageCell.didLoaderCompleted = { [weak self] (cell: UICollectionViewCell, object: Any?, error: NSError?) in
-                if object != nil && error == nil {
+            imageCell.didLoaderCompleted = { [weak self] (cell: UICollectionViewCell, error: NSError?) in
+                if error == nil {
                     self?.browserView?.dismissingGestureEnabled = true
                 }
+            }
+        }
+        if let videoCell = cell as? VideoCell {
+            videoCell.onPressCloseBlock = { [weak self] (cell: UICollectionViewCell) in
+                self?.hide()
             }
         }
     }
@@ -363,6 +368,11 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     
     @objc public func mediaBrowserView(_ browserView: MediaBrowserView, dismissing gestureRecognizer: UIPanGestureRecognizer, verticalDistance: CGFloat) {
         switch gestureRecognizer.state {
+        case .began:
+            if let videoCell = browserView.currentPageCell as? VideoCell {
+                videoCell.hideForTool(animated: true)
+            }
+            break
         case .changed:
             var alpha: CGFloat = 1
             let height: NSNumber = NSNumber(value: Float(browserView.bounds.height / 2))
