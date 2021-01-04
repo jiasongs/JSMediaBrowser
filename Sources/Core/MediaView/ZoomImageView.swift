@@ -149,7 +149,7 @@ extension ZoomImageView {
         return nil
     }
     
-    @objc open override var contentViewRectInZoomView: CGRect {
+    @objc open override var contentViewFrame: CGRect {
         guard let contentView = self.contentView else { return CGRect.zero }
         return self.convert(contentView.frame, from: contentView.superview)
     }
@@ -332,7 +332,7 @@ extension ZoomImageView {
         /// 不需要setNeedsLayout, 当没有标记时, 说明已经布局完毕, 当存在标记时才立刻调用layoutSubviews
         self.layoutIfNeeded()
         let viewport: CGRect = self.finalViewportRect
-        let contentViewFrame: CGRect = self.contentViewRectInZoomView
+        let contentViewFrame: CGRect = self.contentViewFrame
         var contentInset: UIEdgeInsets = UIEdgeInsets.zero
         contentInset.top = viewport.minY
         contentInset.left = viewport.minX

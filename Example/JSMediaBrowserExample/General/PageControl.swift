@@ -22,9 +22,9 @@ import JSMediaBrowser
         let bottom = JSCoreHelper.isNotchedScreen() ? JSCoreHelper.safeAreaInsetsForDeviceWithNotch().bottom : 20
         self.snp.makeConstraints { (make) in
             make.width.equalTo(viewController.view.snp.width).multipliedBy(0.5)
-            make.height.equalTo(30)
             make.centerX.equalTo(viewController.view.snp.centerX)
             make.bottom.equalTo(viewController.view.snp.bottom).offset(-bottom)
+            make.height.equalTo(30)
         }
         self.addTarget(self, action: #selector(self.handlePageControlEvent), for: .valueChanged)
     }

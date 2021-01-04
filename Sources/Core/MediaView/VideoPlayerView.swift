@@ -47,14 +47,14 @@ open class VideoPlayerView: BaseMediaView {
     private(set) var player: AVPlayer? {
         didSet {
             if let player = self.player {
-                self.playerLayer?.player = player;
+                self.playerLayer?.player = player
                 self.playerLayer?.videoGravity = .resizeAspect
                 self.setNeedsLayout()
             }
         }
     }
     
-    @objc open var playerView: AVPlayerView?
+    fileprivate var playerView: AVPlayerView?
     
     private var playerLayer: AVPlayerLayer? {
         return self.playerView?.layer as? AVPlayerLayer
@@ -104,7 +104,6 @@ open class VideoPlayerView: BaseMediaView {
     override func didInitialize(frame: CGRect) -> Void {
         super.didInitialize(frame: frame)
         self.playerView = AVPlayerView()
-        self.playerView?.contentMode = .scaleAspectFit
         self.addSubview(self.playerView!)
         /// 系统的监听
         self.addObserverForSystem()
@@ -125,9 +124,9 @@ extension VideoPlayerView {
         self.playerView?.js_frameApplyTransform = viewport
         if let image = self.thumbImage {
             /// scaleAspectFit
-            let horizontalRatio: CGFloat = viewport.width / image.size.width;
-            let verticalRatio: CGFloat = viewport.height / image.size.height;
-            let ratio: CGFloat = min(horizontalRatio, verticalRatio);
+            let horizontalRatio: CGFloat = viewport.width / image.size.width
+            let verticalRatio: CGFloat = viewport.height / image.size.height
+            let ratio: CGFloat = min(horizontalRatio, verticalRatio)
             let resizedSize: CGSize = CGSize(width: JSCGFlatSpecificScale(image.size.width * ratio, image.scale), height: JSCGFlatSpecificScale(image.size.height * ratio, image.scale))
             var rect: CGRect = CGRect(origin: CGPoint.zero, size: resizedSize)
             rect.origin.x = viewport.minX + (viewport.width - resizedSize.width) / 2.0
@@ -148,7 +147,7 @@ extension VideoPlayerView {
         return self.playerView
     }
     
-    @objc open override var contentViewRectInZoomView: CGRect {
+    @objc open override var contentViewFrame: CGRect {
         guard let contentView = self.contentView else { return CGRect.zero }
         guard let playerLayer = self.playerLayer else { return CGRect.zero }
         if self.isReadyForDisplay {
@@ -178,14 +177,13 @@ extension VideoPlayerView {
         self.playerLayer?.player = nil
     }
     
-    open func seek(to time: CGFloat, completionHandler: @escaping (Bool) -> Void) {
+    open func seek(to time: CGFloat) {
         guard let player = self.player else { return }
-        let startTime: CMTime = CMTimeMakeWithSeconds(Float64(time), preferredTimescale: player.currentTime().timescale);
+        let startTime: CMTime = CMTimeMakeWithSeconds(Float64(time), preferredTimescale: player.currentTime().timescale)
         player.seek(to: CMTime(seconds: Double(startTime.value), preferredTimescale: CMTimeScale.zero), toleranceBefore: CMTimeMake(value: 1, timescale: 1000), toleranceAfter: CMTimeMake(value: 1, timescale: 1000), completionHandler: { (finished) in
             if (finished) {
                 self.play()
             }
-            completionHandler(finished)
         })
     }
     
@@ -195,7 +193,7 @@ extension VideoPlayerView {
     
     func addObserverForPlayer() -> Void {
         if let playerItem = self.playerItem, let player = self.player, let playerLayer = self.playerLayer {
-            /// MARK: status
+            /// status
             self.playerObservers.append(
                 playerItem.observe(\.status, options: .new, changeHandler: { [weak self](playerItem: AVPlayerItem, change) in
                     if playerItem.status == .readyToPlay {
@@ -218,7 +216,7 @@ extension VideoPlayerView {
                         // 表示已经缓冲的时间
                         let durationSeconds: TimeInterval = CMTimeGetSeconds(timeRange.duration)
                         // 计算缓冲总时间
-                        let result: TimeInterval = startSeconds + durationSeconds;
+                        let result: TimeInterval = startSeconds + durationSeconds
                         print("开始:\(startSeconds), 持续:\(durationSeconds), 总时间: \(result)")
                         print("视频的加载进度是 \(durationSeconds / Double(self?.totalDuration ?? 1) * 100)")
                     }
@@ -286,7 +284,7 @@ extension VideoPlayerView {
     
 }
 
-open class AVPlayerView: UIView {
+fileprivate class AVPlayerView: UIView {
     
     open override class var layerClass: AnyClass {
         return AVPlayerLayer.self

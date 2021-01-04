@@ -40,7 +40,7 @@ extension BaseMediaView {
         return nil
     }
     
-    @objc open var contentViewRectInZoomView: CGRect {
+    @objc open var contentViewFrame: CGRect {
         return CGRect.zero
     }
     

@@ -76,6 +76,7 @@ public enum TransitioningStyle: Int {
     @objc open var configureCellBlock: ConfigureCellBlock?
     @objc open var willDisplayEmptyViewBlock: DisplayEmptyViewBlock?
     @objc open var onLongPressBlock: LongPressBlock?
+    @objc open var viewDidLoadBlock: ((MediaBrowserViewController) -> Void)?
     @objc open var viewWillAppearBlock: ((MediaBrowserViewController) -> Void)?
     @objc open var viewDidDisappearBlock: ((MediaBrowserViewController) -> Void)?
     
@@ -138,6 +139,9 @@ extension MediaBrowserViewController {
                 self.view.addSubview(toolView)
                 toolView.didAddToSuperview(in: self)
             }
+        }
+        if let block = self.viewDidLoadBlock {
+            block(self)
         }
     }
     
@@ -464,9 +468,9 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     
     public var contentViewFrame: CGRect {
         if let imageCell = self.browserView?.currentPageCell as? ImageCell {
-            return imageCell.zoomImageView?.contentViewRectInZoomView ?? CGRect.zero
+            return imageCell.zoomImageView?.contentViewFrame ?? CGRect.zero
         } else if let videoCell = self.browserView?.currentPageCell as? VideoCell {
-            return videoCell.videoPlayerView?.contentViewRectInZoomView ?? CGRect.zero
+            return videoCell.videoPlayerView?.contentViewFrame ?? CGRect.zero
         }
         return CGRect.zero
     }
