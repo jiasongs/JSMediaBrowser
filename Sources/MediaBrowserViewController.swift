@@ -300,11 +300,6 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
                 }
             }
         }
-        if let videoCell = cell as? VideoCell {
-            videoCell.onPressCloseBlock = { [weak self] (cell: UICollectionViewCell) in
-                self?.hide()
-            }
-        }
     }
     
 }
@@ -369,9 +364,6 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     @objc public func mediaBrowserView(_ browserView: MediaBrowserView, dismissing gestureRecognizer: UIPanGestureRecognizer, verticalDistance: CGFloat) {
         switch gestureRecognizer.state {
         case .began:
-            if let videoCell = browserView.currentPageCell as? VideoCell {
-                videoCell.hideForTool(animated: true)
-            }
             break
         case .changed:
             var alpha: CGFloat = 1
