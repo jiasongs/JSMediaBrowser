@@ -35,7 +35,11 @@ open class VideoPlayerView: BaseMediaView {
         }
         didSet {
             if self.playerItem != nil {
-                self.player = AVPlayer(playerItem: playerItem)
+                if self.player != nil {
+                    self.player?.replaceCurrentItem(with: self.playerItem)
+                } else {
+                    self.player = AVPlayer(playerItem: playerItem)
+                }
                 self.addObserverForPlayer()
             }
         }
@@ -92,15 +96,17 @@ open class VideoPlayerView: BaseMediaView {
         return imageView
     }()
     
-    private var isAddObserverForPlayer: Bool = false
-    private var isAddObserverForSystem: Bool = false
-    private var timeObserver: Any?
+    private var playerObservers = Array<NSKeyValueObservation>()
+    private var playerCenterObservers = Array<NSObjectProtocol>()
+    private var playerTimeObservers = Array<Any>()
+    private var systemObservers = Array<NSObjectProtocol>()
     
     override func didInitialize(frame: CGRect) -> Void {
         super.didInitialize(frame: frame)
         self.playerView = AVPlayerView()
         self.playerView?.contentMode = .scaleAspectFit
         self.addSubview(self.playerView!)
+        /// 系统的监听
         self.addObserverForSystem()
     }
     
@@ -188,84 +194,94 @@ extension VideoPlayerView {
 extension VideoPlayerView {
     
     func addObserverForPlayer() -> Void {
-        if !self.isAddObserverForPlayer {
-            self.isAddObserverForPlayer = true
-            self.playerItem?.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), options: .new, context: nil)
-            self.playerItem?.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges), options: .new, context: nil)
-            self.playerLayer?.addObserver(self, forKeyPath: #keyPath(AVPlayerLayer.isReadyForDisplay), options: .new, context: nil)
-            self.timeObserver = self.player?.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: DispatchQueue.main, using: { [weak self](time: CMTime) in
-                if let _ = self?.delegate {
-                    
+        if let playerItem = self.playerItem, let player = self.player, let playerLayer = self.playerLayer {
+            /// MARK: status
+            self.playerObservers.append(
+                playerItem.observe(\.status, options: .new, changeHandler: { [weak self](playerItem: AVPlayerItem, change) in
+                    if playerItem.status == .readyToPlay {
+                        self?.totalDuration = CGFloat(CMTimeGetSeconds(playerItem.duration))
+                        if let strongSelf = self, strongSelf.isAutoPlay {
+                            strongSelf.player?.play()
+                        }
+                    }
+                })
+            )
+            /// loadedTimeRanges
+            self.playerObservers.append(
+                playerItem.observe(\.loadedTimeRanges, options: .new, changeHandler: { [weak self](playerItem: AVPlayerItem, change) in
+                    let loadedTimeRanges: Array<NSValue> = playerItem.loadedTimeRanges
+                    if loadedTimeRanges.count > 0 {
+                        // 获取缓冲区域
+                        let timeRange: CMTimeRange =  loadedTimeRanges.first?.timeRangeValue ?? CMTimeRange.zero
+                        // 开始的时间
+                        let startSeconds: TimeInterval = CMTimeGetSeconds(timeRange.start)
+                        // 表示已经缓冲的时间
+                        let durationSeconds: TimeInterval = CMTimeGetSeconds(timeRange.duration)
+                        // 计算缓冲总时间
+                        let result: TimeInterval = startSeconds + durationSeconds;
+                        print("开始:\(startSeconds), 持续:\(durationSeconds), 总时间: \(result)")
+                        print("视频的加载进度是 \(durationSeconds / Double(self?.totalDuration ?? 1) * 100)")
+                    }
+                })
+            )
+            /// isReadyForDisplay
+            self.playerObservers.append(
+                playerLayer.observe(\.isReadyForDisplay, options: .new, changeHandler: { [weak self](playerLayer: AVPlayerLayer, change) in
+                    /// 释放资源
+                    self?.thumbImage = nil
+                })
+            )
+            /// progress
+            self.playerTimeObservers.append(
+                player.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: DispatchQueue.main, using: { [weak self](time: CMTime) in
+                    if let _ = self?.delegate {
+                        
+                    }
+                    print("正在播放：\(CMTimeGetSeconds(time))")
+                })
+            )
+            /// PlayToEndTime
+            self.playerCenterObservers.append(
+                NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.playerItem, queue: OperationQueue.main) { [weak self](notification: Notification) in
+                    if let _ = self?.delegate {
+                        
+                    }
                 }
-                print("正在播放：\(CMTimeGetSeconds(time))")
-            })
-            NotificationCenter.default.addObserver(self, selector: #selector(self.didPlayToEndTime), name: .AVPlayerItemDidPlayToEndTime, object: self.playerItem)
+            )
         }
     }
     
     func removeObserverForPlayer() -> Void {
-        if self.isAddObserverForPlayer {
-            self.isAddObserverForPlayer = false
-            self.playerItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status))
-            self.playerItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges))
-            self.playerLayer?.removeObserver(self, forKeyPath: #keyPath(AVPlayerLayer.isReadyForDisplay))
-            if let timeObserver = self.timeObserver  {
-                self.player?.removeTimeObserver(timeObserver)
-            }
-            NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: self.playerItem)
+        /// 移除playerObservers
+        for observer in self.playerObservers {
+            observer.invalidate()
         }
+        self.playerObservers.removeAll()
+        /// 移除playerTimeObservers
+        for observer in self.playerTimeObservers {
+            self.player?.removeTimeObserver(observer)
+        }
+        self.playerTimeObservers.removeAll()
+        /// 移除playerCenterObservers
+        for observer in self.self.playerCenterObservers {
+            NotificationCenter.default.removeObserver(observer)
+        }
+        self.playerCenterObservers.removeAll()
     }
     
     func addObserverForSystem() -> Void {
-        if !self.isAddObserverForSystem {
-            self.isAddObserverForSystem = true
-            NotificationCenter.default.addObserver(self, selector: #selector(self.applicationDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
-        }
+        self.systemObservers.append(
+            NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: OperationQueue.main, using: { [weak self](notification: Notification) in
+                self?.pause()
+            })
+        )
     }
     
     func removeObserverForSystem() -> Void {
-        if self.isAddObserverForSystem {
-            self.isAddObserverForSystem = false
-            NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
+        for observer in self.systemObservers {
+            NotificationCenter.default.removeObserver(observer)
         }
-    }
-    
-    open override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        guard let change = change else { return }
-        if keyPath == #keyPath(AVPlayerItem.status) {
-            if let status: Int = change[NSKeyValueChangeKey.newKey] as? Int {
-                if let currentItem = self.player?.currentItem, AVPlayer.Status(rawValue: status) == .readyToPlay {
-                    self.totalDuration = CGFloat(CMTimeGetSeconds(currentItem.duration))
-                    if self.isAutoPlay {
-                        self.player?.play()
-                    }
-                }
-            }
-        } else if keyPath == #keyPath(AVPlayerLayer.isReadyForDisplay) {
-            /// 释放资源
-            self.thumbImage = nil
-        } else if keyPath == #keyPath(AVPlayerItem.loadedTimeRanges) {
-            if let loadedTimeRanges: Array<CMTimeRange> = change[NSKeyValueChangeKey.newKey] as? Array<CMTimeRange>, loadedTimeRanges.count > 0 {
-                // 获取缓冲区域
-                let timeRange: CMTimeRange = loadedTimeRanges.first ?? CMTimeRange.zero
-                // 开始的时间
-                let startSeconds: TimeInterval = CMTimeGetSeconds(timeRange.start)
-                // 表示已经缓冲的时间
-                let durationSeconds: TimeInterval = CMTimeGetSeconds(timeRange.duration)
-                // 计算缓冲总时间
-                let result: TimeInterval = startSeconds + durationSeconds;
-                print("开始:\(startSeconds), 持续:\(durationSeconds), 总时间: \(result)")
-                print("视频的加载进度是 \(durationSeconds / Double(self.totalDuration) * 100)")
-            }
-        }
-    }
-    
-    @objc func didPlayToEndTime(notification: Notification) -> Void {
-        
-    }
-    
-    @objc func applicationDidEnterBackground() -> Void {
-        self.pause()
+        self.systemObservers.removeAll()
     }
     
 }
