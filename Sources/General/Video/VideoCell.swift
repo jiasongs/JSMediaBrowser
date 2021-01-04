@@ -8,6 +8,7 @@
 import UIKit
 import JSCoreKit
 
+@objc(MediaBrowserVideoCell)
 open class VideoCell: BaseCell {
     
     @objc open var videoPlayerView: VideoPlayerView?
@@ -21,10 +22,10 @@ open class VideoCell: BaseCell {
     
     open override func prepareForReuse() -> Void {
         super.prepareForReuse()
+        self.pieProgressView?.isHidden = true
         self.videoPlayerView?.reset()
         self.videoPlayerView?.thumbImage = nil
         self.videoPlayerView?.delegate = nil
-        self.pieProgressView?.isHidden = true
     }
     
     open override func layoutSubviews() {

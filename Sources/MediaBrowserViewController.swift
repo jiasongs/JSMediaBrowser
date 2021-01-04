@@ -292,6 +292,9 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
                 block(strongSelf, cell, emptyView, error)
             }
         }
+        cell.didInitializeBlock = { [weak self] (cell: UICollectionViewCell) in
+            print("\(self!)")
+        }
         if let imageCell = cell as? ImageCell {
             self.browserView?.dismissingGestureEnabled = false
             imageCell.didLoaderCompleted = { [weak self] (cell: UICollectionViewCell, error: NSError?) in

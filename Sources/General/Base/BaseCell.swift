@@ -15,6 +15,8 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
     @objc public var onEmptyPressAction: ((UICollectionViewCell) -> Void)?
     @objc public var willDisplayEmptyViewBlock: ((UICollectionViewCell, EmptyView, NSError) -> Void)?
     @objc public var didLoaderCompleted: ((UICollectionViewCell, NSError?) -> Void)?
+    @objc public var didInitializeBlock: ((UICollectionViewCell) -> Void)?
+    fileprivate var initializeExecuteOnce: Int = 0
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -61,7 +63,12 @@ open class BaseCell: UICollectionViewCell, CellProtocol {
     }
     
     public func updateCell(loaderEntity: LoaderProtocol, at index: Int) {
-        
+        if self.initializeExecuteOnce == 0 {
+            self.initializeExecuteOnce += 1
+            if let block = self.didInitializeBlock {
+                block(self)
+            }
+        }
     }
     
     public func didReceive(with progress: Progress?) {
