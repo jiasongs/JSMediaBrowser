@@ -158,9 +158,8 @@ extension MediaBrowserViewController {
     
     open override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        if let browserView = self.browserView {
-            browserView.js_frameApplyTransform = self.view.bounds
-        }
+        let bounds: CGRect = self.view.bounds
+        self.browserView?.js_frameApplyTransform = bounds
         for toolView in self.toolViews {
             if toolView.responds(to: #selector(ToolViewProtocol.didLayoutSubviews(in:))) {
                 toolView.didLayoutSubviews?(in: self)
@@ -307,7 +306,9 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
             }
         }
         cell.didInitializeBlock = { [weak self] (cell: UICollectionViewCell) in
-            print("\(self!)")
+            if let _ = self {
+                
+            }
         }
         #if BUSINESS_IMAGE
         if let imageCell = cell as? ImageCell {

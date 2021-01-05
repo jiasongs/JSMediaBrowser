@@ -72,12 +72,7 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         
         let containerView: UIView = transitionContext.containerView
         let fromView: UIView? = transitionContext.view(forKey: UITransitionContextViewKey.from)
-        fromView?.setNeedsLayout()
-        fromView?.layoutIfNeeded()
         let toView: UIView? = transitionContext.view(forKey: UITransitionContextViewKey.to)
-        toView?.setNeedsLayout()
-        toView?.layoutIfNeeded()
-        toView?.frame = containerView.bounds
         if isPresenting {
             if let toView = toView {
                 containerView.addSubview(toView)
@@ -91,6 +86,12 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             }
             presentingViewController?.beginAppearanceTransition(true, animated: true)
         }
+        /// 强制更新Frame
+        fromView?.setNeedsLayout()
+        fromView?.layoutIfNeeded()
+        toView?.setNeedsLayout()
+        toView?.layoutIfNeeded()
+        toView?.frame = containerView.bounds
         
         let contentViewFrame = self.delegate?.contentViewFrame ?? CGRect.zero
         style = style == .zoom && (sourceRect.isEmpty || contentViewFrame.isEmpty) ? .fade : style

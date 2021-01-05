@@ -101,15 +101,14 @@ extension MediaBrowserView {
     
     open override func layoutSubviews() {
         super.layoutSubviews()
-        if let dimmingView = self.dimmingView {
-            dimmingView.frame = self.bounds
-        }
-        if let collectionView = self.collectionView {
-            if !collectionView.bounds.size.equalTo(self.bounds.size) {
+        self.dimmingView?.frame = self.bounds
+        let bounds: CGRect = self.bounds
+        if let collectionViewSize = self.collectionView?.bounds.size {
+            if !collectionViewSize.equalTo(bounds.size) {
                 self.isChangingCollectionViewFrame = true
                 /// 必须先 invalidateLayout，再更新 collectionView.frame，否则横竖屏旋转前后的图片不一致（因为 scrollViewDidScroll: 时 contentSize、contentOffset 那些是错的）
                 self.collectionViewLayout?.invalidateLayout()
-                self.collectionView?.frame = self.bounds
+                self.collectionView?.frame = bounds
                 self.scrollToPage(at: self.currentPage, animated: false)
                 self.isChangingCollectionViewFrame = false
             }
