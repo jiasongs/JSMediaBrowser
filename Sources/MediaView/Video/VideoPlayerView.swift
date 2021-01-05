@@ -18,7 +18,7 @@ import JSCoreKit
     case failed
 }
 
-@objc open class VideoPlayerView: BaseMediaView {
+@objc open class VideoPlayerView: BasisMediaView {
     
     @objc weak var delegate: VideoPlayerViewDelegate?
     

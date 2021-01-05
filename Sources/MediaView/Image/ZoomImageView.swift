@@ -10,7 +10,7 @@ import PhotosUI
 import JSCoreKit
 
 @objc(MediaBrowserZoomImageView)
-open class ZoomImageView: BaseMediaView {
+open class ZoomImageView: BasisMediaView {
     
     @objc weak var delegate: ZoomImageViewDelegate?
     

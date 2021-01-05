@@ -1,5 +1,5 @@
 //
-//  BaseMediaView.swift
+//  BasisMediaView.swift
 //  JSMediaBrowser
 //
 //  Created by jiasong on 2021/1/3.
@@ -8,8 +8,8 @@
 import UIKit
 import JSCoreKit
 
-@objc(MediaBrowserBaseMediaView)
-open class BaseMediaView: UIView {
+@objc(MediaBrowserBasisMediaView)
+open class BasisMediaView: UIView {
     
     @objc public var viewportRect: CGRect = CGRect.zero
     @objc public var viewportRectMaxWidth: CGFloat = 700
@@ -30,7 +30,7 @@ open class BaseMediaView: UIView {
     
 }
 
-extension BaseMediaView {
+extension BasisMediaView {
     
     @objc open var containerView: UIView? {
         return nil

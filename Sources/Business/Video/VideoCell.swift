@@ -9,7 +9,7 @@ import UIKit
 import JSCoreKit
 
 @objc(MediaBrowserVideoCell)
-open class VideoCell: BaseCell {
+open class VideoCell: BasisCell {
     
     @objc open var videoPlayerView: VideoPlayerView?
     

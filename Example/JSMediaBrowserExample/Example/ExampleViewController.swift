@@ -25,7 +25,7 @@ class ExampleViewController: UIViewController {
             return SDAnimatedImageView() // ImageView()
         }
         MediaBrowserAppearance.appearance.addWebImageMediatorBlock = { (browserVC: MediaBrowserViewController, sourceItem: SourceProtocol) -> WebImageMediatorProtocol in
-            return DefaultWebImageMediator()
+            return SDWebImageMediator()
         }
         MediaBrowserAppearance.appearance.addToolViewsBlock = { (browserVC: MediaBrowserViewController) -> Array<UIView & ToolViewProtocol> in
             let pageControl: PageControl = PageControl()
@@ -33,7 +33,7 @@ class ExampleViewController: UIViewController {
             return [pageControl, shareControl]
         }
         MediaBrowserAppearance.appearance.configureCellBlock = { (browserVC: MediaBrowserViewController, cell: UICollectionViewCell, index: Int) in
-            if let cell = cell as? BaseCell {
+            if let cell = cell as? BasisCell {
                 if cell.pieProgressView?.tintColor != .white {
                     cell.pieProgressView?.tintColor = .white
                 }

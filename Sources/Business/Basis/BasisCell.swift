@@ -1,5 +1,5 @@
 //
-//  BaseCell.swift
+//  BasisCell.swift
 //  JSMediaBrowser
 //
 //  Created by jiasong on 2020/12/12.
@@ -7,8 +7,8 @@
 
 import UIKit
 
-@objc(MediaBrowserBaseCell)
-open class BaseCell: UICollectionViewCell, CellProtocol {
+@objc(MediaBrowserBasisCell)
+open class BasisCell: UICollectionViewCell, CellProtocol {
     
     @objc public var emptyView: EmptyView?
     @objc public var pieProgressView: PieProgressView?

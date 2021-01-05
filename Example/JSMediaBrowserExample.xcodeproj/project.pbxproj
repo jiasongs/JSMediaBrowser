@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		7A03EFF82591BE530029C59F /* data.json in Resources */ = {isa = PBXBuildFile; fileRef = 7A03EFF72591BE530029C59F /* data.json */; };
 		7A03EFF92591BE530029C59F /* data.json in Resources */ = {isa = PBXBuildFile; fileRef = 7A03EFF72591BE530029C59F /* data.json */; };
-		7A06334A2585DC1200DADA21 /* DefaultWebImageMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0633492585DC1200DADA21 /* DefaultWebImageMediator.swift */; };
-		7A06334B2585DC1200DADA21 /* DefaultWebImageMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0633492585DC1200DADA21 /* DefaultWebImageMediator.swift */; };
 		7A23CD5B2581F365004B4033 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A23CD5A2581F365004B4033 /* AppDelegate.swift */; };
 		7A23CD5F2581F365004B4033 /* ExampleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A23CD5E2581F365004B4033 /* ExampleViewController.swift */; };
 		7A23CD642581F367004B4033 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7A23CD632581F367004B4033 /* Assets.xcassets */; };
@@ -25,10 +23,6 @@
 		7A61E078259486FA001C58FA /* PageControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A61E076259486FA001C58FA /* PageControl.swift */; };
 		7A80A5AB25974B0100E9927C /* ShareControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A80A5AA25974B0100E9927C /* ShareControl.swift */; };
 		7A80A5AC25974B0100E9927C /* ShareControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A80A5AA25974B0100E9927C /* ShareControl.swift */; };
-		7AA9E422259DB5B5004E88A2 /* KingfisherWebImageMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9E421259DB5B5004E88A2 /* KingfisherWebImageMediator.swift */; };
-		7AA9E423259DB5B5004E88A2 /* KingfisherWebImageMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9E421259DB5B5004E88A2 /* KingfisherWebImageMediator.swift */; };
-		7AA9E429259DC494004E88A2 /* UIView+Kingfisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9E428259DC494004E88A2 /* UIView+Kingfisher.swift */; };
-		7AA9E42A259DC494004E88A2 /* UIView+Kingfisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9E428259DC494004E88A2 /* UIView+Kingfisher.swift */; };
 		7AEF5DCE25837379006550CE /* OCExampleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AEF5DCD25837379006550CE /* OCExampleViewController.m */; };
 		7AEF5DCF25837379006550CE /* OCExampleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AEF5DCD25837379006550CE /* OCExampleViewController.m */; };
 		7AF4197025981013009E7FEE /* data1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 7AF4196E25981013009E7FEE /* data1.jpg */; };
@@ -43,7 +37,6 @@
 		05CE0DCC7E9D19C545FB46B6 /* Pods-JSMediaBrowserExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JSMediaBrowserExample.release.xcconfig"; path = "Target Support Files/Pods-JSMediaBrowserExample/Pods-JSMediaBrowserExample.release.xcconfig"; sourceTree = "<group>"; };
 		2CA5FEFE7F71BC6264231527 /* Pods-JSMediaBrowserExampleMacOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JSMediaBrowserExampleMacOS.debug.xcconfig"; path = "Target Support Files/Pods-JSMediaBrowserExampleMacOS/Pods-JSMediaBrowserExampleMacOS.debug.xcconfig"; sourceTree = "<group>"; };
 		7A03EFF72591BE530029C59F /* data.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = data.json; sourceTree = "<group>"; };
-		7A0633492585DC1200DADA21 /* DefaultWebImageMediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultWebImageMediator.swift; sourceTree = "<group>"; };
 		7A23CD572581F365004B4033 /* JSMediaBrowserExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JSMediaBrowserExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A23CD5A2581F365004B4033 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7A23CD5E2581F365004B4033 /* ExampleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleViewController.swift; sourceTree = "<group>"; };
@@ -57,8 +50,6 @@
 		7A57BAE425A2FB55008E932D /* VideoActionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoActionView.swift; sourceTree = "<group>"; };
 		7A61E076259486FA001C58FA /* PageControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageControl.swift; sourceTree = "<group>"; };
 		7A80A5AA25974B0100E9927C /* ShareControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareControl.swift; sourceTree = "<group>"; };
-		7AA9E421259DB5B5004E88A2 /* KingfisherWebImageMediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KingfisherWebImageMediator.swift; sourceTree = "<group>"; };
-		7AA9E428259DC494004E88A2 /* UIView+Kingfisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Kingfisher.swift"; sourceTree = "<group>"; };
 		7AEF5DCA25837379006550CE /* JSMediaBrowserExample-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "JSMediaBrowserExample-Bridging-Header.h"; sourceTree = "<group>"; };
 		7AEF5DCC25837379006550CE /* OCExampleViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OCExampleViewController.h; sourceTree = "<group>"; };
 		7AEF5DCD25837379006550CE /* OCExampleViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OCExampleViewController.m; sourceTree = "<group>"; };
@@ -139,11 +130,8 @@
 			isa = PBXGroup;
 			children = (
 				7A57BAE425A2FB55008E932D /* VideoActionView.swift */,
-				7A0633492585DC1200DADA21 /* DefaultWebImageMediator.swift */,
-				7AA9E421259DB5B5004E88A2 /* KingfisherWebImageMediator.swift */,
 				7A61E076259486FA001C58FA /* PageControl.swift */,
 				7A80A5AA25974B0100E9927C /* ShareControl.swift */,
-				7AA9E428259DC494004E88A2 /* UIView+Kingfisher.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -390,11 +378,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7AA9E429259DC494004E88A2 /* UIView+Kingfisher.swift in Sources */,
 				7A61E077259486FA001C58FA /* PageControl.swift in Sources */,
 				7AEF5DCE25837379006550CE /* OCExampleViewController.m in Sources */,
-				7AA9E422259DB5B5004E88A2 /* KingfisherWebImageMediator.swift in Sources */,
-				7A06334A2585DC1200DADA21 /* DefaultWebImageMediator.swift in Sources */,
 				7A57BAE525A2FB55008E932D /* VideoActionView.swift in Sources */,
 				7A23CD5F2581F365004B4033 /* ExampleViewController.swift in Sources */,
 				7A23CD5B2581F365004B4033 /* AppDelegate.swift in Sources */,
@@ -406,11 +391,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7AA9E42A259DC494004E88A2 /* UIView+Kingfisher.swift in Sources */,
 				7A61E078259486FA001C58FA /* PageControl.swift in Sources */,
 				7AEF5DCF25837379006550CE /* OCExampleViewController.m in Sources */,
-				7AA9E423259DB5B5004E88A2 /* KingfisherWebImageMediator.swift in Sources */,
-				7A06334B2585DC1200DADA21 /* DefaultWebImageMediator.swift in Sources */,
 				7A57BAE625A2FB55008E932D /* VideoActionView.swift in Sources */,
 				7A23CD762581F3C1004B4033 /* ExampleViewController.swift in Sources */,
 				7A23CD772581F3C1004B4033 /* AppDelegate.swift in Sources */,

@@ -22,6 +22,7 @@ public enum TransitioningStyle: Int {
         didSet {
             var array: Array<LoaderProtocol> = Array()
             sourceItems?.forEach({ (item) in
+                #if BUSINESS_IMAGE
                 if let _ = item as? ImageSourceProtocol {
                     let loader: ImageLoaderEntity = ImageLoaderEntity()
                     loader.sourceItem = item
@@ -31,11 +32,15 @@ public enum TransitioningStyle: Int {
                         loader.webImageMediator = block(self, item)
                     }
                     array.append(loader)
-                } else if let _ = item as? VideoSourceProtocol {
+                }
+                #endif
+                #if BUSINESS_VIDEO
+                if let _ = item as? VideoSourceProtocol {
                     let loader: VideoLoaderEntity = VideoLoaderEntity()
                     loader.sourceItem = item
                     array.append(loader)
                 }
+                #endif
             })
             loaderItems = array
             for toolView in self.toolViews {
@@ -68,9 +73,11 @@ public enum TransitioningStyle: Int {
             }
         }
     }
+    #if BUSINESS_IMAGE
     @objc open var addImageViewInZoomViewBlock: BuildImageViewInZoomViewBlock?
     @objc open var addLivePhotoViewInZoomViewBlock: BuildLivePhotoViewInZoomViewBlock?
     @objc open var addWebImageMediatorBlock: BuildWebImageMediatorBlock?
+    #endif
     @objc open var addToolViewsBlock: BuildToolViewsBlock?
     @objc open var cellForItemAtIndexBlock: BuildCellBlock?
     @objc open var configureCellBlock: ConfigureCellBlock?
@@ -119,8 +126,12 @@ extension MediaBrowserViewController {
             self.view.addSubview(browserView)
         }
         /// 注册Cell
+        #if BUSINESS_IMAGE
         self.registerClass(ImageCell.self, forCellWithReuseIdentifier: imageCellIdentifier)
+        #endif
+        #if BUSINESS_VIDEO
         self.registerClass(VideoCell.self, forCellWithReuseIdentifier: videoCellIdentifier)
+        #endif
         let reuseCellIdentifiers: Dictionary<Identifier, CellClassSting> = MediaBrowserAppearance.appearance.reuseCellIdentifiers
         for (key, value) in reuseCellIdentifiers {
             let cellClass: AnyClass = NSClassFromString(value) ?? UICollectionViewCell.self
@@ -254,21 +265,24 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         } else if let block = MediaBrowserAppearance.appearance.cellForItemAtIndexBlock {
             cell = block(self, index)
         }
-        if cell == nil, let loaderItem = loaderItems?[index] as? ImageLoaderProtocol {
-            cell = self.dequeueReusableCell(withReuseIdentifier: imageCellIdentifier, at: index)
-            /// 需要添加代理
-            if let imageCell = cell as? ImageCell {
-                imageCell.zoomImageView?.delegate = self
+        let loaderItem: LoaderProtocol? = loaderItems?[index]
+        if let loaderItem = loaderItem {
+            #if BUSINESS_IMAGE
+            if cell == nil, let _ = loaderItem as? ImageLoaderProtocol {
+                cell = self.dequeueReusableCell(withReuseIdentifier: imageCellIdentifier, at: index)
+                if let imageCell = cell as? ImageCell {
+                    imageCell.zoomImageView?.delegate = self
+                }
             }
-            if let baseCell = cell as? BaseCell {
-                self.addMonitorFor(baseCell: baseCell)
-                baseCell.updateCell(loaderEntity: loaderItem, at: index)
+            #endif
+            #if BUSINESS_VIDEO
+            if cell == nil, let _ = loaderItems?[index] as? VideoLoaderProtocol {
+                cell = self.dequeueReusableCell(withReuseIdentifier: videoCellIdentifier, at: index)
             }
-        } else if cell == nil, let loaderItem = loaderItems?[index] as? VideoLoaderProtocol {
-            cell = self.dequeueReusableCell(withReuseIdentifier: videoCellIdentifier, at: index)
-            if let baseCell = cell as? BaseCell {
-                self.addMonitorFor(baseCell: baseCell)
-                baseCell.updateCell(loaderEntity: loaderItem, at: index)
+            #endif
+            if let basisCell = cell as? BasisCell {
+                self.addMonitorFor(basisCell: basisCell)
+                basisCell.updateCell(loaderEntity: loaderItem, at: index)
             }
         }
         if let block = self.configureCellBlock {
@@ -279,7 +293,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         return cell
     }
     
-    private func addMonitorFor(baseCell cell: BaseCell) -> Void {
+    private func addMonitorFor(basisCell cell: BasisCell) -> Void {
         cell.onEmptyPressAction = { [weak self] (cell: UICollectionViewCell) in
             if let index: Int = self?.browserView?.index(for: cell), index != NSNotFound {
                 self?.browserView?.reloadPages(at: [index])
@@ -295,6 +309,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         cell.didInitializeBlock = { [weak self] (cell: UICollectionViewCell) in
             print("\(self!)")
         }
+        #if BUSINESS_IMAGE
         if let imageCell = cell as? ImageCell {
             self.browserView?.dismissingGestureEnabled = false
             imageCell.didLoaderCompleted = { [weak self] (cell: UICollectionViewCell, error: NSError?) in
@@ -303,6 +318,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
                 }
             }
         }
+        #endif
     }
     
 }
@@ -310,9 +326,11 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
 extension MediaBrowserViewController: MediaBrowserViewDelegate {
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, didEndDisplaying cell: UICollectionViewCell, forItemAt index: Int) {
+        #if BUSINESS_VIDEO
         if let videoCell = cell as? VideoCell {
             videoCell.videoPlayerView?.reset()
         }
+        #endif
     }
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, willScrollHalf fromIndex: Int, toIndex: Int) {
@@ -346,6 +364,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     }
     
     @objc public func mediaBrowserView(_ browserView: MediaBrowserView, doubleTouch gestureRecognizer: UITapGestureRecognizer) {
+        #if BUSINESS_IMAGE
         if let imageCell = browserView.currentPageCell as? ImageCell, let zoomImageView = imageCell.zoomImageView {
             if zoomImageView.zoomScale >= zoomImageView.maximumZoomScale {
                 zoomImageView.setZoom(scale: zoomImageView.finalMinimumZoomScale)
@@ -354,6 +373,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
                 zoomImageView.zoom(to: gesturePoint)
             }
         }
+        #endif
     }
     
     @objc public func mediaBrowserView(_ browserView: MediaBrowserView, longPress gestureRecognizer: UILongPressGestureRecognizer) {
@@ -396,6 +416,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     
 }
 
+#if BUSINESS_IMAGE
 extension MediaBrowserViewController: ZoomImageViewDelegate {
     
     @objc public func zoomImageViewLazyBuildImageView(_ zoomImageView: ZoomImageView) -> UIImageView {
@@ -423,6 +444,7 @@ extension MediaBrowserViewController: ZoomImageViewDelegate {
     }
     
 }
+#endif
 
 extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, TransitionAnimatorDelegate {
     
@@ -463,20 +485,30 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     
     public var thumbImage: UIImage? {
         let currentPage = self.browserView?.currentPage ?? 0
+        #if BUSINESS_IMAGE
         if let sourceItem = self.sourceItems?[currentPage] as? ImageSourceProtocol {
             return (sourceItem.image != nil) ? sourceItem.image : sourceItem.thumbImage
-        } else if let sourceItem = self.sourceItems?[currentPage] as? VideoSourceProtocol {
+        }
+        #endif
+        #if BUSINESS_VIDEO
+        if let sourceItem = self.sourceItems?[currentPage] as? VideoSourceProtocol {
             return sourceItem.thumbImage
         }
+        #endif
         return nil
     }
     
     public var contentViewFrame: CGRect {
+        #if BUSINESS_IMAGE
         if let imageCell = self.browserView?.currentPageCell as? ImageCell {
             return imageCell.zoomImageView?.contentViewFrame ?? CGRect.zero
-        } else if let videoCell = self.browserView?.currentPageCell as? VideoCell {
+        }
+        #endif
+        #if BUSINESS_VIDEO
+        if let videoCell = self.browserView?.currentPageCell as? VideoCell {
             return videoCell.videoPlayerView?.contentViewFrame ?? CGRect.zero
         }
+        #endif
         return CGRect.zero
     }
     

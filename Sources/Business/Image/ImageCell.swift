@@ -8,7 +8,7 @@
 import UIKit
 
 @objc(MediaBrowserImageCell)
-open class ImageCell: BaseCell {
+open class ImageCell: BasisCell {
     
     @objc open var zoomImageView: ZoomImageView?
     

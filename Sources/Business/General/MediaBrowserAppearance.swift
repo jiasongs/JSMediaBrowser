@@ -8,9 +8,11 @@
 import UIKit
 import PhotosUI
 
+#if BUSINESS_IMAGE
 public typealias BuildImageViewInZoomViewBlock = (MediaBrowserViewController, ZoomImageView) -> UIImageView
 public typealias BuildLivePhotoViewInZoomViewBlock = (MediaBrowserViewController, ZoomImageView) -> PHLivePhotoView
 public typealias BuildWebImageMediatorBlock = (MediaBrowserViewController, SourceProtocol) -> WebImageMediatorProtocol
+#endif
 public typealias BuildToolViewsBlock = (MediaBrowserViewController) -> Array<UIView & ToolViewProtocol>
 public typealias BuildCellBlock = (MediaBrowserViewController, Int) -> UICollectionViewCell?
 public typealias ConfigureCellBlock = (MediaBrowserViewController, UICollectionViewCell, Int) -> Void
@@ -24,9 +26,11 @@ public typealias CellClassSting = String
     
     @objc public static let appearance = MediaBrowserAppearance()
     
+    #if BUSINESS_IMAGE
     @objc public var addImageViewInZoomViewBlock: BuildImageViewInZoomViewBlock?
     @objc public var addLivePhotoViewInZoomViewBlock: BuildLivePhotoViewInZoomViewBlock?
     @objc public var addWebImageMediatorBlock: BuildWebImageMediatorBlock?
+    #endif
     @objc public var addToolViewsBlock: BuildToolViewsBlock?
     @objc public var cellForItemAtIndexBlock: BuildCellBlock?
     @objc public var configureCellBlock: ConfigureCellBlock?

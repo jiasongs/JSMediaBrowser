@@ -29,7 +29,7 @@
             return [[SDAnimatedImageView alloc] init];
         };
         MediaBrowserAppearance.appearance.addWebImageMediatorBlock = ^id<MediaBrowserWebImageMediatorProtocol> _Nonnull(MediaBrowserViewController * browserVC, id<MediaBrowserSourceProtocol> sourceItem) {
-            return [[MediaBrowserViewDefaultWebImageMediator alloc] init];
+            return [[MediaBrowserViewSDWebImageMediator alloc] init];
         };
         MediaBrowserAppearance.appearance.addToolViewsBlock = ^NSArray<UIView<MediaBrowserToolViewProtocol> *> *(MediaBrowserViewController *browserVC) {
             PageControl *pageControl = [[PageControl alloc] init];

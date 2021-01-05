@@ -1,5 +1,5 @@
 //
-//  BaseEntity.swift
+//  BasisEntity.swift
 //  JSMediaBrowser
 //
 //  Created by jiasong on 2020/12/12.
@@ -7,8 +7,8 @@
 
 import UIKit
 
-@objc(MediaBrowserBaseEntity)
-open class BaseEntity: NSObject, SourceProtocol {
+@objc(MediaBrowserBasisEntity)
+open class BasisEntity: NSObject, SourceProtocol {
     
     @objc public var sourceRect: CGRect = CGRect.zero
     @objc weak public var sourceView: UIView?

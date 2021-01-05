@@ -8,7 +8,7 @@
 import Foundation
 
 @objc(MediaBrowserVideoLoaderEntity)
-open class VideoLoaderEntity: BaseLoaderEntity, VideoLoaderProtocol {
+open class VideoLoaderEntity: BasisLoaderEntity, VideoLoaderProtocol {
     
     
 }

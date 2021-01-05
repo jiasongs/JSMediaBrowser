@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import AVKit
 
 @objc(MediaBrowserSourceProtocol)
 public protocol SourceProtocol: NSObjectProtocol {
@@ -19,21 +18,3 @@ public protocol SourceProtocol: NSObjectProtocol {
     init(sourceView: UIView?, sourceRect: CGRect, thumbImage: UIImage?)
     
 }
-
-@objc(MediaBrowserImageSourceProtocol)
-public protocol ImageSourceProtocol: SourceProtocol {
-    
-    @objc var image: UIImage? { get set }
-    @objc var imageUrl: URL? { get set }
-    @objc var originalImageUrl: URL? { get set }
-   
-}
-
-@objc(MediaBrowserVideoSourceProtocol)
-public protocol VideoSourceProtocol: SourceProtocol {
-    
-    @objc var videoUrl: URL? { get set }
-    @objc var videoAsset: AVAsset? { get set }
-   
-}
-

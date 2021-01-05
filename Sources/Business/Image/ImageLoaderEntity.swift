@@ -9,7 +9,7 @@ import UIKit
 import JSCoreKit
 
 @objc(MediaBrowserImageLoaderEntity)
-open class ImageLoaderEntity: BaseLoaderEntity, ImageLoaderProtocol {
+open class ImageLoaderEntity: BasisLoaderEntity, ImageLoaderProtocol {
     
     @objc public var webImageMediator: WebImageMediatorProtocol?
     
