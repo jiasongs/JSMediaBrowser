@@ -20,3 +20,9 @@ public protocol VideoSourceProtocol: SourceProtocol {
 public protocol VideoLoaderProtocol: LoaderProtocol {
     
 }
+
+@objc(MediaBrowserViedeoActionViewProtocol)
+public protocol ViedeoActionViewProtocol: NSObjectProtocol  {
+    
+    
+}

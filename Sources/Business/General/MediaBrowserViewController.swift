@@ -208,15 +208,6 @@ extension MediaBrowserViewController {
 
 extension MediaBrowserViewController {
     
-    @objc(showFromViewController:animated:completion:)
-    open func show(from sender: UIViewController, animated: Bool = true, completion: (() -> Void)? = nil) {
-        sender.present(self, animated: animated, completion: completion)
-    }
-    
-    @objc open func hide(animated: Bool = true, completion: (() -> Void)? = nil) {
-        self.dismiss(animated: animated, completion: completion)
-    }
-    
     @objc open var toolViews: Array<UIView & ToolViewProtocol> {
         get {
             if !self.isViewLoaded {
@@ -239,6 +230,15 @@ extension MediaBrowserViewController {
             }
         }
         return nil
+    }
+    
+    @objc(showFromViewController:animated:completion:)
+    open func show(from sender: UIViewController, animated: Bool = true, completion: (() -> Void)? = nil) {
+        sender.present(self, animated: animated, completion: completion)
+    }
+    
+    @objc open func hide(animated: Bool = true, completion: (() -> Void)? = nil) {
+        self.dismiss(animated: animated, completion: completion)
     }
     
     @objc public func registerClass(_ cellClass: AnyClass, forCellWithReuseIdentifier identifier: String) -> Void {
@@ -276,7 +276,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
             }
             #endif
             #if BUSINESS_VIDEO
-            if cell == nil, let _ = loaderItems?[index] as? VideoLoaderProtocol {
+            if cell == nil, let _ = loaderItem as? VideoLoaderProtocol {
                 cell = self.dequeueReusableCell(withReuseIdentifier: videoCellIdentifier, at: index)
             }
             #endif
