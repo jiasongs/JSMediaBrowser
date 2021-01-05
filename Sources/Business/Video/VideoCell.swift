@@ -15,9 +15,10 @@ open class VideoCell: BasisCell {
     
     open override func didInitialize() -> Void {
         super.didInitialize()
+        self.pieProgressView?.isHidden = true
         self.videoPlayerView = VideoPlayerView()
         self.contentView.addSubview(self.videoPlayerView!)
-        contentView.sendSubviewToBack(self.videoPlayerView!)
+        self.contentView.sendSubviewToBack(self.videoPlayerView!)
     }
     
     open override func prepareForReuse() -> Void {
