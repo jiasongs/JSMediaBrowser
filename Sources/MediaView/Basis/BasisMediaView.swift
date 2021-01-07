@@ -52,7 +52,7 @@ extension BasisMediaView {
             self.layoutIfNeeded()
         }
         if rect.isEmpty && !self.bounds.isEmpty {
-            let safeAreaInsets: UIEdgeInsets = JSCoreHelper.safeAreaInsetsForDeviceWithNotch()
+            let safeAreaInsets: UIEdgeInsets = JSCoreHelper.safeAreaInsetsForDeviceWithNotch
             let size: CGSize = CGSize(width: min(containerView.bounds.width, viewportRectMaxWidth), height: containerView.bounds.height)
             let offsetX = (containerView.bounds.width - size.width) / 2
             let top = safeAreaInsets.top

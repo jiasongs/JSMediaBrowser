@@ -17,7 +17,7 @@ import JSMediaBrowser
         self.browserViewController = viewController
         self.setTitle("分享", for: UIControl.State.normal)
         self.setTitleColor(.white, for: UIControl.State.normal)
-        let bottom = JSCoreHelper.isNotchedScreen() ? JSCoreHelper.safeAreaInsetsForDeviceWithNotch().bottom : 20
+        let bottom = JSCoreHelper.isNotchedScreen ? JSCoreHelper.safeAreaInsetsForDeviceWithNotch.bottom : 20
         self.snp.makeConstraints { (make) in
             make.height.equalTo(30)
             make.right.equalTo(viewController.view.snp.right).offset(-20)
