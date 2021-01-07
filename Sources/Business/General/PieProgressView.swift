@@ -170,16 +170,9 @@ fileprivate class PieProgressLayer: CALayer {
         super.draw(in: context)
     }
     
-    override var frame: CGRect {
-        didSet {
-            self.cornerRadius = self.frame.height / 2
-        }
-    }
-    
-    override var bounds: CGRect {
-        didSet {
-            self.cornerRadius = self.bounds.height / 2
-        }
+    override func layoutSublayers() {
+        super.layoutSublayers()
+        self.cornerRadius = self.bounds.height / 2
     }
     
 }

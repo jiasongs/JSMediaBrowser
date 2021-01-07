@@ -70,7 +70,7 @@ class ExampleViewController: UIViewController {
             self.dataSource = array ?? []
         }
         self.floatLayoutView = QMUIFloatLayoutView()
-        self.floatLayoutView!.itemMargins = UIEdgeInsets(top: QMUIHelper.pixelOne(), left: QMUIHelper.pixelOne(), bottom: 0, right: 0);
+        self.floatLayoutView!.itemMargins = UIEdgeInsets(top: QMUIHelper.pixelOne, left: QMUIHelper.pixelOne, bottom: 0, right: 0);
         for item: String in self.dataSource {
             let button = QMUIButton()
             //            button.layer.cornerRadius = 10;
