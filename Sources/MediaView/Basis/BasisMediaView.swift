@@ -11,8 +11,13 @@ import JSCoreKit
 @objc(MediaBrowserBasisMediaView)
 open class BasisMediaView: UIView {
     
-    @objc public var viewportRect: CGRect = CGRect.zero
+    @objc public var viewportRect: CGRect = .zero
     @objc public var viewportRectMaxWidth: CGFloat = 700
+    @objc public var mediaSafeAreaInsets: UIEdgeInsets = .zero {
+        didSet {
+            self.setNeedsLayout()
+        }
+    }
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -52,7 +57,7 @@ extension BasisMediaView {
             self.layoutIfNeeded()
         }
         if rect.isEmpty && !self.bounds.isEmpty {
-            let safeAreaInsets: UIEdgeInsets = JSCoreHelper.safeAreaInsetsForDeviceWithNotch
+            let safeAreaInsets: UIEdgeInsets = self.mediaSafeAreaInsets
             let size: CGSize = CGSize(width: min(containerView.bounds.width, viewportRectMaxWidth), height: containerView.bounds.height)
             let offsetX = (containerView.bounds.width - size.width) / 2
             let top = safeAreaInsets.top

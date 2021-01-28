@@ -28,6 +28,9 @@ open class ImageCell: BasisCell {
     
     open override func layoutSubviews() {
         super.layoutSubviews()
+        if #available(iOS 11.0, *) {
+            zoomImageView?.mediaSafeAreaInsets = self.safeAreaInsets
+        }
         zoomImageView?.js_frameApplyTransform = self.contentView.bounds
     }
     

@@ -8,10 +8,13 @@
 import UIKit
 import JSCoreKit
 import JSMediaBrowser
+import SnapKit
+import QMUIKit
 
 @objc class PageControl: UIPageControl, ToolViewProtocol {
     
     weak var browserViewController: MediaBrowserViewController?
+    weak var bottomConstraint: ConstraintMakerEditable?
     
     func didAddToSuperview(in viewController: MediaBrowserViewController) {
         self.browserViewController = viewController
@@ -19,14 +22,18 @@ import JSMediaBrowser
         if let browserView = viewController.browserView {
             self.currentPage = browserView.currentPage
         }
-        let bottom = JSCoreHelper.isNotchedScreen ? JSCoreHelper.safeAreaInsetsForDeviceWithNotch.bottom : 20
         self.snp.makeConstraints { (make) in
             make.width.equalTo(viewController.view.snp.width).multipliedBy(0.5)
             make.centerX.equalTo(viewController.view.snp.centerX)
-            make.bottom.equalTo(viewController.view.snp.bottom).offset(-bottom)
+            self.bottomConstraint = make.bottom.equalTo(viewController.view.snp.bottom)
             make.height.equalTo(30)
         }
         self.addTarget(self, action: #selector(self.handlePageControlEvent), for: .valueChanged)
+    }
+    
+    func didLayoutSubviews(in viewController: MediaBrowserViewController) {
+        let bottom = JSCoreHelper.isNotchedScreen ? viewController.view.qmui_safeAreaInsets.bottom : 20
+        self.bottomConstraint?.offset(-bottom)
     }
     
     func sourceItemsDidChange(in viewController: MediaBrowserViewController) {
