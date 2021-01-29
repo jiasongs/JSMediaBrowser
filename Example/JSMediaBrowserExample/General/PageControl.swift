@@ -14,7 +14,6 @@ import QMUIKit
 @objc class PageControl: UIPageControl, ToolViewProtocol {
     
     weak var browserViewController: MediaBrowserViewController?
-    weak var bottomConstraint: ConstraintMakerEditable?
     
     func didAddToSuperview(in viewController: MediaBrowserViewController) {
         self.browserViewController = viewController
@@ -25,7 +24,7 @@ import QMUIKit
         self.snp.makeConstraints { (make) in
             make.width.equalTo(viewController.view.snp.width).multipliedBy(0.5)
             make.centerX.equalTo(viewController.view.snp.centerX)
-            self.bottomConstraint = make.bottom.equalTo(viewController.view.snp.bottom)
+            make.bottom.equalTo(viewController.view.snp.bottom)
             make.height.equalTo(30)
         }
         self.addTarget(self, action: #selector(self.handlePageControlEvent), for: .valueChanged)
@@ -33,7 +32,9 @@ import QMUIKit
     
     func didLayoutSubviews(in viewController: MediaBrowserViewController) {
         let bottom = JSCoreHelper.isNotchedScreen ? viewController.view.qmui_safeAreaInsets.bottom : 20
-        self.bottomConstraint?.offset(-bottom)
+        self.snp.updateConstraints { (make) in
+            make.bottom.equalTo(viewController.view.snp.bottom).offset(-bottom)
+        }
     }
     
     func sourceItemsDidChange(in viewController: MediaBrowserViewController) {

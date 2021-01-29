@@ -13,7 +13,6 @@ import SnapKit
 @objc class ShareControl: UIButton, ToolViewProtocol {
     
     weak var browserViewController: MediaBrowserViewController?
-    weak var bottomConstraint: ConstraintMakerEditable?
     
     func didAddToSuperview(in viewController: MediaBrowserViewController) {
         self.browserViewController = viewController
@@ -22,14 +21,16 @@ import SnapKit
         self.snp.makeConstraints { (make) in
             make.height.equalTo(30)
             make.right.equalTo(viewController.view.snp.right).offset(-20)
-            self.bottomConstraint = make.bottom.equalTo(viewController.view.snp.bottom)
+            make.bottom.equalTo(viewController.view.snp.bottom)
         }
         self.addTarget(self, action: #selector(self.onPress), for: UIControl.Event.touchUpInside)
     }
     
     func didLayoutSubviews(in viewController: MediaBrowserViewController) {
         let bottom = JSCoreHelper.isNotchedScreen ? viewController.view.qmui_safeAreaInsets.bottom : 20
-        self.bottomConstraint?.offset(-bottom)
+        self.snp.updateConstraints { (make) in
+            make.bottom.equalTo(viewController.view.snp.bottom).offset(-bottom)
+        }
     }
     
     @objc func onPress() {
