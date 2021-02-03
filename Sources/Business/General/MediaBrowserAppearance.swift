@@ -43,4 +43,8 @@ public typealias CellClassSting = String
         self.reuseCellIdentifiers[identifier] = NSStringFromClass(cellClass)
     }
     
+    fileprivate override init() {
+        super.init()
+    }
+    
 }
