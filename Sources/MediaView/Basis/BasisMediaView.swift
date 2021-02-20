@@ -13,7 +13,7 @@ open class BasisMediaView: UIView {
     
     @objc public var viewportRect: CGRect = .zero
     @objc public var viewportRectMaxWidth: CGFloat = 700
-    @objc public var mediaSafeAreaInsets: UIEdgeInsets = .zero {
+    @objc public var viewportSafeAreaInsets: UIEdgeInsets = .zero {
         didSet {
             self.setNeedsLayout()
         }
@@ -29,8 +29,7 @@ open class BasisMediaView: UIView {
         self.didInitialize(frame: CGRect.zero)
     }
     
-    func didInitialize(frame: CGRect) -> Void {
-        
+    func didInitialize(frame: CGRect) {
     }
     
 }
@@ -56,15 +55,23 @@ extension BasisMediaView {
             self.setNeedsLayout()
             self.layoutIfNeeded()
         }
+        let safeAreaInsets: UIEdgeInsets = self.viewportSafeAreaInsets
         if rect.isEmpty && !self.bounds.isEmpty {
-            let safeAreaInsets: UIEdgeInsets = self.mediaSafeAreaInsets
-            let size: CGSize = CGSize(width: min(containerView.bounds.width, viewportRectMaxWidth), height: containerView.bounds.height)
+            let size: CGSize = CGSize(width: min(containerView.bounds.width, self.viewportRectMaxWidth), height: containerView.bounds.height)
             let offsetX = (containerView.bounds.width - size.width) / 2
             let top = safeAreaInsets.top
             let left = max(safeAreaInsets.left, offsetX)
             let bottom = safeAreaInsets.bottom
             let right = safeAreaInsets.right
-            rect = CGRect(x: left, y: top, width: min(size.width, containerView.bounds.width - left - right), height: size.height - top - bottom)
+            rect = CGRect(x: left,
+                          y: top,
+                          width: min(size.width, containerView.bounds.width - left - right),
+                          height: size.height - top - bottom)
+        } else {
+            rect = CGRect(x: rect.minX + safeAreaInsets.left,
+                          y: rect.minY - safeAreaInsets.top,
+                          width: rect.width - (safeAreaInsets.left + safeAreaInsets.right),
+                          height: rect.height - (safeAreaInsets.top + safeAreaInsets.bottom))
         }
         return rect
     }
