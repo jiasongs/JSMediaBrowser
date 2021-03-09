@@ -12,6 +12,7 @@ import JSCoreKit
 open class BasisMediaView: UIView {
     
     @objc public var viewportRect: CGRect = .zero
+    /// 当viewportRect为zero时才会生效, 若自定义viewportRect, 请自行实现
     @objc public var viewportRectMaxWidth: CGFloat = 700
     @objc public var viewportSafeAreaInsets: UIEdgeInsets = .zero {
         didSet {

@@ -9,6 +9,17 @@ import UIKit
 import JSCoreKit
 import PhotosUI
 
+#if BUSINESS_IMAGE
+public typealias BuildImageViewInZoomViewBlock = (MediaBrowserViewController, ZoomImageView) -> UIImageView
+public typealias BuildLivePhotoViewInZoomViewBlock = (MediaBrowserViewController, ZoomImageView) -> PHLivePhotoView
+public typealias BuildWebImageMediatorBlock = (MediaBrowserViewController, SourceProtocol) -> WebImageMediatorProtocol
+#endif
+public typealias BuildToolViewsBlock = (MediaBrowserViewController) -> Array<UIView & ToolViewProtocol>
+public typealias BuildCellBlock = (MediaBrowserViewController, Int) -> UICollectionViewCell?
+public typealias ConfigureCellBlock = (MediaBrowserViewController, UICollectionViewCell, Int) -> Void
+public typealias DisplayEmptyViewBlock = (MediaBrowserViewController, UICollectionViewCell, EmptyView, NSError) -> Void
+public typealias LongPressBlock = (MediaBrowserViewController) -> Void
+
 @objc(MediaBrowserViewControllerTransitioningStyle)
 public enum TransitioningStyle: Int {
     case zoom
@@ -27,8 +38,6 @@ public enum TransitioningStyle: Int {
                     let loader: ImageLoaderEntity = ImageLoaderEntity()
                     loader.sourceItem = item
                     if let block = self.addWebImageMediatorBlock {
-                        loader.webImageMediator = block(self, item)
-                    } else if let block = MediaBrowserAppearance.appearance.addWebImageMediatorBlock {
                         loader.webImageMediator = block(self, item)
                     }
                     array.append(loader)
@@ -132,16 +141,9 @@ extension MediaBrowserViewController {
         #if BUSINESS_VIDEO
         self.registerClass(VideoCell.self, forCellWithReuseIdentifier: videoCellIdentifier)
         #endif
-        let reuseCellIdentifiers: Dictionary<Identifier, CellClassSting> = MediaBrowserAppearance.appearance.reuseCellIdentifiers
-        for (key, value) in reuseCellIdentifiers {
-            let cellClass: AnyClass = NSClassFromString(value) ?? UICollectionViewCell.self
-            self.registerClass(cellClass, forCellWithReuseIdentifier: key)
-        }
         /// 工具视图
         var buildBlock: BuildToolViewsBlock?
         if let block = self.addToolViewsBlock {
-            buildBlock = block
-        } else if let block = MediaBrowserAppearance.appearance.addToolViewsBlock {
             buildBlock = block
         }
         if let block = buildBlock {
@@ -261,8 +263,6 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         var cell: UICollectionViewCell!
         if let block = self.cellForItemAtIndexBlock {
             cell = block(self, index)
-        } else if let block = MediaBrowserAppearance.appearance.cellForItemAtIndexBlock {
-            cell = block(self, index)
         }
         let loaderItem: LoaderProtocol? = loaderItems?[index]
         if let loaderItem = loaderItem {
@@ -286,8 +286,6 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         }
         if let block = self.configureCellBlock {
             block(self, cell, index)
-        } else if let block = MediaBrowserAppearance.appearance.configureCellBlock {
-            block(self, cell, index)
         }
         return cell
     }
@@ -300,8 +298,6 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         }
         cell.willDisplayEmptyViewBlock = { [weak self] (cell: UICollectionViewCell, emptyView: EmptyView, error: NSError) in
             if let block = self?.willDisplayEmptyViewBlock, let strongSelf = self {
-                block(strongSelf, cell, emptyView, error)
-            } else if let block = MediaBrowserAppearance.appearance.willDisplayEmptyViewBlock, let strongSelf = self {
                 block(strongSelf, cell, emptyView, error)
             }
         }
@@ -380,8 +376,6 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     @objc public func mediaBrowserView(_ browserView: MediaBrowserView, longPress gestureRecognizer: UILongPressGestureRecognizer) {
         if let block = self.onLongPressBlock {
             block(self)
-        } else if let block = MediaBrowserAppearance.appearance.onLongPressBlock {
-            block(self)
         }
     }
     
@@ -424,8 +418,6 @@ extension MediaBrowserViewController: ZoomImageViewDelegate {
         var imageView: UIImageView
         if let block = self.addImageViewInZoomViewBlock {
             imageView = block(self, zoomImageView)
-        } else if let block = MediaBrowserAppearance.appearance.addImageViewInZoomViewBlock {
-            imageView = block(self, zoomImageView)
         } else {
             imageView = UIImageView()
         }
@@ -435,8 +427,6 @@ extension MediaBrowserViewController: ZoomImageViewDelegate {
     @objc public func zoomImageViewLazyBuildLivePhotoView(_ zoomImageView: ZoomImageView) -> PHLivePhotoView {
         var livePhotoView: PHLivePhotoView
         if let block = self.addLivePhotoViewInZoomViewBlock {
-            livePhotoView = block(self, zoomImageView)
-        } else if let block = MediaBrowserAppearance.appearance.addLivePhotoViewInZoomViewBlock {
             livePhotoView = block(self, zoomImageView)
         } else {
             livePhotoView = PHLivePhotoView()

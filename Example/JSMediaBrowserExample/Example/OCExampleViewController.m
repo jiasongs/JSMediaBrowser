@@ -24,22 +24,6 @@
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
         [[SDImageCache sharedImageCache] clearMemory];
         [[SDImageCache sharedImageCache] clearDiskOnCompletion:nil];
-        /// 全局配置
-        MediaBrowserAppearance.appearance.addImageViewInZoomViewBlock = ^UIImageView * _Nonnull(MediaBrowserViewController *browserVC, MediaBrowserZoomImageView *zoomImageView) {
-            return [[SDAnimatedImageView alloc] init];
-        };
-        MediaBrowserAppearance.appearance.addWebImageMediatorBlock = ^id<MediaBrowserWebImageMediatorProtocol> _Nonnull(MediaBrowserViewController * browserVC, id<MediaBrowserSourceProtocol> sourceItem) {
-            return [[MediaBrowserViewSDWebImageMediator alloc] init];
-        };
-        MediaBrowserAppearance.appearance.addToolViewsBlock = ^NSArray<UIView<MediaBrowserToolViewProtocol> *> *(MediaBrowserViewController *browserVC) {
-            PageControl *pageControl = [[PageControl alloc] init];
-            ShareControl *shareControl = [[ShareControl alloc] init];
-            return @[pageControl, shareControl];
-        };
-        MediaBrowserAppearance.appearance.willDisplayEmptyViewBlock = ^(MediaBrowserViewController *browserVC, UICollectionViewCell *cell, EmptyView *emptyView, NSError *error) {
-            emptyView.image = [UIImage imageNamed:@"picture_fail"];
-            emptyView.title = [NSString stringWithFormat:@"%@", error.localizedDescription];
-        };
     }
     return self;
 }
@@ -85,6 +69,21 @@
 
 - (void)handleImageButtonEvent:(UIButton *)sender {
     MediaBrowserViewController *browser = [[MediaBrowserViewController alloc] init];
+    browser.addImageViewInZoomViewBlock = ^UIImageView * _Nonnull(MediaBrowserViewController *browserVC, MediaBrowserZoomImageView *zoomImageView) {
+        return [[SDAnimatedImageView alloc] init];
+    };
+    browser.addWebImageMediatorBlock = ^id<MediaBrowserWebImageMediatorProtocol> _Nonnull(MediaBrowserViewController * browserVC, id<MediaBrowserSourceProtocol> sourceItem) {
+        return [[MediaBrowserViewSDWebImageMediator alloc] init];
+    };
+    browser.addToolViewsBlock = ^NSArray<UIView<MediaBrowserToolViewProtocol> *> *(MediaBrowserViewController *browserVC) {
+        PageControl *pageControl = [[PageControl alloc] init];
+        ShareControl *shareControl = [[ShareControl alloc] init];
+        return @[pageControl, shareControl];
+    };
+    browser.willDisplayEmptyViewBlock = ^(MediaBrowserViewController *browserVC, UICollectionViewCell *cell, EmptyView *emptyView, NSError *error) {
+        emptyView.image = [UIImage imageNamed:@"picture_fail"];
+        emptyView.title = [NSString stringWithFormat:@"%@", error.localizedDescription];
+    };
     NSMutableArray *sourceItems = [NSMutableArray array];
     [self.dataSource enumerateObjectsUsingBlock:^(NSString *urlString, NSUInteger idx, BOOL * _Nonnull stop) {
         QMUIButton *button = [self.floatLayoutView.subviews objectAtIndex:idx];

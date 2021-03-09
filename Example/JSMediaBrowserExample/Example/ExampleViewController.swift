@@ -20,36 +20,6 @@ class ExampleViewController: UIViewController {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         SDImageCache.shared.clearMemory()
         SDImageCache.shared.clearDisk(onCompletion: nil)
-        /// 设置全局Block
-        MediaBrowserAppearance.appearance.addImageViewInZoomViewBlock = { (browserVC: MediaBrowserViewController, zoomImageView: ZoomImageView) -> UIImageView in
-            return SDAnimatedImageView() // ImageView()
-        }
-        MediaBrowserAppearance.appearance.addWebImageMediatorBlock = { (browserVC: MediaBrowserViewController, sourceItem: SourceProtocol) -> WebImageMediatorProtocol in
-            return SDWebImageMediator()
-        }
-        MediaBrowserAppearance.appearance.addToolViewsBlock = { (browserVC: MediaBrowserViewController) -> Array<UIView & ToolViewProtocol> in
-            let pageControl: PageControl = PageControl()
-            let shareControl: ShareControl = ShareControl()
-            return [pageControl, shareControl]
-        }
-        MediaBrowserAppearance.appearance.configureCellBlock = { (browserVC: MediaBrowserViewController, cell: UICollectionViewCell, index: Int) in
-            if let cell = cell as? BasisCell {
-                if cell.pieProgressView?.tintColor != .white {
-                    cell.pieProgressView?.tintColor = .white
-                }
-            }
-        }
-        MediaBrowserAppearance.appearance.willDisplayEmptyViewBlock = { (browserVC: MediaBrowserViewController, cell: UICollectionViewCell, emptyView: EmptyView, error: NSError) in
-            emptyView.image = UIImage(named: "picture_fail")
-            emptyView.title = "\(String(describing: error.localizedDescription))"
-        }
-        MediaBrowserAppearance.appearance.onLongPressBlock = { (browserVC: MediaBrowserViewController) in
-            if let currentPage: Int = browserVC.browserView?.currentPage, var sourceItems = browserVC.sourceItems {
-                sourceItems.remove(at: currentPage)
-                browserVC.sourceItems = sourceItems
-                browserVC.browserView?.reloadData()
-            }
-        }
     }
     
     required init?(coder: NSCoder) {
@@ -108,6 +78,36 @@ class ExampleViewController: UIViewController {
     
     @objc func handleImageButtonEvent(sender: QMUIButton) -> Void {
         let browser: MediaBrowserViewController = MediaBrowserViewController()
+        /// 设置全局Block
+        browser.addImageViewInZoomViewBlock = { (browserVC: MediaBrowserViewController, zoomImageView: ZoomImageView) -> UIImageView in
+            return SDAnimatedImageView() // ImageView()
+        }
+        browser.addWebImageMediatorBlock = { (browserVC: MediaBrowserViewController, sourceItem: SourceProtocol) -> WebImageMediatorProtocol in
+            return SDWebImageMediator()
+        }
+        browser.addToolViewsBlock = { (browserVC: MediaBrowserViewController) -> Array<UIView & ToolViewProtocol> in
+            let pageControl: PageControl = PageControl()
+            let shareControl: ShareControl = ShareControl()
+            return [pageControl, shareControl]
+        }
+        browser.configureCellBlock = { (browserVC: MediaBrowserViewController, cell: UICollectionViewCell, index: Int) in
+            if let cell = cell as? BasisCell {
+                if cell.pieProgressView?.tintColor != .white {
+                    cell.pieProgressView?.tintColor = .white
+                }
+            }
+        }
+        browser.willDisplayEmptyViewBlock = { (browserVC: MediaBrowserViewController, cell: UICollectionViewCell, emptyView: EmptyView, error: NSError) in
+            emptyView.image = UIImage(named: "picture_fail")
+            emptyView.title = "\(String(describing: error.localizedDescription))"
+        }
+        browser.onLongPressBlock = { (browserVC: MediaBrowserViewController) in
+            if let currentPage: Int = browserVC.browserView?.currentPage, var sourceItems = browserVC.sourceItems {
+                sourceItems.remove(at: currentPage)
+                browserVC.sourceItems = sourceItems
+                browserVC.browserView?.reloadData()
+            }
+        }
         var sourceItems: Array<SourceProtocol> = [];
         for (index, urlString) in self.dataSource.enumerated() {
             if let button: QMUIButton = self.floatLayoutView.subviews[index] as? QMUIButton {
