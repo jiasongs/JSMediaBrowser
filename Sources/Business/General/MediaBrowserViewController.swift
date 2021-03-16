@@ -10,8 +10,8 @@ import JSCoreKit
 import PhotosUI
 
 #if BUSINESS_IMAGE
-public typealias BuildImageViewInZoomViewBlock = (MediaBrowserViewController, ZoomImageView) -> UIImageView
-public typealias BuildLivePhotoViewInZoomViewBlock = (MediaBrowserViewController, ZoomImageView) -> PHLivePhotoView
+public typealias BuildImageViewForZoomViewBlock = (MediaBrowserViewController, ZoomImageView) -> UIImageView
+public typealias BuildLivePhotoViewForZoomViewBlock = (MediaBrowserViewController, ZoomImageView) -> PHLivePhotoView
 public typealias BuildWebImageMediatorBlock = (MediaBrowserViewController, SourceProtocol) -> WebImageMediatorProtocol
 #endif
 public typealias BuildToolViewsBlock = (MediaBrowserViewController) -> Array<UIView & ToolViewProtocol>
@@ -37,7 +37,7 @@ public enum TransitioningStyle: Int {
                 if let _ = item as? ImageSourceProtocol {
                     let loader: ImageLoaderEntity = ImageLoaderEntity()
                     loader.sourceItem = item
-                    if let block = self.addWebImageMediatorBlock {
+                    if let block = self.webImageMediatorBlock {
                         loader.webImageMediator = block(self, item)
                     }
                     array.append(loader)
@@ -83,12 +83,12 @@ public enum TransitioningStyle: Int {
         }
     }
     #if BUSINESS_IMAGE
-    @objc open var addImageViewInZoomViewBlock: BuildImageViewInZoomViewBlock?
-    @objc open var addLivePhotoViewInZoomViewBlock: BuildLivePhotoViewInZoomViewBlock?
-    @objc open var addWebImageMediatorBlock: BuildWebImageMediatorBlock?
+    @objc open var imageViewForZoomViewBlock: BuildImageViewForZoomViewBlock?
+    @objc open var livePhotoViewForZoomViewBlock: BuildLivePhotoViewForZoomViewBlock?
+    @objc open var webImageMediatorBlock: BuildWebImageMediatorBlock?
     #endif
-    @objc open var addToolViewsBlock: BuildToolViewsBlock?
-    @objc open var cellForItemAtIndexBlock: BuildCellBlock?
+    @objc open var toolViewsBlock: BuildToolViewsBlock?
+    @objc open var cellForItemAtPageBlock: BuildCellBlock?
     @objc open var configureCellBlock: ConfigureCellBlock?
     @objc open var willDisplayEmptyViewBlock: DisplayEmptyViewBlock?
     @objc open var onLongPressBlock: LongPressBlock?
@@ -142,11 +142,7 @@ extension MediaBrowserViewController {
         self.registerClass(VideoCell.self, forCellWithReuseIdentifier: videoCellIdentifier)
         #endif
         /// 工具视图
-        var buildBlock: BuildToolViewsBlock?
-        if let block = self.addToolViewsBlock {
-            buildBlock = block
-        }
-        if let block = buildBlock {
+        if let block = self.toolViewsBlock {
             let toolViews: Array<UIView & ToolViewProtocol> = block(self)
             for toolView in toolViews {
                 self.view.addSubview(toolView)
@@ -261,7 +257,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, cellForItemAt index: Int) -> UICollectionViewCell {
         var cell: UICollectionViewCell!
-        if let block = self.cellForItemAtIndexBlock {
+        if let block = self.cellForItemAtPageBlock {
             cell = block(self, index)
         }
         let loaderItem: LoaderProtocol? = loaderItems?[index]
@@ -416,7 +412,7 @@ extension MediaBrowserViewController: ZoomImageViewDelegate {
     
     @objc public func zoomImageViewLazyBuildImageView(_ zoomImageView: ZoomImageView) -> UIImageView {
         var imageView: UIImageView
-        if let block = self.addImageViewInZoomViewBlock {
+        if let block = self.imageViewForZoomViewBlock {
             imageView = block(self, zoomImageView)
         } else {
             imageView = UIImageView()
@@ -426,7 +422,7 @@ extension MediaBrowserViewController: ZoomImageViewDelegate {
     
     @objc public func zoomImageViewLazyBuildLivePhotoView(_ zoomImageView: ZoomImageView) -> PHLivePhotoView {
         var livePhotoView: PHLivePhotoView
-        if let block = self.addLivePhotoViewInZoomViewBlock {
+        if let block = self.livePhotoViewForZoomViewBlock {
             livePhotoView = block(self, zoomImageView)
         } else {
             livePhotoView = PHLivePhotoView()

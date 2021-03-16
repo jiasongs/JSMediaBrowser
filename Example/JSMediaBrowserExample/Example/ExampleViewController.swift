@@ -79,13 +79,13 @@ class ExampleViewController: UIViewController {
     @objc func handleImageButtonEvent(sender: QMUIButton) -> Void {
         let browser: MediaBrowserViewController = MediaBrowserViewController()
         /// 设置全局Block
-        browser.addImageViewInZoomViewBlock = { (browserVC: MediaBrowserViewController, zoomImageView: ZoomImageView) -> UIImageView in
+        browser.imageViewForZoomViewBlock = { (browserVC: MediaBrowserViewController, zoomImageView: ZoomImageView) -> UIImageView in
             return SDAnimatedImageView() // ImageView()
         }
-        browser.addWebImageMediatorBlock = { (browserVC: MediaBrowserViewController, sourceItem: SourceProtocol) -> WebImageMediatorProtocol in
+        browser.webImageMediatorBlock = { (browserVC: MediaBrowserViewController, sourceItem: SourceProtocol) -> WebImageMediatorProtocol in
             return SDWebImageMediator()
         }
-        browser.addToolViewsBlock = { (browserVC: MediaBrowserViewController) -> Array<UIView & ToolViewProtocol> in
+        browser.toolViewsBlock = { (browserVC: MediaBrowserViewController) -> Array<UIView & ToolViewProtocol> in
             let pageControl: PageControl = PageControl()
             let shareControl: ShareControl = ShareControl()
             return [pageControl, shareControl]

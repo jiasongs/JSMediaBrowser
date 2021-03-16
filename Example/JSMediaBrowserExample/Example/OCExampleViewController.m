@@ -69,13 +69,13 @@
 
 - (void)handleImageButtonEvent:(UIButton *)sender {
     MediaBrowserViewController *browser = [[MediaBrowserViewController alloc] init];
-    browser.addImageViewInZoomViewBlock = ^UIImageView * _Nonnull(MediaBrowserViewController *browserVC, MediaBrowserZoomImageView *zoomImageView) {
+    browser.imageViewForZoomViewBlock = ^UIImageView * _Nonnull(MediaBrowserViewController *browserVC, MediaBrowserZoomImageView *zoomImageView) {
         return [[SDAnimatedImageView alloc] init];
     };
-    browser.addWebImageMediatorBlock = ^id<MediaBrowserWebImageMediatorProtocol> _Nonnull(MediaBrowserViewController * browserVC, id<MediaBrowserSourceProtocol> sourceItem) {
+    browser.webImageMediatorBlock = ^id<MediaBrowserWebImageMediatorProtocol> _Nonnull(MediaBrowserViewController * browserVC, id<MediaBrowserSourceProtocol> sourceItem) {
         return [[MediaBrowserViewSDWebImageMediator alloc] init];
     };
-    browser.addToolViewsBlock = ^NSArray<UIView<MediaBrowserToolViewProtocol> *> *(MediaBrowserViewController *browserVC) {
+    browser.toolViewsBlock = ^NSArray<UIView<MediaBrowserToolViewProtocol> *> *(MediaBrowserViewController *browserVC) {
         PageControl *pageControl = [[PageControl alloc] init];
         ShareControl *shareControl = [[ShareControl alloc] init];
         return @[pageControl, shareControl];
