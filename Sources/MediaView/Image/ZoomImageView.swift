@@ -56,14 +56,16 @@ open class ZoomImageView: BasisMediaView {
             if image == nil && !isImageViewInitialized {
                 return
             }
-            if isLivePhotoViewInitialized {
-                self.livePhotoView.isHidden = true
-                self.livePhotoView.livePhoto = nil
+            if oldValue != image {
+                if isLivePhotoViewInitialized {
+                    self.livePhotoView.isHidden = true
+                    self.livePhotoView.livePhoto = nil
+                }
+                self.imageView.isHidden = false
+                self.imageView.image = image
+                self.imageView.js_frameApplyTransform = CGRect(origin: CGPoint.zero, size: image?.size ?? CGSize.zero)
+                self.revertZooming()
             }
-            self.imageView.isHidden = false
-            self.imageView.image = image
-            self.imageView.js_frameApplyTransform = CGRect(origin: CGPoint.zero, size: image?.size ?? CGSize.zero)
-            self.revertZooming()
         }
     }
     
@@ -72,14 +74,16 @@ open class ZoomImageView: BasisMediaView {
             if livePhoto == nil && !isLivePhotoViewInitialized {
                 return
             }
-            if isImageViewInitialized {
-                self.imageView.isHidden = true
-                self.imageView.image = nil
+            if oldValue != livePhoto {
+                if isImageViewInitialized {
+                    self.imageView.isHidden = true
+                    self.imageView.image = nil
+                }
+                self.livePhotoView.isHidden = false
+                self.livePhotoView.livePhoto = livePhoto
+                self.livePhotoView.js_frameApplyTransform = CGRect(origin: CGPoint.zero, size: livePhoto?.size ?? CGSize.zero)
+                self.revertZooming()
             }
-            self.livePhotoView.isHidden = false
-            self.livePhotoView.livePhoto = livePhoto
-            self.livePhotoView.js_frameApplyTransform = CGRect(origin: CGPoint.zero, size: livePhoto?.size ?? CGSize.zero)
-            self.revertZooming()
         }
     }
     private var isLivePhotoPlaying: Bool = false

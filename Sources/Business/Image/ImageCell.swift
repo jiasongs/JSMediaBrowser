@@ -21,7 +21,6 @@ open class ImageCell: BasisCell {
     
     open override func prepareForReuse() -> Void {
         super.prepareForReuse()
-        /// 超大图时这里可能有点问题, 待处理
         zoomImageView?.stopAnimating()
         zoomImageView?.image = nil
         zoomImageView?.livePhoto = nil

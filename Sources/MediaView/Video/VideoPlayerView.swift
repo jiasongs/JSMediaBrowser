@@ -18,71 +18,81 @@ import JSCoreKit
     case failed
 }
 
+/// TODO：重写部分方法, 使之更加合理
 @objc open class VideoPlayerView: BasisMediaView {
     
     @objc weak var delegate: VideoPlayerViewDelegate?
     
-    var url: URL? {
+    @objc var url: URL? {
         didSet {
             if let url = self.url {
-                let item: AVPlayerItem = AVPlayerItem(url: url)
-                self.playerItem = item
+                if oldValue != url {
+                    let item: AVPlayerItem = AVPlayerItem(url: url)
+                    self.playerItem = item
+                } else {
+                    self.play()
+                }
             }
         }
     }
-    var asset: AVAsset? {
+    
+    @objc var asset: AVAsset? {
         didSet {
             if let asset = self.asset {
-                let item: AVPlayerItem = AVPlayerItem(asset: asset)
-                self.playerItem = item
+                if oldValue != asset {
+                    let item: AVPlayerItem = AVPlayerItem(asset: asset)
+                    self.playerItem = item
+                } else {
+                    self.play()
+                }
             }
         }
     }
+    
     @objc var playerItem: AVPlayerItem? {
         willSet {
             self.removeObserverForPlayer()
         }
         didSet {
-            if self.playerItem != nil {
-                if self.player != nil {
-                    self.player?.replaceCurrentItem(with: self.playerItem)
+            if let playerItem = self.playerItem {
+                if oldValue != playerItem {
+                    self.player.replaceCurrentItem(with: playerItem)
+                    self.addObserverForPlayer()
                 } else {
-                    self.player = AVPlayer(playerItem: playerItem)
+                    self.addObserverForPlayer()
+                    self.play()
                 }
-                self.addObserverForPlayer()
-            }
-        }
-    }
-    private(set) var player: AVPlayer? {
-        didSet {
-            if let player = self.player {
-                self.playerLayer?.player = player
-                self.playerLayer?.videoGravity = .resizeAspect
-                self.setNeedsLayout()
             }
         }
     }
     
-    fileprivate var playerView: AVPlayerView?
+    private lazy var player: AVPlayer = {
+        let player = AVPlayer(playerItem: nil)
+        self.playerLayer.player = player
+        self.playerLayer.videoGravity = .resizeAspect
+        return player
+    }()
     
-    private var playerLayer: AVPlayerLayer? {
-        return self.playerView?.layer as? AVPlayerLayer
+    private lazy var playerView: AVPlayerView = {
+        return AVPlayerView()
+    }()
+    
+    private var playerLayer: AVPlayerLayer {
+        return self.playerView.layer as! AVPlayerLayer
     }
     
     open var currentTime: CGFloat {
-        if let player = self.player {
-            return CGFloat(CMTimeGetSeconds(player.currentTime()))
-        }
-        return 0
+        return CGFloat(CMTimeGetSeconds(self.player.currentTime()))
     }
+    
     private(set) open var totalDuration: CGFloat = 0.0
     
     open var rate: CGFloat {
         get {
-            return CGFloat(self.player?.rate ?? 0.0)
+            return CGFloat(self.player.rate)
         }
         set {
-            self.player?.rate = Float(newValue)
+            self.player.rate = Float(newValue)
         }
     }
     
@@ -96,7 +106,7 @@ import JSCoreKit
                 }
             } else if status == .failed {
                 if let delegate = self.delegate, delegate.responds(to: #selector(VideoPlayerViewDelegate.videoPlayerView(_:didFailed:))) {
-                    delegate.videoPlayerView?(self, didFailed: self.player?.error as NSError?)
+                    delegate.videoPlayerView?(self, didFailed: self.player.error as NSError?)
                 }
             } else if status == .ended || status == .stopped {
                 if let delegate = self.delegate, delegate.responds(to: #selector(VideoPlayerViewDelegate.videoPlayerViewDidPlayToEndTime(_:))) {
@@ -130,8 +140,7 @@ import JSCoreKit
     
     override func didInitialize(frame: CGRect) -> Void {
         super.didInitialize(frame: frame)
-        self.playerView = AVPlayerView()
-        self.addSubview(self.playerView!)
+        self.addSubview(self.playerView)
         /// 系统的监听
         self.addObserverForSystem()
     }
@@ -148,7 +157,7 @@ extension VideoPlayerView {
     open override func layoutSubviews() {
         super.layoutSubviews()
         let viewport = self.finalViewportRect
-        self.playerView?.js_frameApplyTransform = viewport
+        self.playerView.js_frameApplyTransform = viewport
         if let image = self.thumbImage {
             /// scaleAspectFit
             let horizontalRatio: CGFloat = viewport.width / image.size.width
@@ -176,26 +185,24 @@ extension VideoPlayerView {
     
     @objc open override var contentViewFrame: CGRect {
         guard let contentView = self.contentView else { return CGRect.zero }
-        guard let playerLayer = self.playerLayer else { return CGRect.zero }
         if self.isReadyForDisplay {
-            return self.convert(playerLayer.videoRect, from: contentView)
+            return self.convert(self.playerLayer.videoRect, from: contentView)
         } else {
             return self.convert(self.thumbImageView.frame, from: self.thumbImageView.superview)
         }
     }
     
     open var isReadyForDisplay: Bool {
-        guard let playerLayer = self.playerLayer else { return false }
-        return playerLayer.isReadyForDisplay
+        return self.playerLayer.isReadyForDisplay
     }
     
     open func play() -> Void {
-        self.player?.play()
+        self.player.play()
         self.status = .playing
     }
     
     open func pause() -> Void {
-        self.player?.pause()
+        self.player.pause()
         self.status = .paused
     }
     
@@ -206,13 +213,11 @@ extension VideoPlayerView {
     
     open func releasePlayer() -> Void {
         self.playerItem = nil
-        self.player = nil
-        self.playerLayer?.player = nil
+        self.player.replaceCurrentItem(with: nil)
         self.status = .stopped
     }
     
     open func seek(to time: CGFloat, completionHandler: ((Bool) -> Void)? = nil) {
-        guard let player = self.player else { return }
         let startTime: CMTime = CMTimeMakeWithSeconds(Float64(time), preferredTimescale: player.currentTime().timescale)
         if !CMTIME_IS_INDEFINITE(startTime) && !CMTIME_IS_INVALID(startTime) {
             player.seek(to: startTime, toleranceBefore: CMTimeMake(value: 1, timescale: 1000), toleranceAfter: CMTimeMake(value: 1, timescale: 1000), completionHandler: { (finished) in
@@ -228,14 +233,14 @@ extension VideoPlayerView {
 extension VideoPlayerView {
     
     func addObserverForPlayer() -> Void {
-        if let playerItem = self.playerItem, let player = self.player, let playerLayer = self.playerLayer {
+        if let playerItem = self.playerItem {
             /// status
             self.playerObservers.append(
                 playerItem.observe(\.status, options: .new, changeHandler: { [weak self](playerItem: AVPlayerItem, change) in
                     if playerItem.status == .readyToPlay {
                         self?.totalDuration = CGFloat(CMTimeGetSeconds(playerItem.duration))
                         if let strongSelf = self, strongSelf.isAutoPlay {
-                            strongSelf.player?.play()
+                            strongSelf.player.play()
                         }
                     } else if playerItem.status == .failed {
                         self?.status = .failed
@@ -244,7 +249,7 @@ extension VideoPlayerView {
             )
             /// isReadyForDisplay
             self.playerObservers.append(
-                playerLayer.observe(\.isReadyForDisplay, options: .new, changeHandler: { [weak self](playerLayer: AVPlayerLayer, change) in
+                self.playerLayer.observe(\.isReadyForDisplay, options: .new, changeHandler: { [weak self](playerLayer: AVPlayerLayer, change) in
                     self?.status = .ready
                     /// 释放资源
                     self?.thumbImage = nil
@@ -294,7 +299,7 @@ extension VideoPlayerView {
         self.playerObservers.removeAll()
         /// 移除playerTimeObservers
         for observer in self.playerTimeObservers {
-            self.player?.removeTimeObserver(observer)
+            self.player.removeTimeObserver(observer)
         }
         self.playerTimeObservers.removeAll()
         /// 移除playerCenterObservers

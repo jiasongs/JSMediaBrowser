@@ -443,7 +443,7 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
         return self.transitioningAnimator
     }
     
-    /// mark: TransitionAnimatorDelegate
+    /// TODO：TransitionAnimatorDelegate, 需要优化代理, 目前有些复杂, 而且取名取的有歧义
     
     public var sourceRect: CGRect {
         if let sourceItem = self.sourceItems?[browserView?.currentPage ?? 0] {

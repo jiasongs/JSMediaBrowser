@@ -24,7 +24,6 @@ open class VideoCell: BasisCell {
     open override func prepareForReuse() -> Void {
         super.prepareForReuse()
         self.pieProgressView?.isHidden = true
-        self.videoPlayerView?.reset()
         self.videoPlayerView?.thumbImage = nil
         self.videoPlayerView?.delegate = nil
     }
@@ -39,6 +38,10 @@ open class VideoCell: BasisCell {
         if let sourceItem = loaderEntity.sourceItem as? VideoSourceProtocol {
             self.videoPlayerView?.delegate = self
             self.videoPlayerView?.thumbImage = sourceItem.thumbImage
+            /// 前后url不相同时需要释放之前的player, 否则会先显示之前的画面, 再显示当前的
+            if self.videoPlayerView?.url != sourceItem.videoUrl {
+                self.videoPlayerView?.releasePlayer()
+            }
             self.videoPlayerView?.url = sourceItem.videoUrl
         }
     }
