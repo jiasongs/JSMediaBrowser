@@ -318,6 +318,14 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
 
 extension MediaBrowserViewController: MediaBrowserViewDelegate {
     
+    public func mediaBrowserView(_ browserView: MediaBrowserView, willDisplay cell: UICollectionViewCell, forItemAt index: Int) {
+        #if BUSINESS_VIDEO
+        if let videoCell = cell as? VideoCell {
+            videoCell.videoPlayerView?.play()
+        }
+        #endif
+    }
+    
     public func mediaBrowserView(_ browserView: MediaBrowserView, didEndDisplaying cell: UICollectionViewCell, forItemAt index: Int) {
         #if BUSINESS_VIDEO
         if let videoCell = cell as? VideoCell {

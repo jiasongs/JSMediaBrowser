@@ -18,7 +18,6 @@ import JSCoreKit
     case failed
 }
 
-/// TODO：重写部分方法, 使之更加合理
 @objc open class VideoPlayerView: BasisMediaView {
     
     @objc weak var delegate: VideoPlayerViewDelegate?
@@ -29,8 +28,6 @@ import JSCoreKit
                 if oldValue != url {
                     let item: AVPlayerItem = AVPlayerItem(url: url)
                     self.playerItem = item
-                } else {
-                    self.play()
                 }
             }
         }
@@ -42,8 +39,6 @@ import JSCoreKit
                 if oldValue != asset {
                     let item: AVPlayerItem = AVPlayerItem(asset: asset)
                     self.playerItem = item
-                } else {
-                    self.play()
                 }
             }
         }
@@ -51,16 +46,15 @@ import JSCoreKit
     
     @objc var playerItem: AVPlayerItem? {
         willSet {
-            self.removeObserverForPlayer()
+            if newValue != nil && newValue != self.playerItem {
+                self.removeObserverForPlayerItem()
+            }
         }
         didSet {
             if let playerItem = self.playerItem {
                 if oldValue != playerItem {
+                    self.addObserverForPlayerItem()
                     self.player.replaceCurrentItem(with: playerItem)
-                    self.addObserverForPlayer()
-                } else {
-                    self.addObserverForPlayer()
-                    self.play()
                 }
             }
         }
@@ -74,7 +68,8 @@ import JSCoreKit
     }()
     
     private lazy var playerView: AVPlayerView = {
-        return AVPlayerView()
+        let playerView = AVPlayerView()
+        return playerView
     }()
     
     private var playerLayer: AVPlayerLayer {
@@ -133,19 +128,21 @@ import JSCoreKit
         return imageView
     }()
     
+    private var playerItemObservers = Array<NSKeyValueObservation>()
     private var playerObservers = Array<NSKeyValueObservation>()
-    private var playerCenterObservers = Array<NSObjectProtocol>()
+    private var playerItemCenterObservers = Array<NSObjectProtocol>()
     private var playerTimeObservers = Array<Any>()
     private var systemObservers = Array<NSObjectProtocol>()
     
     override func didInitialize(frame: CGRect) -> Void {
         super.didInitialize(frame: frame)
         self.addSubview(self.playerView)
-        /// 系统的监听
         self.addObserverForSystem()
+        self.addObserverForPlayer()
     }
     
     deinit {
+        self.removeObserverForPlayerItem()
         self.removeObserverForPlayer()
         self.removeObserverForSystem()
     }
@@ -197,8 +194,11 @@ extension VideoPlayerView {
     }
     
     open func play() -> Void {
-        self.player.play()
-        self.status = .playing
+        if self.status == .ready || self.status == .paused {
+            self.player.play()
+            self.status = .playing
+            self.releaseThumbImage()
+        }
     }
     
     open func pause() -> Void {
@@ -207,8 +207,10 @@ extension VideoPlayerView {
     }
     
     open func reset() -> Void {
-        self.pause()
-        self.seek(to: 0)
+        self.player.pause()
+        self.seek(to: 0) { (finished) in
+            self.status = .ready
+        }
     }
     
     open func releasePlayer() -> Void {
@@ -232,31 +234,64 @@ extension VideoPlayerView {
 
 extension VideoPlayerView {
     
+    private func releaseThumbImage() -> Void {
+        if self.thumbImage != nil && self.isReadyForDisplay {
+            self.thumbImage = nil
+        }
+    }
+    
+}
+
+extension VideoPlayerView {
+    
     func addObserverForPlayer() -> Void {
+        /// progress
+        self.playerTimeObservers.append(
+            self.player.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: DispatchQueue.main, using: { [weak self](time: CMTime) in
+                if let strongSelf = self, let delegate = strongSelf.delegate, delegate.responds(to: #selector(VideoPlayerViewDelegate.videoPlayerView(_:progress:totalDuration:))) {
+                    delegate.videoPlayerView?(strongSelf, progress: CGFloat(CMTimeGetSeconds(time)), totalDuration: strongSelf.totalDuration)
+                }
+            })
+        )
+        /// isReadyForDisplay
+        self.playerObservers.append(
+            self.playerLayer.observe(\.isReadyForDisplay, options: .new, changeHandler: { [weak self](playerLayer: AVPlayerLayer, change) in
+                if self?.playerItem?.status == .readyToPlay {
+                    self?.releaseThumbImage()
+                }
+            })
+        )
+    }
+    
+    func addObserverForPlayerItem() -> Void {
         if let playerItem = self.playerItem {
             /// status
-            self.playerObservers.append(
+            self.playerItemObservers.append(
                 playerItem.observe(\.status, options: .new, changeHandler: { [weak self](playerItem: AVPlayerItem, change) in
+                    guard let strongSelf = self else { return }
                     if playerItem.status == .readyToPlay {
+                        self?.status = .ready
                         self?.totalDuration = CGFloat(CMTimeGetSeconds(playerItem.duration))
-                        if let strongSelf = self, strongSelf.isAutoPlay {
-                            strongSelf.player.play()
+                        self?.releaseThumbImage()
+                        if strongSelf.isAutoPlay {
+                            strongSelf.play()
                         }
                     } else if playerItem.status == .failed {
                         self?.status = .failed
                     }
                 })
             )
-            /// isReadyForDisplay
-            self.playerObservers.append(
-                self.playerLayer.observe(\.isReadyForDisplay, options: .new, changeHandler: { [weak self](playerLayer: AVPlayerLayer, change) in
-                    self?.status = .ready
-                    /// 释放资源
-                    self?.thumbImage = nil
-                })
+            /// PlayToEndTime
+            self.playerItemCenterObservers.append(
+                NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: playerItem, queue: OperationQueue.main) { [weak self](notification: Notification) in
+                    guard let strongSelf = self else { return }
+                    if strongSelf.playerItem == notification.object as? AVPlayerItem {
+                        self?.status = .ended
+                    }
+                }
             )
             /// loadedTimeRanges
-            self.playerObservers.append(
+            self.playerItemObservers.append(
                 playerItem.observe(\.loadedTimeRanges, options: .new, changeHandler: { [weak self](playerItem: AVPlayerItem, change) in
                     let loadedTimeRanges: Array<NSValue> = playerItem.loadedTimeRanges
                     if loadedTimeRanges.count > 0 {
@@ -274,20 +309,6 @@ extension VideoPlayerView {
                     }
                 })
             )
-            /// progress
-            self.playerTimeObservers.append(
-                player.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: DispatchQueue.main, using: { [weak self](time: CMTime) in
-                    if let strongSelf = self, let delegate = strongSelf.delegate, delegate.responds(to: #selector(VideoPlayerViewDelegate.videoPlayerView(_:progress:totalDuration:))) {
-                        delegate.videoPlayerView?(strongSelf, progress: CGFloat(CMTimeGetSeconds(time)), totalDuration: strongSelf.totalDuration)
-                    }
-                })
-            )
-            /// PlayToEndTime
-            self.playerCenterObservers.append(
-                NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.playerItem, queue: OperationQueue.main) { [weak self](notification: Notification) in
-                    self?.status = .ended
-                }
-            )
         }
     }
     
@@ -302,11 +323,19 @@ extension VideoPlayerView {
             self.player.removeTimeObserver(observer)
         }
         self.playerTimeObservers.removeAll()
-        /// 移除playerCenterObservers
-        for observer in self.self.playerCenterObservers {
+    }
+    
+    func removeObserverForPlayerItem() -> Void {
+        /// 移除playerItemObservers
+        for observer in self.playerItemObservers {
+            observer.invalidate()
+        }
+        self.playerItemObservers.removeAll()
+        /// 移除playerItemCenterObservers
+        for observer in self.self.playerItemCenterObservers {
             NotificationCenter.default.removeObserver(observer)
         }
-        self.playerCenterObservers.removeAll()
+        self.playerItemCenterObservers.removeAll()
     }
     
     func addObserverForSystem() -> Void {
