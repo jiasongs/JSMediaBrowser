@@ -20,13 +20,14 @@ public typealias ConfigureCellBlock = (MediaBrowserViewController, UICollectionV
 public typealias DisplayEmptyViewBlock = (MediaBrowserViewController, UICollectionViewCell, EmptyView, NSError) -> Void
 public typealias LongPressBlock = (MediaBrowserViewController) -> Void
 
-@objc(MediaBrowserViewControllerTransitioningStyle)
+@objc(JSMediaBrowserViewControllerTransitioningStyle)
 public enum TransitioningStyle: Int {
     case zoom
     case fade
 }
 
-@objc open class MediaBrowserViewController: UIViewController {
+@objc(JSMediaBrowserViewController)
+open class MediaBrowserViewController: UIViewController {
     
     @objc open var browserView: MediaBrowserView?
     @objc open var sourceItems: Array<SourceProtocol>? {

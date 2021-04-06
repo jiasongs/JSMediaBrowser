@@ -9,7 +9,8 @@ import UIKit
 import AVKit
 import JSCoreKit
 
-@objc public enum Stauts: Int {
+@objc(JSMediaBrowserVideoPlayerStauts)
+public enum Stauts: Int {
     case stopped = 0
     case ready
     case playing
@@ -18,7 +19,8 @@ import JSCoreKit
     case failed
 }
 
-@objc open class VideoPlayerView: BasisMediaView {
+@objc(JSMediaBrowserVideoPlayerView)
+open class VideoPlayerView: BasisMediaView {
     
     @objc weak var delegate: VideoPlayerViewDelegate?
     

@@ -7,7 +7,7 @@
 
 import UIKit
 
-@objc(MediaBrowserLoaderEntity)
+@objc(JSMediaBrowserBasisLoaderEntity)
 open class BasisLoaderEntity: NSObject, LoaderProtocol {
     
     public var sourceItem: SourceProtocol?

@@ -8,13 +8,14 @@
 import UIKit
 import JSCoreKit
 
-@objc(PieProgressViewShape)
+@objc(JSMediaBrowserPieProgressViewShape)
 public enum Shape: Int {
     case sector
     case ring
 }
 
-@objc open class PieProgressView: UIControl {
+@objc(JSMediaBrowserPieProgressView)
+open class PieProgressView: UIControl {
     
     fileprivate var progressLayer: PieProgressLayer? {
         return self.layer as? PieProgressLayer

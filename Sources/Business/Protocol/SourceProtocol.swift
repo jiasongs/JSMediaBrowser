@@ -7,7 +7,7 @@
 
 import UIKit
 
-@objc(MediaBrowserSourceProtocol)
+@objc(JSMediaBrowserSourceProtocol)
 public protocol SourceProtocol: NSObjectProtocol {
     
     @objc var sourceRect: CGRect { get set }

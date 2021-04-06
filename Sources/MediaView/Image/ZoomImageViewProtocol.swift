@@ -8,7 +8,7 @@
 import UIKit
 import PhotosUI
 
-@objc(MediaBrowserZoomImageViewDelegate)
+@objc(JSMediaBrowserZoomImageViewDelegate)
 public protocol ZoomImageViewDelegate: NSObjectProtocol {
     
     @objc optional func zoomImageViewLazyBuildImageView(_ zoomImageView: ZoomImageView) -> UIImageView

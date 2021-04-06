@@ -7,7 +7,7 @@
 
 import UIKit
 
-@objc(MediaBrowserCellProtocol)
+@objc(JSMediaBrowserCellProtocol)
 public protocol CellProtocol: NSObjectProtocol {
     
     @objc(updateCell:atIndex:)

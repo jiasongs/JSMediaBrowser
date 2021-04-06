@@ -7,7 +7,8 @@
 
 import UIKit
 
-@objc public protocol MediaBrowserViewDataSource: NSObjectProtocol {
+@objc(JSMediaBrowserViewDataSource)
+public protocol MediaBrowserViewDataSource: NSObjectProtocol {
     
     @objc(numberOfMediaItemsInBrowserView:)
     func numberOfMediaItemsInBrowserView(_ browserView: MediaBrowserView) -> Int
@@ -17,7 +18,8 @@ import UIKit
     
 }
 
-@objc public protocol MediaBrowserViewDelegate: NSObjectProtocol {
+@objc(JSMediaBrowserViewDelegate)
+public protocol MediaBrowserViewDelegate: NSObjectProtocol {
     
     @objc(mediaBrowserView:willDisplayCell:forItemAtIndex:)
     optional func mediaBrowserView(_ browserView: MediaBrowserView, willDisplay cell: UICollectionViewCell, forItemAt index: Int)
@@ -33,7 +35,8 @@ import UIKit
     
 }
 
-@objc public protocol MediaBrowserViewGestureDelegate: NSObjectProtocol {
+@objc(JSMediaBrowserViewGestureDelegate)
+public protocol MediaBrowserViewGestureDelegate: NSObjectProtocol {
     
     @objc(mediaBrowserView:singleTouchWithGestureRecognizer:)
     optional func mediaBrowserView(_ browserView: MediaBrowserView, singleTouch gestureRecognizer: UITapGestureRecognizer)

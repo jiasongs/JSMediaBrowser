@@ -7,7 +7,7 @@
 
 import UIKit
 
-@objc(MediaBrowserToolViewProtocol)
+@objc(JSMediaBrowserToolViewProtocol)
 public protocol ToolViewProtocol: NSObjectProtocol  {
     
     @objc(didAddToSuperviewInViewController:)

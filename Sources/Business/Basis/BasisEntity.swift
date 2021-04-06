@@ -7,7 +7,7 @@
 
 import UIKit
 
-@objc(MediaBrowserBasisEntity)
+@objc(JSMediaBrowserBasisEntity)
 open class BasisEntity: NSObject, SourceProtocol {
     
     @objc public var sourceRect: CGRect = CGRect.zero

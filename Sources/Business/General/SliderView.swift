@@ -7,7 +7,8 @@
 
 import UIKit
 
-@objc open class SliderView: UISlider {
+@objc(JSMediaBrowserSliderView)
+open class SliderView: UISlider {
     
     @objc open var trackHeight: CGFloat = 0
     @objc open var thumbSize: CGSize = CGSize.zero {

@@ -8,7 +8,7 @@
 import UIKit
 import JSCoreKit
 
-@objc(MediaBrowserViewControllerTransitionAnimatorDelegate)
+@objc(JSMediaBrowserViewControllerTransitionAnimatorDelegate)
 public protocol TransitionAnimatorDelegate: NSObjectProtocol {
     
     @objc var sourceRect: CGRect { get }
@@ -22,7 +22,7 @@ public protocol TransitionAnimatorDelegate: NSObjectProtocol {
     
 }
 
-@objc(MediaBrowserViewControllerTransitionAnimator)
+@objc(JSMediaBrowserViewControllerTransitionAnimator)
 class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
     @objc open weak var delegate: TransitionAnimatorDelegate?

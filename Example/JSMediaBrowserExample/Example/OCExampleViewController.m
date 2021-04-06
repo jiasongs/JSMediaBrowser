@@ -68,28 +68,28 @@
 }
 
 - (void)handleImageButtonEvent:(UIButton *)sender {
-    MediaBrowserViewController *browser = [[MediaBrowserViewController alloc] init];
-    browser.imageViewForZoomViewBlock = ^UIImageView * _Nonnull(MediaBrowserViewController *browserVC, MediaBrowserZoomImageView *zoomImageView) {
+    JSMediaBrowserViewController *browser = [[JSMediaBrowserViewController alloc] init];
+    browser.imageViewForZoomViewBlock = ^UIImageView * _Nonnull(JSMediaBrowserViewController *browserVC, JSMediaBrowserZoomImageView *zoomImageView) {
         return [[SDAnimatedImageView alloc] init];
     };
-    browser.webImageMediatorBlock = ^id<MediaBrowserWebImageMediatorProtocol> _Nonnull(MediaBrowserViewController * browserVC, id<MediaBrowserSourceProtocol> sourceItem) {
-        return [[MediaBrowserViewSDWebImageMediator alloc] init];
+    browser.webImageMediatorBlock = ^id<JSMediaBrowserWebImageMediatorProtocol> _Nonnull(JSMediaBrowserViewController * browserVC, id<JSMediaBrowserSourceProtocol> sourceItem) {
+        return [[JSMediaBrowserViewSDWebImageMediator alloc] init];
     };
-    browser.toolViewsBlock = ^NSArray<UIView<MediaBrowserToolViewProtocol> *> *(MediaBrowserViewController *browserVC) {
+    browser.toolViewsBlock = ^NSArray<UIView<JSMediaBrowserToolViewProtocol> *> *(JSMediaBrowserViewController *browserVC) {
         PageControl *pageControl = [[PageControl alloc] init];
         ShareControl *shareControl = [[ShareControl alloc] init];
         return @[pageControl, shareControl];
     };
-    browser.willDisplayEmptyViewBlock = ^(MediaBrowserViewController *browserVC, UICollectionViewCell *cell, EmptyView *emptyView, NSError *error) {
+    browser.willDisplayEmptyViewBlock = ^(JSMediaBrowserViewController *browserVC, UICollectionViewCell *cell, JSMediaBrowserEmptyView *emptyView, NSError *error) {
         emptyView.image = [UIImage imageNamed:@"picture_fail"];
         emptyView.title = [NSString stringWithFormat:@"%@", error.localizedDescription];
     };
     NSMutableArray *sourceItems = [NSMutableArray array];
     [self.dataSource enumerateObjectsUsingBlock:^(NSString *urlString, NSUInteger idx, BOOL * _Nonnull stop) {
         QMUIButton *button = [self.floatLayoutView.subviews objectAtIndex:idx];
-        MediaBrowserImageEntity *entity = [[MediaBrowserImageEntity alloc] initWithSourceView:button
-                                                                                   sourceRect:CGRectZero
-                                                                                   thumbImage:[button imageForState:UIControlStateNormal]];
+        JSMediaBrowserImageEntity *entity = [[JSMediaBrowserImageEntity alloc] initWithSourceView:button
+                                                                                       sourceRect:CGRectZero
+                                                                                       thumbImage:[button imageForState:UIControlStateNormal]];
         entity.imageUrl = [NSURL URLWithString:urlString];
         entity.sourceCornerRadius = button.layer.cornerRadius;
         [sourceItems addObject:entity];

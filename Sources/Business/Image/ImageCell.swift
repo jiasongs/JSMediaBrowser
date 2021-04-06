@@ -7,7 +7,7 @@
 
 import UIKit
 
-@objc(MediaBrowserImageCell)
+@objc(JSMediaBrowserImageCell)
 open class ImageCell: BasisCell {
     
     @objc open var zoomImageView: ZoomImageView?

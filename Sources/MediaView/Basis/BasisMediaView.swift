@@ -8,7 +8,7 @@
 import UIKit
 import JSCoreKit
 
-@objc(MediaBrowserBasisMediaView)
+@objc(JSMediaBrowserBasisMediaView)
 open class BasisMediaView: UIView {
     
     @objc public var viewportRect: CGRect = .zero

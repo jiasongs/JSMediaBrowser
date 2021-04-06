@@ -7,7 +7,7 @@
 
 import UIKit
 
-@objc(MediaBrowserVideoPlayerViewDelegate)
+@objc(JSMediaBrowserVideoPlayerViewDelegate)
 public protocol VideoPlayerViewDelegate: NSObjectProtocol {
     
     @objc optional func videoPlayerViewDidReadyForDisplay(_ videoPlayerView: VideoPlayerView)

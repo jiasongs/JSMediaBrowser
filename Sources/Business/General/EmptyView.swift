@@ -7,7 +7,8 @@
 
 import UIKit
 
-@objc open class EmptyView: UIView {
+@objc(JSMediaBrowserEmptyView)
+open class EmptyView: UIView {
     
     @objc lazy open var imageView: UIImageView = {
         let imageView = UIImageView()

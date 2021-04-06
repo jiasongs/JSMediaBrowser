@@ -7,7 +7,7 @@
 
 import UIKit
 
-@objc(MediaBrowserPagingLayout)
+@objc(JSMediaBrowserPagingLayout)
 open class PagingLayout: UICollectionViewFlowLayout {
     
     @objc public var pageSpacing: CGFloat = 10

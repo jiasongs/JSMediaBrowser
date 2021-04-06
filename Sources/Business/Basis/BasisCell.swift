@@ -7,7 +7,7 @@
 
 import UIKit
 
-@objc(MediaBrowserBasisCell)
+@objc(JSMediaBrowserBasisCell)
 open class BasisCell: UICollectionViewCell, CellProtocol {
     
     @objc public var emptyView: EmptyView?

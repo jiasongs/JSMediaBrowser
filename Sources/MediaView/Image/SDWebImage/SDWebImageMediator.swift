@@ -8,7 +8,7 @@
 import UIKit
 import SDWebImage
 
-@objc(MediaBrowserViewSDWebImageMediator)
+@objc(JSMediaBrowserViewSDWebImageMediator)
 open class SDWebImageMediator: NSObject, WebImageMediatorProtocol {
     
     public func setImage(forView view: UIView?, url: URL?, thumbImage: UIImage?, setImageBlock: WebImageMediatorSetImageBlock?, progress: WebImageMediatorDownloadProgress?, completed: WebImageMediatorCompleted?) {

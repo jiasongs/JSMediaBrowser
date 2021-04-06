@@ -11,7 +11,7 @@ public typealias SetDataBlock = (_ loader: LoaderProtocol, _ object: Any?, _ dat
 public typealias DownloadProgressBlock = (_ loader: LoaderProtocol, _ progress: Progress?) -> Void
 public typealias CompletedBlock = (_ loader: LoaderProtocol, _ object: Any?, _ data: Data?, _ error: NSError?, _ cancelled: Bool, _ finished: Bool) -> Void
 
-@objc(MediaBrowserImageSourceProtocol)
+@objc(JSMediaBrowserImageSourceProtocol)
 public protocol ImageSourceProtocol: SourceProtocol {
     
     @objc var image: UIImage? { get set }
@@ -20,7 +20,7 @@ public protocol ImageSourceProtocol: SourceProtocol {
    
 }
 
-@objc(MediaBrowserImageLoaderProtocol)
+@objc(JSMediaBrowserImageLoaderProtocol)
 public protocol ImageLoaderProtocol: LoaderProtocol {
     
     @objc var webImageMediator: WebImageMediatorProtocol? { get set }

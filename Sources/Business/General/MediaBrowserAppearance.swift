@@ -7,7 +7,8 @@
 
 import UIKit
 
-@objc open class MediaBrowserAppearance: NSObject {
+@objc(JSMediaBrowserAppearance)
+open class MediaBrowserAppearance: NSObject {
     
     @objc public static let appearance = MediaBrowserAppearance()
     

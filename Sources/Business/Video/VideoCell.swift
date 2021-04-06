@@ -8,7 +8,7 @@
 import UIKit
 import JSCoreKit
 
-@objc(MediaBrowserVideoCell)
+@objc(JSMediaBrowserVideoCell)
 open class VideoCell: BasisCell {
     
     @objc open var videoPlayerView: VideoPlayerView?

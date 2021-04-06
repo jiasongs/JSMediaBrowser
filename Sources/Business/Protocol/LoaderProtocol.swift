@@ -7,7 +7,7 @@
 
 import UIKit
 
-@objc(MediaBrowserLoaderProtocol)
+@objc(JSMediaBrowserLoaderProtocol)
 public protocol LoaderProtocol: NSObjectProtocol {
     
     @objc var sourceItem: SourceProtocol? { get set }
