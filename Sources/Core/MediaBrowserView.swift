@@ -215,7 +215,6 @@ extension MediaBrowserView: UICollectionViewDataSource {
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        /// TODO：超大图浏览时, 会走这个方法, 导致有抖动的情况发生, 需要解决
         return self.dataSource?.mediaBrowserView(self, cellForItemAt: indexPath.item) ?? UICollectionViewCell()
     }
     
