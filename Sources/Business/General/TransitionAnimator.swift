@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import JSCoreKit
 
 @objc(JSMediaBrowserViewControllerTransitionAnimatorDelegate)
 public protocol TransitionAnimatorDelegate: NSObjectProtocol {

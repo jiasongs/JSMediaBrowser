@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import JSCoreKit
 
 @objc(JSMediaBrowserBasisMediaView)
 open class BasisMediaView: UIView {

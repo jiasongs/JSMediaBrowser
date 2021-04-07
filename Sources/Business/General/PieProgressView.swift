@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import JSCoreKit
 
 @objc(JSMediaBrowserPieProgressViewShape)
 public enum Shape: Int {
@@ -141,7 +140,7 @@ fileprivate class PieProgressLayer: CALayer {
             return
         }
         
-        let center: CGPoint = JSCGPointGetCenterWithRect(self.bounds)
+        let center: CGPoint = CGPoint(x: self.bounds.midX, y: self.bounds.midY)
         var radius: CGFloat = min(center.x, center.y) - self.borderWidth - self.borderInset
         let startAngle: CGFloat = CGFloat(-Float.pi / 2)
         let endAngle: CGFloat = CGFloat(Float.pi * 2 * self.progress) + startAngle
