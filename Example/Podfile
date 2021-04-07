@@ -8,9 +8,9 @@ def pod_Common
   # pod 'JSMediaBrowser/Business', :path => '..'
   # pod 'JSMediaBrowser/MediaImage', :path => '..'
   # pod 'JSMediaBrowser/MediaVideo', :path => '..'
-  pod 'QMUIKit', '~> 4.2.1'
+  pod 'QMUIKit', '~> 4.2.3'
   pod 'SnapKit', '~> 5.0.0'
-  pod 'SDWebImage', '~> 5.10.2'
+  pod 'SDWebImage', '~> 5.11.0'
   pod 'Kingfisher', '~> 5.15.8'
 end
 
