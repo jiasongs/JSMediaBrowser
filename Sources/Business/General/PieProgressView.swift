@@ -56,7 +56,7 @@ open class PieProgressView: UIControl {
     
     private var needSetProgress: Bool = true
     
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         self.didInitialize()
     }

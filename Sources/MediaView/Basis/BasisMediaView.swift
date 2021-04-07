@@ -29,7 +29,7 @@ open class BasisMediaView: UIView {
         self.didInitialize(frame: CGRect.zero)
     }
     
-    func didInitialize(frame: CGRect) {
+    open func didInitialize(frame: CGRect) {
     }
     
 }

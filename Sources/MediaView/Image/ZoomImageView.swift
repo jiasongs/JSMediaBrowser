@@ -89,8 +89,8 @@ open class ZoomImageView: BasisMediaView {
     private var isLivePhotoPlaying: Bool = false
     
     @objc public var enabledZoom: Bool = true
-
-    override func didInitialize(frame: CGRect) -> Void {
+    
+    open override func didInitialize(frame: CGRect) -> Void {
         super.didInitialize(frame: frame)
         self.contentMode = .center
         

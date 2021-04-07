@@ -18,7 +18,7 @@ open class BasisCell: UICollectionViewCell, CellProtocol {
     @objc public var didInitializeBlock: ((UICollectionViewCell) -> Void)?
     fileprivate var initializeExecuteOnce: Int = 0
     
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         self.didInitialize()
     }

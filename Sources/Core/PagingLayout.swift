@@ -18,7 +18,7 @@ open class PagingLayout: UICollectionViewFlowLayout {
     
     fileprivate var finalItemSize: CGSize = CGSize.zero
     
-    override init() {
+    public override init() {
         super.init()
         self.didInitialize()
     }
@@ -28,7 +28,7 @@ open class PagingLayout: UICollectionViewFlowLayout {
         self.didInitialize()
     }
     
-    func didInitialize() -> Void {
+    open func didInitialize() -> Void {
         self.minimumLineSpacing = 0
         self.minimumInteritemSpacing = 0
         self.scrollDirection = .horizontal

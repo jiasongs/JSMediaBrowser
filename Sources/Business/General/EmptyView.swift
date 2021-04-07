@@ -70,7 +70,7 @@ open class EmptyView: UIView {
     
     @objc open var onPressAction: ((UIButton) -> Void)?
     
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         self.didInitialize()
     }

@@ -52,7 +52,7 @@ open class MediaBrowserView: UIView {
     private var isNeededScrollToItem: Bool = true
     private var gestureBeganLocation: CGPoint = CGPoint.zero
     
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         self.didInitialize(frame: frame)
     }
@@ -62,7 +62,7 @@ open class MediaBrowserView: UIView {
         self.didInitialize(frame: CGRect.zero)
     }
     
-    func didInitialize(frame: CGRect) -> Void {
+    open func didInitialize(frame: CGRect) -> Void {
         self.dimmingView = UIView()
         self.dimmingView?.backgroundColor = .black
         

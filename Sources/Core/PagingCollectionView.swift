@@ -10,7 +10,7 @@ import UIKit
 @objc(JSMediaBrowserPagingCollectionView)
 open class PagingCollectionView: UICollectionView {
     
-    override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
+    public override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: layout)
         self.didInitialize()
     }
@@ -20,7 +20,7 @@ open class PagingCollectionView: UICollectionView {
         self.didInitialize()
     }
     
-    func didInitialize() -> Void {
+    open func didInitialize() -> Void {
         self.backgroundColor = UIColor(white: 0, alpha: 0)
         self.showsHorizontalScrollIndicator = false
         self.showsVerticalScrollIndicator = false

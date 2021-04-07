@@ -36,7 +36,7 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     private var animationGroupKey: String = "GroupKey"
     private var imageView: UIImageView?
     
-    override init() {
+    public override init() {
         super.init()
         imageView = UIImageView()
         imageView?.contentMode = .scaleAspectFill

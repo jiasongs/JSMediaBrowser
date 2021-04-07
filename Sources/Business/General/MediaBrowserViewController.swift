@@ -101,7 +101,7 @@ open class MediaBrowserViewController: UIViewController {
     private var imageCellIdentifier = "ImageCellIdentifier"
     private var videoCellIdentifier = "VideoCellIdentifier"
     
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+    public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         self.didInitialize()
     }
@@ -111,7 +111,7 @@ open class MediaBrowserViewController: UIViewController {
         self.didInitialize()
     }
     
-    func didInitialize() -> Void {
+    open func didInitialize() -> Void {
         self.automaticallyAdjustsScrollViewInsets = false
         
         self.modalPresentationStyle = .custom
