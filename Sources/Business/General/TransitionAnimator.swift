@@ -25,7 +25,7 @@ public protocol TransitionAnimatorDelegate: NSObjectProtocol {
 class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
     @objc open weak var delegate: TransitionAnimatorDelegate?
-    @objc open var duration: TimeInterval = 0.28
+    @objc open var duration: TimeInterval = 0.25
     @objc open var presentingStyle: TransitioningStyle = .zoom {
         didSet {
             dismissingStyle = presentingStyle

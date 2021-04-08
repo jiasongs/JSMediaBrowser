@@ -39,23 +39,14 @@ open class ImageCell: BasisCell {
         if let loaderEntity = loaderEntity as? ImageLoaderProtocol {
             loaderEntity.cancelRequest(forView: self.contentView)
             loaderEntity.request(forView: self.contentView) { [weak self](loader: LoaderProtocol, object: Any?, data: Data?) in
-                if let image = object as? UIImage {
-                    self?.zoomImageView?.image = image
-                }
+                let image: UIImage? = object as? UIImage
+                self?.zoomImageView?.image = image
             } downloadProgress: { [weak self](loader: LoaderProtocol, progress: Progress?) in
                 self?.didReceive(with: progress)
             } completed: { [weak self](loader: LoaderProtocol, object: Any?, data: Data?, error: NSError?, cancelled: Bool, finished: Bool) in
                 self?.didCompleted(with: error, cancelled: cancelled, finished: finished)
-                if let image = object as? UIImage {
-                    self?.zoomImageView?.image = image
-                }
-            }
-        }
-        if let sourceItem = loaderEntity.sourceItem as? ImageSourceProtocol {
-            if sourceItem.image != nil {
-                self.zoomImageView?.image = sourceItem.image
-            } else if sourceItem.thumbImage != nil {
-                self.zoomImageView?.image = sourceItem.thumbImage
+                let image: UIImage? = object as? UIImage
+                self?.zoomImageView?.image = image
             }
         }
     }
