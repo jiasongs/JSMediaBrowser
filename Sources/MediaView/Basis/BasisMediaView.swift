@@ -13,11 +13,6 @@ open class BasisMediaView: UIView {
     @objc public var viewportRect: CGRect = .zero
     /// 当viewportRect为zero时才会生效, 若自定义viewportRect, 请自行实现
     @objc public var viewportRectMaxWidth: CGFloat = 700
-    @objc public var viewportSafeAreaInsets: UIEdgeInsets = .zero {
-        didSet {
-            self.setNeedsLayout()
-        }
-    }
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -55,7 +50,10 @@ extension BasisMediaView {
             self.setNeedsLayout()
             self.layoutIfNeeded()
         }
-        let safeAreaInsets: UIEdgeInsets = self.viewportSafeAreaInsets
+        var safeAreaInsets: UIEdgeInsets = UIEdgeInsets.zero
+        if #available(iOS 11.0, *) {
+            safeAreaInsets = self.safeAreaInsets
+        }
         if rect.isEmpty && !self.bounds.isEmpty {
             let size: CGSize = CGSize(width: min(containerView.bounds.width, self.viewportRectMaxWidth), height: containerView.bounds.height)
             let offsetX = (containerView.bounds.width - size.width) / 2

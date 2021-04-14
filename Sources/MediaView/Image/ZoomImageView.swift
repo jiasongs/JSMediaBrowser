@@ -117,14 +117,10 @@ extension ZoomImageView {
         if self.bounds.isEmpty {
             return
         }
-        self.scrollView?.js_frameApplyTransform = self.bounds
-    }
-    
-    open override var frame: CGRect {
-        didSet {
-            if !oldValue.size.equalTo(self.frame.size) {
-                self.revertZooming()
-            }
+        let oldValue = self.scrollView?.bounds.size
+        if oldValue != self.bounds.size {
+            self.scrollView?.js_frameApplyTransform = self.bounds
+            self.revertZooming()
         }
     }
     

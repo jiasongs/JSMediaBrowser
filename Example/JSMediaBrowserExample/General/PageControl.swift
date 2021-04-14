@@ -24,17 +24,14 @@ import QMUIKit
         self.snp.makeConstraints { (make) in
             make.width.equalTo(viewController.view.snp.width).multipliedBy(0.5)
             make.centerX.equalTo(viewController.view.snp.centerX)
-            make.bottom.equalTo(viewController.view.snp.bottom)
+            if #available(iOS 11.0, *) {
+                make.bottom.equalTo(viewController.view.safeAreaLayoutGuide.snp.bottom)
+            } else {
+                make.bottom.equalTo(viewController.bottomLayoutGuide.snp.bottom).offset(-10)
+            }
             make.height.equalTo(30)
         }
         self.addTarget(self, action: #selector(self.handlePageControlEvent), for: .valueChanged)
-    }
-    
-    func didLayoutSubviews(in viewController: MediaBrowserViewController) {
-        let bottom = JSCoreHelper.isNotchedScreen ? viewController.view.qmui_safeAreaInsets.bottom : 20
-        self.snp.updateConstraints { (make) in
-            make.bottom.equalTo(viewController.view.snp.bottom).offset(-bottom)
-        }
     }
     
     func sourceItemsDidChange(in viewController: MediaBrowserViewController) {
