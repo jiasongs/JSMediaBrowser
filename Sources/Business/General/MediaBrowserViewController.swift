@@ -113,6 +113,7 @@ open class MediaBrowserViewController: UIViewController {
     
     open func didInitialize() -> Void {
         self.automaticallyAdjustsScrollViewInsets = false
+        self.extendedLayoutIncludesOpaqueBars = true
         
         self.modalPresentationStyle = .custom
         self.modalPresentationCapturesStatusBarAppearance = true
@@ -200,6 +201,14 @@ extension MediaBrowserViewController {
     
     open override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
         return .fade
+    }
+    
+    open override var shouldAutorotate: Bool {
+        return true
+    }
+    
+    open override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .allButUpsideDown
     }
     
 }

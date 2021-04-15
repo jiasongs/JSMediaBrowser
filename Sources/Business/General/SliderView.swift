@@ -45,15 +45,15 @@ open class SliderView: UISlider {
     }
     
     func updateThumbImage() -> Void {
-        if (!self.thumbSize.equalTo(CGSize.zero)) {
+        if !self.thumbSize.equalTo(CGSize.zero) {
             let thumbColor: UIColor = self.thumbColor != nil ? self.thumbColor! : self.tintColor
-            UIGraphicsBeginImageContextWithOptions(self.thumbSize, false, 0);
+            UIGraphicsBeginImageContextWithOptions(self.thumbSize, false, 0)
             if let context: CGContext = UIGraphicsGetCurrentContext() {
-                let path: UIBezierPath = UIBezierPath(ovalIn: CGRect(origin: CGPoint.zero, size: self.thumbSize));
+                let path: UIBezierPath = UIBezierPath(ovalIn: CGRect(origin: CGPoint.zero, size: self.thumbSize))
                 context.setFillColor(thumbColor.cgColor)
                 path.fill()
-                let thumbImage: UIImage? = UIGraphicsGetImageFromCurrentImageContext();
-                UIGraphicsEndImageContext();
+                let thumbImage: UIImage? = UIGraphicsGetImageFromCurrentImageContext()
+                UIGraphicsEndImageContext()
                 self.setThumbImage(thumbImage, for: .normal)
                 self.setThumbImage(thumbImage, for: .highlighted)
             }
@@ -77,10 +77,10 @@ extension SliderView {
     open override func didAddSubview(_ subview: UIView) {
         super.didAddSubview(subview)
         if let thumbView: UIView = self.thumbViewIfExist, thumbView == subview {
-            thumbView.layer.shadowColor = self.thumbShadowColor?.cgColor;
-            thumbView.layer.shadowOpacity = self.thumbShadowColor != nil ? 1 : 0;
-            thumbView.layer.shadowOffset = self.thumbShadowOffset;
-            thumbView.layer.shadowRadius = self.thumbShadowRadius;
+            thumbView.layer.shadowColor = self.thumbShadowColor?.cgColor
+            thumbView.layer.shadowOpacity = self.thumbShadowColor != nil ? 1 : 0
+            thumbView.layer.shadowOffset = self.thumbShadowOffset
+            thumbView.layer.shadowRadius = self.thumbShadowRadius
         }
     }
     

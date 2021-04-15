@@ -15,15 +15,15 @@ open class ImageLoaderEntity: BasisLoaderEntity, ImageLoaderProtocol {
     
     @objc public func request(forView view: UIView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) {
         if let sourceItem = self.sourceItem as? ImageSourceProtocol {
-            /// 如果存在image, 且imageUrl和originalImageUrl均为nil时, 则代表是本地图片, 无须网络请求
-            if let image = sourceItem.image, sourceItem.imageUrl == nil && sourceItem.originalImageUrl == nil {
+            /// 如果存在image, 且imageUrl为nil时, 则代表是本地图片, 无须网络请求
+            if let image = sourceItem.image, sourceItem.imageUrl == nil {
                 if let completed = completed {
                     JSAsyncExecuteOnMainQueue {
                         completed(self, image, nil, nil, false, true)
                     }
                 }
             } else {
-                let url: URL? = sourceItem.imageUrl != nil ? sourceItem.imageUrl : sourceItem.originalImageUrl
+                let url: URL? = sourceItem.imageUrl
                 self.webImageMediator?.setImage(forView: view, url: url, thumbImage: sourceItem.thumbImage, setImageBlock: { (image: UIImage?, imageData: Data?) in
                     if let setDataBlock = setDataBlock {
                         setDataBlock(self, image, imageData)

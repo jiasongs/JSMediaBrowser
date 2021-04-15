@@ -12,6 +12,5 @@ open class ImageEntity: BasisEntity, ImageSourceProtocol {
     
     @objc open var image: UIImage?
     @objc open var imageUrl: URL?
-    @objc open var originalImageUrl: URL?
 
 }

@@ -16,7 +16,6 @@ public protocol ImageSourceProtocol: SourceProtocol {
     
     @objc var image: UIImage? { get set }
     @objc var imageUrl: URL? { get set }
-    @objc var originalImageUrl: URL? { get set }
    
 }
 
