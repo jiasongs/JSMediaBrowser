@@ -17,6 +17,7 @@ open class BasisEntity: NSObject, SourceProtocol {
     
     required public init(sourceView: UIView?, sourceRect: CGRect, thumbImage: UIImage?) {
         self.sourceView = sourceView
+        self.sourceRect = sourceRect
         self.thumbImage = thumbImage
     }
     
