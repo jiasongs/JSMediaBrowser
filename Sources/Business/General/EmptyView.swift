@@ -90,7 +90,7 @@ open class EmptyView: UIView {
     open override func layoutSubviews() {
         super.layoutSubviews()
         var imageSize: CGSize = self.imageViewSize
-        if imageSize.equalTo(CGSize.zero) {
+        if imageSize == CGSize.zero {
             let width = min(self.frame.width * 0.4, 120)
             imageSize = CGSize(width: width, height: width)
         }
@@ -117,7 +117,7 @@ open class EmptyView: UIView {
         subtitleLabel.frame = CGRect(origin: CGPoint(x: (self.frame.width - subtitleSize.width) / 2, y: titleLabel.frame.maxY + margin), size: subtitleSize)
         actionButton.frame = CGRect(origin: CGPoint(x: (self.frame.width - buttonSize.width) / 2, y: subtitleLabel.frame.maxY + buttonMarginTop), size: buttonSize)
         
-        imageView.isHidden = imageSize.equalTo(CGSize.zero)
+        imageView.isHidden = imageSize == CGSize.zero
         titleLabel.isHidden = titleSize.height == 0
         subtitleLabel.isHidden = subtitleSize.height == 0
         actionButton.isHidden = buttonSize.height == 0

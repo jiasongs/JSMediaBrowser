@@ -23,10 +23,9 @@ open class MediaBrowserView: UIView {
     
     @objc open var dimmingView: UIView? {
         didSet {
+            oldValue?.removeFromSuperview()
             if let dimmingView = self.dimmingView {
-                dimmingView.removeFromSuperview()
                 self.insertSubview(dimmingView, at: 0)
-                self.setNeedsLayout()
             }
         }
     }
@@ -105,7 +104,7 @@ extension MediaBrowserView {
         self.dimmingView?.frame = self.bounds
         let bounds: CGRect = self.bounds
         if let collectionViewSize = self.collectionView?.bounds.size {
-            if !collectionViewSize.equalTo(bounds.size) {
+            if collectionViewSize != bounds.size {
                 self.isChangingCollectionViewFrame = true
                 /// 必须先 invalidateLayout，再更新 collectionView.frame，否则横竖屏旋转前后的图片不一致（因为 scrollViewDidScroll: 时 contentSize、contentOffset 那些是错的）
                 self.collectionViewLayout?.invalidateLayout()

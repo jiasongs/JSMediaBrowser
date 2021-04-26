@@ -45,7 +45,7 @@ open class SliderView: UISlider {
     }
     
     func updateThumbImage() -> Void {
-        if !self.thumbSize.equalTo(CGSize.zero) {
+        if self.thumbSize != CGSize.zero {
             let thumbColor: UIColor = self.thumbColor != nil ? self.thumbColor! : self.tintColor
             UIGraphicsBeginImageContextWithOptions(self.thumbSize, false, 0)
             if let context: CGContext = UIGraphicsGetCurrentContext() {

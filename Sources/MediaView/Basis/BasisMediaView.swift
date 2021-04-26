@@ -46,7 +46,7 @@ extension BasisMediaView {
     @objc open var finalViewportRect: CGRect {
         var rect: CGRect = self.viewportRect
         guard let containerView = self.containerView else { return rect }
-        if !containerView.bounds.size.equalTo(self.bounds.size) {
+        if containerView.bounds.size != self.bounds.size {
             self.setNeedsLayout()
             self.layoutIfNeeded()
         }
