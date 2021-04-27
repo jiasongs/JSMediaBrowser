@@ -10,14 +10,13 @@ import UIKit
 @objc(JSMediaBrowserViewControllerTransitionAnimatorDelegate)
 public protocol TransitionAnimatorDelegate: NSObjectProtocol {
     
-    @objc var sourceRect: CGRect { get }
-    @objc weak var sourceView: UIView? { get }
-    @objc var sourceCornerRadius: CGFloat { get }
-    @objc var thumbImage: UIImage? { get }
-    @objc var animatorViews: Array<UIView>? { get }
-    @objc var contentViewFrame: CGRect { get }
-    @objc weak var dimmingView: UIView? { get }
-    @objc weak var zoomView: UIView? { get }
+    @objc var transitionSourceRect: CGRect { get }
+    @objc weak var transitionSourceView: UIView? { get }
+    @objc var transitionCornerRadius: CGFloat { get }
+    @objc var transitionThumbImage: UIImage? { get }
+    @objc var transitionAnimatorViews: Array<UIView>? { get }
+    @objc weak var transitionTargetView: UIView? { get }
+    @objc var transitionTargetFrame: CGRect { get }
     
 }
 
@@ -51,8 +50,8 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         let shouldAppearanceTransitionManually: Bool = presentingViewController?.modalPresentationStyle != UIModalPresentationStyle.fullScreen// 触发背后界面的生命周期，从而配合屏幕旋转那边做一些强制旋转的操作
         
         var style: TransitioningStyle = isPresenting ? self.presentingStyle : self.dismissingStyle
-        let sourceView = self.delegate?.sourceView
-        var sourceRect = self.delegate?.sourceRect ?? CGRect.zero
+        let sourceView = self.delegate?.transitionSourceView
+        var sourceRect = self.delegate?.transitionSourceRect ?? CGRect.zero
         if style == .zoom {
             let needViewController = isPresenting ? toViewController : fromViewController
             if !sourceRect.isEmpty {
@@ -92,7 +91,7 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         toView?.layoutIfNeeded()
         toView?.frame = containerView.bounds
         
-        let contentViewFrame = self.delegate?.contentViewFrame ?? CGRect.zero
+        let contentViewFrame = self.delegate?.transitionTargetFrame ?? CGRect.zero
         style = style == .zoom && (sourceRect.isEmpty || contentViewFrame.isEmpty) ? .fade : style
         
         self.handleAnimationEntering(style: style, isPresenting: isPresenting, fromViewController: fromViewController, toViewController: toViewController, sourceView: sourceView, sourceRect: sourceRect)
@@ -116,7 +115,7 @@ extension TransitionAnimator {
     
     func handleAnimationEntering(style: TransitioningStyle, isPresenting: Bool, fromViewController: UIViewController?, toViewController: UIViewController?, sourceView: UIView?, sourceRect: CGRect) -> Void {
         let needViewController = isPresenting ? toViewController : fromViewController
-        if let toolViews = self.delegate?.animatorViews {
+        if let toolViews = self.delegate?.transitionAnimatorViews {
             for view in toolViews {
                 if isPresenting {
                     view.alpha = 0.0
@@ -126,17 +125,12 @@ extension TransitionAnimator {
         if style == .fade {
             needViewController?.view.alpha = isPresenting ? 0 : 1
         } else if style == .zoom {
-            let dimmingView = self.delegate?.dimmingView
-            let zoomView = self.delegate?.zoomView
-            let zoomContentViewFrame = self.delegate?.contentViewFrame ?? CGRect.zero
+            let zoomView = self.delegate?.transitionTargetView
+            let zoomContentViewFrame = self.delegate?.transitionTargetFrame ?? CGRect.zero
             let zoomContentViewFrameInView = needViewController?.view.convert(zoomContentViewFrame, from: zoomView) ?? CGRect.zero
             let zoomContentViewBoundsInView = CGRect(origin: CGPoint.zero, size: zoomContentViewFrameInView.size)
-            /// 遮罩
-            if isPresenting {
-                dimmingView?.alpha = 0.0
-            }
             /// 判断是否截取image
-            if let thumbImage = self.delegate?.thumbImage {
+            if let thumbImage = self.delegate?.transitionThumbImage {
                 imageView?.image = thumbImage
             }
             /// 隐藏相关视图
@@ -160,7 +154,7 @@ extension TransitionAnimator {
             boundsAnimation.fromValue = NSValue(cgRect: isPresenting ? sourceBounds : zoomContentViewBoundsInView)
             boundsAnimation.toValue = NSValue(cgRect: isPresenting ? zoomContentViewBoundsInView : sourceBounds)
             /// 计算cornerRadius
-            let cornerRadius: CGFloat = self.delegate?.sourceCornerRadius ?? 0
+            let cornerRadius: CGFloat = self.delegate?.transitionCornerRadius ?? 0
             let cornerRadiusAnimation: CABasicAnimation = CABasicAnimation(keyPath: "cornerRadius")
             cornerRadiusAnimation.fromValue = isPresenting ? cornerRadius : 0
             cornerRadiusAnimation.toValue = isPresenting ? 0 : cornerRadius
@@ -177,30 +171,27 @@ extension TransitionAnimator {
     
     func handleAnimationProcessing(style: TransitioningStyle, isPresenting: Bool, fromViewController: UIViewController?, toViewController: UIViewController?, sourceView: UIView?) -> Void {
         let needViewController = isPresenting ? toViewController : fromViewController
-        if let toolViews = self.delegate?.animatorViews {
+        if let toolViews = self.delegate?.transitionAnimatorViews {
             for view in toolViews {
                 view.alpha = isPresenting ? 1 : 0
             }
         }
         if style == .fade {
             needViewController?.view.alpha = isPresenting ? 1 : 0
-        } else if style == .zoom {
-            if let dimmingView = self.delegate?.dimmingView {
-                dimmingView.alpha = isPresenting ? 1.0 : 0.0
-            }
         }
     }
     
     func handleAnimationCompletion(style: TransitioningStyle, isPresenting: Bool, fromViewController: UIViewController?, toViewController: UIViewController?, sourceView: UIView?) -> Void {
+        /// 释放资源
+        imageView?.removeFromSuperview()
+        imageView?.layer.removeAnimation(forKey: animationGroupKey)
+        imageView?.image = nil
+        /// 还原设置
         let needViewController = isPresenting ? toViewController : fromViewController
         if style == .fade {
             needViewController?.view.alpha = 1
         } else if style == .zoom {
-            delegate?.zoomView?.isHidden = false
-            
-            imageView?.removeFromSuperview()
-            imageView?.layer.removeAnimation(forKey: animationGroupKey)
-            imageView?.image = nil // 释放资源
+            delegate?.transitionTargetView?.isHidden = false
         }
         if !isPresenting {
             sourceView?.isHidden = false

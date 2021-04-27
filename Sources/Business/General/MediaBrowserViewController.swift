@@ -270,14 +270,10 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         if let block = self.cellForItemAtPageBlock {
             cell = block(self, index)
         }
-        let loaderItem: LoaderProtocol? = loaderItems?[index]
-        if let loaderItem = loaderItem {
+        if let loaderItem: LoaderProtocol = loaderItems?[index] {
             #if BUSINESS_IMAGE
             if cell == nil, let _ = loaderItem as? ImageLoaderProtocol {
                 cell = self.dequeueReusableCell(withReuseIdentifier: imageCellIdentifier, at: index)
-                if let imageCell = cell as? ImageCell {
-                    imageCell.zoomImageView?.delegate = self
-                }
             }
             #endif
             #if BUSINESS_VIDEO
@@ -319,6 +315,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     }
     
     private func configureImageCell(_ cell: ImageCell, at index: Int) -> Void {
+        cell.zoomImageView?.delegate = self
         if let loaderItem: ImageLoaderProtocol = loaderItems?[index] as? ImageLoaderProtocol {
             loaderItem.cancelRequest(forView: cell)
             loaderItem.request(forView: cell) { [weak cell](loader: LoaderProtocol, object: Any?, data: Data?) in
@@ -482,23 +479,21 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
         return self.transitioningAnimator
     }
     
-    /// TODO：TransitionAnimatorDelegate, 需要优化代理, 目前有些复杂, 而且取名取的有歧义
-    
-    public var sourceRect: CGRect {
+    public var transitionSourceRect: CGRect {
         if let sourceItem = self.sourceItems?[browserView?.currentPage ?? 0] {
             return sourceItem.sourceRect
         }
         return CGRect.zero
     }
     
-    public var sourceView: UIView? {
+    public var transitionSourceView: UIView? {
         if let sourceItem = self.sourceItems?[browserView?.currentPage ?? 0] {
             return sourceItem.sourceView
         }
         return nil
     }
     
-    public var sourceCornerRadius: CGFloat {
+    public var transitionCornerRadius: CGFloat {
         if let sourceItem = self.sourceItems?[browserView?.currentPage ?? 0] {
             if sourceItem.sourceCornerRadius > 0 {
                 return sourceItem.sourceCornerRadius
@@ -509,7 +504,7 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
         return 0
     }
     
-    public var thumbImage: UIImage? {
+    public var transitionThumbImage: UIImage? {
         let currentPage = self.browserView?.currentPage ?? 0
         #if BUSINESS_IMAGE
         if let sourceItem = self.sourceItems?[currentPage] as? ImageSourceProtocol {
@@ -524,7 +519,22 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
         return nil
     }
     
-    public var contentViewFrame: CGRect {
+    public var transitionAnimatorViews: Array<UIView>? {
+        var animatorViews: [UIView] = self.toolViews
+        if let dimmingView = self.browserView?.dimmingView {
+            animatorViews.append(dimmingView)
+        }
+        return animatorViews
+    }
+    
+    public var transitionTargetView: UIView? {
+        if let cell = self.browserView?.currentPageCell {
+            return cell
+        }
+        return nil
+    }
+    
+    public var transitionTargetFrame: CGRect {
         #if BUSINESS_IMAGE
         if let imageCell = self.browserView?.currentPageCell as? ImageCell {
             return imageCell.zoomImageView?.contentViewFrame ?? CGRect.zero
@@ -536,21 +546,6 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
         }
         #endif
         return CGRect.zero
-    }
-    
-    public var animatorViews: Array<UIView>? {
-        return self.toolViews
-    }
-    
-    public var dimmingView: UIView? {
-        return self.browserView?.dimmingView
-    }
-    
-    public var zoomView: UIView? {
-        if let cell = self.browserView?.currentPageCell {
-            return cell
-        }
-        return nil
     }
     
 }
