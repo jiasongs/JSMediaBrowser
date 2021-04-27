@@ -182,10 +182,6 @@ extension TransitionAnimator {
     }
     
     func handleAnimationCompletion(style: TransitioningStyle, isPresenting: Bool, fromViewController: UIViewController?, toViewController: UIViewController?, sourceView: UIView?) -> Void {
-        /// 释放资源
-        imageView?.removeFromSuperview()
-        imageView?.layer.removeAnimation(forKey: animationGroupKey)
-        imageView?.image = nil
         /// 还原设置
         let needViewController = isPresenting ? toViewController : fromViewController
         if style == .fade {
@@ -198,6 +194,10 @@ extension TransitionAnimator {
             /// 需要标记下刷新布局, 防止外部的sourceView因isHidden而产生奇怪的问题
             toViewController?.view.setNeedsLayout()
         }
+        /// 释放资源
+        imageView?.removeFromSuperview()
+        imageView?.layer.removeAnimation(forKey: animationGroupKey)
+        imageView?.image = nil
     }
     
 }
