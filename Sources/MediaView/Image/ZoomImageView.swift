@@ -17,7 +17,7 @@ open class ZoomImageView: BasisMediaView {
     @objc private var scrollView: UIScrollView?
     
     private var isImageViewInitialized: Bool = false
-    @objc private lazy var imageView: UIImageView = {
+    @objc lazy var imageView: UIImageView = {
         isImageViewInitialized = true
         var imageView: UIImageView
         if let delegate = self.delegate, delegate.responds(to: #selector(ZoomImageViewDelegate.zoomImageViewLazyBuildImageView(_:))) {
@@ -31,7 +31,7 @@ open class ZoomImageView: BasisMediaView {
     }()
     
     private var isLivePhotoViewInitialized: Bool = false
-    @objc private lazy var livePhotoView: PHLivePhotoView = {
+    @objc lazy var livePhotoView: PHLivePhotoView = {
         isLivePhotoViewInitialized = true
         var livePhotoView: PHLivePhotoView
         if let delegate = self.delegate, delegate.responds(to: #selector(ZoomImageViewDelegate.zoomImageViewLazyBuildLivePhotoView(_:))) {

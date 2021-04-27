@@ -13,7 +13,7 @@ open class ImageLoaderEntity: BasisLoaderEntity, ImageLoaderProtocol {
     
     @objc public var webImageMediator: WebImageMediatorProtocol?
     
-    @objc public func request(forView view: UIView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) {
+    @objc public func request(for imageView: UIImageView?, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) {
         if let sourceItem = self.sourceItem as? ImageSourceProtocol {
             /// 如果存在image, 且imageUrl为nil时, 则代表是本地图片, 无须网络请求
             if let image = sourceItem.image, sourceItem.imageUrl == nil {
@@ -24,7 +24,7 @@ open class ImageLoaderEntity: BasisLoaderEntity, ImageLoaderProtocol {
                 }
             } else {
                 let url: URL? = sourceItem.imageUrl
-                self.webImageMediator?.setImage(forView: view, url: url, thumbImage: sourceItem.thumbImage, setImageBlock: { (image: UIImage?, imageData: Data?) in
+                self.webImageMediator?.setImage(for: imageView, url: url, thumbImage: sourceItem.thumbImage, setImageBlock: { (image: UIImage?, imageData: Data?) in
                     if let setDataBlock = setDataBlock {
                         setDataBlock(self, image, imageData)
                     }
@@ -51,8 +51,8 @@ open class ImageLoaderEntity: BasisLoaderEntity, ImageLoaderProtocol {
         }
     }
     
-    public func cancelRequest(forView view: UIView) {
-        self.webImageMediator?.cancelImageRequest(forView: view)
+    public func cancelRequest(for imageView: UIImageView?) {
+        self.webImageMediator?.cancelImageRequest(for: imageView)
     }
     
 }

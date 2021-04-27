@@ -43,14 +43,18 @@ class ExampleViewController: UIViewController {
         self.floatLayoutView!.itemMargins = UIEdgeInsets(top: QMUIHelper.pixelOne, left: QMUIHelper.pixelOne, bottom: 0, right: 0);
         for item: String in self.dataSource {
             let button = QMUIButton()
-            //            button.layer.cornerRadius = 10;
-            //            button.layer.masksToBounds = true;
-            if item.contains("mp4") {
-                button.setImage(self.getVideoFirstImage(with: URL(string: item)!), for: .normal)
-            } else {
-                button.sd_setImage(with: URL(string: item)!, for: .normal, completed: nil)
+            let imageView = SDAnimatedImageView()
+            imageView.clipsToBounds = true
+            imageView.contentMode = .scaleAspectFill
+            button.addSubview(imageView)
+            imageView.snp.makeConstraints { (maker: ConstraintMaker) in
+                maker.edges.equalTo(button)
             }
-            button.imageView?.contentMode = .scaleAspectFill
+            if item.contains("mp4") {
+                imageView.image = self.getVideoFirstImage(with: URL(string: item)!)
+            } else {
+                imageView.sd_setImage(with: URL(string: item))
+            }
             button.addTarget(self, action: #selector(self.handleImageButtonEvent(sender:)), for: UIControl.Event.touchUpInside)
             self.floatLayoutView!.addSubview(button)
         }
@@ -80,7 +84,9 @@ class ExampleViewController: UIViewController {
         let browser: MediaBrowserViewController = MediaBrowserViewController()
         /// 设置全局Block
         browser.imageViewForZoomViewBlock = { (browserVC: MediaBrowserViewController, zoomImageView: ZoomImageView) -> UIImageView in
-            return SDAnimatedImageView() // ImageView()
+            let imageView = SDAnimatedImageView()
+            imageView.autoPlayAnimatedImage = false
+            return imageView
         }
         browser.webImageMediatorBlock = { (browserVC: MediaBrowserViewController, sourceItem: SourceProtocol) -> WebImageMediatorProtocol in
             return SDWebImageMediator()
@@ -112,11 +118,11 @@ class ExampleViewController: UIViewController {
         for (index, urlString) in self.dataSource.enumerated() {
             if let button: QMUIButton = self.floatLayoutView.subviews[index] as? QMUIButton {
                 if urlString.contains("mp4") {
-                    let videoEntity = VideoEntity(sourceView: button, sourceRect: CGRect.zero, thumbImage: button.image(for: .normal))
+                    let videoEntity = VideoEntity(sourceView: button, sourceRect: CGRect.zero, thumbImage: nil)
                     videoEntity.videoUrl = URL(string: urlString)
                     sourceItems.append(videoEntity)
                 } else {
-                    let imageEntity = ImageEntity(sourceView: button, sourceRect: CGRect.zero, thumbImage: button.image(for: .normal))
+                    let imageEntity = ImageEntity(sourceView: button, sourceRect: CGRect.zero, thumbImage: nil)
                     imageEntity.imageUrl = URL(string: urlString)
                     imageEntity.sourceCornerRadius = button.layer.cornerRadius
                     sourceItems.append(imageEntity)

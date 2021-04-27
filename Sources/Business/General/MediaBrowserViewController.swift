@@ -318,8 +318,8 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     private func configureImageCell(_ cell: ImageCell, at index: Int) -> Void {
         cell.zoomImageView?.delegate = self
         if let loaderItem: ImageLoaderProtocol = loaderItems?[index] as? ImageLoaderProtocol {
-            loaderItem.cancelRequest(forView: cell)
-            loaderItem.request(forView: cell) { [weak cell](loader: LoaderProtocol, object: Any?, data: Data?) in
+            loaderItem.cancelRequest(for: cell.zoomImageView?.imageView)
+            loaderItem.request(for: cell.zoomImageView?.imageView) { [weak cell](loader: LoaderProtocol, object: Any?, data: Data?) in
                 let image: UIImage? = object as? UIImage
                 cell?.zoomImageView?.image = image
             } downloadProgress: { [weak cell](loader: LoaderProtocol, progress: Progress?) in
@@ -351,6 +351,11 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
 extension MediaBrowserViewController: MediaBrowserViewDelegate {
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, willDisplay cell: UICollectionViewCell, forItemAt index: Int) {
+        #if BUSINESS_IMAGE
+        if let imageCell = cell as? ImageCell {
+            imageCell.zoomImageView?.startAnimating()
+        }
+        #endif
         #if BUSINESS_VIDEO
         if let videoCell = cell as? VideoCell {
             videoCell.videoPlayerView?.play()
@@ -359,6 +364,11 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
     }
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, didEndDisplaying cell: UICollectionViewCell, forItemAt index: Int) {
+        #if BUSINESS_IMAGE
+        if let imageCell = cell as? ImageCell {
+            imageCell.zoomImageView?.stopAnimating()
+        }
+        #endif
         #if BUSINESS_VIDEO
         if let videoCell = cell as? VideoCell {
             videoCell.videoPlayerView?.reset()

@@ -24,7 +24,7 @@ public protocol ImageLoaderProtocol: LoaderProtocol {
     
     @objc var webImageMediator: WebImageMediatorProtocol? { get set }
     
-    @objc func request(forView view: UIView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) -> Void
-    @objc func cancelRequest(forView view: UIView)
+    @objc func request(for imageView: UIImageView?, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) -> Void
+    @objc func cancelRequest(for imageView: UIImageView?)
     
 }
