@@ -10,10 +10,7 @@ import UIKit
 @objc(JSMediaBrowserCellProtocol)
 public protocol CellProtocol: NSObjectProtocol {
     
-    @objc(updateCell:atIndex:)
-    func updateCell(loaderEntity: LoaderProtocol, at index: Int)
-    
-    func didReceive(with progress: Progress?)
-    func didCompleted(with error: NSError?, cancelled: Bool, finished: Bool)
+    func setProgress(_ progress: Progress?)
+    func setError(_ error: NSError?, cancelled: Bool, finished: Bool)
     
 }

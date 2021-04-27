@@ -286,8 +286,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
             }
             #endif
             if let basisCell = cell as? BasisCell {
-                self.addMonitorFor(basisCell: basisCell)
-                basisCell.updateCell(loaderEntity: loaderItem, at: index)
+                self.configureCell(basisCell, at: index)
             }
         }
         if let block = self.configureCellBlock {
@@ -296,7 +295,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         return cell
     }
     
-    private func addMonitorFor(basisCell cell: BasisCell) -> Void {
+    private func configureCell(_ cell: BasisCell, at index: Int) -> Void {
         cell.onEmptyPressAction = { [weak self] (cell: UICollectionViewCell) in
             if let index: Int = self?.browserView?.index(for: cell), index != NSNotFound {
                 self?.browserView?.reloadPages(at: [index])
@@ -307,21 +306,43 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
                 block(strongSelf, cell, emptyView, error)
             }
         }
-        cell.didInitializeBlock = { [weak self] (cell: UICollectionViewCell) in
-            if let _ = self {
-                
-            }
-        }
         #if BUSINESS_IMAGE
         if let imageCell = cell as? ImageCell {
-            self.browserView?.dismissingGestureEnabled = false
-            imageCell.didLoaderCompleted = { [weak self] (cell: UICollectionViewCell, error: NSError?) in
-                if error == nil {
-                    self?.browserView?.dismissingGestureEnabled = true
-                }
-            }
+            self.configureImageCell(imageCell, at: index)
         }
         #endif
+        #if BUSINESS_VIDEO
+        if let videoCell = cell as? VideoCell {
+            self.configureVideoCell(videoCell, at: index)
+        }
+        #endif
+    }
+    
+    private func configureImageCell(_ cell: ImageCell, at index: Int) -> Void {
+        if let loaderItem: ImageLoaderProtocol = loaderItems?[index] as? ImageLoaderProtocol {
+            loaderItem.cancelRequest(forView: cell)
+            loaderItem.request(forView: cell) { [weak cell](loader: LoaderProtocol, object: Any?, data: Data?) in
+                let image: UIImage? = object as? UIImage
+                cell?.zoomImageView?.image = image
+            } downloadProgress: { [weak cell](loader: LoaderProtocol, progress: Progress?) in
+                cell?.setProgress(progress)
+            } completed: { [weak cell](loader: LoaderProtocol, object: Any?, data: Data?, error: NSError?, cancelled: Bool, finished: Bool) in
+                cell?.setError(error, cancelled: cancelled, finished: finished)
+                let image: UIImage? = object as? UIImage
+                cell?.zoomImageView?.image = image
+            }
+        }
+    }
+    
+    private func configureVideoCell(_ cell: VideoCell, at index: Int) -> Void {
+        if  let sourceItem: VideoSourceProtocol = self.loaderItems?[index].sourceItem as? VideoSourceProtocol {
+            cell.videoPlayerView?.thumbImage = sourceItem.thumbImage
+            /// 前后url不相同时需要释放之前的player, 否则会先显示之前的画面, 再显示当前的
+            if cell.videoPlayerView?.url != sourceItem.videoUrl {
+                cell.videoPlayerView?.releasePlayer()
+            }
+            cell.videoPlayerView?.url = sourceItem.videoUrl
+        }
     }
     
 }

@@ -14,9 +14,6 @@ open class BasisCell: UICollectionViewCell, CellProtocol {
     @objc public var pieProgressView: PieProgressView?
     @objc public var onEmptyPressAction: ((UICollectionViewCell) -> Void)?
     @objc public var willDisplayEmptyViewBlock: ((UICollectionViewCell, EmptyView, NSError) -> Void)?
-    @objc public var didLoaderCompleted: ((UICollectionViewCell, NSError?) -> Void)?
-    @objc public var didInitializeBlock: ((UICollectionViewCell) -> Void)?
-    fileprivate var initializeExecuteOnce: Int = 0
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -62,23 +59,14 @@ open class BasisCell: UICollectionViewCell, CellProtocol {
         self.pieProgressView?.frame = CGRect(origin: progressPoint, size: progressSize)
     }
     
-    public func updateCell(loaderEntity: LoaderProtocol, at index: Int) {
-        if self.initializeExecuteOnce == 0 {
-            self.initializeExecuteOnce += 1
-            if let block = self.didInitializeBlock {
-                block(self)
-            }
-        }
-    }
-    
-    public func didReceive(with progress: Progress?) {
+    public func setProgress(_ progress: Progress?) {
         if let progress = progress {
             self.layoutIfNeeded()
             self.pieProgressView?.setProgress(Float(progress.fractionCompleted))
         }
     }
     
-    public func didCompleted(with error: NSError?, cancelled: Bool, finished: Bool) {
+    public func setError(_ error: NSError?, cancelled: Bool, finished: Bool) {
         if cancelled {
             pieProgressView?.isHidden = false
         } else {
@@ -91,9 +79,6 @@ open class BasisCell: UICollectionViewCell, CellProtocol {
                 emptyView?.isHidden = true
             }
             pieProgressView?.isHidden = true
-        }
-        if let block = self.didLoaderCompleted {
-            block(self, error)
         }
     }
     
