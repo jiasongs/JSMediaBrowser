@@ -98,8 +98,8 @@ open class MediaBrowserViewController: UIViewController {
     @objc open var viewDidDisappearBlock: ((MediaBrowserViewController) -> Void)?
     
     private var loaderItems: Array<LoaderProtocol>?
-    private var imageCellIdentifier = "ImageCellIdentifier"
-    private var videoCellIdentifier = "VideoCellIdentifier"
+    private static let imageCellIdentifier: String = "ImageCellIdentifier"
+    private static let videoCellIdentifier: String = "VideoCellIdentifier"
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -138,10 +138,10 @@ extension MediaBrowserViewController {
         }
         /// 注册Cell
         #if BUSINESS_IMAGE
-        self.registerClass(ImageCell.self, forCellWithReuseIdentifier: imageCellIdentifier)
+        self.registerClass(ImageCell.self, forCellWithReuseIdentifier: MediaBrowserViewController.imageCellIdentifier)
         #endif
         #if BUSINESS_VIDEO
-        self.registerClass(VideoCell.self, forCellWithReuseIdentifier: videoCellIdentifier)
+        self.registerClass(VideoCell.self, forCellWithReuseIdentifier: MediaBrowserViewController.videoCellIdentifier)
         #endif
         /// 工具视图
         if let block = self.toolViewsBlock {
@@ -273,12 +273,12 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         if let loaderItem: LoaderProtocol = loaderItems?[index] {
             #if BUSINESS_IMAGE
             if cell == nil, let _ = loaderItem as? ImageLoaderProtocol {
-                cell = self.dequeueReusableCell(withReuseIdentifier: imageCellIdentifier, at: index)
+                cell = self.dequeueReusableCell(withReuseIdentifier: MediaBrowserViewController.imageCellIdentifier, at: index)
             }
             #endif
             #if BUSINESS_VIDEO
             if cell == nil, let _ = loaderItem as? VideoLoaderProtocol {
-                cell = self.dequeueReusableCell(withReuseIdentifier: videoCellIdentifier, at: index)
+                cell = self.dequeueReusableCell(withReuseIdentifier: MediaBrowserViewController.videoCellIdentifier, at: index)
             }
             #endif
             if let basisCell = cell as? BasisCell {
@@ -314,6 +314,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         #endif
     }
     
+    #if BUSINESS_IMAGE
     private func configureImageCell(_ cell: ImageCell, at index: Int) -> Void {
         cell.zoomImageView?.delegate = self
         if let loaderItem: ImageLoaderProtocol = loaderItems?[index] as? ImageLoaderProtocol {
@@ -330,7 +331,9 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
             }
         }
     }
+    #endif
     
+    #if BUSINESS_VIDEO
     private func configureVideoCell(_ cell: VideoCell, at index: Int) -> Void {
         if  let sourceItem: VideoSourceProtocol = self.loaderItems?[index].sourceItem as? VideoSourceProtocol {
             cell.videoPlayerView?.thumbImage = sourceItem.thumbImage
@@ -341,6 +344,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
             cell.videoPlayerView?.url = sourceItem.videoUrl
         }
     }
+    #endif
     
 }
 
