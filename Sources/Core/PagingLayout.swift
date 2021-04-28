@@ -39,7 +39,6 @@ open class PagingLayout: UICollectionViewFlowLayout {
 
 extension PagingLayout {
     
-    /// TODO：超大图浏览时, 导致有抖动的情况发生, 需要解决
     open override func prepare() {
         super.prepare()
         guard let collectionView = self.collectionView else {

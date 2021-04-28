@@ -112,7 +112,10 @@ open class MediaBrowserViewController: UIViewController {
     }
     
     open func didInitialize() -> Void {
-        self.automaticallyAdjustsScrollViewInsets = false
+        if #available(iOS 11.0, *) {
+        } else {
+            self.automaticallyAdjustsScrollViewInsets = false
+        }
         self.extendedLayoutIncludesOpaqueBars = true
         
         self.modalPresentationStyle = .custom
@@ -316,10 +319,12 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     
     #if BUSINESS_IMAGE
     private func configureImageCell(_ cell: ImageCell, at index: Int) -> Void {
+        /// 先设置代理
         cell.zoomImageView?.delegate = self
         if let loaderItem: ImageLoaderProtocol = loaderItems?[index] as? ImageLoaderProtocol {
-            loaderItem.cancelRequest(for: cell.zoomImageView?.imageView)
-            loaderItem.request(for: cell.zoomImageView?.imageView) { [weak cell](loader: LoaderProtocol, object: Any?, data: Data?) in
+            let imageView: UIImageView? = cell.zoomImageView?.imageView
+            loaderItem.cancelRequest(for: imageView)
+            loaderItem.request(for: imageView) { [weak cell](loader: LoaderProtocol, object: Any?, data: Data?) in
                 let image: UIImage? = object as? UIImage
                 cell?.zoomImageView?.image = image
             } downloadProgress: { [weak cell](loader: LoaderProtocol, progress: Progress?) in
