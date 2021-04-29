@@ -11,11 +11,8 @@ import UIKit
 open class PagingLayout: UICollectionViewFlowLayout {
     
     @objc public var pageSpacing: CGFloat = 10
-    @objc public var velocityForEnsurePageDown: CGFloat = 0.4
-    @objc public var allowsMultipleItemScroll: Bool = false
-    @objc public var multipleItemScrollVelocityLimit: CGFloat = 2.5
-    @objc public var pagingThreshold: CGFloat = 2.0 / 3.0
     
+    fileprivate var attributes: [UICollectionViewLayoutAttributes] = []
     fileprivate var finalItemSize: CGSize = CGSize.zero
     
     public override init() {
@@ -44,32 +41,36 @@ extension PagingLayout {
         guard let collectionView = self.collectionView else {
             return
         }
-        var itemSize: CGSize = self.itemSize
-        if let layoutDelegate = collectionView.delegate,
-           layoutDelegate.responds(to: #selector(UICollectionViewDelegateFlowLayout.collectionView(_:layout:sizeForItemAt:))) {
-            let delegate = layoutDelegate as! UICollectionViewDelegateFlowLayout
-            itemSize = delegate.collectionView?(collectionView, layout: self, sizeForItemAt: IndexPath(item: 0, section: 0)) ?? CGSize.zero
+        guard let delegate = collectionView.delegate as? UICollectionViewDelegateFlowLayout else {
+            return
         }
-        self.finalItemSize = itemSize
+        self.attributes.removeAll()
+        let sectionCount: Int = collectionView.numberOfSections
+        for section: Int in 0..<sectionCount {
+            let itemCount = collectionView.numberOfItems(inSection: section)
+            for item in 0..<itemCount {
+                let indexPath: IndexPath = IndexPath(item: item, section: section)
+                if let attributes: UICollectionViewLayoutAttributes = self.layoutAttributesForItem(at: indexPath) {
+                    var itemSize: CGSize = self.itemSize
+                    if delegate.responds(to: #selector(UICollectionViewDelegateFlowLayout.collectionView(_:layout:sizeForItemAt:))) {
+                        itemSize = delegate.collectionView?(collectionView, layout: self, sizeForItemAt: indexPath) ?? CGSize.zero
+                    }
+                    let halfWidth: CGFloat = itemSize.width / 2.0
+                    let centerX: CGFloat = collectionView.contentOffset.x + halfWidth
+                    attributes.center = CGPoint(x: attributes.center.x + (attributes.center.x - centerX) / halfWidth * self.pageSpacing / 2, y: attributes.center.y)
+                    attributes.size = itemSize
+                    self.attributes.append(attributes)
+                }
+            }
+        }
+    }
+    
+    open override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+        return self.attributes
     }
     
     open override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
         return true
-    }
-    
-    open override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        var attributesArray: Array<UICollectionViewLayoutAttributes> = Array()
-        let superAttributesArray: Array<UICollectionViewLayoutAttributes> = super.layoutAttributesForElements(in: rect) ?? []
-        let halfWidth: CGFloat = self.finalItemSize.width / 2.0
-        let centerX: CGFloat = (self.collectionView?.contentOffset.x ?? 0.0) + halfWidth
-        for attribute in superAttributesArray {
-            if let newAttribute = attribute.copy() as? UICollectionViewLayoutAttributes {
-                newAttribute.center = CGPoint(x: newAttribute.center.x + (newAttribute.center.x - centerX) / halfWidth * self.pageSpacing / 2, y: newAttribute.center.y)
-                newAttribute.size = self.finalItemSize
-                attributesArray.append(newAttribute)
-            }
-        }
-        return attributesArray
     }
     
 }
