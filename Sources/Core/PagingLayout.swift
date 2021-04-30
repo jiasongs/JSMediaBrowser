@@ -13,7 +13,6 @@ open class PagingLayout: UICollectionViewFlowLayout {
     @objc public var pageSpacing: CGFloat = 10
     
     fileprivate var attributes: [UICollectionViewLayoutAttributes] = []
-    fileprivate var finalItemSize: CGSize = CGSize.zero
     
     public override init() {
         super.init()

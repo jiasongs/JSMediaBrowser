@@ -5,13 +5,10 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 def pod_Common
   pod 'JSMediaBrowser', :path => '..', :subspecs => ['BusinessForImage', 'BusinessForVideo', 'MediaImageForSDWebImage']
-  # pod 'JSMediaBrowser/Business', :path => '..'
-  # pod 'JSMediaBrowser/MediaImage', :path => '..'
-  # pod 'JSMediaBrowser/MediaVideo', :path => '..'
-  pod 'QMUIKit', '~> 4.2.3'
-  pod 'SnapKit', '~> 5.0.0'
-  pod 'SDWebImage', '~> 5.11.0'
-  pod 'Kingfisher', '~> 5.15.8'
+  pod 'QMUIKit'
+  pod 'SnapKit'
+  pod 'SDWebImage'
+  pod 'Kingfisher'
 end
 
 target 'JSMediaBrowserExample' do
@@ -19,6 +16,7 @@ target 'JSMediaBrowserExample' do
   # 调试工具
   pod 'LookinServer', :configurations => ['Debug']
   pod 'MLeaksFinder', :configurations => ['Debug']
+  pod "FBRetainCycleDetector", :git => "https://github.com/jiasongs/FBRetainCycleDetector.git", :configurations => ["Debug"]
 end
 
 target 'JSMediaBrowserExampleMacOS' do
