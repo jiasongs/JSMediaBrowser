@@ -54,6 +54,7 @@ extension PagingLayout {
                     if delegate.responds(to: #selector(UICollectionViewDelegateFlowLayout.collectionView(_:layout:sizeForItemAt:))) {
                         itemSize = delegate.collectionView?(collectionView, layout: self, sizeForItemAt: indexPath) ?? CGSize.zero
                     }
+                    /// 每次滑动时需要重置下center, 让视觉上居中
                     let halfWidth: CGFloat = itemSize.width / 2.0
                     let centerX: CGFloat = collectionView.contentOffset.x + halfWidth
                     attributes.center = CGPoint(x: attributes.center.x + (attributes.center.x - centerX) / halfWidth * self.pageSpacing / 2, y: attributes.center.y)

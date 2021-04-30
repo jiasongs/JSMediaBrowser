@@ -147,7 +147,10 @@ extension MediaBrowserView {
     }
     
     @objc open func reloadData() -> Void {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
         self.collectionView?.reloadData()
+        CATransaction.commit()
     }
     
     @objc(reloadPagesAtIndexs:)
