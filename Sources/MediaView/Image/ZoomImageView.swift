@@ -180,6 +180,9 @@ extension ZoomImageView {
     }
     
     @objc open func startAnimating() -> Void {
+        guard !self.isAnimating else {
+            return
+        }
         if self.isDisplayImageView {
             self.imageView.startAnimating()
         } else if self.isDisplayLivePhotoView {
@@ -188,6 +191,9 @@ extension ZoomImageView {
     }
     
     @objc open func stopAnimating() -> Void {
+        guard self.isAnimating else {
+            return
+        }
         if self.isDisplayImageView {
             self.imageView.stopAnimating()
         } else if self.isDisplayLivePhotoView {

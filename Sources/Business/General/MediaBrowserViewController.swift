@@ -333,6 +333,10 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
                 cell?.setError(error, cancelled: cancelled, finished: finished)
                 let image: UIImage? = object as? UIImage
                 cell?.zoomImageView?.image = image
+                if image != nil && error == nil {
+                    /// 解决网络图片下载完成后不播放的问题
+                    cell?.zoomImageView?.startAnimating()
+                }
             }
         }
     }
@@ -357,8 +361,10 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, willDisplay cell: UICollectionViewCell, forItemAt index: Int) {
         #if BUSINESS_IMAGE
-        if let imageCell = cell as? ImageCell {
-            imageCell.zoomImageView?.startAnimating()
+        if let imageCell = cell as? ImageCell, let loaderItem: ImageLoaderProtocol = loaderItems?[index] as? ImageLoaderProtocol {
+            if loaderItem.isFinished {
+                imageCell.zoomImageView?.startAnimating()
+            }
         }
         #endif
         #if BUSINESS_VIDEO

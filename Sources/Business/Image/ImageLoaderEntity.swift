@@ -43,6 +43,7 @@ open class ImageLoaderEntity: BasisLoaderEntity, ImageLoaderProtocol {
                     }
                     if let completed = completed {
                         JSAsyncExecuteOnMainQueue {
+                            self.isFinished = finished
                             completed(self, image, imageData, error, cancelled, finished)
                         }
                     }

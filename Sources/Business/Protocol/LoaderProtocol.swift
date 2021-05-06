@@ -13,5 +13,6 @@ public protocol LoaderProtocol: NSObjectProtocol {
     @objc var sourceItem: SourceProtocol? { get set }
     @objc var progress: Progress? { get set }
     @objc var error: NSError? { get set }
+    @objc var isFinished: Bool { get set }
     
 }
