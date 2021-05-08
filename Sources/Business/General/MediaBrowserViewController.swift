@@ -122,13 +122,15 @@ open class MediaBrowserViewController: UIViewController {
         self.modalPresentationCapturesStatusBarAppearance = true
         self.transitioningDelegate = self
         
-        transitioningAnimator = TransitionAnimator()
-        browserView = MediaBrowserView()
+        self.transitioningAnimator = TransitionAnimator()
+        self.browserView = MediaBrowserView()
     }
     
     deinit {
         /// 重置
-        self.transitionSourceView?.isHidden = false
+        if let sourceView = self.transitionSourceView, sourceView.isHidden {
+            sourceView.isHidden = false
+        }
     }
     
 }
