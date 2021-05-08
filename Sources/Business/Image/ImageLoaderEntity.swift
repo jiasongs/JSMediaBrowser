@@ -19,6 +19,7 @@ open class ImageLoaderEntity: BasisLoaderEntity, ImageLoaderProtocol {
             if let image = sourceItem.image, sourceItem.imageUrl == nil {
                 if let completed = completed {
                     JSAsyncExecuteOnMainQueue {
+                        self.isFinished = true
                         completed(self, image, nil, nil, false, true)
                     }
                 }
