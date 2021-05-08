@@ -126,6 +126,11 @@ open class MediaBrowserViewController: UIViewController {
         browserView = MediaBrowserView()
     }
     
+    deinit {
+        /// 重置
+        self.transitionSourceView?.isHidden = false
+    }
+    
 }
 
 extension MediaBrowserViewController {
