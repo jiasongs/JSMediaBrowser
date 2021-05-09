@@ -270,12 +270,14 @@ extension MediaBrowserViewController {
     }
     
     @objc open func hide(animated: Bool = true, completion: (() -> Void)? = nil) {
-        if let navigationController = self.navigationController {
-            /// 导航控制器代理
-            navigationController.delegate = self
-            navigationController.popViewController(animated: animated)
-        } else {
+        let viewController: UIViewController = self.navigationController != nil ? self.navigationController! : self
+        let isPresented: Bool = viewController.presentingViewController?.presentedViewController == viewController
+        if isPresented {
             self.dismiss(animated: animated, completion: completion)
+        } else {
+            /// 导航控制器代理
+            self.navigationController?.delegate = self
+            self.navigationController?.popViewController(animated: animated)
         }
     }
     
