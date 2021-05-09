@@ -17,6 +17,8 @@
 		7A23CD772581F3C1004B4033 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A23CD5A2581F365004B4033 /* AppDelegate.swift */; };
 		7A23CD7A2581F3C1004B4033 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7A23CD652581F367004B4033 /* LaunchScreen.storyboard */; };
 		7A23CD7B2581F3C1004B4033 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7A23CD632581F367004B4033 /* Assets.xcassets */; };
+		7A320035264774B9005BDC71 /* JSFloatLayoutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A320034264774B9005BDC71 /* JSFloatLayoutView.m */; };
+		7A320036264774B9005BDC71 /* JSFloatLayoutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A320034264774B9005BDC71 /* JSFloatLayoutView.m */; };
 		7A57BAE525A2FB55008E932D /* VideoActionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A57BAE425A2FB55008E932D /* VideoActionView.swift */; };
 		7A57BAE625A2FB55008E932D /* VideoActionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A57BAE425A2FB55008E932D /* VideoActionView.swift */; };
 		7A61E077259486FA001C58FA /* PageControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A61E076259486FA001C58FA /* PageControl.swift */; };
@@ -46,6 +48,8 @@
 		7A23CD722581F3B2004B4033 /* JSMediaBrowserExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = JSMediaBrowserExample.entitlements; sourceTree = "<group>"; };
 		7A23CD802581F3C1004B4033 /* JSMediaBrowserExampleMacOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JSMediaBrowserExampleMacOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A23CD8C2581F58C004B4033 /* InfoMacOS.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = InfoMacOS.plist; sourceTree = "<group>"; };
+		7A320033264774B9005BDC71 /* JSFloatLayoutView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSFloatLayoutView.h; sourceTree = "<group>"; };
+		7A320034264774B9005BDC71 /* JSFloatLayoutView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSFloatLayoutView.m; sourceTree = "<group>"; };
 		7A35FAEF259A2F3100149139 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		7A57BAE425A2FB55008E932D /* VideoActionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoActionView.swift; sourceTree = "<group>"; };
 		7A61E076259486FA001C58FA /* PageControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageControl.swift; sourceTree = "<group>"; };
@@ -129,9 +133,11 @@
 		7A80A5B12597608A00E9927C /* General */ = {
 			isa = PBXGroup;
 			children = (
-				7A57BAE425A2FB55008E932D /* VideoActionView.swift */,
+				7A320033264774B9005BDC71 /* JSFloatLayoutView.h */,
+				7A320034264774B9005BDC71 /* JSFloatLayoutView.m */,
 				7A61E076259486FA001C58FA /* PageControl.swift */,
 				7A80A5AA25974B0100E9927C /* ShareControl.swift */,
+				7A57BAE425A2FB55008E932D /* VideoActionView.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -380,6 +386,7 @@
 			files = (
 				7A61E077259486FA001C58FA /* PageControl.swift in Sources */,
 				7AEF5DCE25837379006550CE /* OCExampleViewController.m in Sources */,
+				7A320035264774B9005BDC71 /* JSFloatLayoutView.m in Sources */,
 				7A57BAE525A2FB55008E932D /* VideoActionView.swift in Sources */,
 				7A23CD5F2581F365004B4033 /* ExampleViewController.swift in Sources */,
 				7A23CD5B2581F365004B4033 /* AppDelegate.swift in Sources */,
@@ -393,6 +400,7 @@
 			files = (
 				7A61E078259486FA001C58FA /* PageControl.swift in Sources */,
 				7AEF5DCF25837379006550CE /* OCExampleViewController.m in Sources */,
+				7A320036264774B9005BDC71 /* JSFloatLayoutView.m in Sources */,
 				7A57BAE625A2FB55008E932D /* VideoActionView.swift in Sources */,
 				7A23CD762581F3C1004B4033 /* ExampleViewController.swift in Sources */,
 				7A23CD772581F3C1004B4033 /* AppDelegate.swift in Sources */,

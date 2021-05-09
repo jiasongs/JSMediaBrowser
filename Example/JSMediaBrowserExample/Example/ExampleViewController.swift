@@ -13,8 +13,19 @@ import JSMediaBrowser
 
 class ExampleViewController: UIViewController {
     
-    var floatLayoutView: QMUIFloatLayoutView!
-    var dataSource: Array<String> = []
+    lazy var scrollView: UIScrollView = {
+        let view = UIScrollView()
+        if #available(iOS 11.0, *) {
+            view.contentInsetAdjustmentBehavior = .never
+        }
+        return view
+    }()
+    lazy var floatLayoutView: JSFloatLayoutView = {
+       let view = JSFloatLayoutView()
+        view.itemMargins = UIEdgeInsets(top: QMUIHelper.pixelOne, left: QMUIHelper.pixelOne, bottom: 0, right: 0);
+       return view
+    }()
+    lazy var dataSource: Array<String> = []
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -39,8 +50,7 @@ class ExampleViewController: UIViewController {
             }
             self.dataSource = array ?? []
         }
-        self.floatLayoutView = QMUIFloatLayoutView()
-        self.floatLayoutView!.itemMargins = UIEdgeInsets(top: QMUIHelper.pixelOne, left: QMUIHelper.pixelOne, bottom: 0, right: 0);
+        self.view.addSubview(self.scrollView)
         for item: String in self.dataSource {
             let button = QMUIButton()
             let imageView = SDAnimatedImageView()
@@ -56,28 +66,45 @@ class ExampleViewController: UIViewController {
                 imageView.sd_setImage(with: URL(string: item))
             }
             button.addTarget(self, action: #selector(self.handleImageButtonEvent(sender:)), for: UIControl.Event.touchUpInside)
-            self.floatLayoutView!.addSubview(button)
+            self.floatLayoutView.addSubview(button)
         }
-        self.view.addSubview(floatLayoutView!)
+        self.scrollView.addSubview(floatLayoutView)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.title = "图片/视频预览"
+        self.navigationController?.delegate = self
+        self.navigationController?.setNavigationBarHidden(false, animated: false)
+        self.navigationController?.navigationBar.barStyle = .black
+        self.navigationController?.navigationBar.tintColor = .white
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        self.navigationController?.delegate = nil
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
-        let margins: UIEdgeInsets = UIEdgeInsets(top: 70 + self.qmui_navigationBarMaxYInViewCoordinator, left: 24 + self.view.qmui_safeAreaInsets.left, bottom: 24, right: 24 + self.view.qmui_safeAreaInsets.right);
+        let top = self.qmui_navigationBarMaxYInViewCoordinator
+        let margins: UIEdgeInsets = UIEdgeInsets(top: top + 5, left: 24 + self.view.qmui_safeAreaInsets.left, bottom: 24, right: 24 + self.view.qmui_safeAreaInsets.right);
         let contentWidth: CGFloat = self.view.qmui_width - UIEdgeInsetsGetHorizontalValue(margins);
         let column: Int = self.view.qmui_width > 700 ? 8 : 3
         let horizontalValue: CGFloat = CGFloat((column - 1)) * UIEdgeInsetsGetHorizontalValue(self.floatLayoutView.itemMargins);
         let imgWith: CGFloat = contentWidth / CGFloat(column) - horizontalValue;
-        self.floatLayoutView!.minimumItemSize = CGSize(width: imgWith, height: imgWith);
-        self.floatLayoutView!.maximumItemSize = self.floatLayoutView!.minimumItemSize;
+        self.floatLayoutView.minimumItemSize = CGSize(width: imgWith, height: imgWith);
+        self.floatLayoutView.maximumItemSize = self.floatLayoutView.minimumItemSize;
         let oldSize: CGSize = self.floatLayoutView.bounds.size
-        self.floatLayoutView!.frame = CGRect(x: margins.left, y: margins.top, width: contentWidth, height: QMUIViewSelfSizingHeight);
+        self.floatLayoutView.frame = CGRect(x: margins.left, y: margins.top, width: contentWidth, height: QMUIViewSelfSizingHeight);
         /// 前后Bounds相等时, 也需要刷新下内部子视图的布局, 不然可能会有Bug
         if oldSize.equalTo(self.floatLayoutView.bounds.size) {
             self.floatLayoutView.setNeedsLayout()
             self.floatLayoutView.layoutIfNeeded()
         }
+        self.scrollView.frame = self.view.bounds
+        self.scrollView.contentSize = self.floatLayoutView.bounds.size
     }
     
     @objc func handleImageButtonEvent(sender: QMUIButton) -> Void {
@@ -131,7 +158,7 @@ class ExampleViewController: UIViewController {
         }
         browser.sourceItems = sourceItems
         browser.browserView?.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
-        browser.show(from: self)
+        browser.present(from: self)
     }
     
     override var prefersStatusBarHidden: Bool {
@@ -154,5 +181,9 @@ class ExampleViewController: UIViewController {
         }
         return nil
     }
+    
+}
+
+extension ExampleViewController: UINavigationControllerDelegate {
     
 }

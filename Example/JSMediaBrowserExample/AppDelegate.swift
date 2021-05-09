@@ -20,7 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         NSObject.addClassNames(toWhitelist: ["_UIPageControlContentView"])
         #endif
         window = UIWindow.init(frame: UIScreen.main.bounds)
-        window?.rootViewController = ExampleViewController()
+        window?.rootViewController = UINavigationController(rootViewController: ExampleViewController())
         window?.makeKeyAndVisible()
         return true
     }

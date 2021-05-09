@@ -32,8 +32,8 @@ open class MediaBrowserViewController: UIViewController {
     @objc open var browserView: MediaBrowserView?
     @objc open var sourceItems: Array<SourceProtocol>? {
         didSet {
-            var array: Array<LoaderProtocol> = Array()
-            sourceItems?.forEach({ (item) in
+            var loaderItems: Array<LoaderProtocol> = Array()
+            self.sourceItems?.forEach({ (item) in
                 #if BUSINESS_IMAGE
                 if let _ = item as? ImageSourceProtocol {
                     let loader: ImageLoaderEntity = ImageLoaderEntity()
@@ -41,18 +41,18 @@ open class MediaBrowserViewController: UIViewController {
                     if let block = self.webImageMediatorBlock {
                         loader.webImageMediator = block(self, item)
                     }
-                    array.append(loader)
+                    loaderItems.append(loader)
                 }
                 #endif
                 #if BUSINESS_VIDEO
                 if let _ = item as? VideoSourceProtocol {
                     let loader: VideoLoaderEntity = VideoLoaderEntity()
                     loader.sourceItem = item
-                    array.append(loader)
+                    loaderItems.append(loader)
                 }
                 #endif
             })
-            loaderItems = array
+            self.loaderItems = loaderItems
             for toolView in self.toolViews {
                 if toolView.responds(to: #selector(ToolViewProtocol.sourceItemsDidChange(in:))) {
                     toolView.sourceItemsDidChange?(in: self)
@@ -68,18 +68,17 @@ open class MediaBrowserViewController: UIViewController {
             }
         }
     }
-    @objc open var presentingStyle: TransitioningStyle = .zoom {
+    @objc open var enteringStyle: TransitioningStyle = .zoom {
         didSet {
-            dismissingStyle = presentingStyle
             if let animator = transitioningAnimator as? TransitionAnimator {
-                animator.presentingStyle = presentingStyle
+                animator.enteringStyle = enteringStyle
             }
         }
     }
-    @objc open var dismissingStyle: TransitioningStyle = .zoom {
+    @objc open var exitingStyle: TransitioningStyle = .zoom {
         didSet {
             if let animator = transitioningAnimator as? TransitionAnimator {
-                animator.dismissingStyle = dismissingStyle
+                animator.exitingStyle = exitingStyle
             }
         }
     }
@@ -117,20 +116,9 @@ open class MediaBrowserViewController: UIViewController {
             self.automaticallyAdjustsScrollViewInsets = false
         }
         self.extendedLayoutIncludesOpaqueBars = true
-        
-        self.modalPresentationStyle = .custom
-        self.modalPresentationCapturesStatusBarAppearance = true
-        self.transitioningDelegate = self
-        
+                
         self.transitioningAnimator = TransitionAnimator()
         self.browserView = MediaBrowserView()
-    }
-    
-    deinit {
-        /// 重置
-        if let sourceView = self.transitionSourceView, sourceView.isHidden {
-            sourceView.isHidden = false
-        }
     }
     
 }
@@ -179,6 +167,12 @@ extension MediaBrowserViewController {
     
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        /// 导航控制器代理, 防止外部重置了我们的代理
+        self.navigationController?.delegate = self
+        
+        if let sourceView = self.transitionSourceView, !sourceView.isHidden {
+            sourceView.isHidden = true
+        }
         if let browserView = self.browserView {
             browserView.reloadData()
             browserView.collectionView?.layoutIfNeeded()
@@ -190,6 +184,8 @@ extension MediaBrowserViewController {
     
     open override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        /// 导航控制器代理, 防止外部重置了我们的代理
+        self.navigationController?.delegate = self
         self.setNeedsStatusBarAppearanceUpdate()
     }
     
@@ -200,6 +196,14 @@ extension MediaBrowserViewController {
     
     open override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+        /// 导航控制器代理, 判断下代理是否还在自己身上
+        if let delegate = self.navigationController?.delegate, delegate.isEqual(self) {
+            self.navigationController?.delegate = nil
+        }
+        
+        if let sourceView = self.transitionSourceView, sourceView.isHidden {
+            sourceView.isHidden = false
+        }
         if let block = self.viewDidDisappearBlock {
             block(self)
         }
@@ -249,13 +253,30 @@ extension MediaBrowserViewController {
         return nil
     }
     
-    @objc(showFromViewController:animated:completion:)
-    open func show(from sender: UIViewController, animated: Bool = true, completion: (() -> Void)? = nil) {
+    @objc(presentFromViewController:animated:completion:)
+    open func present(from sender: UIViewController, animated: Bool = true, completion: (() -> Void)? = nil) {
+        self.modalPresentationStyle = .custom
+        self.modalPresentationCapturesStatusBarAppearance = true
+        self.transitioningDelegate = self
         sender.present(self, animated: animated, completion: completion)
     }
     
+    @objc(pushFromViewController:animated:)
+    open func push(from sender: UIViewController, animated: Bool = true) {
+        guard let navigationController = sender.navigationController else { return }
+        /// 导航控制器代理
+        navigationController.delegate = self
+        navigationController.pushViewController(self, animated: animated)
+    }
+    
     @objc open func hide(animated: Bool = true, completion: (() -> Void)? = nil) {
-        self.dismiss(animated: animated, completion: completion)
+        if let navigationController = self.navigationController {
+            /// 导航控制器代理
+            navigationController.delegate = self
+            navigationController.popViewController(animated: animated)
+        } else {
+            self.dismiss(animated: animated, completion: completion)
+        }
     }
     
     @objc public func registerClass(_ cellClass: AnyClass, forCellWithReuseIdentifier identifier: String) -> Void {
@@ -501,14 +522,30 @@ extension MediaBrowserViewController: ZoomImageViewDelegate {
 }
 #endif
 
-extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, TransitionAnimatorDelegate {
+extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, UINavigationControllerDelegate, TransitionAnimatorDelegate {
     
     public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        if let animator = transitioningAnimator as? TransitionAnimator {
+            animator.animatorType = .presenting
+        }
         return self.transitioningAnimator
     }
     
     public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        if let animator = transitioningAnimator as? TransitionAnimator {
+            animator.animatorType = .dismiss
+        }
         return self.transitioningAnimator
+    }
+    
+    public func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        if toVC == self || operation == .pop {
+            if let animator = transitioningAnimator as? TransitionAnimator {
+                animator.animatorType = operation == .push ? .push : .pop
+            }
+            return self.transitioningAnimator
+        }
+        return nil
     }
     
     public var transitionSourceRect: CGRect {

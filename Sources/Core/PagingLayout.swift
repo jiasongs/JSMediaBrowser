@@ -49,7 +49,7 @@ extension PagingLayout {
             let itemCount = collectionView.numberOfItems(inSection: section)
             for item in 0..<itemCount {
                 let indexPath: IndexPath = IndexPath(item: item, section: section)
-                if let attributes: UICollectionViewLayoutAttributes = self.layoutAttributesForItem(at: indexPath) {
+                if let attributes: UICollectionViewLayoutAttributes = self.layoutAttributesForItem(at: indexPath)?.copy() as? UICollectionViewLayoutAttributes {
                     var itemSize: CGSize = self.itemSize
                     if delegate.responds(to: #selector(UICollectionViewDelegateFlowLayout.collectionView(_:layout:sizeForItemAt:))) {
                         itemSize = delegate.collectionView?(collectionView, layout: self, sizeForItemAt: indexPath) ?? CGSize.zero

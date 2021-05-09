@@ -96,7 +96,7 @@
     }];
     browser.sourceItems = sourceItems;
     browser.browserView.currentPage = [self.floatLayoutView.subviews indexOfObject:sender];
-    [browser showFromViewController:self animated:YES completion:nil];
+    [browser presentFromViewController:self animated:YES completion:nil];
 }
 
 @end

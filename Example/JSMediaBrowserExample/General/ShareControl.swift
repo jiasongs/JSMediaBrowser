@@ -38,7 +38,13 @@ import SnapKit
         alertVC.addAction(UIAlertAction(title: "确定", style: UIAlertAction.Style.default, handler: { (action) in
             
         }))
-        self.browserViewController?.present(alertVC, animated: true, completion: nil)
+        let vc = UIViewController()
+        vc.modalPresentationStyle = .fullScreen
+        vc.view.backgroundColor = .white
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            vc.dismiss(animated: true, completion: nil)
+        }
+        self.browserViewController?.present(vc, animated: true, completion: nil)
     }
     
 }
