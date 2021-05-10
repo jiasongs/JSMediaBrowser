@@ -120,7 +120,7 @@ extension MediaBrowserView {
 extension MediaBrowserView {
     
     @objc open func setCurrentPage(_ index: Int, animated: Bool = true) -> Void {
-        /// iOS 14, 当isPagingEnabled为true, 若不刷新则无法滚动到相应Item
+        /// iOS 14, 当isPagingEnabled为true, 若不reloadData则无法滚动到相应Item
         /// https://stackoverflow.com/questions/41884645/uicollectionview-scroll-to-item-not-working-with-horizontal-direction
         self.reloadData()
         /// 滚动到指定位置
@@ -130,8 +130,7 @@ extension MediaBrowserView {
         self.isNeededScrollToItem = true
     }
     
-    @objc(scrollToPageAtIndex:animated:)
-    open func scrollToPage(at index: Int, animated: Bool = true) -> Void {
+    private func scrollToPage(at index: Int, animated: Bool = true) -> Void {
         if let collectionView = self.collectionView {
             /// 第一次产生实际性滚动的时候, 需要赋值当前的偏移率
             if self.previousPageOffsetRatio == 0 {
