@@ -38,7 +38,14 @@ import SnapKit
         alertVC.addAction(UIAlertAction(title: "确定", style: UIAlertAction.Style.default, handler: { (action) in
             
         }))
-        self.browserViewController?.present(alertVC, animated: true, completion: nil)
+//        self.browserViewController?.present(alertVC, animated: true, completion: nil)
+        let vc = UIViewController()
+        vc.qmui_visibleStateDidChangeBlock = { (vc, state) in
+            if vc.qmui_visibleState == .viewDidLoad {
+                vc.view.backgroundColor = UIColor.white
+            }
+        }
+        self.browserViewController?.navigationController?.pushViewController(vc, animated: true)
     }
     
 }

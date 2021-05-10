@@ -158,7 +158,12 @@ class ExampleViewController: UIViewController {
         }
         browser.sourceItems = sourceItems
         browser.browserView?.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
-        browser.present(from: self)
+//        browser.push(from: self)
+        let nav = UINavigationController(rootViewController: browser)
+        nav.modalPresentationStyle = .custom
+        nav.modalPresentationCapturesStatusBarAppearance = true
+        nav.transitioningDelegate = browser
+        self.present(nav, animated: true, completion: nil)
     }
     
     override var prefersStatusBarHidden: Bool {
