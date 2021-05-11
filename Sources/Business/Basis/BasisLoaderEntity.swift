@@ -11,7 +11,7 @@ import UIKit
 open class BasisLoaderEntity: NSObject, LoaderProtocol {
     
     public var sourceItem: SourceProtocol?
-    public var progress: Progress?
+    public var progress: Progress = Progress()
     public var error: NSError?
     public var isFinished: Bool = false
     
@@ -21,7 +21,7 @@ open class BasisLoaderEntity: NSObject, LoaderProtocol {
     }
     
     open func didInitialize() -> Void {
-        self.progress = Progress(totalUnitCount: -1)
+        self.progress.totalUnitCount = -1
     }
     
 }

@@ -29,11 +29,36 @@ public enum TransitioningStyle: Int {
 @objc(JSMediaBrowserViewController)
 open class MediaBrowserViewController: UIViewController {
     
-    @objc open var browserView: MediaBrowserView?
-    @objc open var sourceItems: Array<SourceProtocol>? {
+    @objc lazy open var browserView: MediaBrowserView = {
+        let browserView = MediaBrowserView()
+        return browserView
+    }()
+    
+    @objc lazy open var transitioningAnimator: UIViewControllerAnimatedTransitioning = {
+        let animator = TransitionAnimator()
+        animator.delegate = self
+        return animator
+    }()
+    
+    @objc open var enteringStyle: TransitioningStyle = .zoom {
+        didSet {
+            if let animator = transitioningAnimator as? TransitionAnimator {
+                animator.enteringStyle = enteringStyle
+            }
+        }
+    }
+    @objc open var exitingStyle: TransitioningStyle = .zoom {
+        didSet {
+            if let animator = transitioningAnimator as? TransitionAnimator {
+                animator.exitingStyle = exitingStyle
+            }
+        }
+    }
+    
+    @objc open var sourceItems: Array<SourceProtocol> = [] {
         didSet {
             var loaderItems: Array<LoaderProtocol> = Array()
-            self.sourceItems?.forEach({ (item) in
+            self.sourceItems.forEach({ (item) in
                 #if BUSINESS_IMAGE
                 if let _ = item as? ImageSourceProtocol {
                     let loader: ImageLoaderEntity = ImageLoaderEntity()
@@ -61,27 +86,6 @@ open class MediaBrowserViewController: UIViewController {
         }
     }
     
-    @objc open var transitioningAnimator: UIViewControllerAnimatedTransitioning? {
-        didSet {
-            if let animator = transitioningAnimator as? TransitionAnimator {
-                animator.delegate = self
-            }
-        }
-    }
-    @objc open var enteringStyle: TransitioningStyle = .zoom {
-        didSet {
-            if let animator = transitioningAnimator as? TransitionAnimator {
-                animator.enteringStyle = enteringStyle
-            }
-        }
-    }
-    @objc open var exitingStyle: TransitioningStyle = .zoom {
-        didSet {
-            if let animator = transitioningAnimator as? TransitionAnimator {
-                animator.exitingStyle = exitingStyle
-            }
-        }
-    }
     #if BUSINESS_IMAGE
     @objc open var imageViewForZoomViewBlock: BuildImageViewForZoomViewBlock?
     @objc open var livePhotoViewForZoomViewBlock: BuildLivePhotoViewForZoomViewBlock?
@@ -96,7 +100,7 @@ open class MediaBrowserViewController: UIViewController {
     @objc open var viewWillAppearBlock: ((MediaBrowserViewController) -> Void)?
     @objc open var viewDidDisappearBlock: ((MediaBrowserViewController) -> Void)?
     
-    private var loaderItems: Array<LoaderProtocol>?
+    private var loaderItems: Array<LoaderProtocol> = []
     private static let imageCellIdentifier: String = "ImageCellIdentifier"
     private static let videoCellIdentifier: String = "VideoCellIdentifier"
     
@@ -116,9 +120,6 @@ open class MediaBrowserViewController: UIViewController {
             self.automaticallyAdjustsScrollViewInsets = false
         }
         self.extendedLayoutIncludesOpaqueBars = true
-                
-        self.transitioningAnimator = TransitionAnimator()
-        self.browserView = MediaBrowserView()
     }
     
 }
@@ -128,18 +129,17 @@ extension MediaBrowserViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor(white: 0, alpha: 0)
-        if let browserView = self.browserView {
-            browserView.delegate = self
-            browserView.dataSource = self
-            browserView.gestureDelegate = self
-            self.view.addSubview(browserView)
-        }
         /// 注册Cell
         #if BUSINESS_IMAGE
         self.registerClass(ImageCell.self, forCellWithReuseIdentifier: MediaBrowserViewController.imageCellIdentifier)
         #endif
         #if BUSINESS_VIDEO
         self.registerClass(VideoCell.self, forCellWithReuseIdentifier: MediaBrowserViewController.videoCellIdentifier)
+        /// 注册完cell再加代理, 防止崩溃
+        self.browserView.delegate = self
+        self.browserView.dataSource = self
+        self.browserView.gestureDelegate = self
+        self.view.addSubview(self.browserView)
         #endif
         /// 工具视图
         if let block = self.toolViewsBlock {
@@ -156,8 +156,7 @@ extension MediaBrowserViewController {
     
     open override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        let bounds: CGRect = self.view.bounds
-        self.browserView?.js_frameApplyTransform = bounds
+        self.browserView.js_frameApplyTransform = self.view.bounds
         for toolView in self.toolViews {
             if toolView.responds(to: #selector(ToolViewProtocol.didLayoutSubviews(in:))) {
                 toolView.didLayoutSubviews?(in: self)
@@ -167,16 +166,13 @@ extension MediaBrowserViewController {
     
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        /// 导航控制器代理, 防止外部重置了我们的代理
-        self.navigationController?.delegate = self
-        
         if let sourceView = self.transitionSourceView, !sourceView.isHidden {
             sourceView.isHidden = true
         }
-        if let browserView = self.browserView {
-            browserView.reloadData()
-            browserView.collectionView?.layoutIfNeeded()
-        }
+        
+        self.browserView.reloadData()
+        self.browserView.collectionView.layoutIfNeeded()
+        
         if let block = self.viewWillAppearBlock {
             block(self)
         }
@@ -184,9 +180,12 @@ extension MediaBrowserViewController {
     
     open override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        /// 导航控制器代理, 防止外部重置了我们的代理
-        self.navigationController?.delegate = self
         self.setNeedsStatusBarAppearanceUpdate()
+        
+        /// 修复动态图可能不动的问题
+        if let cell = self.browserView.currentPageCell {
+            self.mediaBrowserView(self.browserView, willDisplay: cell, forItemAt: self.browserView.currentPage)
+        }
     }
     
     open override func viewWillDisappear(_ animated: Bool) {
@@ -196,14 +195,10 @@ extension MediaBrowserViewController {
     
     open override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        /// 导航控制器代理, 判断下代理是否还在自己身上
-        if let delegate = self.navigationController?.delegate, delegate.isEqual(self) {
-            self.navigationController?.delegate = nil
-        }
-        
         if let sourceView = self.transitionSourceView, sourceView.isHidden {
             sourceView.isHidden = false
         }
+        
         if let block = self.viewDidDisappearBlock {
             block(self)
         }
@@ -261,33 +256,17 @@ extension MediaBrowserViewController {
         sender.present(self, animated: animated, completion: completion)
     }
     
-    @objc(pushFromViewController:animated:)
-    open func push(from sender: UIViewController, animated: Bool = true) {
-        guard let navigationController = sender.navigationController else { return }
-        /// 导航控制器代理
-        navigationController.delegate = self
-        navigationController.pushViewController(self, animated: animated)
-    }
-    
     @objc open func hide(animated: Bool = true, completion: (() -> Void)? = nil) {
-        let viewController: UIViewController = self.navigationController != nil ? self.navigationController! : self
-        let isPresented: Bool = viewController.presentingViewController?.presentedViewController == viewController
-        if isPresented {
-            self.dismiss(animated: animated, completion: completion)
-        } else {
-            /// 导航控制器代理
-            self.navigationController?.delegate = self
-            self.navigationController?.popViewController(animated: animated)
-        }
+        self.dismiss(animated: animated, completion: completion)
     }
     
     @objc public func registerClass(_ cellClass: AnyClass, forCellWithReuseIdentifier identifier: String) -> Void {
-        self.browserView?.registerClass(cellClass, forCellWithReuseIdentifier: identifier)
+        self.browserView.registerClass(cellClass, forCellWithReuseIdentifier: identifier)
     }
     
     @objc(dequeueReusableCell:atIndex:)
     open func dequeueReusableCell(withReuseIdentifier identifier: String, at index: Int) -> UICollectionViewCell {
-        return self.browserView?.dequeueReusableCell(withReuseIdentifier: identifier, at: index) ?? UICollectionViewCell()
+        return self.browserView.dequeueReusableCell(withReuseIdentifier: identifier, at: index)
     }
     
 }
@@ -295,7 +274,7 @@ extension MediaBrowserViewController {
 extension MediaBrowserViewController: MediaBrowserViewDataSource {
     
     public func numberOfMediaItemsInBrowserView(_ browserView: MediaBrowserView) -> Int {
-        return loaderItems?.count ?? 0
+        return self.loaderItems.count
     }
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, cellForItemAt index: Int) -> UICollectionViewCell {
@@ -303,20 +282,19 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         if let block = self.cellForItemAtPageBlock {
             cell = block(self, index)
         }
-        if let loaderItem: LoaderProtocol = loaderItems?[index] {
-            #if BUSINESS_IMAGE
-            if cell == nil, let _ = loaderItem as? ImageLoaderProtocol {
-                cell = self.dequeueReusableCell(withReuseIdentifier: MediaBrowserViewController.imageCellIdentifier, at: index)
-            }
-            #endif
-            #if BUSINESS_VIDEO
-            if cell == nil, let _ = loaderItem as? VideoLoaderProtocol {
-                cell = self.dequeueReusableCell(withReuseIdentifier: MediaBrowserViewController.videoCellIdentifier, at: index)
-            }
-            #endif
-            if let basisCell = cell as? BasisCell {
-                self.configureCell(basisCell, at: index)
-            }
+        let loaderItem: LoaderProtocol = self.loaderItems[index]
+        #if BUSINESS_IMAGE
+        if cell == nil, let _ = loaderItem as? ImageLoaderProtocol {
+            cell = self.dequeueReusableCell(withReuseIdentifier: MediaBrowserViewController.imageCellIdentifier, at: index)
+        }
+        #endif
+        #if BUSINESS_VIDEO
+        if cell == nil, let _ = loaderItem as? VideoLoaderProtocol {
+            cell = self.dequeueReusableCell(withReuseIdentifier: MediaBrowserViewController.videoCellIdentifier, at: index)
+        }
+        #endif
+        if let basisCell = cell as? BasisCell {
+            self.configureCell(basisCell, at: index)
         }
         if let block = self.configureCellBlock {
             block(self, cell, index)
@@ -326,8 +304,8 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     
     private func configureCell(_ cell: BasisCell, at index: Int) -> Void {
         cell.onEmptyPressAction = { [weak self] (cell: UICollectionViewCell) in
-            if let index: Int = self?.browserView?.index(for: cell), index != NSNotFound {
-                self?.browserView?.reloadPages(at: [index])
+            if let index: Int = self?.browserView.index(for: cell), index != NSNotFound {
+                self?.browserView.reloadPages(at: [index])
             }
         }
         cell.willDisplayEmptyViewBlock = { [weak self] (cell: UICollectionViewCell, emptyView: EmptyView, error: NSError) in
@@ -350,22 +328,22 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     #if BUSINESS_IMAGE
     private func configureImageCell(_ cell: ImageCell, at index: Int) -> Void {
         /// 先设置代理
-        cell.zoomImageView?.delegate = self
-        if let loaderItem: ImageLoaderProtocol = loaderItems?[index] as? ImageLoaderProtocol {
-            let imageView: UIImageView? = cell.zoomImageView?.imageView
+        cell.zoomImageView.delegate = self
+        if let loaderItem: ImageLoaderProtocol = loaderItems[index] as? ImageLoaderProtocol {
+            let imageView: UIImageView = cell.zoomImageView.imageView
             loaderItem.cancelRequest(for: imageView)
             loaderItem.request(for: imageView) { [weak cell](loader: LoaderProtocol, object: Any?, data: Data?) in
                 let image: UIImage? = object as? UIImage
-                cell?.zoomImageView?.image = image
-            } downloadProgress: { [weak cell](loader: LoaderProtocol, progress: Progress?) in
+                cell?.zoomImageView.image = image
+            } downloadProgress: { [weak cell](loader: LoaderProtocol, progress: Progress) in
                 cell?.setProgress(progress)
             } completed: { [weak cell](loader: LoaderProtocol, object: Any?, data: Data?, error: NSError?, cancelled: Bool, finished: Bool) in
                 cell?.setError(error, cancelled: cancelled, finished: finished)
                 let image: UIImage? = object as? UIImage
-                cell?.zoomImageView?.image = image
+                cell?.zoomImageView.image = image
                 if image != nil && error == nil {
                     /// 解决网络图片下载完成后不播放的问题
-                    cell?.zoomImageView?.startAnimating()
+                    cell?.zoomImageView.startAnimating()
                 }
             }
         }
@@ -374,13 +352,13 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     
     #if BUSINESS_VIDEO
     private func configureVideoCell(_ cell: VideoCell, at index: Int) -> Void {
-        if  let sourceItem: VideoSourceProtocol = self.loaderItems?[index].sourceItem as? VideoSourceProtocol {
-            cell.videoPlayerView?.thumbImage = sourceItem.thumbImage
+        if  let sourceItem: VideoSourceProtocol = self.loaderItems[index].sourceItem as? VideoSourceProtocol {
+            cell.videoPlayerView.thumbImage = sourceItem.thumbImage
             /// 前后url不相同时需要释放之前的player, 否则会先显示之前的画面, 再显示当前的
-            if cell.videoPlayerView?.url != sourceItem.videoUrl {
-                cell.videoPlayerView?.releasePlayer()
+            if cell.videoPlayerView.url != sourceItem.videoUrl {
+                cell.videoPlayerView.releasePlayer()
             }
-            cell.videoPlayerView?.url = sourceItem.videoUrl
+            cell.videoPlayerView.url = sourceItem.videoUrl
         }
     }
     #endif
@@ -391,15 +369,15 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, willDisplay cell: UICollectionViewCell, forItemAt index: Int) {
         #if BUSINESS_IMAGE
-        if let imageCell = cell as? ImageCell, let loaderItem: ImageLoaderProtocol = loaderItems?[index] as? ImageLoaderProtocol {
+        if let imageCell = cell as? ImageCell, let loaderItem: ImageLoaderProtocol = self.loaderItems[index] as? ImageLoaderProtocol {
             if loaderItem.isFinished {
-                imageCell.zoomImageView?.startAnimating()
+                imageCell.zoomImageView.startAnimating()
             }
         }
         #endif
         #if BUSINESS_VIDEO
         if let videoCell = cell as? VideoCell {
-            videoCell.videoPlayerView?.play()
+            videoCell.videoPlayerView.play()
         }
         #endif
     }
@@ -407,21 +385,21 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
     public func mediaBrowserView(_ browserView: MediaBrowserView, didEndDisplaying cell: UICollectionViewCell, forItemAt index: Int) {
         #if BUSINESS_IMAGE
         if let imageCell = cell as? ImageCell {
-            imageCell.zoomImageView?.stopAnimating()
+            imageCell.zoomImageView.stopAnimating()
         }
         #endif
         #if BUSINESS_VIDEO
         if let videoCell = cell as? VideoCell {
-            videoCell.videoPlayerView?.reset()
+            videoCell.videoPlayerView.reset()
         }
         #endif
     }
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, willScrollHalf fromIndex: Int, toIndex: Int) {
-        if let loaderEntity = loaderItems?[fromIndex], let sourceItem = loaderEntity.sourceItem {
+        if let sourceItem = self.loaderItems[fromIndex].sourceItem {
             sourceItem.sourceView?.isHidden = false
         }
-        if let loaderEntity = loaderItems?[toIndex], let sourceItem = loaderEntity.sourceItem {
+        if let sourceItem = self.loaderItems[toIndex].sourceItem {
             sourceItem.sourceView?.isHidden = true
         }
         for toolView in self.toolViews {
@@ -449,7 +427,8 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     
     @objc public func mediaBrowserView(_ browserView: MediaBrowserView, doubleTouch gestureRecognizer: UITapGestureRecognizer) {
         #if BUSINESS_IMAGE
-        if let imageCell = browserView.currentPageCell as? ImageCell, let zoomImageView = imageCell.zoomImageView {
+        if let imageCell = browserView.currentPageCell as? ImageCell {
+            let zoomImageView = imageCell.zoomImageView
             if zoomImageView.zoomScale >= zoomImageView.maximumZoomScale {
                 zoomImageView.setZoom(scale: zoomImageView.finalMinimumZoomScale)
             } else {
@@ -524,7 +503,7 @@ extension MediaBrowserViewController: ZoomImageViewDelegate {
 }
 #endif
 
-extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, UINavigationControllerDelegate, TransitionAnimatorDelegate {
+extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, TransitionAnimatorDelegate {
     
     public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         if let animator = transitioningAnimator as? TransitionAnimator {
@@ -540,50 +519,34 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, UIN
         return self.transitioningAnimator
     }
     
-    public func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        if toVC == self || operation == .pop {
-            if let animator = transitioningAnimator as? TransitionAnimator {
-                animator.animatorType = operation == .push ? .push : .pop
-            }
-            return self.transitioningAnimator
-        }
-        return nil
-    }
-    
     public var transitionSourceRect: CGRect {
-        if let sourceItem = self.sourceItems?[browserView?.currentPage ?? 0] {
-            return sourceItem.sourceRect
-        }
-        return CGRect.zero
+        let sourceItem = self.sourceItems[self.browserView.currentPage]
+        return sourceItem.sourceRect
     }
     
     public var transitionSourceView: UIView? {
-        if let sourceItem = self.sourceItems?[browserView?.currentPage ?? 0] {
-            return sourceItem.sourceView
-        }
-        return nil
+        let sourceItem = self.sourceItems[self.browserView.currentPage]
+        return sourceItem.sourceView
     }
     
     public var transitionCornerRadius: CGFloat {
-        if let sourceItem = self.sourceItems?[browserView?.currentPage ?? 0] {
-            if sourceItem.sourceCornerRadius > 0 {
-                return sourceItem.sourceCornerRadius
-            } else {
-                return sourceItem.sourceView?.layer.cornerRadius ?? 0
-            }
+        let sourceItem = self.sourceItems[self.browserView.currentPage]
+        if sourceItem.sourceCornerRadius > 0 {
+            return sourceItem.sourceCornerRadius
+        } else {
+            return sourceItem.sourceView?.layer.cornerRadius ?? 0
         }
-        return 0
     }
     
     public var transitionThumbImage: UIImage? {
-        let currentPage = self.browserView?.currentPage ?? 0
+        let currentPage = self.browserView.currentPage
         #if BUSINESS_IMAGE
-        if let sourceItem = self.sourceItems?[currentPage] as? ImageSourceProtocol {
+        if let sourceItem = self.sourceItems[currentPage] as? ImageSourceProtocol {
             return (sourceItem.image != nil) ? sourceItem.image : sourceItem.thumbImage
         }
         #endif
         #if BUSINESS_VIDEO
-        if let sourceItem = self.sourceItems?[currentPage] as? VideoSourceProtocol {
+        if let sourceItem = self.sourceItems[currentPage] as? VideoSourceProtocol {
             return sourceItem.thumbImage
         }
         #endif
@@ -592,14 +555,14 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, UIN
     
     public var transitionAnimatorViews: Array<UIView>? {
         var animatorViews: [UIView] = self.toolViews
-        if let dimmingView = self.browserView?.dimmingView {
+        if let dimmingView = self.browserView.dimmingView {
             animatorViews.append(dimmingView)
         }
         return animatorViews
     }
     
     public var transitionTargetView: UIView? {
-        if let cell = self.browserView?.currentPageCell {
+        if let cell = self.browserView.currentPageCell {
             return cell
         }
         return nil
@@ -607,13 +570,13 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, UIN
     
     public var transitionTargetFrame: CGRect {
         #if BUSINESS_IMAGE
-        if let imageCell = self.browserView?.currentPageCell as? ImageCell {
-            return imageCell.zoomImageView?.contentViewFrame ?? CGRect.zero
+        if let imageCell = self.browserView.currentPageCell as? ImageCell {
+            return imageCell.zoomImageView.contentViewFrame
         }
         #endif
         #if BUSINESS_VIDEO
-        if let videoCell = self.browserView?.currentPageCell as? VideoCell {
-            return videoCell.videoPlayerView?.contentViewFrame ?? CGRect.zero
+        if let videoCell = self.browserView.currentPageCell as? VideoCell {
+            return videoCell.videoPlayerView.contentViewFrame
         }
         #endif
         return CGRect.zero

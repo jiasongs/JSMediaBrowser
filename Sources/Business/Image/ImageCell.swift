@@ -10,25 +10,26 @@ import UIKit
 @objc(JSMediaBrowserImageCell)
 open class ImageCell: BasisCell {
     
-    @objc open var zoomImageView: ZoomImageView?
+    @objc lazy open var zoomImageView: ZoomImageView = {
+        return ZoomImageView()
+    }()
     
     open override func didInitialize() -> Void {
         super.didInitialize()
-        zoomImageView = ZoomImageView()
-        contentView.addSubview(zoomImageView!)
-        contentView.sendSubviewToBack(zoomImageView!)
+        self.contentView.addSubview(self.zoomImageView)
+        self.contentView.sendSubviewToBack(self.zoomImageView)
     }
     
     open override func prepareForReuse() -> Void {
         super.prepareForReuse()
-        zoomImageView?.stopAnimating()
-        zoomImageView?.image = nil
-        zoomImageView?.livePhoto = nil
+        self.zoomImageView.stopAnimating()
+        self.zoomImageView.image = nil
+        self.zoomImageView.livePhoto = nil
     }
     
     open override func layoutSubviews() {
         super.layoutSubviews()
-        zoomImageView?.js_frameApplyTransform = self.contentView.bounds
+        self.zoomImageView.js_frameApplyTransform = self.contentView.bounds
     }
     
 }

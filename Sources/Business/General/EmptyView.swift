@@ -14,6 +14,7 @@ open class EmptyView: UIView {
         let imageView = UIImageView()
         return imageView
     }()
+    
     @objc lazy open var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16)
@@ -22,6 +23,7 @@ open class EmptyView: UIView {
         label.textColor = .white
         return label
     }()
+    
     @objc lazy open var subtitleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
@@ -30,6 +32,7 @@ open class EmptyView: UIView {
         label.textColor = .white
         return label
     }()
+    
     @objc lazy open var actionButton: UIButton = {
         let button = UIButton()
         button.titleLabel?.font = UIFont.systemFont(ofSize: 15)

@@ -16,13 +16,13 @@ public enum Shape: Int {
 @objc(JSMediaBrowserPieProgressView)
 open class PieProgressView: UIControl {
     
-    fileprivate var progressLayer: PieProgressLayer? {
-        return self.layer as? PieProgressLayer
+    fileprivate var progressLayer: PieProgressLayer {
+        return self.layer as! PieProgressLayer
     }
     
     @objc open var animationDuration: CFTimeInterval = 0.5 {
         didSet {
-            self.progressLayer?.animationDuration = animationDuration
+            self.progressLayer.animationDuration = animationDuration
         }
     }
     @objc open var progress: Float = 0.0 {
@@ -34,22 +34,22 @@ open class PieProgressView: UIControl {
     }
     @objc open var borderWidth: CGFloat = 1.0 {
         didSet {
-            self.progressLayer?.borderWidth = borderWidth
+            self.progressLayer.borderWidth = borderWidth
         }
     }
     @objc open var borderInset: CGFloat = 3.0 {
         didSet {
-            self.progressLayer?.borderInset = borderInset
+            self.progressLayer.borderInset = borderInset
         }
     }
     @objc open var lineWidth: CGFloat = 0.0 {
         didSet {
-            self.progressLayer?.lineWidth = lineWidth
+            self.progressLayer.lineWidth = lineWidth
         }
     }
     @objc open var shape: Shape = .sector {
         didSet {
-            self.progressLayer?.shape = shape
+            self.progressLayer.shape = shape
             self.borderWidth = CGFloat(borderWidth)
         }
     }
@@ -88,8 +88,8 @@ extension PieProgressView {
         needSetProgress = false
         self.progress = fmax(0.0, fmin(1.0, progress))
         needSetProgress = true
-        self.progressLayer?.shouldChangeProgressWithAnimation = animated
-        self.progressLayer?.progress = progress
+        self.progressLayer.shouldChangeProgressWithAnimation = animated
+        self.progressLayer.progress = progress
         self.sendActions(for: UIControl.Event.valueChanged)
     }
     
@@ -103,9 +103,9 @@ extension PieProgressView {
     
     open override func tintColorDidChange() {
         super.tintColorDidChange()
-        self.progressLayer?.fillColor = self.tintColor
-        self.progressLayer?.strokeColor = self.tintColor
-        self.progressLayer?.borderColor = self.tintColor.cgColor
+        self.progressLayer.fillColor = self.tintColor
+        self.progressLayer.strokeColor = self.tintColor
+        self.progressLayer.borderColor = self.tintColor.cgColor
     }
     
 }

@@ -13,7 +13,7 @@ open class ImageLoaderEntity: BasisLoaderEntity, ImageLoaderProtocol {
     
     @objc public var webImageMediator: WebImageMediatorProtocol?
     
-    @objc public func request(for imageView: UIImageView?, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) {
+    @objc public func request(for imageView: UIImageView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) {
         if let sourceItem = self.sourceItem as? ImageSourceProtocol {
             /// 如果存在image, 且imageUrl为nil时, 则代表是本地图片, 无须网络请求
             if let image = sourceItem.image, sourceItem.imageUrl == nil {
@@ -32,8 +32,8 @@ open class ImageLoaderEntity: BasisLoaderEntity, ImageLoaderProtocol {
                 }, progress: { (receivedSize: Int64, expectedSize: Int64) in
                     if let downloadProgress = downloadProgress {
                         JSAsyncExecuteOnMainQueue {
-                            self.progress?.completedUnitCount = receivedSize
-                            self.progress?.totalUnitCount = expectedSize
+                            self.progress.completedUnitCount = receivedSize
+                            self.progress.totalUnitCount = expectedSize
                             downloadProgress(self, self.progress)
                         }
                     }
@@ -53,7 +53,7 @@ open class ImageLoaderEntity: BasisLoaderEntity, ImageLoaderProtocol {
         }
     }
     
-    public func cancelRequest(for imageView: UIImageView?) {
+    public func cancelRequest(for imageView: UIImageView) {
         self.webImageMediator?.cancelImageRequest(for: imageView)
     }
     

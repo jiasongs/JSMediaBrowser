@@ -38,14 +38,12 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     @objc open var animatorType: TransitionAnimatorType = .presenting
     
     private var animationGroupKey: String = "GroupKey"
-    private var imageView: UIImageView?
-    
-    public override init() {
-        super.init()
-        imageView = UIImageView()
-        imageView?.contentMode = .scaleAspectFill
-        imageView?.clipsToBounds = true
-    }
+    private lazy var imageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        return imageView
+    }()
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         let fromViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from)
@@ -133,17 +131,15 @@ extension TransitionAnimator {
             let zoomContentViewBoundsInView = CGRect(origin: CGPoint.zero, size: zoomContentViewFrameInView.size)
             /// 判断是否截取image
             if let thumbImage = self.delegate?.transitionThumbImage {
-                imageView?.image = thumbImage
+                imageView.image = thumbImage
             }
             /// 隐藏目标视图
             zoomView?.isHidden = true
             /// 添加imageView
-            if let imageView = self.imageView {
-                imageView.removeFromSuperview()
-                needViewController?.view.addSubview(imageView)
-            }
+            self.imageView.removeFromSuperview()
+            needViewController?.view.addSubview(self.imageView)
             /// 设置下Frame
-            imageView?.frame = isEntering ? sourceRect : zoomContentViewFrameInView
+            imageView.frame = isEntering ? sourceRect : zoomContentViewFrameInView
             /// 计算position
             let sourceCenter = CGPoint(x: sourceRect.midX, y: sourceRect.midY)
             let zoomContentViewCenterInView = CGPoint(x: zoomContentViewFrameInView.midX, y: zoomContentViewFrameInView.midY)
@@ -167,7 +163,7 @@ extension TransitionAnimator {
             groupAnimation.fillMode = .forwards
             groupAnimation.isRemovedOnCompletion = false
             groupAnimation.animations = [positionAnimation, boundsAnimation, cornerRadiusAnimation]
-            imageView?.layer.add(groupAnimation, forKey: animationGroupKey)
+            imageView.layer.add(groupAnimation, forKey: animationGroupKey)
         }
     }
     
@@ -192,9 +188,9 @@ extension TransitionAnimator {
             self.delegate?.transitionTargetView?.isHidden = false
         }
         /// 释放资源
-        self.imageView?.removeFromSuperview()
-        self.imageView?.layer.removeAnimation(forKey: animationGroupKey)
-        self.imageView?.image = nil
+        self.imageView.removeFromSuperview()
+        self.imageView.layer.removeAnimation(forKey: animationGroupKey)
+        self.imageView.image = nil
     }
     
 }

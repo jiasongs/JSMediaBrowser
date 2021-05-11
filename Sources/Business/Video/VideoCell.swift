@@ -11,26 +11,27 @@ import JSCoreKit
 @objc(JSMediaBrowserVideoCell)
 open class VideoCell: BasisCell {
     
-    @objc open var videoPlayerView: VideoPlayerView?
+    @objc lazy open var videoPlayerView: VideoPlayerView = {
+        return VideoPlayerView()
+    }()
     
     open override func didInitialize() -> Void {
         super.didInitialize()
-        self.pieProgressView?.isHidden = true
-        self.videoPlayerView = VideoPlayerView()
-        self.contentView.addSubview(self.videoPlayerView!)
-        self.contentView.sendSubviewToBack(self.videoPlayerView!)
+        self.pieProgressView.isHidden = true
+        self.contentView.addSubview(self.videoPlayerView)
+        self.contentView.sendSubviewToBack(self.videoPlayerView)
     }
     
     open override func prepareForReuse() -> Void {
         super.prepareForReuse()
-        self.pieProgressView?.isHidden = true
-        self.videoPlayerView?.thumbImage = nil
-        self.videoPlayerView?.delegate = self
+        self.pieProgressView.isHidden = true
+        self.videoPlayerView.thumbImage = nil
+        self.videoPlayerView.delegate = self
     }
     
     open override func layoutSubviews() {
         super.layoutSubviews()
-        self.videoPlayerView?.js_frameApplyTransform = self.contentView.bounds
+        self.videoPlayerView.js_frameApplyTransform = self.contentView.bounds
     }
     
 }

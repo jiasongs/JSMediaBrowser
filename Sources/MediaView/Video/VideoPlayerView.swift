@@ -174,16 +174,15 @@ extension VideoPlayerView {
 
 extension VideoPlayerView {
     
-    @objc open override var containerView: UIView? {
+    @objc open override var containerView: UIView {
         return self
     }
     
-    @objc open override var contentView: UIView? {
+    @objc open override var contentView: UIView {
         return self.playerView
     }
     
     @objc open override var contentViewFrame: CGRect {
-        guard let contentView = self.contentView else { return CGRect.zero }
         if self.isReadyForDisplay {
             return self.convert(self.playerLayer.videoRect, from: contentView)
         } else {

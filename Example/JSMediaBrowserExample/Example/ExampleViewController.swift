@@ -21,9 +21,9 @@ class ExampleViewController: UIViewController {
         return view
     }()
     lazy var floatLayoutView: JSFloatLayoutView = {
-       let view = JSFloatLayoutView()
+        let view = JSFloatLayoutView()
         view.itemMargins = UIEdgeInsets(top: QMUIHelper.pixelOne, left: QMUIHelper.pixelOne, bottom: 0, right: 0);
-       return view
+        return view
     }()
     lazy var dataSource: Array<String> = []
     
@@ -125,8 +125,8 @@ class ExampleViewController: UIViewController {
         }
         browser.configureCellBlock = { (browserVC: MediaBrowserViewController, cell: UICollectionViewCell, index: Int) in
             if let cell = cell as? BasisCell {
-                if cell.pieProgressView?.tintColor != .white {
-                    cell.pieProgressView?.tintColor = .white
+                if cell.pieProgressView.tintColor != .white {
+                    cell.pieProgressView.tintColor = .white
                 }
             }
         }
@@ -135,11 +135,11 @@ class ExampleViewController: UIViewController {
             emptyView.title = "\(String(describing: error.localizedDescription))"
         }
         browser.onLongPressBlock = { (browserVC: MediaBrowserViewController) in
-            if let currentPage: Int = browserVC.browserView?.currentPage, var sourceItems = browserVC.sourceItems {
-                sourceItems.remove(at: currentPage)
-                browserVC.sourceItems = sourceItems
-                browserVC.browserView?.reloadData()
-            }
+            let currentPage: Int = browserVC.browserView.currentPage
+            var sourceItems = browserVC.sourceItems
+            sourceItems.remove(at: currentPage)
+            browserVC.sourceItems = sourceItems
+            browserVC.browserView.reloadData()
         }
         var sourceItems: Array<SourceProtocol> = [];
         for (index, urlString) in self.dataSource.enumerated() {
@@ -157,8 +157,7 @@ class ExampleViewController: UIViewController {
             }
         }
         browser.sourceItems = sourceItems
-        browser.browserView?.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
-//        browser.push(from: self)
+        browser.browserView.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
         let nav = UINavigationController(rootViewController: browser)
         nav.modalPresentationStyle = .custom
         nav.modalPresentationCapturesStatusBarAppearance = true
