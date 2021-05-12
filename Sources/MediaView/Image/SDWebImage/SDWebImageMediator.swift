@@ -18,21 +18,15 @@ open class SDWebImageMediator: NSObject, WebImageMediatorProtocol {
             context = [SDWebImageContextOption.animatedImageClass: SDAnimatedImage.self]
         }
         imageView.sd_internalSetImage(with: url, placeholderImage: thumbImage, options: SDWebImageOptions.retryFailed, context: context, setImageBlock: { (image: UIImage?, data: Data?, cacheType: SDImageCacheType, targetUrl: URL?) in
-            if let setImageBlock = setImageBlock {
-                setImageBlock(image, data)
-            }
+            setImageBlock?(image, data)
         }, progress: { (receivedSize: Int, expectedSize: Int, targetUrl: URL?) in
-            if let progressBlock = progress {
-                progressBlock(Int64(receivedSize), Int64(expectedSize))
-            }
+            progress?(Int64(receivedSize), Int64(expectedSize))
         }, completed: { (image: UIImage?, data: Data?, error: Error?, cacheType: SDImageCacheType, finished: Bool, url: URL?) in
-            if let completedBlock = completed {
-                var cancelled: Bool = false
-                if let error = error as NSError? {
-                    cancelled = error.code == SDWebImageError.cancelled.rawValue
-                }
-                completedBlock(image, data, error as NSError?, cancelled, finished)
+            var cancelled: Bool = false
+            if let error = error as NSError? {
+                cancelled = error.code == SDWebImageError.cancelled.rawValue
             }
+            completed?(image, data, error as NSError?, cancelled, finished)
         })
     }
     

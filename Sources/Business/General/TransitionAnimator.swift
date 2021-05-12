@@ -38,6 +38,7 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     @objc open var animatorType: TransitionAnimatorType = .presenting
     
     private var animationGroupKey: String = "GroupKey"
+    
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -139,7 +140,7 @@ extension TransitionAnimator {
             self.imageView.removeFromSuperview()
             needViewController?.view.addSubview(self.imageView)
             /// 设置下Frame
-            imageView.frame = isEntering ? sourceRect : zoomContentViewFrameInView
+            self.imageView.frame = isEntering ? sourceRect : zoomContentViewFrameInView
             /// 计算position
             let sourceCenter = CGPoint(x: sourceRect.midX, y: sourceRect.midY)
             let zoomContentViewCenterInView = CGPoint(x: zoomContentViewFrameInView.midX, y: zoomContentViewFrameInView.midY)

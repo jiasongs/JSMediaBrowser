@@ -10,12 +10,12 @@ import UIKit
 @objc(JSMediaBrowserEmptyView)
 open class EmptyView: UIView {
     
-    @objc lazy open var imageView: UIImageView = {
+    @objc open lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         return imageView
     }()
     
-    @objc lazy open var titleLabel: UILabel = {
+    @objc open lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16)
         label.numberOfLines = 2
@@ -24,7 +24,7 @@ open class EmptyView: UIView {
         return label
     }()
     
-    @objc lazy open var subtitleLabel: UILabel = {
+    @objc open lazy var subtitleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
         label.numberOfLines = 3
@@ -33,7 +33,7 @@ open class EmptyView: UIView {
         return label
     }()
     
-    @objc lazy open var actionButton: UIButton = {
+    @objc open lazy var actionButton: UIButton = {
         let button = UIButton()
         button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         button.setTitleColor(.white, for: UIControl.State.normal)
@@ -127,9 +127,7 @@ open class EmptyView: UIView {
     }
     
     @objc func handleAction(button: UIButton) -> Void {
-        if let block = self.onPressAction {
-            block(button)
-        }
+        self.onPressAction?(button)
     }
     
 }

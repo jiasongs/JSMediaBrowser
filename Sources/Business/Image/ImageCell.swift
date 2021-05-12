@@ -10,7 +10,7 @@ import UIKit
 @objc(JSMediaBrowserImageCell)
 open class ImageCell: BasisCell {
     
-    @objc lazy open var zoomImageView: ZoomImageView = {
+    @objc open lazy var zoomImageView: ZoomImageView = {
         return ZoomImageView()
     }()
     

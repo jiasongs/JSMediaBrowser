@@ -34,15 +34,12 @@ import SnapKit
     }
     
     @objc func onPress() {
-       let alertVC = UIAlertController(title: "提示", message: "分享", preferredStyle: UIAlertController.Style.alert)
-        alertVC.addAction(UIAlertAction(title: "确定", style: UIAlertAction.Style.default, handler: { (action) in
-            
-        }))
-//        self.browserViewController?.present(alertVC, animated: true, completion: nil)
         let vc = UIViewController()
         vc.qmui_visibleStateDidChangeBlock = { (vc, state) in
-            if vc.qmui_visibleState == .viewDidLoad {
+            if state == .viewDidLoad {
                 vc.view.backgroundColor = UIColor.white
+            } else if state == .willAppear {
+                vc.navigationController?.setNavigationBarHidden(false, animated: false)
             }
         }
         self.browserViewController?.navigationController?.pushViewController(vc, animated: true)

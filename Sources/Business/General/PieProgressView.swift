@@ -16,10 +16,6 @@ public enum Shape: Int {
 @objc(JSMediaBrowserPieProgressView)
 open class PieProgressView: UIControl {
     
-    fileprivate var progressLayer: PieProgressLayer {
-        return self.layer as! PieProgressLayer
-    }
-    
     @objc open var animationDuration: CFTimeInterval = 0.5 {
         didSet {
             self.progressLayer.animationDuration = animationDuration
@@ -54,7 +50,11 @@ open class PieProgressView: UIControl {
         }
     }
     
-    private var needSetProgress: Bool = true
+    fileprivate var needSetProgress: Bool = true
+    
+    fileprivate var progressLayer: PieProgressLayer {
+        return self.layer as! PieProgressLayer
+    }
     
     public override init(frame: CGRect) {
         super.init(frame: frame)

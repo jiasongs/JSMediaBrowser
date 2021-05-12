@@ -14,8 +14,8 @@ open class BasisCell: UICollectionViewCell, CellProtocol {
         let view = EmptyView()
         view.isHidden = true
         view.onPressAction = { [weak self] (sender: UIButton) in
-            if let strongSelf = self, let block = strongSelf.onEmptyPressAction {
-                block(strongSelf)
+            if let strongSelf = self {
+                strongSelf.onEmptyPressAction?(strongSelf)
             }
         }
         return view
@@ -71,10 +71,8 @@ open class BasisCell: UICollectionViewCell, CellProtocol {
         if cancelled {
             self.pieProgressView.isHidden = false
         } else {
-            if error != nil {
-                if let block = self.willDisplayEmptyViewBlock {
-                    block(self, self.emptyView, error!)
-                }
+            if let error = error {
+                self.willDisplayEmptyViewBlock?(self, self.emptyView, error)
                 self.emptyView.isHidden = false
             } else {
                 self.emptyView.isHidden = true

@@ -23,11 +23,11 @@ open class MediaBrowserView: UIView {
     }
     @objc open weak var gestureDelegate: MediaBrowserViewGestureDelegate?
     
-    @objc private(set) lazy open var collectionView: PagingCollectionView = {
+    @objc private(set) open lazy var collectionView: PagingCollectionView = {
         return PagingCollectionView(frame: frame, collectionViewLayout: self.collectionViewLayout)
     }()
     
-    @objc private(set) lazy open var collectionViewLayout: PagingLayout  = {
+    @objc private(set) open lazy var collectionViewLayout: PagingLayout  = {
         return PagingLayout()
     }()
     
@@ -40,7 +40,7 @@ open class MediaBrowserView: UIView {
         }
     }
     
-    @objc lazy open var singleTapGesture: UITapGestureRecognizer = {
+    @objc open lazy var singleTapGesture: UITapGestureRecognizer = {
         let gesture = UITapGestureRecognizer(target: self, action: #selector(self.handleSingleTapGesture))
         gesture.delegate = self
         gesture.numberOfTapsRequired = 1
@@ -48,20 +48,20 @@ open class MediaBrowserView: UIView {
         return gesture
     }()
     
-    @objc lazy open var doubleTapGesture: UITapGestureRecognizer = {
+    @objc open lazy var doubleTapGesture: UITapGestureRecognizer = {
         let gesture = UITapGestureRecognizer(target: self, action: #selector(self.handleDoubleTapGesture))
         gesture.numberOfTapsRequired = 2
         gesture.numberOfTouchesRequired = 1
         return gesture
     }()
     
-    @objc lazy open var longPressGesture: UILongPressGestureRecognizer = {
+    @objc open lazy var longPressGesture: UILongPressGestureRecognizer = {
         let gesture = UILongPressGestureRecognizer(target: self, action: #selector(self.handleLongPressGesture))
         gesture.minimumPressDuration = 1
         return gesture
     }()
     
-    @objc lazy open var dismissingGesture: UIPanGestureRecognizer = {
+    @objc open lazy var dismissingGesture: UIPanGestureRecognizer = {
         let gesture = UIPanGestureRecognizer(target: self, action: #selector(self.handleDismissingGesture))
         gesture.minimumNumberOfTouches = 1
         gesture.maximumNumberOfTouches = 1
@@ -69,7 +69,7 @@ open class MediaBrowserView: UIView {
         return gesture
     }()
     
-    @objc lazy open var dismissingGestureEnabled: Bool = true
+    @objc open lazy var dismissingGestureEnabled: Bool = true
     
     @objc public var currentPage: Int = 0 {
         didSet {
