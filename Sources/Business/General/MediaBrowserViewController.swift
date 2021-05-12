@@ -78,9 +78,7 @@ open class MediaBrowserViewController: UIViewController {
             self.loaderItems = loaderItems
             
             for toolView in self.toolViews {
-                if toolView.responds(to: #selector(ToolViewProtocol.sourceItemsDidChange(in:))) {
-                    toolView.sourceItemsDidChange?(in: self)
-                }
+                toolView.sourceItemsDidChange?(in: self)
             }
         }
     }
@@ -154,9 +152,7 @@ extension MediaBrowserViewController {
         self.browserView.js_frameApplyTransform = self.view.bounds
         
         for toolView in self.toolViews {
-            if toolView.responds(to: #selector(ToolViewProtocol.didLayoutSubviews(in:))) {
-                toolView.didLayoutSubviews?(in: self)
-            }
+            toolView.didLayoutSubviews?(in: self)
         }
     }
     
@@ -393,17 +389,13 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
             sourceItem.sourceView?.isHidden = true
         }
         for toolView in self.toolViews {
-            if toolView.responds(to: #selector(ToolViewProtocol.willScrollHalf(fromIndex:toIndex:in:))) {
-                toolView.willScrollHalf?(fromIndex: fromIndex, toIndex: toIndex, in: self)
-            }
+            toolView.willScrollHalf?(fromIndex: fromIndex, toIndex: toIndex, in: self)
         }
     }
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, didScrollTo index: Int) {
         for toolView in self.toolViews {
-            if toolView.responds(to: #selector(ToolViewProtocol.didScrollTo(index:in:))) {
-                toolView.didScrollTo?(index: index, in: self)
-            }
+            toolView.didScrollTo?(index: index, in: self)
         }
     }
     

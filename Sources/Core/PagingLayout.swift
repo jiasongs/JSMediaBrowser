@@ -50,10 +50,7 @@ extension PagingLayout {
             for item in 0..<itemCount {
                 let indexPath: IndexPath = IndexPath(item: item, section: section)
                 if let attributes: UICollectionViewLayoutAttributes = self.layoutAttributesForItem(at: indexPath)?.copy() as? UICollectionViewLayoutAttributes {
-                    var itemSize: CGSize = self.itemSize
-                    if delegate.responds(to: #selector(UICollectionViewDelegateFlowLayout.collectionView(_:layout:sizeForItemAt:))) {
-                        itemSize = delegate.collectionView?(collectionView, layout: self, sizeForItemAt: indexPath) ?? CGSize.zero
-                    }
+                    let itemSize: CGSize = delegate.collectionView?(collectionView, layout: self, sizeForItemAt: indexPath) ?? CGSize.zero
                     /// 每次滑动时需要重置下center, 让视觉上居中
                     let halfWidth: CGFloat = itemSize.width / 2.0
                     let centerX: CGFloat = collectionView.contentOffset.x + halfWidth

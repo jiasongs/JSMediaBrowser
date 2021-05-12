@@ -32,12 +32,7 @@ open class ZoomImageView: BasisMediaView {
     private var isImageViewInitialized: Bool = false
     @objc private(set) lazy var imageView: UIImageView = {
         isImageViewInitialized = true
-        var imageView: UIImageView
-        if let delegate = self.delegate, delegate.responds(to: #selector(ZoomImageViewDelegate.zoomImageViewLazyBuildImageView(_:))) {
-            imageView = delegate.zoomImageViewLazyBuildImageView!(self)
-        } else {
-            imageView = UIImageView()
-        }
+        var imageView: UIImageView = self.delegate?.zoomImageViewLazyBuildImageView?(self) ?? UIImageView()
         imageView.isHidden = true
         self.scrollView.addSubview(imageView)
         return imageView
@@ -46,12 +41,7 @@ open class ZoomImageView: BasisMediaView {
     private var isLivePhotoViewInitialized: Bool = false
     @objc private(set) lazy var livePhotoView: PHLivePhotoView = {
         isLivePhotoViewInitialized = true
-        var livePhotoView: PHLivePhotoView
-        if let delegate = self.delegate, delegate.responds(to: #selector(ZoomImageViewDelegate.zoomImageViewLazyBuildLivePhotoView(_:))) {
-            livePhotoView = delegate.zoomImageViewLazyBuildLivePhotoView!(self)
-        } else {
-            livePhotoView = PHLivePhotoView()
-        }
+        var livePhotoView: PHLivePhotoView = self.delegate?.zoomImageViewLazyBuildLivePhotoView?(self) ?? PHLivePhotoView()
         livePhotoView.isHidden = true
         livePhotoView.delegate = self
         self.scrollView.addSubview(livePhotoView)
@@ -106,7 +96,7 @@ open class ZoomImageView: BasisMediaView {
     open override func didInitialize(frame: CGRect) -> Void {
         super.didInitialize(frame: frame)
         self.contentMode = .center
-    
+        
         self.addSubview(self.scrollView)
     }
     
@@ -158,10 +148,7 @@ extension ZoomImageView {
     
     @objc open override var finalViewportRect: CGRect {
         let rect = super.finalViewportRect
-        if let deleagte = self.delegate, deleagte.responds(to: #selector(ZoomImageViewDelegate.zoomImageView(_:finalViewportRect:))) {
-            return deleagte.zoomImageView!(self, finalViewportRect: rect)
-        }
-        return rect
+        return self.delegate?.zoomImageView?(self, finalViewportRect: rect) ?? rect
     }
     
     @objc open var isDisplayImageView: Bool {

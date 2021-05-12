@@ -98,17 +98,11 @@ open class VideoPlayerView: BasisMediaView {
     @objc open var status: Stauts = .stopped {
         didSet {
             if status == .ready {
-                if let delegate = self.delegate, delegate.responds(to: #selector(VideoPlayerViewDelegate.videoPlayerViewDidReadyForDisplay(_:))) {
-                    delegate.videoPlayerViewDidReadyForDisplay?(self)
-                }
+                self.delegate?.videoPlayerViewDidReadyForDisplay?(self)
             } else if status == .failed {
-                if let delegate = self.delegate, delegate.responds(to: #selector(VideoPlayerViewDelegate.videoPlayerView(_:didFailed:))) {
-                    delegate.videoPlayerView?(self, didFailed: self.player.error as NSError?)
-                }
+                self.delegate?.videoPlayerView?(self, didFailed: self.player.error as NSError?)
             } else if status == .ended || status == .stopped {
-                if let delegate = self.delegate, delegate.responds(to: #selector(VideoPlayerViewDelegate.videoPlayerViewDidPlayToEndTime(_:))) {
-                    delegate.videoPlayerViewDidPlayToEndTime?(self)
-                }
+                self.delegate?.videoPlayerViewDidPlayToEndTime?(self)
             }
         }
     }
@@ -249,8 +243,8 @@ extension VideoPlayerView {
         /// progress
         self.playerTimeObservers.append(
             self.player.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: DispatchQueue.main, using: { [weak self](time: CMTime) in
-                if let strongSelf = self, let delegate = strongSelf.delegate, delegate.responds(to: #selector(VideoPlayerViewDelegate.videoPlayerView(_:progress:totalDuration:))) {
-                    delegate.videoPlayerView?(strongSelf, progress: CGFloat(CMTimeGetSeconds(time)), totalDuration: strongSelf.totalDuration)
+                if let strongSelf = self {
+                    strongSelf.delegate?.videoPlayerView?(strongSelf, progress: CGFloat(CMTimeGetSeconds(time)), totalDuration: strongSelf.totalDuration)
                 }
             })
         )
