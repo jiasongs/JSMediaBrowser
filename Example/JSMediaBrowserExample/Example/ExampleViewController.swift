@@ -158,13 +158,13 @@ class ExampleViewController: UIViewController {
         }
         browser.sourceItems = sourceItems
         browser.browserView.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
-//        browser.show(from: self)
+        browser.show(from: self)
         /// 带导航栏的情况
-        let nav = UINavigationController(rootViewController: browser)
-        nav.modalPresentationStyle = .custom
-        nav.modalPresentationCapturesStatusBarAppearance = true
-        nav.transitioningDelegate = browser
-        self.present(nav, animated: true, completion: nil)
+//        let nav = UINavigationController(rootViewController: browser)
+//        nav.modalPresentationStyle = .custom
+//        nav.modalPresentationCapturesStatusBarAppearance = true
+//        nav.transitioningDelegate = browser
+//        self.present(nav, animated: true, completion: nil)
     }
     
     override var prefersStatusBarHidden: Bool {

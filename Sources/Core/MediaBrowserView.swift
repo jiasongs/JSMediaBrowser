@@ -24,7 +24,7 @@ open class MediaBrowserView: UIView {
     @objc open weak var gestureDelegate: MediaBrowserViewGestureDelegate?
     
     @objc private(set) open lazy var collectionView: PagingCollectionView = {
-        return PagingCollectionView(frame: self.bounds, collectionViewLayout: self.collectionViewLayout)
+        return PagingCollectionView(frame: CGRect.zero, collectionViewLayout: self.collectionViewLayout)
     }()
     
     @objc private(set) open lazy var collectionViewLayout: PagingLayout  = {
