@@ -24,7 +24,7 @@ open class MediaBrowserView: UIView {
     @objc open weak var gestureDelegate: MediaBrowserViewGestureDelegate?
     
     @objc private(set) open lazy var collectionView: PagingCollectionView = {
-        return PagingCollectionView(frame: frame, collectionViewLayout: self.collectionViewLayout)
+        return PagingCollectionView(frame: self.bounds, collectionViewLayout: self.collectionViewLayout)
     }()
     
     @objc private(set) open lazy var collectionViewLayout: PagingLayout  = {
@@ -118,12 +118,11 @@ extension MediaBrowserView {
     open override func layoutSubviews() {
         super.layoutSubviews()
         self.dimmingView?.frame = self.bounds
-        let bounds: CGRect = self.bounds
-        if self.collectionView.bounds.size != bounds.size {
+        if self.collectionView.bounds.size != self.bounds.size {
             self.isChangingCollectionViewFrame = true
             /// 必须先 invalidateLayout，再更新 collectionView.frame，否则横竖屏旋转前后的图片不一致（因为 scrollViewDidScroll: 时 contentSize、contentOffset 那些是错的）
             self.collectionViewLayout.invalidateLayout()
-            self.collectionView.frame = bounds
+            self.collectionView.frame = self.bounds
             self.scrollToPage(at: self.currentPage, animated: false)
             self.isChangingCollectionViewFrame = false
         }

@@ -76,6 +76,7 @@ open class MediaBrowserViewController: UIViewController {
                 #endif
             })
             self.loaderItems = loaderItems
+            
             for toolView in self.toolViews {
                 if toolView.responds(to: #selector(ToolViewProtocol.sourceItemsDidChange(in:))) {
                     toolView.sourceItemsDidChange?(in: self)
