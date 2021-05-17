@@ -440,7 +440,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
             }
             break
         case .ended:
-            if verticalDistance > browserView.bounds.height / 4 {
+            if verticalDistance > 60 {
                 self.hide()
             } else {
                 browserView.resetDismissingGesture(withAnimations: { () -> Void in
