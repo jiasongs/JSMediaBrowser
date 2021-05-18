@@ -43,6 +43,7 @@ extension PagingLayout {
         guard let delegate = collectionView.delegate as? UICollectionViewDelegateFlowLayout else {
             return
         }
+        /// 需要优化性能
         self.attributes.removeAll()
         let sectionCount: Int = collectionView.numberOfSections
         for section: Int in 0..<sectionCount {
