@@ -83,6 +83,8 @@ open class MediaBrowserViewController: UIViewController {
         }
     }
     
+    @objc open var dismissWhenSlidingDistance: CGFloat = 60
+    
     #if BUSINESS_IMAGE
     @objc open var imageViewForZoomViewBlock: BuildImageViewForZoomViewBlock?
     @objc open var livePhotoViewForZoomViewBlock: BuildLivePhotoViewForZoomViewBlock?
@@ -440,7 +442,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
             }
             break
         case .ended:
-            if verticalDistance > 60 {
+            if verticalDistance > self.dismissWhenSlidingDistance {
                 self.hide()
             } else {
                 browserView.resetDismissingGesture(withAnimations: { () -> Void in
