@@ -365,7 +365,7 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
     
     @discardableResult
     fileprivate func toggleDismissingGestureDelegate(_ gesture: UIPanGestureRecognizer, verticalDistance: CGFloat) -> Bool {
-        if let _ = self.gestureDelegate?.mediaBrowserView?(self, dismissing: gesture, verticalDistance: verticalDistance) {
+        if let _ = self.gestureDelegate?.mediaBrowserView?(self, dismissingChanged: gesture, verticalDistance: verticalDistance) {
             return true
         } else {
             return false

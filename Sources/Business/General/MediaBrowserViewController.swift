@@ -429,7 +429,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
         self.onLongPressBlock?(self)
     }
     
-    @objc public func mediaBrowserView(_ browserView: MediaBrowserView, dismissing gestureRecognizer: UIPanGestureRecognizer, verticalDistance: CGFloat) {
+    @objc public func mediaBrowserView(_ browserView: MediaBrowserView, dismissingChanged gestureRecognizer: UIPanGestureRecognizer, verticalDistance: CGFloat) {
         switch gestureRecognizer.state {
         case .began:
             break
@@ -464,14 +464,17 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
         guard let imageCell = browserView.currentPageCell as? ImageCell else {
             return true
         }
-        let scrollView = imageCell.zoomImageView.scrollView
+        let zoomImageView: ZoomImageView = imageCell.zoomImageView
+        let scrollView = zoomImageView.scrollView
         let velocity: CGPoint = gestureRecognizer.velocity(in: gestureRecognizer.view)
         if velocity.y > 0 {
+            let minY: CGFloat = ceil(zoomImageView.minContentOffset.y)
             /// 手势向下
-            return scrollView.contentOffset.y <= 0 && !(scrollView.isDragging || scrollView.isDecelerating)
+            return scrollView.contentOffset.y <= minY && !(scrollView.isDragging || scrollView.isDecelerating)
         } else {
+            let maxY: CGFloat = floor(zoomImageView.maxContentOffset.y)
             /// 手势向上
-            return scrollView.contentOffset.y >= 370 && !(scrollView.isDragging || scrollView.isDecelerating)
+            return scrollView.contentOffset.y >= maxY && !(scrollView.isDragging || scrollView.isDecelerating)
         }
         #else
         return true

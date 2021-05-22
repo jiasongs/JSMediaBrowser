@@ -89,7 +89,7 @@ open class ZoomImageView: BasisMediaView {
             }
         }
     }
-   
+    
     @objc public var enabledZoom: Bool = true
     
     fileprivate var isLivePhotoPlaying: Bool = false
@@ -340,6 +340,20 @@ extension ZoomImageView {
 
 extension ZoomImageView {
     
+    @objc open var minContentOffset: CGPoint {
+        let scrollView: UIScrollView = self.scrollView
+        let contentInset: UIEdgeInsets = scrollView.contentInset
+        return CGPoint(x: -contentInset.left,
+                       y: -contentInset.top)
+    }
+    
+    @objc open var maxContentOffset: CGPoint {
+        let scrollView: UIScrollView = self.scrollView
+        let contentInset: UIEdgeInsets = scrollView.contentInset
+        return CGPoint(x: scrollView.contentOffset.x,
+                       y: scrollView.contentSize.height + contentInset.bottom - scrollView.bounds.height)
+    }
+    
     @objc open func revertContentOffset(animated: Bool = true) -> Void {
         var x: CGFloat = self.scrollView.contentOffset.x
         var y: CGFloat = self.scrollView.contentOffset.y
@@ -354,7 +368,6 @@ extension ZoomImageView {
         }
         self.scrollView.setContentOffset(CGPoint(x: x, y: y), animated: animated)
     }
-    
     
     @objc(requireGestureRecognizerToFail:)
     open func require(toFail otherGestureRecognizer: UIGestureRecognizer) {
