@@ -50,7 +50,7 @@ public protocol MediaBrowserViewGestureDelegate: NSObjectProtocol {
     @objc(mediaBrowserView:dismissingWithGestureRecognizer:verticalDistance:)
     optional func mediaBrowserView(_ browserView: MediaBrowserView, dismissing gestureRecognizer: UIPanGestureRecognizer, verticalDistance: CGFloat)
     
-    @objc(mediaBrowserView:gestureRecognizer:shouldReceiveTouch:)
-    optional func mediaBrowserView(_ browserView: MediaBrowserView, gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool
+    @objc(mediaBrowserView:dismissingShouldBeginWithGestureRecognizer:)
+    optional func mediaBrowserView(_ browserView: MediaBrowserView, dismissingShouldBegin gestureRecognizer: UIPanGestureRecognizer) -> Bool
     
 }

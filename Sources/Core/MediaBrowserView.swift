@@ -42,7 +42,6 @@ open class MediaBrowserView: UIView {
     
     @objc open lazy var singleTapGesture: UITapGestureRecognizer = {
         let gesture = UITapGestureRecognizer(target: self, action: #selector(self.handleSingleTapGesture))
-        gesture.delegate = self
         gesture.numberOfTapsRequired = 1
         gesture.numberOfTouchesRequired = 1
         return gesture
@@ -68,8 +67,6 @@ open class MediaBrowserView: UIView {
         gesture.delegate = self
         return gesture
     }()
-    
-    @objc open lazy var dismissingGestureEnabled: Bool = true
     
     @objc public var currentPage: Int = 0 {
         didSet {
@@ -108,7 +105,7 @@ open class MediaBrowserView: UIView {
         self.addGestureRecognizer(self.longPressGesture)
         self.addGestureRecognizer(self.dismissingGesture)
         
-        self.singleTapGesture.require(toFail: doubleTapGesture)
+        self.singleTapGesture.require(toFail: self.doubleTapGesture)
     }
     
 }
@@ -141,7 +138,7 @@ extension MediaBrowserView {
         self.isNeededScrollToItem = true
     }
     
-    private func scrollToPage(at index: Int, animated: Bool = true) -> Void {
+    fileprivate func scrollToPage(at index: Int, animated: Bool = true) -> Void {
         /// 第一次产生实际性滚动的时候, 需要赋值当前的偏移率
         if self.previousPageOffsetRatio == 0 {
             self.previousPageOffsetRatio = self.pageOffsetRatio
@@ -155,22 +152,16 @@ extension MediaBrowserView {
     }
     
     @objc open func reloadData() -> Void {
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
         self.collectionView.reloadData()
-        CATransaction.commit()
     }
     
     @objc(reloadPagesAtIndexs:)
     open func reloadPages(at indexs: Array<Int>) {
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
         var indexPaths: Array<IndexPath> = []
         for index in indexs {
             indexPaths.append(IndexPath(item: index, section: 0))
         }
         self.collectionView.reloadItems(at: indexPaths)
-        CATransaction.commit()
     }
     
     @objc(indexForPageCell:)
@@ -352,16 +343,19 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
     
     @objc public override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if gestureRecognizer == self.dismissingGesture {
-            return self.dismissingGestureEnabled
+            return self.gestureDelegate?.mediaBrowserView?(self, dismissingShouldBegin: self.dismissingGesture) ?? true
+        }
+        return super.gestureRecognizerShouldBegin(gestureRecognizer)
+    }
+    
+    @objc public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        if let _ = touch.view as? UISlider {
+            return false
         }
         return true
     }
     
-    @objc public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        return self.gestureDelegate?.mediaBrowserView?(self, gestureRecognizer: gestureRecognizer, shouldReceive: touch) ?? true
-    }
-    
-    private func endDismissingGesture(_ gesture: UIPanGestureRecognizer, verticalDistance: CGFloat) -> Void {
+    fileprivate func endDismissingGesture(_ gesture: UIPanGestureRecognizer, verticalDistance: CGFloat) -> Void {
         if self.toggleDismissingGestureDelegate(gesture, verticalDistance: verticalDistance) {
             self.gestureBeganLocation = CGPoint.zero
         } else {
@@ -370,7 +364,7 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
     }
     
     @discardableResult
-    private func toggleDismissingGestureDelegate(_ gesture: UIPanGestureRecognizer, verticalDistance: CGFloat) -> Bool {
+    fileprivate func toggleDismissingGestureDelegate(_ gesture: UIPanGestureRecognizer, verticalDistance: CGFloat) -> Bool {
         if let _ = self.gestureDelegate?.mediaBrowserView?(self, dismissing: gesture, verticalDistance: verticalDistance) {
             return true
         } else {

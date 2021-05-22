@@ -317,6 +317,8 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     private func configureImageCell(_ cell: ImageCell, at index: Int) -> Void {
         /// 先设置代理
         cell.zoomImageView.delegate = self
+        /// 当dismissingGesture失败时才会去响应scrollView的手势
+        cell.zoomImageView.require(toFail: self.browserView.dismissingGesture)
         if let loaderItem: ImageLoaderProtocol = loaderItems[index] as? ImageLoaderProtocol {
             let imageView: UIImageView = cell.zoomImageView.imageView
             loaderItem.cancelRequest(for: imageView)
@@ -455,6 +457,25 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
         default:
             break
         }
+    }
+    
+    @objc public func mediaBrowserView(_ browserView: MediaBrowserView, dismissingShouldBegin gestureRecognizer: UIPanGestureRecognizer) -> Bool {
+        #if BUSINESS_IMAGE
+        guard let imageCell = browserView.currentPageCell as? ImageCell else {
+            return true
+        }
+        let scrollView = imageCell.zoomImageView.scrollView
+        let velocity: CGPoint = gestureRecognizer.velocity(in: gestureRecognizer.view)
+        if velocity.y > 0 {
+            /// 手势向下
+            return scrollView.contentOffset.y <= 0 && !(scrollView.isDragging || scrollView.isDecelerating)
+        } else {
+            /// 手势向上
+            return scrollView.contentOffset.y >= 370 && !(scrollView.isDragging || scrollView.isDecelerating)
+        }
+        #else
+        return true
+        #endif
     }
     
 }

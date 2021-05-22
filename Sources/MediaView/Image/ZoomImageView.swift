@@ -14,7 +14,7 @@ open class ZoomImageView: BasisMediaView {
     
     @objc weak var delegate: ZoomImageViewDelegate?
     
-    @objc private lazy var scrollView: UIScrollView = {
+    @objc private(set) lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView(frame: CGRect(origin: CGPoint.zero, size: frame.size))
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
@@ -89,9 +89,11 @@ open class ZoomImageView: BasisMediaView {
             }
         }
     }
-    private var isLivePhotoPlaying: Bool = false
-    
+   
     @objc public var enabledZoom: Bool = true
+    
+    fileprivate var isLivePhotoPlaying: Bool = false
+    fileprivate var failGestureRecognizer: UIGestureRecognizer?
     
     open override func didInitialize(frame: CGRect) -> Void {
         super.didInitialize(frame: frame)
@@ -151,6 +153,10 @@ extension ZoomImageView {
         return self.delegate?.zoomImageView?(self, finalViewportRect: rect) ?? rect
     }
     
+}
+
+extension ZoomImageView {
+    
     @objc open var isDisplayImageView: Bool {
         return isImageViewInitialized && !self.imageView.isHidden
     }
@@ -189,6 +195,10 @@ extension ZoomImageView {
             self.livePhotoView.stopPlayback()
         }
     }
+    
+}
+
+extension ZoomImageView {
     
     @objc open var finalEnabledZoom: Bool {
         var enabledZoom: Bool = self.enabledZoom
@@ -229,48 +239,6 @@ extension ZoomImageView {
             }
         }
         return minScale
-    }
-    
-    @objc open func revertZooming() -> Void {
-        if self.bounds.isEmpty {
-            return
-        }
-        let finalEnabledZoom: Bool = self.finalEnabledZoom
-        let minimumZoomScale: CGFloat = self.finalMinimumZoomScale
-        let maximumZoomScale: CGFloat = max(finalEnabledZoom ? self.maximumZoomScale : minimumZoomScale, minimumZoomScale)
-        let zoomScale: CGFloat = minimumZoomScale
-        let shouldFireDidZoomingManual: Bool = zoomScale == self.zoomScale
-        self.scrollView.panGestureRecognizer.isEnabled = finalEnabledZoom
-        self.scrollView.pinchGestureRecognizer?.isEnabled = finalEnabledZoom
-        self.scrollView.minimumZoomScale = minimumZoomScale
-        self.scrollView.maximumZoomScale = maximumZoomScale
-        /// 重置Frame
-        if let contentView = self.contentView {
-            self.contentView?.frame = CGRect(x: 0, y: 0, width: contentView.frame.width, height: contentView.frame.height)
-        }
-        /// 重置ZoomScale
-        self.setZoom(scale: zoomScale, animated: false)
-        /// 手动触发一次缩放
-        if shouldFireDidZoomingManual {
-            self.handleDidEndZooming()
-        }
-        /// 重置ContentOffset
-        self.revertContentOffset(animated: false)
-    }
-    
-    @objc open func revertContentOffset(animated: Bool = true) -> Void {
-        var x: CGFloat = scrollView.contentOffset.x
-        var y: CGFloat = scrollView.contentOffset.y
-        let viewport: CGRect = self.finalViewportRect
-        if let contentView = self.contentView, !viewport.isEmpty {
-            if viewport.width < contentView.frame.width {
-                x = (contentView.frame.width - viewport.width) / 2 - viewport.minX
-            }
-            if viewport.height < contentView.frame.height {
-                y = -scrollView.contentInset.top
-            }
-        }
-        self.scrollView.setContentOffset(CGPoint(x: x, y: y), animated: animated)
     }
     
     @objc open var zoomScale: CGFloat {
@@ -318,7 +286,34 @@ extension ZoomImageView {
         }
     }
     
-    private func handleDidEndZooming() -> Void {
+    @objc open func revertZooming() -> Void {
+        if self.bounds.isEmpty {
+            return
+        }
+        let finalEnabledZoom: Bool = self.finalEnabledZoom
+        let minimumZoomScale: CGFloat = self.finalMinimumZoomScale
+        let maximumZoomScale: CGFloat = max(finalEnabledZoom ? self.maximumZoomScale : minimumZoomScale, minimumZoomScale)
+        let zoomScale: CGFloat = minimumZoomScale
+        let shouldFireDidZoomingManual: Bool = zoomScale == self.zoomScale
+        self.scrollView.panGestureRecognizer.isEnabled = finalEnabledZoom
+        self.scrollView.pinchGestureRecognizer?.isEnabled = finalEnabledZoom
+        self.scrollView.minimumZoomScale = minimumZoomScale
+        self.scrollView.maximumZoomScale = maximumZoomScale
+        /// 重置Frame
+        if let contentView = self.contentView {
+            self.contentView?.frame = CGRect(x: 0, y: 0, width: contentView.frame.width, height: contentView.frame.height)
+        }
+        /// 重置ZoomScale
+        self.setZoom(scale: zoomScale, animated: false)
+        /// 手动触发一次缩放
+        if shouldFireDidZoomingManual {
+            self.handleDidEndZooming()
+        }
+        /// 重置ContentOffset
+        self.revertContentOffset(animated: false)
+    }
+    
+    fileprivate func handleDidEndZooming() -> Void {
         guard let contentView = self.contentView else { return }
         /// 不需要setNeedsLayout, 当没有标记时, 说明已经布局完毕, 当存在标记时才立刻调用layoutSubviews
         self.layoutIfNeeded()
@@ -339,6 +334,34 @@ extension ZoomImageView {
         }
         scrollView.contentInset = contentInset
         scrollView.contentSize = contentView.frame.size
+    }
+    
+}
+
+extension ZoomImageView {
+    
+    @objc open func revertContentOffset(animated: Bool = true) -> Void {
+        var x: CGFloat = self.scrollView.contentOffset.x
+        var y: CGFloat = self.scrollView.contentOffset.y
+        let viewport: CGRect = self.finalViewportRect
+        if let contentView = self.contentView, !viewport.isEmpty {
+            if viewport.width < contentView.frame.width {
+                x = (contentView.frame.width - viewport.width) / 2 - viewport.minX
+            }
+            if viewport.height < contentView.frame.height {
+                y = -scrollView.contentInset.top
+            }
+        }
+        self.scrollView.setContentOffset(CGPoint(x: x, y: y), animated: animated)
+    }
+    
+    
+    @objc(requireGestureRecognizerToFail:)
+    open func require(toFail otherGestureRecognizer: UIGestureRecognizer) {
+        if self.failGestureRecognizer != otherGestureRecognizer {
+            self.failGestureRecognizer = otherGestureRecognizer
+            self.scrollView.panGestureRecognizer.require(toFail: otherGestureRecognizer)
+        }
     }
     
 }
