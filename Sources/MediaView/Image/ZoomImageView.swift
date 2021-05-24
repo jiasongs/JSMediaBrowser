@@ -332,8 +332,8 @@ extension ZoomImageView {
             contentInset.left = floor(viewport.midX - contentViewFrame.width / 2.0)
             contentInset.right = floor(scrollView.bounds.width - viewport.midX - contentViewFrame.width / 2.0)
         }
-        scrollView.contentInset = contentInset
-        scrollView.contentSize = contentView.frame.size
+        self.scrollView.contentInset = contentInset
+        self.scrollView.contentSize = contentView.frame.size
     }
     
 }

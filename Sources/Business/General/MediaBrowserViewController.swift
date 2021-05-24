@@ -429,6 +429,28 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
         self.onLongPressBlock?(self)
     }
     
+    @objc public func mediaBrowserView(_ browserView: MediaBrowserView, dismissingShouldBegin gestureRecognizer: UIPanGestureRecognizer) -> Bool {
+        #if BUSINESS_IMAGE
+        guard let imageCell = browserView.currentPageCell as? ImageCell else {
+            return true
+        }
+        let zoomImageView: ZoomImageView = imageCell.zoomImageView
+        let scrollView = zoomImageView.scrollView
+        let velocity: CGPoint = gestureRecognizer.velocity(in: gestureRecognizer.view)
+        if velocity.y > 0 {
+            let minY: CGFloat = ceil(zoomImageView.minContentOffset.y)
+            /// 手势向下
+            return scrollView.contentOffset.y <= minY && !(scrollView.isDragging || scrollView.isDecelerating)
+        } else {
+            let maxY: CGFloat = floor(zoomImageView.maxContentOffset.y)
+            /// 手势向上
+            return scrollView.contentOffset.y >= maxY && !(scrollView.isDragging || scrollView.isDecelerating)
+        }
+        #else
+        return true
+        #endif
+    }
+    
     @objc public func mediaBrowserView(_ browserView: MediaBrowserView, dismissingChanged gestureRecognizer: UIPanGestureRecognizer, verticalDistance: CGFloat) {
         switch gestureRecognizer.state {
         case .began:
@@ -457,28 +479,6 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
         default:
             break
         }
-    }
-    
-    @objc public func mediaBrowserView(_ browserView: MediaBrowserView, dismissingShouldBegin gestureRecognizer: UIPanGestureRecognizer) -> Bool {
-        #if BUSINESS_IMAGE
-        guard let imageCell = browserView.currentPageCell as? ImageCell else {
-            return true
-        }
-        let zoomImageView: ZoomImageView = imageCell.zoomImageView
-        let scrollView = zoomImageView.scrollView
-        let velocity: CGPoint = gestureRecognizer.velocity(in: gestureRecognizer.view)
-        if velocity.y > 0 {
-            let minY: CGFloat = ceil(zoomImageView.minContentOffset.y)
-            /// 手势向下
-            return scrollView.contentOffset.y <= minY && !(scrollView.isDragging || scrollView.isDecelerating)
-        } else {
-            let maxY: CGFloat = floor(zoomImageView.maxContentOffset.y)
-            /// 手势向上
-            return scrollView.contentOffset.y >= maxY && !(scrollView.isDragging || scrollView.isDecelerating)
-        }
-        #else
-        return true
-        #endif
     }
     
 }
