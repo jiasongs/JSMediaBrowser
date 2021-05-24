@@ -258,18 +258,11 @@ extension ZoomImageView {
     @objc(zoomToPoint:animated:)
     open func zoom(to point: CGPoint, animated: Bool = true) -> Void {
         guard let cententView = self.contentView else { return }
-        var newZoomScale: CGFloat = 0
-        if self.zoomScale < 1 {
-            /// 如果目前显示的大小比原图小，则放大到原图
-            newZoomScale = 1
-        } else {
-            /// 如果当前显示原图，则放大到最大的大小
-            newZoomScale = self.maximumZoomScale
-        }
-        let tapPoint: CGPoint = cententView.convert(point, from: scrollView)
+        let newZoomScale: CGFloat = self.maximumZoomScale
+        let tapPoint: CGPoint = cententView.convert(point, from: self.scrollView)
         var zoomRect: CGRect = CGRect.zero
-        zoomRect.size.width = scrollView.bounds.width / newZoomScale
-        zoomRect.size.height = scrollView.bounds.height / newZoomScale
+        zoomRect.size.width = self.scrollView.bounds.width / newZoomScale
+        zoomRect.size.height = self.scrollView.bounds.height / newZoomScale
         zoomRect.origin.x = tapPoint.x - zoomRect.width / 2
         zoomRect.origin.y = tapPoint.y - zoomRect.height / 2
         self.zoom(to: zoomRect, animated: animated)
@@ -350,7 +343,7 @@ extension ZoomImageView {
     @objc open var maxContentOffset: CGPoint {
         let scrollView: UIScrollView = self.scrollView
         let contentInset: UIEdgeInsets = scrollView.contentInset
-        return CGPoint(x: scrollView.contentOffset.x,
+        return CGPoint(x: scrollView.contentSize.width + contentInset.right - scrollView.bounds.width,
                        y: scrollView.contentSize.height + contentInset.bottom - scrollView.bounds.height)
     }
     

@@ -48,6 +48,10 @@ class ExampleViewController: UIViewController {
             if let data2 = Bundle.main.path(forResource: "data2", ofType: "gif") {
                 array?.append(URL(fileURLWithPath: data2).absoluteString)
             }
+            if let data3 = Bundle.main.path(forResource: "data3", ofType: "jpg") {
+                array?.append(URL(fileURLWithPath: data3).absoluteString)
+            }
+            array = array?.filter { !$0.contains("mp4") }
             self.dataSource = array ?? []
         }
         self.view.addSubview(self.scrollView)
@@ -159,6 +163,7 @@ class ExampleViewController: UIViewController {
         browser.sourceItems = sourceItems
         browser.browserView.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
         browser.show(from: self)
+        
         /// 带导航栏的情况
 //        let nav = UINavigationController(rootViewController: browser)
 //        nav.modalPresentationStyle = .custom

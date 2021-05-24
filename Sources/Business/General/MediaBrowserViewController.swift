@@ -437,14 +437,22 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
         let zoomImageView: ZoomImageView = imageCell.zoomImageView
         let scrollView = zoomImageView.scrollView
         let velocity: CGPoint = gestureRecognizer.velocity(in: gestureRecognizer.view)
+        let minX: CGFloat = ceil(zoomImageView.minContentOffset.x)
+        let minY: CGFloat = ceil(zoomImageView.minContentOffset.y)
+        let maxX: CGFloat = floor(zoomImageView.maxContentOffset.x)
+        let maxY: CGFloat = floor(zoomImageView.maxContentOffset.y)
         if velocity.y > 0 {
-            let minY: CGFloat = ceil(zoomImageView.minContentOffset.y)
             /// 手势向下
-            return scrollView.contentOffset.y <= minY && !(scrollView.isDragging || scrollView.isDecelerating)
+            if scrollView.contentOffset.y <= minY && !(scrollView.isDragging || scrollView.isDecelerating) {
+                return velocity.x > 0 ? scrollView.contentOffset.x <= minX : scrollView.contentOffset.x >= maxX
+            }
+            return false
         } else {
-            let maxY: CGFloat = floor(zoomImageView.maxContentOffset.y)
             /// 手势向上
-            return scrollView.contentOffset.y >= maxY && !(scrollView.isDragging || scrollView.isDecelerating)
+            if scrollView.contentOffset.y >= maxY && !(scrollView.isDragging || scrollView.isDecelerating) {
+                return velocity.x > 0 ? scrollView.contentOffset.x <= minX : scrollView.contentOffset.x >= maxX
+            }
+            return false
         }
         #else
         return true
