@@ -113,7 +113,7 @@ class ExampleViewController: UIViewController {
     
     @objc func handleImageButtonEvent(sender: QMUIButton) -> Void {
         let browser: MediaBrowserViewController = MediaBrowserViewController()
-        /// 设置全局Block
+        /// 设置全局Block, 待优化block调用的机制
         browser.imageViewForZoomViewBlock = { (browserVC: MediaBrowserViewController, zoomImageView: ZoomImageView) -> UIImageView in
             let imageView = SDAnimatedImageView()
             imageView.autoPlayAnimatedImage = false

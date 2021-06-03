@@ -83,6 +83,12 @@ open class MediaBrowserViewController: UIViewController {
         }
     }
     
+    @objc open var currentPage: Int {
+        didSet {
+            self.browserView.currentPage = self.currentPage
+        }
+    }
+    
     @objc open var dismissWhenSlidingDistance: CGFloat = 60
     
     #if BUSINESS_IMAGE
@@ -260,6 +266,10 @@ extension MediaBrowserViewController {
     @objc(dequeueReusableCell:atIndex:)
     open func dequeueReusableCell(withReuseIdentifier identifier: String, at index: Int) -> UICollectionViewCell {
         return self.browserView.dequeueReusableCell(withReuseIdentifier: identifier, at: index)
+    }
+    
+    @objc open func setCurrentPage(_ index: Int, animated: Bool = true) -> Void {
+        self.browserView.setCurrentPage(index, animated: animated)
     }
     
 }
