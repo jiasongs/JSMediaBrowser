@@ -11,12 +11,9 @@ import UIKit
 open class BasisEntity: NSObject, SourceProtocol {
     
     @objc public var sourceRect: CGRect = CGRect.zero
-    @objc weak public var sourceView: UIView?
-    @objc public var sourceCornerRadius: CGFloat = 0
     @objc public var thumbImage: UIImage?
     
-    required public init(sourceView: UIView?, sourceRect: CGRect, thumbImage: UIImage?) {
-        self.sourceView = sourceView
+    required public init(sourceRect: CGRect, thumbImage: UIImage?) {
         self.sourceRect = sourceRect
         self.thumbImage = thumbImage
     }

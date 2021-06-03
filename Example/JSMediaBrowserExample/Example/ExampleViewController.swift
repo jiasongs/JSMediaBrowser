@@ -161,7 +161,7 @@ class ExampleViewController: UIViewController {
             }
         }
         browser.sourceItems = sourceItems
-        browser.browserView.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
+        browser.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
         browser.show(from: self)
         
         /// 带导航栏的情况

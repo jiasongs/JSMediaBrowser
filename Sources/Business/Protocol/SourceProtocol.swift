@@ -11,10 +11,8 @@ import UIKit
 public protocol SourceProtocol: NSObjectProtocol {
     
     @objc var sourceRect: CGRect { get set }
-    @objc var sourceView: UIView? { get set }
-    @objc var sourceCornerRadius: CGFloat { get set }
     @objc var thumbImage: UIImage? { get set }
     
-    init(sourceView: UIView?, sourceRect: CGRect, thumbImage: UIImage?)
+    init(sourceRect: CGRect, thumbImage: UIImage?)
     
 }
