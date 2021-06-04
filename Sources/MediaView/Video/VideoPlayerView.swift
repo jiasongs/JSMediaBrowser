@@ -9,7 +9,6 @@ import UIKit
 import AVKit
 import JSCoreKit
 
-@objc(JSMediaBrowserVideoPlayerStauts)
 public enum Stauts: Int {
     case stopped = 0
     case ready
@@ -19,12 +18,11 @@ public enum Stauts: Int {
     case failed
 }
 
-@objc(JSMediaBrowserVideoPlayerView)
 open class VideoPlayerView: BasisMediaView {
     
-    @objc weak var delegate: VideoPlayerViewDelegate?
+    weak var delegate: VideoPlayerViewDelegate?
     
-    @objc var url: URL? {
+    var url: URL? {
         didSet {
             if let url = self.url {
                 if oldValue != url {
@@ -35,7 +33,7 @@ open class VideoPlayerView: BasisMediaView {
         }
     }
     
-    @objc var asset: AVAsset? {
+    var asset: AVAsset? {
         didSet {
             if let asset = self.asset {
                 if oldValue != asset {
@@ -46,7 +44,7 @@ open class VideoPlayerView: BasisMediaView {
         }
     }
     
-    @objc var playerItem: AVPlayerItem? {
+    var playerItem: AVPlayerItem? {
         willSet {
             if newValue != nil && newValue != self.playerItem {
                 self.removeObserverForPlayerItem()
@@ -93,21 +91,21 @@ open class VideoPlayerView: BasisMediaView {
         }
     }
     
-    @objc open var isAutoPlay: Bool = true
+    open var isAutoPlay: Bool = true
     
-    @objc open var status: Stauts = .stopped {
+    open var status: Stauts = .stopped {
         didSet {
             if status == .ready {
-                self.delegate?.videoPlayerViewDidReadyForDisplay?(self)
+                self.delegate?.videoPlayerViewDidReadyForDisplay(self)
             } else if status == .failed {
-                self.delegate?.videoPlayerView?(self, didFailed: self.player.error as NSError?)
+                self.delegate?.videoPlayerView(self, didFailed: self.player.error as NSError?)
             } else if status == .ended || status == .stopped {
-                self.delegate?.videoPlayerViewDidPlayToEndTime?(self)
+                self.delegate?.videoPlayerViewDidPlayToEndTime(self)
             }
         }
     }
     
-    @objc var thumbImage: UIImage? {
+    var thumbImage: UIImage? {
         didSet {
             self.thumbImageView.image = self.thumbImage
             self.thumbImageView.isHidden = self.thumbImage == nil
@@ -126,15 +124,31 @@ open class VideoPlayerView: BasisMediaView {
     
     private var playerItemObservers = Array<NSKeyValueObservation>()
     private var playerObservers = Array<NSKeyValueObservation>()
-    private var playerItemCenterObservers = Array<NSObjectProtocol>()
+    private var playerItemCenterObservers = Array<AnyObject>()
     private var playerTimeObservers = Array<Any>()
-    private var systemObservers = Array<NSObjectProtocol>()
+    private var systemObservers = Array<AnyObject>()
     
     open override func didInitialize(frame: CGRect) -> Void {
         super.didInitialize(frame: frame)
         self.addSubview(self.playerView)
         self.addObserverForSystem()
         self.addObserverForPlayer()
+    }
+    
+    open override var containerView: UIView {
+        return self
+    }
+    
+    open override var contentView: UIView {
+        return self.playerView
+    }
+    
+    open override var contentViewFrame: CGRect {
+        if self.isReadyForDisplay {
+            return self.convert(self.playerLayer.videoRect, from: contentView)
+        } else {
+            return self.convert(self.thumbImageView.frame, from: self.thumbImageView.superview)
+        }
     }
     
     deinit {
@@ -167,22 +181,6 @@ extension VideoPlayerView {
 }
 
 extension VideoPlayerView {
-    
-    @objc open override var containerView: UIView {
-        return self
-    }
-    
-    @objc open override var contentView: UIView {
-        return self.playerView
-    }
-    
-    @objc open override var contentViewFrame: CGRect {
-        if self.isReadyForDisplay {
-            return self.convert(self.playerLayer.videoRect, from: contentView)
-        } else {
-            return self.convert(self.thumbImageView.frame, from: self.thumbImageView.superview)
-        }
-    }
     
     open var isReadyForDisplay: Bool {
         return self.playerLayer.isReadyForDisplay
@@ -244,7 +242,7 @@ extension VideoPlayerView {
         self.playerTimeObservers.append(
             self.player.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: DispatchQueue.main, using: { [weak self](time: CMTime) in
                 if let strongSelf = self {
-                    strongSelf.delegate?.videoPlayerView?(strongSelf, progress: CGFloat(CMTimeGetSeconds(time)), totalDuration: strongSelf.totalDuration)
+                    strongSelf.delegate?.videoPlayerView(strongSelf, progress: CGFloat(CMTimeGetSeconds(time)), totalDuration: strongSelf.totalDuration)
                 }
             })
         )

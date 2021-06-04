@@ -8,7 +8,7 @@
 import UIKit
 
 @objc(JSMediaBrowserSourceProtocol)
-public protocol SourceProtocol: NSObjectProtocol {
+public protocol SourceProtocol: AnyObject {
     
     @objc var sourceRect: CGRect { get set }
     @objc var thumbImage: UIImage? { get set }

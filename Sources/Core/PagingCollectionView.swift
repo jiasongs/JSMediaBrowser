@@ -7,7 +7,6 @@
 
 import UIKit
 
-@objc(JSMediaBrowserPagingCollectionView)
 open class PagingCollectionView: UICollectionView {
     
     public override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {

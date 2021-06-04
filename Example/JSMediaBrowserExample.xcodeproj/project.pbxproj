@@ -27,8 +27,6 @@
 		7A61E078259486FA001C58FA /* PageControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A61E076259486FA001C58FA /* PageControl.swift */; };
 		7A80A5AB25974B0100E9927C /* ShareControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A80A5AA25974B0100E9927C /* ShareControl.swift */; };
 		7A80A5AC25974B0100E9927C /* ShareControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A80A5AA25974B0100E9927C /* ShareControl.swift */; };
-		7AEF5DCE25837379006550CE /* OCExampleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AEF5DCD25837379006550CE /* OCExampleViewController.m */; };
-		7AEF5DCF25837379006550CE /* OCExampleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AEF5DCD25837379006550CE /* OCExampleViewController.m */; };
 		7AF4197025981013009E7FEE /* data1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 7AF4196E25981013009E7FEE /* data1.jpg */; };
 		7AF4197125981013009E7FEE /* data1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 7AF4196E25981013009E7FEE /* data1.jpg */; };
 		7AF4197225981013009E7FEE /* data2.gif in Resources */ = {isa = PBXBuildFile; fileRef = 7AF4196F25981013009E7FEE /* data2.gif */; };
@@ -57,9 +55,7 @@
 		7A5F728C265B7E2A0048EF56 /* data3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = data3.jpg; sourceTree = "<group>"; };
 		7A61E076259486FA001C58FA /* PageControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageControl.swift; sourceTree = "<group>"; };
 		7A80A5AA25974B0100E9927C /* ShareControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareControl.swift; sourceTree = "<group>"; };
-		7AEF5DCA25837379006550CE /* JSMediaBrowserExample-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "JSMediaBrowserExample-Bridging-Header.h"; sourceTree = "<group>"; };
-		7AEF5DCC25837379006550CE /* OCExampleViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OCExampleViewController.h; sourceTree = "<group>"; };
-		7AEF5DCD25837379006550CE /* OCExampleViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OCExampleViewController.m; sourceTree = "<group>"; };
+		7AEF29972669C5BC00DE8F79 /* JSMediaBrowserExample-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "JSMediaBrowserExample-Bridging-Header.h"; sourceTree = "<group>"; };
 		7AF4196E25981013009E7FEE /* data1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = data1.jpg; sourceTree = "<group>"; };
 		7AF4196F25981013009E7FEE /* data2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = data2.gif; sourceTree = "<group>"; };
 		7CCDCF6D2CDAF3039877EFE3 /* Pods_JSMediaBrowserExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JSMediaBrowserExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -124,7 +120,7 @@
 				7A80A5B12597608A00E9927C /* General */,
 				7AF419922598439F009E7FEE /* Example */,
 				7A23CD5A2581F365004B4033 /* AppDelegate.swift */,
-				7AEF5DCA25837379006550CE /* JSMediaBrowserExample-Bridging-Header.h */,
+				7AEF29972669C5BC00DE8F79 /* JSMediaBrowserExample-Bridging-Header.h */,
 				7A23CD632581F367004B4033 /* Assets.xcassets */,
 				7A23CD652581F367004B4033 /* LaunchScreen.storyboard */,
 				7A23CD682581F367004B4033 /* Info.plist */,
@@ -160,8 +156,6 @@
 			isa = PBXGroup;
 			children = (
 				7A23CD5E2581F365004B4033 /* ExampleViewController.swift */,
-				7AEF5DCC25837379006550CE /* OCExampleViewController.h */,
-				7AEF5DCD25837379006550CE /* OCExampleViewController.m */,
 			);
 			path = Example;
 			sourceTree = "<group>";
@@ -391,7 +385,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				7A61E077259486FA001C58FA /* PageControl.swift in Sources */,
-				7AEF5DCE25837379006550CE /* OCExampleViewController.m in Sources */,
 				7A320035264774B9005BDC71 /* JSFloatLayoutView.m in Sources */,
 				7A57BAE525A2FB55008E932D /* VideoActionView.swift in Sources */,
 				7A23CD5F2581F365004B4033 /* ExampleViewController.swift in Sources */,
@@ -405,7 +398,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				7A61E078259486FA001C58FA /* PageControl.swift in Sources */,
-				7AEF5DCF25837379006550CE /* OCExampleViewController.m in Sources */,
 				7A320036264774B9005BDC71 /* JSFloatLayoutView.m in Sources */,
 				7A57BAE625A2FB55008E932D /* VideoActionView.swift in Sources */,
 				7A23CD762581F3C1004B4033 /* ExampleViewController.swift in Sources */,

@@ -8,13 +8,28 @@
 import UIKit
 import PhotosUI
 
-@objc(JSMediaBrowserZoomImageViewDelegate)
-public protocol ZoomImageViewDelegate: NSObjectProtocol {
+public protocol ZoomImageViewDelegate: AnyObject {
     
-    @objc optional func zoomImageViewLazyBuildImageView(_ zoomImageView: ZoomImageView) -> UIImageView
+    func zoomImageViewLazyBuildImageView(_ zoomImageView: ZoomImageView) -> UIImageView
     
-    @objc optional func zoomImageViewLazyBuildLivePhotoView(_ zoomImageView: ZoomImageView) -> PHLivePhotoView
+    func zoomImageViewLazyBuildLivePhotoView(_ zoomImageView: ZoomImageView) -> PHLivePhotoView
     
-    @objc optional func zoomImageView(_ zoomImageView: ZoomImageView, finalViewportRect viewportRect: CGRect) -> CGRect
+    func zoomImageView(_ zoomImageView: ZoomImageView, finalViewportRect viewportRect: CGRect) -> CGRect
+    
+}
+
+extension ZoomImageViewDelegate {
+    
+    func zoomImageViewLazyBuildImageView(_ zoomImageView: ZoomImageView) -> UIImageView {
+     return UIImageView()
+    }
+    
+    func zoomImageViewLazyBuildLivePhotoView(_ zoomImageView: ZoomImageView) -> PHLivePhotoView {
+        return PHLivePhotoView()
+    }
+    
+    public func zoomImageView(_ zoomImageView: ZoomImageView, finalViewportRect viewportRect: CGRect) -> CGRect {
+        return CGRect.zero
+    }
     
 }

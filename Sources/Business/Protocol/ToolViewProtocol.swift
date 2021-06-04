@@ -8,7 +8,7 @@
 import UIKit
 
 @objc(JSMediaBrowserToolViewProtocol)
-public protocol ToolViewProtocol: NSObjectProtocol  {
+public protocol ToolViewProtocol: AnyObject {
     
     @objc(didAddToSuperviewInViewController:)
     func didAddToSuperview(in viewController: MediaBrowserViewController)

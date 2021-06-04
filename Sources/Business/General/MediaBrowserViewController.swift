@@ -105,6 +105,8 @@ open class MediaBrowserViewController: UIViewController {
     @objc open var viewWillAppearBlock: ((MediaBrowserViewController) -> Void)?
     @objc open var viewDidDisappearBlock: ((MediaBrowserViewController) -> Void)?
     
+    @objc open weak var sourceViewDelegate: MediaBrowserViewControllerSourceViewDelegate?
+    
     private var loaderItems: Array<LoaderProtocol> = []
     private static let imageCellIdentifier: String = "ImageCellIdentifier"
     private static let videoCellIdentifier: String = "VideoCellIdentifier"
@@ -396,11 +398,11 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
     }
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, willScrollHalf fromIndex: Int, toIndex: Int) {
-        if let sourceItem = self.loaderItems[fromIndex].sourceItem {
-            sourceItem.sourceView?.isHidden = false
+        if let sourceView = self.sourceViewDelegate?.sourceViewForPageAtIndex?(fromIndex) {
+            sourceView.isHidden = false
         }
-        if let sourceItem = self.loaderItems[toIndex].sourceItem {
-            sourceItem.sourceView?.isHidden = true
+        if let sourceView = self.sourceViewDelegate?.sourceViewForPageAtIndex?(toIndex) {
+            sourceView.isHidden = true
         }
         for toolView in self.toolViews {
             toolView.willScrollHalf?(fromIndex: fromIndex, toIndex: toIndex, in: self)
@@ -501,12 +503,12 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
 #if BUSINESS_IMAGE
 extension MediaBrowserViewController: ZoomImageViewDelegate {
     
-    @objc public func zoomImageViewLazyBuildImageView(_ zoomImageView: ZoomImageView) -> UIImageView {
+    public func zoomImageViewLazyBuildImageView(_ zoomImageView: ZoomImageView) -> UIImageView {
         let imageView: UIImageView = self.imageViewForZoomViewBlock?(self, zoomImageView) ?? UIImageView()
         return imageView
     }
     
-    @objc public func zoomImageViewLazyBuildLivePhotoView(_ zoomImageView: ZoomImageView) -> PHLivePhotoView {
+    public func zoomImageViewLazyBuildLivePhotoView(_ zoomImageView: ZoomImageView) -> PHLivePhotoView {
         let livePhotoView: PHLivePhotoView = self.livePhotoViewForZoomViewBlock?(self, zoomImageView) ?? PHLivePhotoView()
         return livePhotoView
     }
@@ -536,17 +538,11 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     }
     
     public var transitionSourceView: UIView? {
-        let sourceItem = self.sourceItems[self.browserView.currentPage]
-        return sourceItem.sourceView
+        return self.sourceViewDelegate?.sourceViewForPageAtIndex?(self.browserView.currentPage)
     }
     
     public var transitionCornerRadius: CGFloat {
-        let sourceItem = self.sourceItems[self.browserView.currentPage]
-        if sourceItem.sourceCornerRadius > 0 {
-            return sourceItem.sourceCornerRadius
-        } else {
-            return sourceItem.sourceView?.layer.cornerRadius ?? 0
-        }
+        return self.sourceViewDelegate?.sourceViewCornerRadiusForPageAtIndex?(self.browserView.currentPage) ?? 0
     }
     
     public var transitionThumbImage: UIImage? {

@@ -12,7 +12,7 @@ public typealias WebImageMediatorDownloadProgress = (_ receivedSize: Int64, _ ex
 public typealias WebImageMediatorCompleted = (_ image: UIImage?, _ imageData: Data?, _ error: NSError?, _ cancelled: Bool, _ finished: Bool) -> Void
 
 @objc(JSMediaBrowserWebImageMediatorProtocol)
-public protocol WebImageMediatorProtocol: NSObjectProtocol {
+public protocol WebImageMediatorProtocol: AnyObject {
     
     @objc(setImageForImageView:url:thumbImage:setImageBlock:progress:completed:)
     func setImage(for imageView: UIImageView, url: URL?, thumbImage: UIImage?, setImageBlock: WebImageMediatorSetImageBlock?, progress: WebImageMediatorDownloadProgress?, completed: WebImageMediatorCompleted?)
