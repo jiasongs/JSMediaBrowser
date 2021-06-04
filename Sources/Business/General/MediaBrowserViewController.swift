@@ -78,10 +78,12 @@ open class MediaBrowserViewController: UIViewController {
             self.loaderItems = loaderItems
             
             for toolView in self.toolViews {
-                toolView.sourceItemsDidChange?(in: self)
+                toolView.sourceItemsDidChange(in: self)
             }
         }
     }
+    
+    @objc open weak var sourceViewDelegate: MediaBrowserViewControllerSourceViewDelegate?
     
     @objc open var currentPage: Int = 0 {
         didSet {
@@ -92,20 +94,18 @@ open class MediaBrowserViewController: UIViewController {
     @objc open var dismissWhenSlidingDistance: CGFloat = 60
     
     #if BUSINESS_IMAGE
-    @objc open var imageViewForZoomViewBlock: BuildImageViewForZoomViewBlock?
-    @objc open var livePhotoViewForZoomViewBlock: BuildLivePhotoViewForZoomViewBlock?
-    @objc open var webImageMediatorBlock: BuildWebImageMediatorBlock?
+    open var imageViewForZoomViewBlock: BuildImageViewForZoomViewBlock?
+    open var livePhotoViewForZoomViewBlock: BuildLivePhotoViewForZoomViewBlock?
+    open var webImageMediatorBlock: BuildWebImageMediatorBlock?
     #endif
-    @objc open var toolViewsBlock: BuildToolViewsBlock?
-    @objc open var cellForItemAtPageBlock: BuildCellBlock?
-    @objc open var configureCellBlock: ConfigureCellBlock?
-    @objc open var willDisplayEmptyViewBlock: DisplayEmptyViewBlock?
-    @objc open var onLongPressBlock: LongPressBlock?
-    @objc open var viewDidLoadBlock: ((MediaBrowserViewController) -> Void)?
-    @objc open var viewWillAppearBlock: ((MediaBrowserViewController) -> Void)?
-    @objc open var viewDidDisappearBlock: ((MediaBrowserViewController) -> Void)?
-    
-    @objc open weak var sourceViewDelegate: MediaBrowserViewControllerSourceViewDelegate?
+    open var toolViewsBlock: BuildToolViewsBlock?
+    open var cellForItemAtPageBlock: BuildCellBlock?
+    open var configureCellBlock: ConfigureCellBlock?
+    open var willDisplayEmptyViewBlock: DisplayEmptyViewBlock?
+    open var onLongPressBlock: LongPressBlock?
+    open var viewDidLoadBlock: ((MediaBrowserViewController) -> Void)?
+    open var viewWillAppearBlock: ((MediaBrowserViewController) -> Void)?
+    open var viewDidDisappearBlock: ((MediaBrowserViewController) -> Void)?
     
     private var loaderItems: Array<LoaderProtocol> = []
     private static let imageCellIdentifier: String = "ImageCellIdentifier"
@@ -162,7 +162,7 @@ extension MediaBrowserViewController {
         self.browserView.js_frameApplyTransform = self.view.bounds
         
         for toolView in self.toolViews {
-            toolView.didLayoutSubviews?(in: self)
+            toolView.didLayoutSubviews(in: self)
         }
     }
     
@@ -225,19 +225,17 @@ extension MediaBrowserViewController {
 
 extension MediaBrowserViewController {
     
-    @objc open var toolViews: Array<UIView & ToolViewProtocol> {
-        get {
-            if !self.isViewLoaded {
-                return []
-            }
-            var resultArray = Array<UIView & ToolViewProtocol>()
-            for item in self.view.subviews.enumerated() {
-                if let subview = item.element as? (UIView & ToolViewProtocol) {
-                    resultArray.append(subview)
-                }
-            }
-            return resultArray
+    open var toolViews: Array<UIView & ToolViewProtocol> {
+        if !self.isViewLoaded {
+            return []
         }
+        var resultArray = Array<UIView & ToolViewProtocol>()
+        for item in self.view.subviews.enumerated() {
+            if let subview = item.element as? (UIView & ToolViewProtocol) {
+                resultArray.append(subview)
+            }
+        }
+        return resultArray
     }
     
     @objc open func toolViewForClass(_ viewClass: UIView.Type) -> UIView? {
@@ -405,13 +403,13 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
             sourceView.isHidden = true
         }
         for toolView in self.toolViews {
-            toolView.willScrollHalf?(fromIndex: fromIndex, toIndex: toIndex, in: self)
+            toolView.willScrollHalf(fromIndex: fromIndex, toIndex: toIndex, in: self)
         }
     }
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, didScrollTo index: Int) {
         for toolView in self.toolViews {
-            toolView.didScrollTo?(index: index, in: self)
+            toolView.didScrollTo(index: index, in: self)
         }
     }
     

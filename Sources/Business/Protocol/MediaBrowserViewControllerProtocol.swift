@@ -6,15 +6,9 @@
 //
 
 import UIKit
+import PhotosUI
 
-@objc(JSMediaBrowserViewControllerProtocol)
-public protocol MediaBrowserViewControllerProtocol: AnyObject {
-    
-    
-    
-}
-
-@objc(JSMediaBrowserViewControllerSourceViewProtocol)
+@objc(JSMediaBrowserViewControllerSourceViewDelegate)
 public protocol MediaBrowserViewControllerSourceViewDelegate: AnyObject {
     
     @objc optional func sourceViewForPageAtIndex(_ index: Int) -> UIView?

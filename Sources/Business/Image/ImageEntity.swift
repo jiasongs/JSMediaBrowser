@@ -11,5 +11,5 @@ open class ImageEntity: BasisEntity, ImageSourceProtocol {
     
     open var image: UIImage?
     open var imageUrl: URL?
-
+    
 }
