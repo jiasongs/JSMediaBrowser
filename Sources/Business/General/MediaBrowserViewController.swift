@@ -83,7 +83,7 @@ open class MediaBrowserViewController: UIViewController {
         }
     }
     
-    @objc open var currentPage: Int {
+    @objc open var currentPage: Int = 0 {
         didSet {
             self.browserView.currentPage = self.currentPage
         }
