@@ -11,7 +11,6 @@ import SDWebImage
 open class SDWebImageMediator: WebImageMediatorProtocol {
     
     public init() {
-        
     }
     
     public func setImage(for imageView: UIImageView, url: URL?, thumbImage: UIImage?, setImageBlock: WebImageMediatorSetImageBlock?, progress: WebImageMediatorDownloadProgress?, completed: WebImageMediatorCompleted?) {

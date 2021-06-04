@@ -21,20 +21,9 @@ public protocol VideoPlayerViewDelegate: AnyObject {
 
 extension VideoPlayerViewDelegate {
     
-    func videoPlayerViewDidReadyForDisplay(_ videoPlayerView: VideoPlayerView) {
-        
-    }
-    
-    func videoPlayerView(_ videoPlayerView: VideoPlayerView, progress currentTime: CGFloat, totalDuration: CGFloat) {
-        
-    }
-    
-    func videoPlayerViewDidPlayToEndTime(_ videoPlayerView: VideoPlayerView) {
-        
-    }
-    
-    func videoPlayerView(_ videoPlayerView: VideoPlayerView, didFailed error: NSError?) {
-        
-    }
+    func videoPlayerViewDidReadyForDisplay(_ videoPlayerView: VideoPlayerView) {}
+    func videoPlayerView(_ videoPlayerView: VideoPlayerView, progress currentTime: CGFloat, totalDuration: CGFloat) {}
+    func videoPlayerViewDidPlayToEndTime(_ videoPlayerView: VideoPlayerView) {}
+    func videoPlayerView(_ videoPlayerView: VideoPlayerView, didFailed error: NSError?) {}
     
 }
