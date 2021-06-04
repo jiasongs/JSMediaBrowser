@@ -8,18 +8,21 @@
 import UIKit
 import AVKit
 
+@objc(JSMediaBrowserVideoSourceProtocol)
 public protocol VideoSourceProtocol: SourceProtocol {
     
-    var videoUrl: URL? { get set }
-    var videoAsset: AVAsset? { get set }
-    
+    @objc var videoUrl: URL? { get set }
+    @objc var videoAsset: AVAsset? { get set }
+   
 }
 
+@objc(JSMediaBrowserVideoLoaderProtocol)
 public protocol VideoLoaderProtocol: LoaderProtocol {
     
 }
 
-public protocol ViedeoActionViewProtocol: AnyObject  {
+@objc(JSMediaBrowserViedeoActionViewProtocol)
+public protocol ViedeoActionViewProtocol: NSObjectProtocol  {
     
     
 }

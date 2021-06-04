@@ -7,14 +7,15 @@
 
 import UIKit
 
+@objc(JSMediaBrowserEmptyView)
 open class EmptyView: UIView {
     
-    open lazy var imageView: UIImageView = {
+    @objc open lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         return imageView
     }()
     
-    open lazy var titleLabel: UILabel = {
+    @objc open lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16)
         label.numberOfLines = 2
@@ -23,7 +24,7 @@ open class EmptyView: UIView {
         return label
     }()
     
-    open lazy var subtitleLabel: UILabel = {
+    @objc open lazy var subtitleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
         label.numberOfLines = 3
@@ -32,7 +33,7 @@ open class EmptyView: UIView {
         return label
     }()
     
-    open lazy var actionButton: UIButton = {
+    @objc open lazy var actionButton: UIButton = {
         let button = UIButton()
         button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         button.setTitleColor(.white, for: UIControl.State.normal)
@@ -40,37 +41,37 @@ open class EmptyView: UIView {
         return button
     }()
     
-    open var image: UIImage? {
+    @objc open var image: UIImage? {
         didSet {
             imageView.image = image
             self.setNeedsLayout()
         }
     }
-    open var imageViewSize: CGSize = CGSize.zero {
+    @objc open var imageViewSize: CGSize = CGSize.zero {
         didSet {
             self.setNeedsLayout()
         }
     }
-    open var title: String? {
+    @objc open var title: String? {
         didSet {
             titleLabel.text = title
             self.setNeedsLayout()
         }
     }
-    open var subtitle: String? {
+    @objc open var subtitle: String? {
         didSet {
             subtitleLabel.text = subtitle
             self.setNeedsLayout()
         }
     }
-    open var actionTitle: String? {
+    @objc open var actionTitle: String? {
         didSet {
             actionButton.setTitle(actionTitle, for: UIControl.State.normal)
             self.setNeedsLayout()
         }
     }
     
-    open var onPressAction: ((UIButton) -> Void)?
+    @objc open var onPressAction: ((UIButton) -> Void)?
     
     public override init(frame: CGRect) {
         super.init(frame: frame)

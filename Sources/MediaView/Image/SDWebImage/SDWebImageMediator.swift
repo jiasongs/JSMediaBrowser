@@ -8,10 +8,8 @@
 import UIKit
 import SDWebImage
 
-open class SDWebImageMediator: WebImageMediatorProtocol {
-    
-    public init() {
-    }
+@objc(JSMediaBrowserViewSDWebImageMediator)
+open class SDWebImageMediator: NSObject, WebImageMediatorProtocol {
     
     public func setImage(for imageView: UIImageView, url: URL?, thumbImage: UIImage?, setImageBlock: WebImageMediatorSetImageBlock?, progress: WebImageMediatorDownloadProgress?, completed: WebImageMediatorCompleted?) {
         /// 使用SDAnimatedImageView时, 一定要使用SDAnimatedImage, 否则将会是普通的UIImageView渲染

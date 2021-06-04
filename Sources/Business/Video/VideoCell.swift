@@ -8,9 +8,10 @@
 import UIKit
 import JSCoreKit
 
+@objc(JSMediaBrowserVideoCell)
 open class VideoCell: BasisCell {
     
-    open lazy var videoPlayerView: VideoPlayerView = {
+    @objc open lazy var videoPlayerView: VideoPlayerView = {
         return VideoPlayerView()
     }()
     

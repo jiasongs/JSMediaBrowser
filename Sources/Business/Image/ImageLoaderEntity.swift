@@ -8,12 +8,13 @@
 import UIKit
 import JSCoreKit
 
+@objc(JSMediaBrowserImageLoaderEntity)
 open class ImageLoaderEntity: BasisLoaderEntity, ImageLoaderProtocol {
     
-    public var webImageMediator: WebImageMediatorProtocol?
+    @objc public var webImageMediator: WebImageMediatorProtocol?
     
-    public func request(for imageView: UIImageView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) {
-        if let sourceItem = self.sourceItem as? ImageEntity {
+    @objc public func request(for imageView: UIImageView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) {
+        if let sourceItem = self.sourceItem as? ImageSourceProtocol {
             /// 如果存在image, 且imageUrl为nil时, 则代表是本地图片, 无须网络请求
             if let image = sourceItem.image, sourceItem.imageUrl == nil {
                 JSAsyncExecuteOnMainQueue {

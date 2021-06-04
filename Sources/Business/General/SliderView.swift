@@ -7,20 +7,21 @@
 
 import UIKit
 
+@objc(JSMediaBrowserSliderView)
 open class SliderView: UISlider {
     
-    open var trackHeight: CGFloat = 0
-    open var thumbSize: CGSize = CGSize.zero {
+    @objc open var trackHeight: CGFloat = 0
+    @objc open var thumbSize: CGSize = CGSize.zero {
         didSet {
             self.updateThumbImage()
         }
     }
-    open var thumbColor: UIColor? {
+    @objc open var thumbColor: UIColor? {
         didSet {
             self.updateThumbImage()
         }
     }
-    open var thumbShadowColor: UIColor? {
+    @objc open var thumbShadowColor: UIColor? {
         didSet {
             if let thumbView = self.thumbViewIfExist {
                 thumbView.layer.shadowColor = thumbShadowColor?.cgColor
@@ -28,14 +29,14 @@ open class SliderView: UISlider {
             }
         }
     }
-    open var thumbShadowOffset: CGSize = CGSize.zero {
+    @objc open var thumbShadowOffset: CGSize = CGSize.zero {
         didSet {
             if let thumbView = self.thumbViewIfExist {
                 thumbView.layer.shadowOffset = thumbShadowOffset
             }
         }
     }
-    open var thumbShadowRadius: CGFloat = 0 {
+    @objc open var thumbShadowRadius: CGFloat = 0 {
         didSet {
             if let thumbView = self.thumbViewIfExist {
                 thumbView.layer.shadowRadius = thumbShadowRadius

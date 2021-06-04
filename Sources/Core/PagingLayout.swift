@@ -7,9 +7,10 @@
 
 import UIKit
 
+@objc(JSMediaBrowserPagingLayout)
 open class PagingLayout: UICollectionViewFlowLayout {
     
-    public var pageSpacing: CGFloat = 10
+    @objc public var pageSpacing: CGFloat = 10
     
     public override init() {
         super.init()

@@ -7,57 +7,50 @@
 
 import UIKit
 
-public protocol MediaBrowserViewDataSource: AnyObject {
+@objc(JSMediaBrowserViewDataSource)
+public protocol MediaBrowserViewDataSource: NSObjectProtocol {
     
+    @objc(numberOfMediaItemsInBrowserView:)
     func numberOfMediaItemsInBrowserView(_ browserView: MediaBrowserView) -> Int
     
+    @objc(mediaBrowserView:cellForItemAtIndex:)
     func mediaBrowserView(_ browserView: MediaBrowserView, cellForItemAt index: Int) -> UICollectionViewCell
     
 }
 
-public protocol MediaBrowserViewDelegate: AnyObject {
+@objc(JSMediaBrowserViewDelegate)
+public protocol MediaBrowserViewDelegate: NSObjectProtocol {
     
-    func mediaBrowserView(_ browserView: MediaBrowserView, willDisplay cell: UICollectionViewCell, forItemAt index: Int)
+    @objc(mediaBrowserView:willDisplayCell:forItemAtIndex:)
+    optional func mediaBrowserView(_ browserView: MediaBrowserView, willDisplay cell: UICollectionViewCell, forItemAt index: Int)
     
-    func mediaBrowserView(_ browserView: MediaBrowserView, didEndDisplaying cell: UICollectionViewCell, forItemAt index: Int)
+    @objc(mediaBrowserView:didEndDisplaying:forItemAtIndex:)
+    optional func mediaBrowserView(_ browserView: MediaBrowserView, didEndDisplaying cell: UICollectionViewCell, forItemAt index: Int)
     
-    func mediaBrowserView(_ browserView: MediaBrowserView, willScrollHalf fromIndex: Int, toIndex: Int)
+    @objc(mediaBrowserView:willScrollHalfFromIndex:toIndex:)
+    optional func mediaBrowserView(_ browserView: MediaBrowserView, willScrollHalf fromIndex: Int, toIndex: Int)
     
-    func mediaBrowserView(_ browserView: MediaBrowserView, didScrollTo index: Int)
-    
-}
-
-public protocol MediaBrowserViewGestureDelegate: AnyObject {
-    
-    func mediaBrowserView(_ browserView: MediaBrowserView, singleTouch gestureRecognizer: UITapGestureRecognizer)
-    
-    func mediaBrowserView(_ browserView: MediaBrowserView, doubleTouch gestureRecognizer: UITapGestureRecognizer)
-    
-    func mediaBrowserView(_ browserView: MediaBrowserView, longPress gestureRecognizer: UILongPressGestureRecognizer)
-    
-    func mediaBrowserView(_ browserView: MediaBrowserView, dismissingChanged gestureRecognizer: UIPanGestureRecognizer, verticalDistance: CGFloat)
-    
-    func mediaBrowserView(_ browserView: MediaBrowserView, dismissingShouldBegin gestureRecognizer: UIPanGestureRecognizer) -> Bool
+    @objc(mediaBrowserView:didScrollToIndex:)
+    optional func mediaBrowserView(_ browserView: MediaBrowserView, didScrollTo index: Int)
     
 }
 
-extension MediaBrowserViewDelegate {
+@objc(JSMediaBrowserViewGestureDelegate)
+public protocol MediaBrowserViewGestureDelegate: NSObjectProtocol {
     
-    func mediaBrowserView(_ browserView: MediaBrowserView, willDisplay cell: UICollectionViewCell, forItemAt index: Int) {}
-    func mediaBrowserView(_ browserView: MediaBrowserView, didEndDisplaying cell: UICollectionViewCell, forItemAt index: Int) {}
-    func mediaBrowserView(_ browserView: MediaBrowserView, willScrollHalf fromIndex: Int, toIndex: Int) {}
-    func mediaBrowserView(_ browserView: MediaBrowserView, didScrollTo index: Int) {}
+    @objc(mediaBrowserView:singleTouchWithGestureRecognizer:)
+    optional func mediaBrowserView(_ browserView: MediaBrowserView, singleTouch gestureRecognizer: UITapGestureRecognizer)
     
-}
-
-extension MediaBrowserViewGestureDelegate {
+    @objc(mediaBrowserView:doubleTouchWithGestureRecognizer:)
+    optional func mediaBrowserView(_ browserView: MediaBrowserView, doubleTouch gestureRecognizer: UITapGestureRecognizer)
     
-    func mediaBrowserView(_ browserView: MediaBrowserView, singleTouch gestureRecognizer: UITapGestureRecognizer) {}
-    func mediaBrowserView(_ browserView: MediaBrowserView, doubleTouch gestureRecognizer: UITapGestureRecognizer) {}
-    func mediaBrowserView(_ browserView: MediaBrowserView, longPress gestureRecognizer: UILongPressGestureRecognizer) {}
-    func mediaBrowserView(_ browserView: MediaBrowserView, dismissingChanged gestureRecognizer: UIPanGestureRecognizer, verticalDistance: CGFloat) {}
-    func mediaBrowserView(_ browserView: MediaBrowserView, dismissingShouldBegin gestureRecognizer: UIPanGestureRecognizer) -> Bool {
-        return true
-    }
+    @objc(mediaBrowserView:longPressWithGestureRecognizer:)
+    optional func mediaBrowserView(_ browserView: MediaBrowserView, longPress gestureRecognizer: UILongPressGestureRecognizer)
+    
+    @objc(mediaBrowserView:dismissingChangedWithGestureRecognizer:verticalDistance:)
+    optional func mediaBrowserView(_ browserView: MediaBrowserView, dismissingChanged gestureRecognizer: UIPanGestureRecognizer, verticalDistance: CGFloat)
+    
+    @objc(mediaBrowserView:dismissingShouldBeginWithGestureRecognizer:)
+    optional func mediaBrowserView(_ browserView: MediaBrowserView, dismissingShouldBegin gestureRecognizer: UIPanGestureRecognizer) -> Bool
     
 }

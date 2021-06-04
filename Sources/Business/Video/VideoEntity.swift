@@ -12,5 +12,5 @@ open class VideoEntity: BasisEntity, VideoSourceProtocol {
     
     @objc open var videoUrl: URL?
     @objc open var videoAsset: AVAsset?
-    
+
 }

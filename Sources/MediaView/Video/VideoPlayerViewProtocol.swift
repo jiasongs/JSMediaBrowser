@@ -7,23 +7,15 @@
 
 import UIKit
 
-public protocol VideoPlayerViewDelegate: AnyObject {
+@objc(JSMediaBrowserVideoPlayerViewDelegate)
+public protocol VideoPlayerViewDelegate: NSObjectProtocol {
     
-    func videoPlayerViewDidReadyForDisplay(_ videoPlayerView: VideoPlayerView)
+    @objc optional func videoPlayerViewDidReadyForDisplay(_ videoPlayerView: VideoPlayerView)
     
-    func videoPlayerView(_ videoPlayerView: VideoPlayerView, progress currentTime: CGFloat, totalDuration: CGFloat)
+    @objc optional func videoPlayerView(_ videoPlayerView: VideoPlayerView, progress currentTime: CGFloat, totalDuration: CGFloat)
     
-    func videoPlayerViewDidPlayToEndTime(_ videoPlayerView: VideoPlayerView)
+    @objc optional func videoPlayerViewDidPlayToEndTime(_ videoPlayerView: VideoPlayerView)
     
-    func videoPlayerView(_ videoPlayerView: VideoPlayerView, didFailed error: NSError?)
-    
-}
-
-extension VideoPlayerViewDelegate {
-    
-    func videoPlayerViewDidReadyForDisplay(_ videoPlayerView: VideoPlayerView) {}
-    func videoPlayerView(_ videoPlayerView: VideoPlayerView, progress currentTime: CGFloat, totalDuration: CGFloat) {}
-    func videoPlayerViewDidPlayToEndTime(_ videoPlayerView: VideoPlayerView) {}
-    func videoPlayerView(_ videoPlayerView: VideoPlayerView, didFailed error: NSError?) {}
+    @objc optional func videoPlayerView(_ videoPlayerView: VideoPlayerView, didFailed error: NSError?)
     
 }
