@@ -11,14 +11,14 @@ import JSMediaBrowser
 import SnapKit
 import QMUIKit
 
-@objc class PageControl: UIPageControl, ToolViewProtocol {
+class PageControl: UIPageControl, ToolViewProtocol {
     
     weak var browserViewController: MediaBrowserViewController?
     
-    func didAddToSuperview(in viewController: MediaBrowserViewController) {
+    func toolView(_ toolView: ToolViewProtocol, prepare viewController: MediaBrowserViewController) {
         self.browserViewController = viewController
-        self.sourceItemsDidChange(in: viewController)
-        self.currentPage = viewController.browserView.currentPage
+        self.numberOfPages = viewController.totalUnitPage
+        self.currentPage = viewController.currentPage
         self.snp.makeConstraints { (make) in
             make.width.equalTo(viewController.view.snp.width).multipliedBy(0.5)
             make.centerX.equalTo(viewController.view.snp.centerX)
@@ -32,12 +32,20 @@ import QMUIKit
         self.addTarget(self, action: #selector(self.handlePageControlEvent), for: .valueChanged)
     }
     
-    func sourceItemsDidChange(in viewController: MediaBrowserViewController) {
-        self.numberOfPages = viewController.sourceItems.count
+    func toolView(_ toolView: ToolViewProtocol, layout viewController: MediaBrowserViewController) {
+       
     }
     
-    func willScrollHalf(fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController) {
-        self.currentPage = viewController.browserView.currentPage
+    func toolView(_ toolView: ToolViewProtocol, pageDidChange viewController: MediaBrowserViewController) {
+        self.numberOfPages = viewController.totalUnitPage
+    }
+    
+    func toolView(_ toolView: ToolViewProtocol, willScrollHalf fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController) {
+        self.currentPage = viewController.currentPage
+    }
+    
+    func toolView(_ toolView: ToolViewProtocol, didScrollTo index: Int, in viewController: MediaBrowserViewController) {
+        
     }
     
     @objc func handlePageControlEvent() -> Void {

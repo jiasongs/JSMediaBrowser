@@ -74,6 +74,7 @@ open class MediaBrowserView: UIView {
             }
         }
     }
+    
     public var totalUnitPage: Int {
         return self.collectionView.numberOfItems(inSection: 0)
     }

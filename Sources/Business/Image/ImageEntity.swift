@@ -7,9 +7,10 @@
 
 import UIKit
 
+@objc(JSMediaBrowserImageEntity)
 open class ImageEntity: BasisEntity, ImageSourceProtocol {
     
-    open var image: UIImage?
-    open var imageUrl: URL?
+    @objc open var image: UIImage?
+    @objc open var imageUrl: URL?
     
 }

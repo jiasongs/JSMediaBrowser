@@ -78,7 +78,7 @@ open class MediaBrowserViewController: UIViewController {
             self.loaderItems = loaderItems
             
             for toolView in self.toolViews {
-                toolView.sourceItemsDidChange(in: self)
+                toolView.toolView(toolView, didChange: self)
             }
         }
     }
@@ -89,6 +89,10 @@ open class MediaBrowserViewController: UIViewController {
         didSet {
             self.browserView.currentPage = self.currentPage
         }
+    }
+    
+    @objc open var totalUnitPage: Int {
+        return self.browserView.totalUnitPage
     }
     
     @objc open var dismissWhenSlidingDistance: CGFloat = 60
@@ -152,7 +156,7 @@ extension MediaBrowserViewController {
         let toolViews: Array<UIView & ToolViewProtocol> = self.toolViewsBlock?(self) ?? []
         for toolView in toolViews {
             self.view.addSubview(toolView)
-            toolView.didAddToSuperview(in: self)
+            toolView.toolView(toolView, prepare: self)
         }
         self.viewDidLoadBlock?(self)
     }
@@ -162,7 +166,7 @@ extension MediaBrowserViewController {
         self.browserView.js_frameApplyTransform = self.view.bounds
         
         for toolView in self.toolViews {
-            toolView.didLayoutSubviews(in: self)
+            toolView.toolView(toolView, layout: self)
         }
     }
     
@@ -403,13 +407,13 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
             sourceView.isHidden = true
         }
         for toolView in self.toolViews {
-            toolView.willScrollHalf(fromIndex: fromIndex, toIndex: toIndex, in: self)
+            toolView.toolView(toolView, willScrollHalf: fromIndex, toIndex: toIndex, in: self)
         }
     }
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, didScrollTo index: Int) {
         for toolView in self.toolViews {
-            toolView.didScrollTo(index: index, in: self)
+            toolView.toolView(toolView, didScrollTo: index, in: self)
         }
     }
     

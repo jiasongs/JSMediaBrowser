@@ -7,9 +7,10 @@
 
 import AVKit
 
+@objc(JSMediaBrowserVideoEntity)
 open class VideoEntity: BasisEntity, VideoSourceProtocol {
     
-    open var videoUrl: URL?
-    open var videoAsset: AVAsset?
+    @objc open var videoUrl: URL?
+    @objc open var videoAsset: AVAsset?
     
 }

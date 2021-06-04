@@ -193,10 +193,6 @@ class ExampleViewController: UIViewController {
     
 }
 
-extension ExampleViewController: UINavigationControllerDelegate {
-    
-}
-
 extension ExampleViewController: MediaBrowserViewControllerSourceViewDelegate {
     
     func sourceViewForPageAtIndex(_ index: Int) -> UIView? {
@@ -208,4 +204,6 @@ extension ExampleViewController: MediaBrowserViewControllerSourceViewDelegate {
     
 }
 
-
+extension ExampleViewController: UINavigationControllerDelegate {
+    
+}

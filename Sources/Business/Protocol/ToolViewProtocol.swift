@@ -9,24 +9,24 @@ import UIKit
 
 public protocol ToolViewProtocol: AnyObject {
     
-    func prepare(in viewController: MediaBrowserViewController)
+    func toolView(_ toolView: ToolViewProtocol, prepare viewController: MediaBrowserViewController)
     
-    func layoutView(in viewController: MediaBrowserViewController)
+    func toolView(_ toolView: ToolViewProtocol, layout viewController: MediaBrowserViewController)
     
-    func itemsDidChange(in viewController: MediaBrowserViewController)
+    func toolView(_ toolView: ToolViewProtocol, pageDidChange viewController: MediaBrowserViewController)
     
-    func willScrollHalf(fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController)
+    func toolView(_ toolView: ToolViewProtocol, willScrollHalf fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController)
     
-    func didScrollTo(index: Int, in viewController: MediaBrowserViewController)
+    func toolView(_ toolView: ToolViewProtocol, didScrollTo index: Int, in viewController: MediaBrowserViewController)
     
 }
 
 extension ToolViewProtocol {
     
-    func prepare(in viewController: MediaBrowserViewController) {}
-    func layoutView(in viewController: MediaBrowserViewController) {}
-    func itemsDidChange(in viewController: MediaBrowserViewController) {}
-    func willScrollHalf(fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController) {}
-    func didScrollTo(index: Int, in viewController: MediaBrowserViewController) {}
+    func toolView(_ toolView: ToolViewProtocol, prepare viewController: MediaBrowserViewController) {}
+    func toolView(_ toolView: ToolViewProtocol, layout viewController: MediaBrowserViewController) {}
+    func toolView(_ toolView: ToolViewProtocol, didChange viewController: MediaBrowserViewController) {}
+    func toolView(_ toolView: ToolViewProtocol, willScrollHalf fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController) {}
+    func toolView(_ toolView: ToolViewProtocol, didScrollTo index: Int, in viewController: MediaBrowserViewController) {}
     
 }

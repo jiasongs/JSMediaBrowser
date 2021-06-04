@@ -10,11 +10,11 @@ import JSCoreKit
 import JSMediaBrowser
 import SnapKit
 
-@objc class ShareControl: UIButton, ToolViewProtocol {
+class ShareControl: UIButton, ToolViewProtocol {
     
     weak var browserViewController: MediaBrowserViewController?
     
-    func didAddToSuperview(in viewController: MediaBrowserViewController) {
+    func toolView(_ toolView: ToolViewProtocol, prepare viewController: MediaBrowserViewController) {
         self.browserViewController = viewController
         self.setTitle("分享", for: UIControl.State.normal)
         self.setTitleColor(.white, for: UIControl.State.normal)
@@ -26,11 +26,23 @@ import SnapKit
         self.addTarget(self, action: #selector(self.onPress), for: UIControl.Event.touchUpInside)
     }
     
-    func didLayoutSubviews(in viewController: MediaBrowserViewController) {
+    func toolView(_ toolView: ToolViewProtocol, layout viewController: MediaBrowserViewController) {
         let bottom = JSCoreHelper.isNotchedScreen ? viewController.view.qmui_safeAreaInsets.bottom : 20
         self.snp.updateConstraints { (make) in
             make.bottom.equalTo(viewController.view.snp.bottom).offset(-bottom)
         }
+    }
+    
+    func toolView(_ toolView: ToolViewProtocol, pageDidChange viewController: MediaBrowserViewController) {
+      
+    }
+    
+    func toolView(_ toolView: ToolViewProtocol, willScrollHalf fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController) {
+        
+    }
+    
+    func toolView(_ toolView: ToolViewProtocol, didScrollTo index: Int, in viewController: MediaBrowserViewController) {
+        
     }
     
     @objc func onPress() {
