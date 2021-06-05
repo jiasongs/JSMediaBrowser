@@ -7,10 +7,9 @@
 
 import UIKit
 
-@objc(JSMediaBrowserBasisCell)
 open class BasisCell: UICollectionViewCell, CellProtocol {
     
-    @objc open lazy var emptyView: EmptyView = {
+    open lazy var emptyView: EmptyView = {
         let view = EmptyView()
         view.isHidden = true
         view.onPressAction = { [weak self] (sender: UIButton) in
@@ -21,14 +20,14 @@ open class BasisCell: UICollectionViewCell, CellProtocol {
         return view
     }()
     
-    @objc open lazy var pieProgressView: PieProgressView = {
+    open lazy var pieProgressView: PieProgressView = {
         let view = PieProgressView()
         view.tintColor = .white
         return view
     }()
     
-    @objc open var onEmptyPressAction: ((UICollectionViewCell) -> Void)?
-    @objc open var willDisplayEmptyViewBlock: ((UICollectionViewCell, EmptyView, NSError) -> Void)?
+    open var onEmptyPressAction: ((UICollectionViewCell) -> Void)?
+    open var willDisplayEmptyViewBlock: ((UICollectionViewCell, EmptyView, NSError) -> Void)?
     
     public override init(frame: CGRect) {
         super.init(frame: frame)

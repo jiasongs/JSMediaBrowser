@@ -7,22 +7,26 @@
 
 import UIKit
 
-@objc(JSMediaBrowserToolViewProtocol)
-public protocol ToolViewProtocol: NSObjectProtocol  {
+public protocol ToolViewProtocol {
     
-    @objc(didAddToSuperviewInViewController:)
-    func didAddToSuperview(in viewController: MediaBrowserViewController)
+    func prepare(in viewController: MediaBrowserViewController)
     
-    @objc(didLayoutSubviewsInViewController:)
-    optional func didLayoutSubviews(in viewController: MediaBrowserViewController)
+    func layout(in viewController: MediaBrowserViewController)
     
-    @objc(sourceItemsDidChangeInViewController:)
-    optional func sourceItemsDidChange(in viewController: MediaBrowserViewController)
+    func totalUnitPageDidChange(_ totalUnitPage: Int, in viewController: MediaBrowserViewController)
     
-    @objc(willScrollHalfFromIndex:toIndex:inViewController:)
-    optional func willScrollHalf(fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController)
+    func willScrollHalf(fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController)
     
-    @objc(didScrollToIndex:inViewController:)
-    optional func didScrollTo(index: Int, in viewController: MediaBrowserViewController)
+    func didScroll(to index: Int, in viewController: MediaBrowserViewController)
+    
+}
+
+extension ToolViewProtocol {
+    
+    func prepare(in viewController: MediaBrowserViewController) {}
+    func layout(in viewController: MediaBrowserViewController) {}
+    func totalUnitPageDidChange(_ totalUnitPage: Int, in viewController: MediaBrowserViewController) {}
+    func willScrollHalf(fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController) {}
+    func didScroll(to index: Int, in viewController: MediaBrowserViewController) {}
     
 }

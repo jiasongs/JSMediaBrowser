@@ -7,7 +7,11 @@
 
 import Foundation
 
-@objc(JSMediaBrowserVideoLoaderEntity)
-open class VideoLoaderEntity: BasisLoaderEntity, VideoLoaderProtocol {
+open class VideoLoaderEntity: VideoLoaderProtocol {
+    
+    public var sourceItem: SourceProtocol?
+    public var progress: Progress = Progress()
+    public var error: NSError?
+    public var isFinished: Bool = true
     
 }

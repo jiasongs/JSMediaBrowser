@@ -7,13 +7,12 @@
 
 import UIKit
 
-@objc(JSMediaBrowserBasisMediaView)
 open class BasisMediaView: UIView {
     
-    @objc public var viewportRect: CGRect = .zero
+    public var viewportRect: CGRect = .zero
     /// 以下属性viewportRect、isEnableSafeArea为zero时才会生效, 若自定义viewportRect, 请自行实现
-    @objc public var viewportRectMaxWidth: CGFloat = 700
-    @objc public var isEnableVerticalSafeArea = false
+    public var viewportRectMaxWidth: CGFloat = 700
+    public var isEnableVerticalSafeArea = false
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -26,27 +25,24 @@ open class BasisMediaView: UIView {
     }
     
     open func didInitialize(frame: CGRect) {
+        
     }
     
-}
-
-extension BasisMediaView {
-    
-    @objc open var containerView: UIView {
+    open var containerView: UIView {
         return self
     }
     
-    @objc open var contentView: UIView? {
+    open var contentView: UIView? {
         return nil
     }
     
-    @objc open var contentViewFrame: CGRect {
+    open var contentViewFrame: CGRect {
         return CGRect.zero
     }
     
-    @objc open var finalViewportRect: CGRect {
+    open var finalViewportRect: CGRect {
         var rect: CGRect = self.viewportRect
-        if containerView.bounds.size != self.bounds.size {
+        if self.containerView.bounds.size != self.bounds.size {
             self.setNeedsLayout()
             self.layoutIfNeeded()
         }
@@ -60,15 +56,15 @@ extension BasisMediaView {
             }
         }
         if rect.isEmpty && !self.bounds.isEmpty {
-            let size: CGSize = CGSize(width: min(containerView.bounds.width, self.viewportRectMaxWidth), height: containerView.bounds.height)
-            let offsetX = (containerView.bounds.width - size.width) / 2
+            let size: CGSize = CGSize(width: min(self.containerView.bounds.width, self.viewportRectMaxWidth), height: self.containerView.bounds.height)
+            let offsetX = (self.containerView.bounds.width - size.width) / 2
             let top = safeAreaInsets.top
             let left = max(safeAreaInsets.left, offsetX)
             let bottom = safeAreaInsets.bottom
             let right = safeAreaInsets.right
             rect = CGRect(x: left,
                           y: top,
-                          width: min(size.width, containerView.bounds.width - left - right),
+                          width: min(size.width, self.containerView.bounds.width - left - right),
                           height: size.height - top - bottom)
         } else {
             rect = CGRect(x: rect.minX + safeAreaInsets.left,

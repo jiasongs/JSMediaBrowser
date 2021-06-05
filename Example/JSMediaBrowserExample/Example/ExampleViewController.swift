@@ -146,22 +146,18 @@ class ExampleViewController: UIViewController {
             browserVC.browserView.reloadData()
         }
         var sourceItems: Array<SourceProtocol> = [];
-        for (index, urlString) in self.dataSource.enumerated() {
-            if let button: QMUIButton = self.floatLayoutView.subviews[index] as? QMUIButton {
-                if urlString.contains("mp4") {
-                    let videoEntity = VideoEntity(sourceView: button, sourceRect: CGRect.zero, thumbImage: nil)
-                    videoEntity.videoUrl = URL(string: urlString)
-                    sourceItems.append(videoEntity)
-                } else {
-                    let imageEntity = ImageEntity(sourceView: button, sourceRect: CGRect.zero, thumbImage: nil)
-                    imageEntity.imageUrl = URL(string: urlString)
-                    imageEntity.sourceCornerRadius = button.layer.cornerRadius
-                    sourceItems.append(imageEntity)
-                }
+        for (_, urlString) in self.dataSource.enumerated() {
+            if urlString.contains("mp4") {
+                let videoEntity = VideoEntity(sourceRect: CGRect.zero, thumbImage: nil, videoUrl: URL(string: urlString))
+                sourceItems.append(videoEntity)
+            } else {
+                let imageEntity = ImageEntity(sourceRect: CGRect.zero, thumbImage: nil, imageUrl: URL(string: urlString))
+                sourceItems.append(imageEntity)
             }
         }
         browser.sourceItems = sourceItems
-        browser.browserView.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
+        browser.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
+        browser.sourceViewDelegate = self
         browser.show(from: self)
         
         /// 带导航栏的情况
@@ -191,6 +187,18 @@ class ExampleViewController: UIViewController {
             return UIImage(cgImage: cgImage)
         }
         return nil
+    }
+    
+}
+
+extension ExampleViewController: MediaBrowserViewControllerSourceViewDelegate {
+    
+    func sourceViewForPageAtIndex(_ index: Int) -> UIView? {
+        return self.floatLayoutView.subviews[index]
+    }
+    
+    func sourceViewCornerRadiusForPageAtIndex(_ index: Int) -> CGFloat {
+        return 0
     }
     
 }

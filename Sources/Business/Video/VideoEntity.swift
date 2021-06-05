@@ -7,10 +7,19 @@
 
 import AVKit
 
-@objc(JSMediaBrowserVideoEntity)
-open class VideoEntity: BasisEntity, VideoSourceProtocol {
+public struct VideoEntity: VideoSourceProtocol {
     
-    @objc open var videoUrl: URL?
-    @objc open var videoAsset: AVAsset?
-
+    public var sourceRect: CGRect = CGRect.zero
+    public var thumbImage: UIImage?
+    
+    public var videoUrl: URL?
+    public var videoAsset: AVAsset?
+    
+    public init(sourceRect: CGRect = CGRect.zero, thumbImage: UIImage? = nil, videoUrl: URL? = nil, videoAsset: AVAsset? = nil) {
+        self.sourceRect = sourceRect
+        self.thumbImage = thumbImage
+        self.videoUrl = videoUrl
+        self.videoAsset = videoAsset
+    }
+    
 }

@@ -7,14 +7,9 @@
 
 import UIKit
 
-@objc(JSMediaBrowserSourceProtocol)
-public protocol SourceProtocol: NSObjectProtocol {
+public protocol SourceProtocol {
     
-    @objc var sourceRect: CGRect { get set }
-    @objc var sourceView: UIView? { get set }
-    @objc var sourceCornerRadius: CGFloat { get set }
-    @objc var thumbImage: UIImage? { get set }
-    
-    init(sourceView: UIView?, sourceRect: CGRect, thumbImage: UIImage?)
+    var sourceRect: CGRect { get set }
+    var thumbImage: UIImage? { get set }
     
 }

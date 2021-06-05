@@ -7,12 +7,11 @@
 
 import UIKit
 
-@objc(JSMediaBrowserLoaderProtocol)
-public protocol LoaderProtocol: NSObjectProtocol {
+public protocol LoaderProtocol {
     
-    @objc var sourceItem: SourceProtocol? { get set }
-    @objc var progress: Progress { get set }
-    @objc var error: NSError? { get set }
-    @objc var isFinished: Bool { get set }
+    var sourceItem: SourceProtocol? { get set }
+    var progress: Progress { get set }
+    var error: NSError? { get set }
+    var isFinished: Bool { get set }
     
 }

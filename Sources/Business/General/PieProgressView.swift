@@ -7,43 +7,41 @@
 
 import UIKit
 
-@objc(JSMediaBrowserPieProgressViewShape)
 public enum Shape: Int {
     case sector
     case ring
 }
 
-@objc(JSMediaBrowserPieProgressView)
 open class PieProgressView: UIControl {
     
-    @objc open var animationDuration: CFTimeInterval = 0.5 {
+    open var animationDuration: CFTimeInterval = 0.5 {
         didSet {
             self.progressLayer.animationDuration = animationDuration
         }
     }
-    @objc open var progress: Float = 0.0 {
+    open var progress: Float = 0.0 {
         didSet {
             if needSetProgress {
                 self.setProgress(progress, animated: false)
             }
         }
     }
-    @objc open var borderWidth: CGFloat = 1.0 {
+    open var borderWidth: CGFloat = 1.0 {
         didSet {
             self.progressLayer.borderWidth = borderWidth
         }
     }
-    @objc open var borderInset: CGFloat = 3.0 {
+    open var borderInset: CGFloat = 3.0 {
         didSet {
             self.progressLayer.borderInset = borderInset
         }
     }
-    @objc open var lineWidth: CGFloat = 0.0 {
+    open var lineWidth: CGFloat = 0.0 {
         didSet {
             self.progressLayer.lineWidth = lineWidth
         }
     }
-    @objc open var shape: Shape = .sector {
+    open var shape: Shape = .sector {
         didSet {
             self.progressLayer.shape = shape
             self.borderWidth = CGFloat(borderWidth)
@@ -84,7 +82,7 @@ open class PieProgressView: UIControl {
 
 extension PieProgressView {
     
-    @objc open func setProgress(_ progress: Float, animated: Bool = true) -> Void {
+    open func setProgress(_ progress: Float, animated: Bool = true) -> Void {
         needSetProgress = false
         self.progress = fmax(0.0, fmin(1.0, progress))
         needSetProgress = true
@@ -112,11 +110,11 @@ extension PieProgressView {
 
 fileprivate class PieProgressLayer: CALayer {
     
+    var shape: Shape = .sector
     @NSManaged var fillColor: UIColor?
     @NSManaged var strokeColor: UIColor?
     @NSManaged var progress: Float
     @NSManaged var lineWidth: CGFloat
-    @NSManaged var shape: Shape
     @NSManaged var borderInset: CGFloat
     var animationDuration: CFTimeInterval = 0.5
     var shouldChangeProgressWithAnimation: Bool = true
@@ -154,7 +152,6 @@ fileprivate class PieProgressLayer: CALayer {
             context.closePath()
             context.fillPath()
             break
-            
         case .ring:
             // 绘制环形进度区域
             radius -= self.lineWidth
@@ -162,8 +159,6 @@ fileprivate class PieProgressLayer: CALayer {
             context.setStrokeColor(self.strokeColor?.cgColor ?? UIColor.red.cgColor)
             context.addArc(center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: false)
             context.strokePath()
-            break
-        default:
             break
         }
         
