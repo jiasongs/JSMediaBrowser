@@ -8,12 +8,16 @@
 import UIKit
 import JSCoreKit
 
-open class ImageLoaderEntity: BasisLoaderEntity, ImageLoaderProtocol {
+public class ImageLoaderEntity: ImageLoaderProtocol {
     
+    public var sourceItem: SourceProtocol?
+    public var progress: Progress = Progress()
+    public var error: NSError?
+    public var isFinished: Bool = true
     public var webImageMediator: WebImageMediatorProtocol?
     
     public func request(for imageView: UIImageView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) {
-        if let sourceItem = self.sourceItem as? ImageEntity {
+        if var sourceItem = self.sourceItem as? ImageSourceProtocol {
             /// 如果存在image, 且imageUrl为nil时, 则代表是本地图片, 无须网络请求
             if let image = sourceItem.image, sourceItem.imageUrl == nil {
                 JSAsyncExecuteOnMainQueue {
@@ -34,6 +38,8 @@ open class ImageLoaderEntity: BasisLoaderEntity, ImageLoaderProtocol {
                     self.error = error
                     if image != nil && error == nil && finished {
                         sourceItem.image = image
+                        /// update
+                        self.sourceItem = sourceItem
                     }
                     JSAsyncExecuteOnMainQueue {
                         self.isFinished = finished

@@ -7,7 +7,7 @@
 
 import UIKit
 
-public protocol LoaderProtocol: AnyObject {
+public protocol LoaderProtocol {
     
     var sourceItem: SourceProtocol? { get set }
     var progress: Progress { get set }

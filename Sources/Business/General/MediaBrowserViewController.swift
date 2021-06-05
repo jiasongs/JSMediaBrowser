@@ -81,6 +81,8 @@ open class MediaBrowserViewController: UIViewController {
         }
     }
     
+    private(set) var loaderItems: Array<LoaderProtocol> = []
+    
     open weak var sourceViewDelegate: MediaBrowserViewControllerSourceViewDelegate?
     
     open var currentPage: Int = 0 {
@@ -109,7 +111,6 @@ open class MediaBrowserViewController: UIViewController {
     open var viewWillAppearBlock: ((MediaBrowserViewController) -> Void)?
     open var viewDidDisappearBlock: ((MediaBrowserViewController) -> Void)?
     
-    private var loaderItems: Array<LoaderProtocol> = []
     private static let imageCellIdentifier: String = "ImageCellIdentifier"
     private static let videoCellIdentifier: String = "VideoCellIdentifier"
     
@@ -276,7 +277,7 @@ extension MediaBrowserViewController {
 
 extension MediaBrowserViewController: MediaBrowserViewDataSource {
     
-    public func numberOfMediaItemsInBrowserView(_ browserView: MediaBrowserView) -> Int {
+    public func numberOfPagesInMediaBrowserView(_ browserView: MediaBrowserView) -> Int {
         return self.loaderItems.count
     }
     
@@ -531,8 +532,8 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     }
     
     public var transitionSourceRect: CGRect {
-        let sourceItem = self.sourceItems[self.browserView.currentPage]
-        return sourceItem.sourceRect
+        let sourceItem = self.loaderItems[self.browserView.currentPage].sourceItem
+        return sourceItem?.sourceRect ?? CGRect.zero
     }
     
     public var transitionSourceView: UIView? {
@@ -546,12 +547,12 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     public var transitionThumbImage: UIImage? {
         let currentPage = self.browserView.currentPage
         #if BUSINESS_IMAGE
-        if let sourceItem = self.sourceItems[currentPage] as? ImageSourceProtocol {
+        if let sourceItem = self.loaderItems[currentPage].sourceItem as? ImageSourceProtocol {
             return (sourceItem.image != nil) ? sourceItem.image : sourceItem.thumbImage
         }
         #endif
         #if BUSINESS_VIDEO
-        if let sourceItem = self.sourceItems[currentPage] as? VideoSourceProtocol {
+        if let sourceItem = self.loaderItems[currentPage].sourceItem as? VideoSourceProtocol {
             return sourceItem.thumbImage
         }
         #endif

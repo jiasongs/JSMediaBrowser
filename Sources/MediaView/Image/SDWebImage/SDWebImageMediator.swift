@@ -8,10 +8,7 @@
 import UIKit
 import SDWebImage
 
-open class SDWebImageMediator: WebImageMediatorProtocol {
-    
-    public init() {
-    }
+public struct SDWebImageMediator: WebImageMediatorProtocol {
     
     public func setImage(for imageView: UIImageView, url: URL?, thumbImage: UIImage?, setImageBlock: WebImageMediatorSetImageBlock?, progress: WebImageMediatorDownloadProgress?, completed: WebImageMediatorCompleted?) {
         /// 使用SDAnimatedImageView时, 一定要使用SDAnimatedImage, 否则将会是普通的UIImageView渲染
@@ -34,6 +31,9 @@ open class SDWebImageMediator: WebImageMediatorProtocol {
     
     public func cancelImageRequest(for imageView: UIImageView) {
         imageView.sd_cancelCurrentImageLoad()
+    }
+    
+    public init() {
     }
     
 }

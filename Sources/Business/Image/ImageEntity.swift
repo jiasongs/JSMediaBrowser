@@ -7,9 +7,19 @@
 
 import UIKit
 
-open class ImageEntity: BasisEntity, ImageSourceProtocol {
+public struct ImageEntity: ImageSourceProtocol {
     
-    open var image: UIImage?
-    open var imageUrl: URL?
+    public var sourceRect: CGRect = CGRect.zero
+    public var thumbImage: UIImage?
+
+    public var image: UIImage?
+    public var imageUrl: URL?
+    
+    public init(sourceRect: CGRect = CGRect.zero, thumbImage: UIImage? = nil, image: UIImage? = nil, imageUrl: URL? = nil) {
+        self.sourceRect = sourceRect
+        self.thumbImage = thumbImage
+        self.image = image
+        self.imageUrl = imageUrl
+    }
     
 }

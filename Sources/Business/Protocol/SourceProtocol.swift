@@ -7,11 +7,9 @@
 
 import UIKit
 
-public protocol SourceProtocol: AnyObject {
+public protocol SourceProtocol {
     
     var sourceRect: CGRect { get set }
     var thumbImage: UIImage? { get set }
-    
-    init(sourceRect: CGRect, thumbImage: UIImage?)
     
 }

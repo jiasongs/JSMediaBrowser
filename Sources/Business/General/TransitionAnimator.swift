@@ -7,7 +7,7 @@
 
 import UIKit
 
-public protocol TransitionAnimatorDelegate: NSObjectProtocol {
+public protocol TransitionAnimatorDelegate: AnyObject {
     
     var transitionSourceRect: CGRect { get }
     var transitionSourceView: UIView? { get }
@@ -26,7 +26,7 @@ public enum TransitionAnimatorType: Int {
     case pop
 }
 
-class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
+open class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
     open weak var delegate: TransitionAnimatorDelegate?
     open var duration: TimeInterval = 0.25
@@ -43,7 +43,7 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         return imageView
     }()
     
-    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+    public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         let fromViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from)
         let toViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to)
         let isEntering = self.animatorType == .presenting || self.animatorType == .push
@@ -103,7 +103,7 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         
     }
     
-    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
+    public func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return self.duration
     }
     
@@ -129,7 +129,7 @@ extension TransitionAnimator {
             let zoomContentViewBoundsInView = CGRect(origin: CGPoint.zero, size: zoomContentViewFrameInView.size)
             /// 判断是否截取image
             if let thumbImage = self.delegate?.transitionThumbImage {
-                imageView.image = thumbImage
+                self.imageView.image = thumbImage
             }
             /// 隐藏目标视图
             zoomView?.isHidden = true

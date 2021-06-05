@@ -7,7 +7,7 @@
 
 import UIKit
 
-public protocol CellProtocol: AnyObject {
+public protocol CellProtocol {
     
     func setProgress(_ progress: Progress)
     func setError(_ error: NSError?, cancelled: Bool, finished: Bool)
@@ -16,12 +16,7 @@ public protocol CellProtocol: AnyObject {
 
 extension CellProtocol {
     
-    func setProgress(_ progress: Progress) {
-        
-    }
-    
-    func setError(_ error: NSError?, cancelled: Bool, finished: Bool) {
-        
-    }
+    func setProgress(_ progress: Progress) {}
+    func setError(_ error: NSError?, cancelled: Bool, finished: Bool) {}
     
 }

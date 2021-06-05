@@ -19,7 +19,7 @@ public protocol VideoLoaderProtocol: LoaderProtocol {
     
 }
 
-public protocol ViedeoActionViewProtocol: AnyObject  {
+public protocol ViedeoActionViewProtocol {
     
     
 }

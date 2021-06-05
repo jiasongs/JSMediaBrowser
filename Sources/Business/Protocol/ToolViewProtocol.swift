@@ -7,7 +7,7 @@
 
 import UIKit
 
-public protocol ToolViewProtocol: AnyObject {
+public protocol ToolViewProtocol {
     
     func toolView(_ toolView: ToolViewProtocol, prepare viewController: MediaBrowserViewController)
     

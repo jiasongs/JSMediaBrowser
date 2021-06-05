@@ -211,7 +211,7 @@ extension MediaBrowserView {
 extension MediaBrowserView: UICollectionViewDataSource {
     
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.dataSource?.numberOfMediaItemsInBrowserView(self) ?? 0
+        return self.dataSource?.numberOfPagesInMediaBrowserView(self) ?? 0
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

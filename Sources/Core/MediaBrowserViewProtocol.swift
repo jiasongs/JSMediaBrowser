@@ -9,7 +9,7 @@ import UIKit
 
 public protocol MediaBrowserViewDataSource: AnyObject {
     
-    func numberOfMediaItemsInBrowserView(_ browserView: MediaBrowserView) -> Int
+    func numberOfPagesInMediaBrowserView(_ browserView: MediaBrowserView) -> Int
     
     func mediaBrowserView(_ browserView: MediaBrowserView, cellForItemAt index: Int) -> UICollectionViewCell
     
