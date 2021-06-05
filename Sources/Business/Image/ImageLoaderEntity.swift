@@ -13,7 +13,7 @@ public class ImageLoaderEntity: ImageLoaderProtocol {
     public var sourceItem: SourceProtocol?
     public var progress: Progress = Progress()
     public var error: NSError?
-    public var isFinished: Bool = true
+    public var isFinished: Bool = false
     public var webImageMediator: WebImageMediatorProtocol?
     
     public func request(for imageView: UIImageView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) {
@@ -38,7 +38,7 @@ public class ImageLoaderEntity: ImageLoaderProtocol {
                     self.error = error
                     if image != nil && error == nil && finished {
                         sourceItem.image = image
-                        /// update
+                        /// sourceItem有可能是struct类型, 所以这里需要赋值
                         self.sourceItem = sourceItem
                     }
                     JSAsyncExecuteOnMainQueue {
