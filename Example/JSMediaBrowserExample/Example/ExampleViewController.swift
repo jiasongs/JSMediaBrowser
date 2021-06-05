@@ -201,10 +201,6 @@ extension ExampleViewController: MediaBrowserViewControllerSourceViewDelegate {
         return 0
     }
     
-    func sourceViewCornerRadiusForPageAtIndex(_ index: Int) -> CGFloat {
-        return 0
-    }
-    
 }
 
 extension ExampleViewController: UINavigationControllerDelegate {
