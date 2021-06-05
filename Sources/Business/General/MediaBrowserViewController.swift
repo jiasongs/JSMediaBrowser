@@ -14,7 +14,7 @@ public typealias BuildImageViewForZoomViewBlock = (MediaBrowserViewController, Z
 public typealias BuildLivePhotoViewForZoomViewBlock = (MediaBrowserViewController, ZoomImageView) -> PHLivePhotoView
 public typealias BuildWebImageMediatorBlock = (MediaBrowserViewController, SourceProtocol) -> WebImageMediatorProtocol
 #endif
-public typealias BuildToolViewsBlock = (MediaBrowserViewController) -> Array<UIView & ToolViewProtocol>
+public typealias BuildToolViewsBlock = (MediaBrowserViewController) -> [UIView & ToolViewProtocol]
 public typealias BuildCellBlock = (MediaBrowserViewController, Int) -> UICollectionViewCell?
 public typealias ConfigureCellBlock = (MediaBrowserViewController, UICollectionViewCell, Int) -> Void
 public typealias DisplayEmptyViewBlock = (MediaBrowserViewController, UICollectionViewCell, EmptyView, NSError) -> Void
@@ -53,9 +53,9 @@ open class MediaBrowserViewController: UIViewController {
         }
     }
     
-    open var sourceItems: Array<SourceProtocol> = [] {
+    open var sourceItems: [SourceProtocol] = [] {
         didSet {
-            var loaderItems: Array<LoaderProtocol> = Array()
+            var loaderItems: [LoaderProtocol] = []
             self.sourceItems.forEach({ (item) in
                 #if BUSINESS_IMAGE
                 if let _ = item as? ImageSourceProtocol {
@@ -81,13 +81,16 @@ open class MediaBrowserViewController: UIViewController {
         }
     }
     
-    private(set) var loaderItems: Array<LoaderProtocol> = []
+    private(set) var loaderItems: [LoaderProtocol] = []
     
     open weak var sourceViewDelegate: MediaBrowserViewControllerSourceViewDelegate?
     
-    open var currentPage: Int = 0 {
-        didSet {
-            self.browserView.currentPage = self.currentPage
+    open var currentPage: Int {
+        set {
+            self.browserView.currentPage = newValue
+        }
+        get {
+            return self.browserView.currentPage
         }
     }
     
@@ -145,14 +148,14 @@ extension MediaBrowserViewController {
         #endif
         #if BUSINESS_VIDEO
         self.registerClass(VideoCell.self, forCellWithReuseIdentifier: MediaBrowserViewController.videoCellIdentifier)
+        #endif
         /// 注册完cell再加代理, 防止崩溃
         self.browserView.delegate = self
         self.browserView.dataSource = self
         self.browserView.gestureDelegate = self
         self.view.addSubview(self.browserView)
-        #endif
         /// 工具视图
-        let toolViews: Array<UIView & ToolViewProtocol> = self.toolViewsBlock?(self) ?? []
+        let toolViews: [UIView & ToolViewProtocol] = self.toolViewsBlock?(self) ?? []
         for toolView in toolViews {
             self.view.addSubview(toolView)
             toolView.prepare(in: self)
@@ -228,17 +231,17 @@ extension MediaBrowserViewController {
 
 extension MediaBrowserViewController {
     
-    open var toolViews: Array<UIView & ToolViewProtocol> {
+    open var toolViews: [UIView & ToolViewProtocol] {
         if !self.isViewLoaded {
             return []
         }
-        var resultArray = Array<UIView & ToolViewProtocol>()
+        var result: [UIView & ToolViewProtocol] = []
         for item in self.view.subviews.enumerated() {
             if let subview = item.element as? (UIView & ToolViewProtocol) {
-                resultArray.append(subview)
+                result.append(subview)
             }
         }
-        return resultArray
+        return result
     }
     
     open func toolViewForClass(_ viewClass: UIView.Type) -> UIView? {
@@ -559,7 +562,7 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
         return nil
     }
     
-    public var transitionAnimatorViews: Array<UIView>? {
+    public var transitionAnimatorViews: [UIView]? {
         var animatorViews: [UIView] = self.toolViews
         if let dimmingView = self.browserView.dimmingView {
             animatorViews.append(dimmingView)
