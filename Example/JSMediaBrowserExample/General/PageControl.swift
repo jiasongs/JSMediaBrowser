@@ -11,14 +11,14 @@ import JSMediaBrowser
 import SnapKit
 import QMUIKit
 
-@objc class PageControl: UIPageControl, ToolViewProtocol {
+class PageControl: UIPageControl, ToolViewProtocol {
     
     weak var browserViewController: MediaBrowserViewController?
     
-    func didAddToSuperview(in viewController: MediaBrowserViewController) {
+    func prepare(in viewController: MediaBrowserViewController) {
         self.browserViewController = viewController
-        self.sourceItemsDidChange(in: viewController)
-        self.currentPage = viewController.browserView.currentPage
+        self.numberOfPages = viewController.totalUnitPage
+        self.currentPage = viewController.currentPage
         self.snp.makeConstraints { (make) in
             make.width.equalTo(viewController.view.snp.width).multipliedBy(0.5)
             make.centerX.equalTo(viewController.view.snp.centerX)
@@ -32,16 +32,25 @@ import QMUIKit
         self.addTarget(self, action: #selector(self.handlePageControlEvent), for: .valueChanged)
     }
     
-    func sourceItemsDidChange(in viewController: MediaBrowserViewController) {
-        self.numberOfPages = viewController.sourceItems.count
+    func totalUnitPageDidChange(_ totalUnitPage: Int, in viewController: MediaBrowserViewController) {
+        self.numberOfPages = viewController.totalUnitPage
     }
     
     func willScrollHalf(fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController) {
-        self.currentPage = viewController.browserView.currentPage
+        self.currentPage = toIndex
+    }
+    
+    func layout(in viewController: MediaBrowserViewController) {
+        
+    }
+    
+    func didScroll(to index: Int, in viewController: MediaBrowserViewController) {
+        
     }
     
     @objc func handlePageControlEvent() -> Void {
         self.browserViewController?.browserView.setCurrentPage(self.currentPage, animated: false)
     }
+    
     
 }
