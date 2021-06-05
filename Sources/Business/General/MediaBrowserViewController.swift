@@ -81,7 +81,7 @@ open class MediaBrowserViewController: UIViewController {
         }
     }
     
-    private(set) var loaderItems: [LoaderProtocol] = []
+    open private(set) var loaderItems: [LoaderProtocol] = []
     
     open weak var sourceViewDelegate: MediaBrowserViewControllerSourceViewDelegate?
     
@@ -96,6 +96,10 @@ open class MediaBrowserViewController: UIViewController {
     
     open var totalUnitPage: Int {
         return self.browserView.totalUnitPage
+    }
+    
+    open var currentPageCell: UICollectionViewCell? {
+        return self.browserView.currentPageCell
     }
     
     open var dismissWhenSlidingDistance: CGFloat = 60
@@ -192,8 +196,8 @@ extension MediaBrowserViewController {
         self.setNeedsStatusBarAppearanceUpdate()
         
         /// 修复动态图或视频可能不播放的问题
-        if let cell = self.browserView.currentPageCell {
-            self.mediaBrowserView(self.browserView, willDisplay: cell, forItemAt: self.browserView.currentPage)
+        if let cell = self.currentPageCell {
+            self.mediaBrowserView(self.browserView, willDisplay: cell, forItemAt: self.currentPage)
         }
     }
     
@@ -427,7 +431,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, doubleTouch gestureRecognizer: UITapGestureRecognizer) {
         #if BUSINESS_IMAGE
-        if let imageCell = browserView.currentPageCell as? ImageCell {
+        if let imageCell = self.currentPageCell as? ImageCell {
             let zoomImageView = imageCell.zoomImageView
             if zoomImageView.zoomScale >= zoomImageView.maximumZoomScale {
                 zoomImageView.setZoom(scale: zoomImageView.finalMinimumZoomScale)
@@ -445,7 +449,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, dismissingShouldBegin gestureRecognizer: UIPanGestureRecognizer) -> Bool {
         #if BUSINESS_IMAGE
-        guard let imageCell = browserView.currentPageCell as? ImageCell else {
+        guard let imageCell = self.currentPageCell as? ImageCell else {
             return true
         }
         let zoomImageView: ZoomImageView = imageCell.zoomImageView
@@ -535,20 +539,20 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     }
     
     public var transitionSourceRect: CGRect {
-        let sourceItem = self.loaderItems[self.browserView.currentPage].sourceItem
+        let sourceItem = self.loaderItems[self.currentPage].sourceItem
         return sourceItem?.sourceRect ?? CGRect.zero
     }
     
     public var transitionSourceView: UIView? {
-        return self.sourceViewDelegate?.sourceViewForPageAtIndex(self.browserView.currentPage)
+        return self.sourceViewDelegate?.sourceViewForPageAtIndex(self.currentPage)
     }
     
     public var transitionCornerRadius: CGFloat {
-        return self.sourceViewDelegate?.sourceViewCornerRadiusForPageAtIndex(self.browserView.currentPage) ?? 0
+        return self.sourceViewDelegate?.sourceViewCornerRadiusForPageAtIndex(self.currentPage) ?? 0
     }
     
     public var transitionThumbImage: UIImage? {
-        let currentPage = self.browserView.currentPage
+        let currentPage = self.currentPage
         #if BUSINESS_IMAGE
         if let sourceItem = self.loaderItems[currentPage].sourceItem as? ImageSourceProtocol {
             return (sourceItem.image != nil) ? sourceItem.image : sourceItem.thumbImage
@@ -571,7 +575,7 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     }
     
     public var transitionTargetView: UIView? {
-        if let cell = self.browserView.currentPageCell {
+        if let cell = self.currentPageCell {
             return cell
         }
         return nil
@@ -579,12 +583,12 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     
     public var transitionTargetFrame: CGRect {
         #if BUSINESS_IMAGE
-        if let imageCell = self.browserView.currentPageCell as? ImageCell {
+        if let imageCell = self.currentPageCell as? ImageCell {
             return imageCell.zoomImageView.contentViewFrame
         }
         #endif
         #if BUSINESS_VIDEO
-        if let videoCell = self.browserView.currentPageCell as? VideoCell {
+        if let videoCell = self.currentPageCell as? VideoCell {
             return videoCell.videoPlayerView.contentViewFrame
         }
         #endif
