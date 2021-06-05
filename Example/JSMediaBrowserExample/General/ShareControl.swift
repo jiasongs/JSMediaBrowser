@@ -14,34 +14,35 @@ class ShareControl: UIButton, ToolViewProtocol {
     
     weak var browserViewController: MediaBrowserViewController?
     
-    func toolView(_ toolView: ToolViewProtocol, prepare viewController: MediaBrowserViewController) {
+    func prepare(in viewController: MediaBrowserViewController) {
         self.browserViewController = viewController
         self.setTitle("分享", for: UIControl.State.normal)
         self.setTitleColor(.white, for: UIControl.State.normal)
         self.snp.makeConstraints { (make) in
             make.height.equalTo(30)
             make.right.equalTo(viewController.view.snp.right).offset(-20)
-            make.bottom.equalTo(viewController.view.snp.bottom)
+            if #available(iOS 11.0, *) {
+                make.bottom.equalTo(viewController.view.safeAreaLayoutGuide.snp.bottom)
+            } else {
+                make.bottom.equalTo(viewController.bottomLayoutGuide.snp.bottom).offset(-10)
+            }
         }
         self.addTarget(self, action: #selector(self.onPress), for: UIControl.Event.touchUpInside)
     }
     
-    func toolView(_ toolView: ToolViewProtocol, layout viewController: MediaBrowserViewController) {
-        let bottom = JSCoreHelper.isNotchedScreen ? viewController.view.qmui_safeAreaInsets.bottom : 20
-        self.snp.updateConstraints { (make) in
-            make.bottom.equalTo(viewController.view.snp.bottom).offset(-bottom)
-        }
-    }
-    
-    func toolView(_ toolView: ToolViewProtocol, pageDidChange viewController: MediaBrowserViewController) {
-      
-    }
-    
-    func toolView(_ toolView: ToolViewProtocol, willScrollHalf fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController) {
+    func layout(in viewController: MediaBrowserViewController) {
         
     }
     
-    func toolView(_ toolView: ToolViewProtocol, didScrollTo index: Int, in viewController: MediaBrowserViewController) {
+    func totalUnitPageDidChange(_ totalUnitPage: Int, in viewController: MediaBrowserViewController) {
+        
+    }
+    
+    func willScrollHalf(fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController) {
+        
+    }
+    
+    func didScroll(to index: Int, in viewController: MediaBrowserViewController) {
         
     }
     

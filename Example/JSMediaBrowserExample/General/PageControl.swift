@@ -15,7 +15,7 @@ class PageControl: UIPageControl, ToolViewProtocol {
     
     weak var browserViewController: MediaBrowserViewController?
     
-    func toolView(_ toolView: ToolViewProtocol, prepare viewController: MediaBrowserViewController) {
+    func prepare(in viewController: MediaBrowserViewController) {
         self.browserViewController = viewController
         self.numberOfPages = viewController.totalUnitPage
         self.currentPage = viewController.currentPage
@@ -32,24 +32,25 @@ class PageControl: UIPageControl, ToolViewProtocol {
         self.addTarget(self, action: #selector(self.handlePageControlEvent), for: .valueChanged)
     }
     
-    func toolView(_ toolView: ToolViewProtocol, layout viewController: MediaBrowserViewController) {
-       
-    }
-    
-    func toolView(_ toolView: ToolViewProtocol, pageDidChange viewController: MediaBrowserViewController) {
+    func totalUnitPageDidChange(_ totalUnitPage: Int, in viewController: MediaBrowserViewController) {
         self.numberOfPages = viewController.totalUnitPage
     }
     
-    func toolView(_ toolView: ToolViewProtocol, willScrollHalf fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController) {
-        self.currentPage = viewController.currentPage
+    func willScrollHalf(fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController) {
+        self.currentPage = toIndex
     }
     
-    func toolView(_ toolView: ToolViewProtocol, didScrollTo index: Int, in viewController: MediaBrowserViewController) {
+    func layout(in viewController: MediaBrowserViewController) {
+        
+    }
+    
+    func didScroll(to index: Int, in viewController: MediaBrowserViewController) {
         
     }
     
     @objc func handlePageControlEvent() -> Void {
         self.browserViewController?.browserView.setCurrentPage(self.currentPage, animated: false)
     }
+    
     
 }

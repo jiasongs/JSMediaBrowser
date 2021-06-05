@@ -76,7 +76,7 @@ open class MediaBrowserViewController: UIViewController {
             self.loaderItems = loaderItems
             
             for toolView in self.toolViews {
-                toolView.toolView(toolView, didChange: self)
+                toolView.totalUnitPageDidChange(self.totalUnitPage, in: self)
             }
         }
     }
@@ -155,7 +155,7 @@ extension MediaBrowserViewController {
         let toolViews: Array<UIView & ToolViewProtocol> = self.toolViewsBlock?(self) ?? []
         for toolView in toolViews {
             self.view.addSubview(toolView)
-            toolView.toolView(toolView, prepare: self)
+            toolView.prepare(in: self)
         }
         self.viewDidLoadBlock?(self)
     }
@@ -165,7 +165,7 @@ extension MediaBrowserViewController {
         self.browserView.js_frameApplyTransform = self.view.bounds
         
         for toolView in self.toolViews {
-            toolView.toolView(toolView, layout: self)
+            toolView.layout(in: self)
         }
     }
     
@@ -404,13 +404,13 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
             sourceView.isHidden = true
         }
         for toolView in self.toolViews {
-            toolView.toolView(toolView, willScrollHalf: fromIndex, toIndex: toIndex, in: self)
+            toolView.willScrollHalf(fromIndex: fromIndex, toIndex: toIndex, in: self)
         }
     }
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, didScrollTo index: Int) {
         for toolView in self.toolViews {
-            toolView.toolView(toolView, didScrollTo: index, in: self)
+            toolView.didScroll(to: index, in: self)
         }
     }
     

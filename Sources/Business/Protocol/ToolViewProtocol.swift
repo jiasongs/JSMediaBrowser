@@ -9,24 +9,24 @@ import UIKit
 
 public protocol ToolViewProtocol {
     
-    func toolView(_ toolView: ToolViewProtocol, prepare viewController: MediaBrowserViewController)
+    func prepare(in viewController: MediaBrowserViewController)
     
-    func toolView(_ toolView: ToolViewProtocol, layout viewController: MediaBrowserViewController)
+    func layout(in viewController: MediaBrowserViewController)
     
-    func toolView(_ toolView: ToolViewProtocol, pageDidChange viewController: MediaBrowserViewController)
+    func totalUnitPageDidChange(_ totalUnitPage: Int, in viewController: MediaBrowserViewController)
     
-    func toolView(_ toolView: ToolViewProtocol, willScrollHalf fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController)
+    func willScrollHalf(fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController)
     
-    func toolView(_ toolView: ToolViewProtocol, didScrollTo index: Int, in viewController: MediaBrowserViewController)
+    func didScroll(to index: Int, in viewController: MediaBrowserViewController)
     
 }
 
 extension ToolViewProtocol {
     
-    func toolView(_ toolView: ToolViewProtocol, prepare viewController: MediaBrowserViewController) {}
-    func toolView(_ toolView: ToolViewProtocol, layout viewController: MediaBrowserViewController) {}
-    func toolView(_ toolView: ToolViewProtocol, didChange viewController: MediaBrowserViewController) {}
-    func toolView(_ toolView: ToolViewProtocol, willScrollHalf fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController) {}
-    func toolView(_ toolView: ToolViewProtocol, didScrollTo index: Int, in viewController: MediaBrowserViewController) {}
+    func prepare(in viewController: MediaBrowserViewController) {}
+    func layout(in viewController: MediaBrowserViewController) {}
+    func totalUnitPageDidChange(_ totalUnitPage: Int, in viewController: MediaBrowserViewController) {}
+    func willScrollHalf(fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController) {}
+    func didScroll(to index: Int, in viewController: MediaBrowserViewController) {}
     
 }

@@ -148,12 +148,10 @@ class ExampleViewController: UIViewController {
         var sourceItems: Array<SourceProtocol> = [];
         for (_, urlString) in self.dataSource.enumerated() {
             if urlString.contains("mp4") {
-                var videoEntity = VideoEntity(sourceRect: CGRect.zero, thumbImage: nil)
-                videoEntity.videoUrl = URL(string: urlString)
+                let videoEntity = VideoEntity(sourceRect: CGRect.zero, thumbImage: nil, videoUrl: URL(string: urlString))
                 sourceItems.append(videoEntity)
             } else {
-                var imageEntity = ImageEntity(sourceRect: CGRect.zero, thumbImage: nil)
-                imageEntity.imageUrl = URL(string: urlString)
+                let imageEntity = ImageEntity(sourceRect: CGRect.zero, thumbImage: nil, imageUrl: URL(string: urlString))
                 sourceItems.append(imageEntity)
             }
         }
