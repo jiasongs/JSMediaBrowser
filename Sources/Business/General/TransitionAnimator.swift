@@ -7,18 +7,20 @@
 
 import UIKit
 
-public protocol TransitionAnimatorDelegate: AnyObject {
+@objc(JSMediaBrowserViewControllerTransitionAnimatorDelegate)
+public protocol TransitionAnimatorDelegate: NSObjectProtocol {
     
-    var transitionSourceRect: CGRect { get }
-    var transitionSourceView: UIView? { get }
-    var transitionCornerRadius: CGFloat { get }
-    var transitionThumbImage: UIImage? { get }
-    var transitionAnimatorViews: Array<UIView>? { get }
-    var transitionTargetView: UIView? { get }
-    var transitionTargetFrame: CGRect { get }
+    @objc var transitionSourceRect: CGRect { get }
+    @objc weak var transitionSourceView: UIView? { get }
+    @objc var transitionCornerRadius: CGFloat { get }
+    @objc var transitionThumbImage: UIImage? { get }
+    @objc var transitionAnimatorViews: Array<UIView>? { get }
+    @objc weak var transitionTargetView: UIView? { get }
+    @objc var transitionTargetFrame: CGRect { get }
     
 }
 
+@objc(JSMediaBrowserViewControllerTransitionAnimatorType)
 public enum TransitionAnimatorType: Int {
     case presenting
     case dismiss
@@ -26,17 +28,18 @@ public enum TransitionAnimatorType: Int {
     case pop
 }
 
+@objc(JSMediaBrowserViewControllerTransitionAnimator)
 class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
-    open weak var delegate: TransitionAnimatorDelegate?
-    open var duration: TimeInterval = 0.25
-    open var enteringStyle: TransitioningStyle = .zoom
-    open var exitingStyle: TransitioningStyle = .zoom
-    open var animatorType: TransitionAnimatorType = .presenting
+    @objc open weak var delegate: TransitionAnimatorDelegate?
+    @objc open var duration: TimeInterval = 0.25
+    @objc open var enteringStyle: TransitioningStyle = .zoom
+    @objc open var exitingStyle: TransitioningStyle = .zoom
+    @objc open var animatorType: TransitionAnimatorType = .presenting
     
-    private var animationGroupKey: String = "GroupKey"
+    fileprivate var animationGroupKey: String = "GroupKey"
     
-    private lazy var imageView: UIImageView = {
+    fileprivate lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
@@ -49,22 +52,6 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         let isEntering = self.animatorType == .presenting || self.animatorType == .push
         let presentingViewController = isEntering ? fromViewController : toViewController
         let shouldAppearanceTransitionManually: Bool = presentingViewController?.modalPresentationStyle != UIModalPresentationStyle.fullScreen// 触发背后界面的生命周期，从而配合屏幕旋转那边做一些强制旋转的操作
-        
-        var style: TransitioningStyle = isEntering ? self.enteringStyle : self.exitingStyle
-        let sourceView = self.delegate?.transitionSourceView
-        var sourceRect = self.delegate?.transitionSourceRect ?? CGRect.zero
-        if style == .zoom {
-            let needViewController = isEntering ? toViewController : fromViewController
-            if !sourceRect.isEmpty {
-                sourceRect = needViewController?.view.convert(sourceRect, from: nil) ?? CGRect.zero
-            } else if let sourceView = sourceView {
-                sourceRect = needViewController?.view.convert(sourceView.frame, from: sourceView.superview) ?? CGRect.zero
-            }
-            /// 判断sourceRect是否与needViewController.view相交
-            if !sourceRect.isEmpty && !sourceRect.intersects(needViewController?.view.bounds ?? CGRect.zero) {
-                sourceRect = CGRect.zero
-            }
-        }
         
         let containerView: UIView = transitionContext.containerView
         let fromView: UIView? = transitionContext.view(forKey: UITransitionContextViewKey.from)
@@ -82,12 +69,28 @@ class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             }
             presentingViewController?.beginAppearanceTransition(true, animated: true)
         }
+        
         /// 强制更新Frame
         fromView?.setNeedsLayout()
         fromView?.layoutIfNeeded()
         toView?.setNeedsLayout()
         toView?.layoutIfNeeded()
         toView?.frame = containerView.bounds
+        
+        var style: TransitioningStyle = isEntering ? self.enteringStyle : self.exitingStyle
+        let sourceView = self.delegate?.transitionSourceView
+        var sourceRect = self.delegate?.transitionSourceRect ?? CGRect.zero
+        if style == .zoom, let needView: UIView = isEntering ? toView : fromView {
+            if !sourceRect.isEmpty {
+                sourceRect = needView.convert(sourceRect, from: nil)
+            } else if let sourceView = sourceView {
+                sourceRect = needView.convert(sourceView.frame, from: sourceView.superview)
+            }
+            /// 判断sourceRect是否与needView相交
+            if !sourceRect.isEmpty && !sourceRect.intersects(needView.frame) {
+                sourceRect = CGRect.zero
+            }
+        }
         
         let contentViewFrame = self.delegate?.transitionTargetFrame ?? CGRect.zero
         style = style == .zoom && (sourceRect.isEmpty || contentViewFrame.isEmpty) ? .fade : style
@@ -161,7 +164,7 @@ extension TransitionAnimator {
             groupAnimation.fillMode = .forwards
             groupAnimation.isRemovedOnCompletion = false
             groupAnimation.animations = [positionAnimation, boundsAnimation, cornerRadiusAnimation]
-            imageView.layer.add(groupAnimation, forKey: animationGroupKey)
+            self.imageView.layer.add(groupAnimation, forKey: animationGroupKey)
         }
     }
     
