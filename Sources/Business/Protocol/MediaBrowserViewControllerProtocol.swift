@@ -8,11 +8,22 @@
 import UIKit
 import PhotosUI
 
-@objc(JSMediaBrowserViewControllerSourceViewDelegate)
 public protocol MediaBrowserViewControllerSourceViewDelegate: AnyObject {
     
-    @objc optional func sourceViewForPageAtIndex(_ index: Int) -> UIView?
+    func sourceViewForPageAtIndex(_ index: Int) -> UIView?
     
-    @objc optional func sourceViewCornerRadiusForPageAtIndex(_ index: Int) -> CGFloat
+    func sourceViewCornerRadiusForPageAtIndex(_ index: Int) -> CGFloat
+    
+}
+
+extension MediaBrowserViewControllerSourceViewDelegate {
+    
+    func sourceViewForPageAtIndex(_ index: Int) -> UIView? {
+        return nil
+    }
+    
+    func sourceViewCornerRadiusForPageAtIndex(_ index: Int) -> CGFloat {
+        return 0
+    }
     
 }

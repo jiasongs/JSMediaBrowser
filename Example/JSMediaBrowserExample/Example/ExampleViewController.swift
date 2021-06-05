@@ -163,11 +163,11 @@ class ExampleViewController: UIViewController {
         browser.show(from: self)
         
         /// 带导航栏的情况
-//        let nav = UINavigationController(rootViewController: browser)
-//        nav.modalPresentationStyle = .custom
-//        nav.modalPresentationCapturesStatusBarAppearance = true
-//        nav.transitioningDelegate = browser
-//        self.present(nav, animated: true, completion: nil)
+        //        let nav = UINavigationController(rootViewController: browser)
+        //        nav.modalPresentationStyle = .custom
+        //        nav.modalPresentationCapturesStatusBarAppearance = true
+        //        nav.transitioningDelegate = browser
+        //        self.present(nav, animated: true, completion: nil)
     }
     
     override var prefersStatusBarHidden: Bool {
@@ -200,6 +200,10 @@ extension ExampleViewController: MediaBrowserViewControllerSourceViewDelegate {
             return button
         }
         return nil
+    }
+    
+    func sourceViewCornerRadiusForPageAtIndex(_ index: Int) -> CGFloat {
+        return 0
     }
     
 }

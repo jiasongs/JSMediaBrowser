@@ -7,11 +7,10 @@
 
 import UIKit
 
-@objc(JSMediaBrowserBasisEntity)
 open class BasisEntity: NSObject, SourceProtocol {
     
-    @objc public var sourceRect: CGRect = CGRect.zero
-    @objc public var thumbImage: UIImage?
+    public var sourceRect: CGRect = CGRect.zero
+    public var thumbImage: UIImage?
     
     required public init(sourceRect: CGRect, thumbImage: UIImage?) {
         self.sourceRect = sourceRect
