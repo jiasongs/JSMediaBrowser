@@ -139,13 +139,13 @@ open class VideoPlayerView: BasisMediaView {
         return self
     }
     
-    open override var contentView: UIView {
+    open override var contentView: UIView? {
         return self.playerView
     }
     
     open override var contentViewFrame: CGRect {
         if self.isReadyForDisplay {
-            return self.convert(self.playerLayer.videoRect, from: contentView)
+            return self.convert(self.playerLayer.videoRect, from: self.playerView)
         } else {
             return self.convert(self.thumbImageView.frame, from: self.thumbImageView.superview)
         }

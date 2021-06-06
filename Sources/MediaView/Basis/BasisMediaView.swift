@@ -9,10 +9,10 @@ import UIKit
 
 open class BasisMediaView: UIView {
     
-    public var viewportRect: CGRect = .zero
-    /// 以下属性viewportRect、isEnableSafeArea为zero时才会生效, 若自定义viewportRect, 请自行实现
-    public var viewportRectMaxWidth: CGFloat = 700
     public var isEnableVerticalSafeArea = false
+    public var viewportRect: CGRect = .zero
+    /// 以下属性viewportRect为zero时才会生效, 若自定义viewportRect, 请自行实现
+    public var viewportRectMaxWidth: CGFloat = 700
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -41,7 +41,6 @@ open class BasisMediaView: UIView {
     }
     
     open var finalViewportRect: CGRect {
-        var rect: CGRect = self.viewportRect
         if self.containerView.bounds.size != self.bounds.size {
             self.setNeedsLayout()
             self.layoutIfNeeded()
@@ -55,8 +54,10 @@ open class BasisMediaView: UIView {
                 safeAreaInsets.bottom = 0
             }
         }
+        var rect: CGRect = self.viewportRect
         if rect.isEmpty && !self.bounds.isEmpty {
-            let size: CGSize = CGSize(width: min(self.containerView.bounds.width, self.viewportRectMaxWidth), height: self.containerView.bounds.height)
+            let size: CGSize = CGSize(width: min(self.containerView.bounds.width, self.viewportRectMaxWidth),
+                                      height: self.containerView.bounds.height)
             let offsetX = (self.containerView.bounds.width - size.width) / 2
             let top = safeAreaInsets.top
             let left = max(safeAreaInsets.left, offsetX)
