@@ -34,7 +34,7 @@ open class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     open var exitingStyle: TransitioningStyle = .zoom
     open var animatorType: TransitionAnimatorType = .presenting
     
-    fileprivate var animationGroupKey: String = "GroupKey"
+    fileprivate let animationGroupKey: String = "AnimationGroupKey"
     
     fileprivate lazy var imageView: UIImageView = {
         let imageView = UIImageView()

@@ -19,28 +19,39 @@ open class PieProgressView: UIControl {
             self.progressLayer.animationDuration = animationDuration
         }
     }
+    
     open var progress: Float = 0.0 {
         didSet {
             if needSetProgress {
-                self.setProgress(progress, animated: false)
+                self.setProgress(self.progress, animated: false)
             }
         }
     }
+    
+    open var minimumProgress: Float = 0.0 {
+        didSet {
+            self.progress = Float(self.progress)
+        }
+    }
+    
     open var borderWidth: CGFloat = 1.0 {
         didSet {
             self.progressLayer.borderWidth = borderWidth
         }
     }
+    
     open var borderInset: CGFloat = 3.0 {
         didSet {
             self.progressLayer.borderInset = borderInset
         }
     }
+    
     open var lineWidth: CGFloat = 0.0 {
         didSet {
             self.progressLayer.lineWidth = lineWidth
         }
     }
+    
     open var shape: Shape = .sector {
         didSet {
             self.progressLayer.shape = shape
@@ -84,10 +95,10 @@ extension PieProgressView {
     
     open func setProgress(_ progress: Float, animated: Bool = true) -> Void {
         needSetProgress = false
-        self.progress = fmax(0.0, fmin(1.0, progress))
+        self.progress = fmax(self.minimumProgress, fmin(1.0, progress))
         needSetProgress = true
         self.progressLayer.shouldChangeProgressWithAnimation = animated
-        self.progressLayer.progress = progress
+        self.progressLayer.progress = self.progress
         self.sendActions(for: UIControl.Event.valueChanged)
     }
     
