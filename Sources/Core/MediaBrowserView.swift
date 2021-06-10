@@ -117,7 +117,6 @@ extension MediaBrowserView {
         self.dimmingView?.frame = self.bounds
         if self.collectionView.bounds.size != self.bounds.size {
             self.isChangingCollectionViewFrame = true
-            self.collectionView.collectionViewLayout.invalidateLayout()
             self.collectionView.frame = self.bounds
             self.scrollToPage(at: self.currentPage, animated: false)
             self.isChangingCollectionViewFrame = false
