@@ -200,9 +200,7 @@ extension MediaBrowserView {
         UIView.animate(withDuration: 0.25, delay: 0, options: AnimationOptionsCurveOut, animations: {
             self.currentPageCell?.transform = CGAffineTransform.identity
             self.dimmingView?.alpha = 1.0
-            if let block = animations {
-                block()
-            }
+            animations?()
         }, completion: nil)
     }
     

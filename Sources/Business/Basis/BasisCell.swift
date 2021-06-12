@@ -28,7 +28,7 @@ open class BasisCell: UICollectionViewCell, CellProtocol {
     }()
     
     open var onEmptyPressAction: ((UICollectionViewCell) -> Void)?
-    open var willDisplayEmptyViewBlock: ((UICollectionViewCell, EmptyView, NSError) -> Void)?
+    open var willDisplayEmptyView: ((UICollectionViewCell, EmptyView, NSError) -> Void)?
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -72,7 +72,7 @@ open class BasisCell: UICollectionViewCell, CellProtocol {
             self.pieProgressView.isHidden = false
         } else {
             if let error = error {
-                self.willDisplayEmptyViewBlock?(self, self.emptyView, error)
+                self.willDisplayEmptyView?(self, self.emptyView, error)
                 self.emptyView.isHidden = false
             } else {
                 self.emptyView.isHidden = true

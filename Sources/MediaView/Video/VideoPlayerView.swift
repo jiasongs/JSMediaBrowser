@@ -216,9 +216,7 @@ extension VideoPlayerView {
         let startTime: CMTime = CMTimeMakeWithSeconds(Float64(time), preferredTimescale: player.currentTime().timescale)
         if !CMTIME_IS_INDEFINITE(startTime) && !CMTIME_IS_INVALID(startTime) {
             player.seek(to: startTime, toleranceBefore: CMTimeMake(value: 1, timescale: 1000), toleranceAfter: CMTimeMake(value: 1, timescale: 1000), completionHandler: { (finished) in
-                if let block = completionHandler {
-                    block(finished)
-                }
+                completionHandler?(finished)
             })
         }
     }

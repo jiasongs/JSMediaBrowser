@@ -9,11 +9,6 @@ import UIKit
 import JSCoreKit
 import PhotosUI
 
-public typealias BuildCellBlock = (MediaBrowserViewController, Int) -> UICollectionViewCell?
-public typealias ConfigureCellBlock = (MediaBrowserViewController, UICollectionViewCell, Int) -> Void
-public typealias DisplayEmptyViewBlock = (MediaBrowserViewController, UICollectionViewCell, EmptyView, NSError) -> Void
-public typealias LongPressBlock = (MediaBrowserViewController) -> Void
-
 public enum TransitioningStyle: Int {
     case zoom
     case fade
@@ -92,6 +87,11 @@ open class MediaBrowserViewController: UIViewController {
     open var livePhotoViewForZoomView: ((MediaBrowserViewController, ZoomImageView) -> PHLivePhotoView)?
     #endif
     
+    open var cellForItemAtPage: ((MediaBrowserViewController, Int) -> UICollectionViewCell?)?
+    open var configureCell: ((MediaBrowserViewController, UICollectionViewCell, Int) -> Void)?
+    open var willDisplayEmptyView: ((MediaBrowserViewController, UICollectionViewCell, EmptyView, NSError) -> Void)?
+    open var onLongPress: ((MediaBrowserViewController) -> Void)?
+    
     open var currentPage: Int {
         set {
             self.browserView.currentPage = newValue
@@ -110,11 +110,6 @@ open class MediaBrowserViewController: UIViewController {
     }
     
     open var dismissWhenSlidingDistance: CGFloat = 60
-    
-    open var cellForItemAtPageBlock: BuildCellBlock?
-    open var configureCellBlock: ConfigureCellBlock?
-    open var willDisplayEmptyViewBlock: DisplayEmptyViewBlock?
-    open var onLongPressBlock: LongPressBlock?
     
     private static let imageCellIdentifier: String = "ImageCellIdentifier"
     private static let videoCellIdentifier: String = "VideoCellIdentifier"
@@ -157,7 +152,7 @@ extension MediaBrowserViewController {
         self.browserView.dataSource = self
         self.browserView.gestureDelegate = self
         self.view.addSubview(self.browserView)
-     
+        
         self.togglePrepareAdditionalViews()
     }
     
@@ -228,7 +223,7 @@ extension MediaBrowserViewController {
 }
 
 extension MediaBrowserViewController {
-
+    
     open func show(from sender: UIViewController, animated: Bool = true, completion: (() -> Void)? = nil) {
         self.modalPresentationStyle = .custom
         self.modalPresentationCapturesStatusBarAppearance = true
@@ -286,7 +281,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     }
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, cellForItemAt index: Int) -> UICollectionViewCell {
-        var cell: UICollectionViewCell? = self.cellForItemAtPageBlock?(self, index)
+        var cell: UICollectionViewCell? = self.cellForItemAtPage?(self, index)
         let loaderItem: LoaderProtocol = self.loaderItems[index]
         #if BUSINESS_IMAGE
         if cell == nil, let _ = loaderItem as? ImageLoaderProtocol {
@@ -301,7 +296,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         if let basisCell = cell as? BasisCell {
             self.configureCell(basisCell, at: index)
         }
-        self.configureCellBlock?(self, cell!, index)
+        self.configureCell?(self, cell!, index)
         return cell!
     }
     
@@ -311,9 +306,9 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
                 self?.browserView.reloadPages(at: [index])
             }
         }
-        cell.willDisplayEmptyViewBlock = { [weak self] (cell: UICollectionViewCell, emptyView: EmptyView, error: NSError) in
+        cell.willDisplayEmptyView = { [weak self] (cell: UICollectionViewCell, emptyView: EmptyView, error: NSError) in
             if let strongSelf = self {
-                strongSelf.willDisplayEmptyViewBlock?(strongSelf, cell, emptyView, error)
+                self?.willDisplayEmptyView?(strongSelf, cell, emptyView, error)
             }
         }
         #if BUSINESS_IMAGE
@@ -445,7 +440,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     }
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, longPress gestureRecognizer: UILongPressGestureRecognizer) {
-        self.onLongPressBlock?(self)
+        self.onLongPress?(self)
     }
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, dismissingShouldBegin gestureRecognizer: UIPanGestureRecognizer) -> Bool {

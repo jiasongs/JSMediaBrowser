@@ -120,6 +120,10 @@ class ExampleViewController: UIViewController {
         browser.imageViewForZoomView = { (_, _) in
             return SDAnimatedImageView().then { $0.autoPlayAnimatedImage = false }
         }
+        browser.willDisplayEmptyView = { (browserVC: MediaBrowserViewController, cell: UICollectionViewCell, emptyView: EmptyView, error: NSError) in
+            emptyView.image = UIImage(named: "picture_fail")
+            emptyView.title = "\(String(describing: error.localizedDescription))"
+        }
         
         var sourceItems: Array<SourceProtocol> = [];
         for (_, urlString) in self.dataSource.enumerated() {
@@ -134,24 +138,6 @@ class ExampleViewController: UIViewController {
         browser.sourceItems = sourceItems
         browser.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
         
-        browser.configureCellBlock = { (browserVC: MediaBrowserViewController, cell: UICollectionViewCell, index: Int) in
-            if let cell = cell as? BasisCell {
-                if cell.pieProgressView.tintColor != .white {
-                    cell.pieProgressView.tintColor = .white
-                }
-            }
-        }
-        browser.willDisplayEmptyViewBlock = { (browserVC: MediaBrowserViewController, cell: UICollectionViewCell, emptyView: EmptyView, error: NSError) in
-            emptyView.image = UIImage(named: "picture_fail")
-            emptyView.title = "\(String(describing: error.localizedDescription))"
-        }
-        browser.onLongPressBlock = { (browserVC: MediaBrowserViewController) in
-            let currentPage: Int = browserVC.browserView.currentPage
-            var sourceItems = browserVC.sourceItems
-            sourceItems.remove(at: currentPage)
-            browserVC.sourceItems = sourceItems
-            browserVC.browserView.reloadData()
-        }
         browser.show(from: self)
         /// 带导航栏的情况
         //        let nav = UINavigationController(rootViewController: browser)
