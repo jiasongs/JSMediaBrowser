@@ -143,7 +143,7 @@ extension MediaBrowserView {
         if self.previousPageOffsetRatio == 0 {
             self.previousPageOffsetRatio = self.pageOffsetRatio
         }
-        if index < self.totalUnitPage {
+        if index >= 0 && index < self.totalUnitPage {
             let indexPath = IndexPath(item: index, section: 0)
             self.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: animated)
             /// 立即滚动, 若不调用某些场景下可能无法滚动

@@ -9,12 +9,6 @@ import UIKit
 import JSCoreKit
 import PhotosUI
 
-#if BUSINESS_IMAGE
-public typealias BuildImageViewForZoomViewBlock = (MediaBrowserViewController, ZoomImageView) -> UIImageView
-public typealias BuildLivePhotoViewForZoomViewBlock = (MediaBrowserViewController, ZoomImageView) -> PHLivePhotoView
-public typealias BuildWebImageMediatorBlock = (MediaBrowserViewController, SourceProtocol) -> WebImageMediatorProtocol
-#endif
-public typealias BuildToolViewsBlock = (MediaBrowserViewController) -> [UIView & ToolViewProtocol]
 public typealias BuildCellBlock = (MediaBrowserViewController, Int) -> UICollectionViewCell?
 public typealias ConfigureCellBlock = (MediaBrowserViewController, UICollectionViewCell, Int) -> Void
 public typealias DisplayEmptyViewBlock = (MediaBrowserViewController, UICollectionViewCell, EmptyView, NSError) -> Void
@@ -61,7 +55,7 @@ open class MediaBrowserViewController: UIViewController {
                 if let _ = item as? ImageSourceProtocol {
                     let loader: ImageLoaderEntity = ImageLoaderEntity()
                     loader.sourceItem = item
-                    loader.webImageMediator = self.webImageMediatorBlock?(self, item)
+                    loader.webImageMediator = self.webImageMediator
                     loaderItems.append(loader)
                 }
                 #endif
@@ -75,15 +69,28 @@ open class MediaBrowserViewController: UIViewController {
             })
             self.loaderItems = loaderItems
             
-            for toolView in self.toolViews {
-                toolView.totalUnitPageDidChange(self.totalUnitPage, in: self)
-            }
+            self.toggleTotalUnitPageDidChange()
         }
     }
     
     open private(set) var loaderItems: [LoaderProtocol] = []
     
     open weak var sourceViewDelegate: MediaBrowserViewControllerSourceViewDelegate?
+    
+    open var additionalViews: [UIView & AdditionalViewProtocol] = [] {
+        didSet {
+            for additionalView in oldValue {
+                additionalView.removeFromSuperview()
+            }
+            self.togglePrepareAdditionalViews()
+        }
+    }
+    
+    #if BUSINESS_IMAGE
+    open var webImageMediator: WebImageMediatorProtocol?
+    open var imageViewForZoomView: ((MediaBrowserViewController, ZoomImageView) -> UIImageView)?
+    open var livePhotoViewForZoomView: ((MediaBrowserViewController, ZoomImageView) -> PHLivePhotoView)?
+    #endif
     
     open var currentPage: Int {
         set {
@@ -104,22 +111,14 @@ open class MediaBrowserViewController: UIViewController {
     
     open var dismissWhenSlidingDistance: CGFloat = 60
     
-    #if BUSINESS_IMAGE
-    open var imageViewForZoomViewBlock: BuildImageViewForZoomViewBlock?
-    open var livePhotoViewForZoomViewBlock: BuildLivePhotoViewForZoomViewBlock?
-    open var webImageMediatorBlock: BuildWebImageMediatorBlock?
-    #endif
-    open var toolViewsBlock: BuildToolViewsBlock?
     open var cellForItemAtPageBlock: BuildCellBlock?
     open var configureCellBlock: ConfigureCellBlock?
     open var willDisplayEmptyViewBlock: DisplayEmptyViewBlock?
     open var onLongPressBlock: LongPressBlock?
-    open var viewDidLoadBlock: ((MediaBrowserViewController) -> Void)?
-    open var viewWillAppearBlock: ((MediaBrowserViewController) -> Void)?
-    open var viewDidDisappearBlock: ((MediaBrowserViewController) -> Void)?
     
     private static let imageCellIdentifier: String = "ImageCellIdentifier"
     private static let videoCellIdentifier: String = "VideoCellIdentifier"
+    fileprivate var hasAlreadyViewWillAppear: Bool = false
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -158,21 +157,16 @@ extension MediaBrowserViewController {
         self.browserView.dataSource = self
         self.browserView.gestureDelegate = self
         self.view.addSubview(self.browserView)
-        /// 工具视图
-        let toolViews: [UIView & ToolViewProtocol] = self.toolViewsBlock?(self) ?? []
-        for toolView in toolViews {
-            self.view.addSubview(toolView)
-            toolView.prepare(in: self)
-        }
-        self.viewDidLoadBlock?(self)
+     
+        self.togglePrepareAdditionalViews()
     }
     
     open override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         self.browserView.js_frameApplyTransform = self.view.bounds
         
-        for toolView in self.toolViews {
-            toolView.layout(in: self)
+        for additionalView in self.additionalViews {
+            additionalView.layout(in: self)
         }
     }
     
@@ -185,10 +179,12 @@ extension MediaBrowserViewController {
             sourceView.isHidden = true
         }
         
-        self.browserView.reloadData()
-        self.browserView.collectionView.layoutIfNeeded()
-        
-        self.viewWillAppearBlock?(self)
+        if !self.hasAlreadyViewWillAppear {
+            self.hasAlreadyViewWillAppear = true
+            /// 提前reloadData, 可以拿到currentPageCell
+            self.browserView.reloadData()
+            self.browserView.collectionView.layoutIfNeeded()
+        }
     }
     
     open override func viewDidAppear(_ animated: Bool) {
@@ -211,8 +207,6 @@ extension MediaBrowserViewController {
         if let sourceView = self.transitionSourceView, sourceView.isHidden {
             sourceView.isHidden = false
         }
-        
-        self.viewDidDisappearBlock?(self)
     }
     
     open override var prefersStatusBarHidden: Bool {
@@ -234,29 +228,7 @@ extension MediaBrowserViewController {
 }
 
 extension MediaBrowserViewController {
-    
-    open var toolViews: [UIView & ToolViewProtocol] {
-        if !self.isViewLoaded {
-            return []
-        }
-        var result: [UIView & ToolViewProtocol] = []
-        for item in self.view.subviews.enumerated() {
-            if let subview = item.element as? (UIView & ToolViewProtocol) {
-                result.append(subview)
-            }
-        }
-        return result
-    }
-    
-    open func toolViewForClass(_ viewClass: UIView.Type) -> UIView? {
-        for view in self.toolViews {
-            if view.isKind(of: viewClass) {
-                return view
-            }
-        }
-        return nil
-    }
-    
+
     open func show(from sender: UIViewController, animated: Bool = true, completion: (() -> Void)? = nil) {
         self.modalPresentationStyle = .custom
         self.modalPresentationCapturesStatusBarAppearance = true
@@ -278,6 +250,31 @@ extension MediaBrowserViewController {
     
     open func setCurrentPage(_ index: Int, animated: Bool = true) -> Void {
         self.browserView.setCurrentPage(index, animated: animated)
+    }
+    
+}
+
+extension MediaBrowserViewController {
+    
+    private func togglePrepareAdditionalViews() {
+        if !self.isViewLoaded {
+            return
+        }
+        for additionalView in self.additionalViews {
+            additionalView.removeFromSuperview()
+            self.view.addSubview(additionalView)
+            additionalView.prepare(in: self)
+        }
+        self.toggleTotalUnitPageDidChange()
+    }
+    
+    private func toggleTotalUnitPageDidChange() {
+        if !self.isViewLoaded {
+            return
+        }
+        for additionalView in self.additionalViews {
+            additionalView.totalUnitPageDidChange(self.totalUnitPage, in: self)
+        }
     }
     
 }
@@ -377,15 +374,19 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, willDisplay cell: UICollectionViewCell, forItemAt index: Int) {
         #if BUSINESS_IMAGE
-        if let imageCell = cell as? ImageCell, let loaderItem: ImageLoaderProtocol = self.loaderItems[index] as? ImageLoaderProtocol {
-            if loaderItem.isFinished {
+        if let imageCell = cell as? ImageCell,
+           let loaderItem: ImageLoaderProtocol = self.loaderItems[index] as? ImageLoaderProtocol {
+            if loaderItem.isFinished && !imageCell.zoomImageView.isAnimating {
                 imageCell.zoomImageView.startAnimating()
             }
         }
         #endif
         #if BUSINESS_VIDEO
         if let videoCell = cell as? VideoCell {
-            videoCell.videoPlayerView.play()
+            let status: Stauts = videoCell.videoPlayerView.status
+            if status == .ready || status == .paused {
+                videoCell.videoPlayerView.play()
+            }
         }
         #endif
     }
@@ -410,14 +411,14 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
         if let sourceView = self.sourceViewDelegate?.sourceViewForPageAtIndex(toIndex) {
             sourceView.isHidden = true
         }
-        for toolView in self.toolViews {
-            toolView.willScrollHalf(fromIndex: fromIndex, toIndex: toIndex, in: self)
+        for additionalView in self.additionalViews {
+            additionalView.willScrollHalf(fromIndex: fromIndex, toIndex: toIndex, in: self)
         }
     }
     
     public func mediaBrowserView(_ browserView: MediaBrowserView, didScrollTo index: Int) {
-        for toolView in self.toolViews {
-            toolView.didScroll(to: index, in: self)
+        for additionalView in self.additionalViews {
+            additionalView.didScroll(to: index, in: self)
         }
     }
     
@@ -484,8 +485,8 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
             if verticalDistance > 0 {
                 alpha = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.2], extrapolateLeft: .clamp, extrapolateRight: .clamp)
             }
-            for toolView in self.toolViews {
-                toolView.alpha = alpha
+            for additionalView in self.additionalViews {
+                additionalView.alpha = alpha
             }
             break
         case .ended:
@@ -493,8 +494,8 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
                 self.hide()
             } else {
                 browserView.resetDismissingGesture(withAnimations: { () -> Void in
-                    for toolView in self.toolViews {
-                        toolView.alpha = 1.0
+                    for additionalView in self.additionalViews {
+                        additionalView.alpha = 1.0
                     }
                 })
             }
@@ -510,13 +511,11 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
 extension MediaBrowserViewController: ZoomImageViewDelegate {
     
     public func zoomImageViewLazyBuildImageView(_ zoomImageView: ZoomImageView) -> UIImageView {
-        let imageView: UIImageView = self.imageViewForZoomViewBlock?(self, zoomImageView) ?? UIImageView()
-        return imageView
+        return self.imageViewForZoomView?(self, zoomImageView) ?? UIImageView()
     }
     
     public func zoomImageViewLazyBuildLivePhotoView(_ zoomImageView: ZoomImageView) -> PHLivePhotoView {
-        let livePhotoView: PHLivePhotoView = self.livePhotoViewForZoomViewBlock?(self, zoomImageView) ?? PHLivePhotoView()
-        return livePhotoView
+        return self.livePhotoViewForZoomView?(self, zoomImageView) ?? PHLivePhotoView()
     }
     
 }
@@ -567,7 +566,7 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     }
     
     public var transitionAnimatorViews: [UIView]? {
-        var animatorViews: [UIView] = self.toolViews
+        var animatorViews: [UIView] = self.additionalViews
         if let dimmingView = self.browserView.dimmingView {
             animatorViews.append(dimmingView)
         }

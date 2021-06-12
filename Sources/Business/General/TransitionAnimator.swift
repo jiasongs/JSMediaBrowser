@@ -113,8 +113,8 @@ extension TransitionAnimator {
     
     func handleAnimationEntering(style: TransitioningStyle, isEntering: Bool, fromViewController: UIViewController?, toViewController: UIViewController?, sourceView: UIView?, sourceRect: CGRect) -> Void {
         let needViewController = isEntering ? toViewController : fromViewController
-        if let toolViews = self.delegate?.transitionAnimatorViews {
-            for view in toolViews {
+        if let animatorViews = self.delegate?.transitionAnimatorViews {
+            for view in animatorViews {
                 if isEntering {
                     view.alpha = 0.0
                 }
@@ -167,8 +167,8 @@ extension TransitionAnimator {
     
     func handleAnimationProcessing(style: TransitioningStyle, isEntering: Bool, fromViewController: UIViewController?, toViewController: UIViewController?, sourceView: UIView?) -> Void {
         let needViewController = isEntering ? toViewController : fromViewController
-        if let toolViews = self.delegate?.transitionAnimatorViews {
-            for view in toolViews {
+        if let animatorViews = self.delegate?.transitionAnimatorViews {
+            for view in animatorViews {
                 view.alpha = isEntering ? 1 : 0
             }
         }

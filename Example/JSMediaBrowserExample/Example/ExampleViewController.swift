@@ -10,6 +10,7 @@ import QMUIKit
 import SDWebImage
 import SnapKit
 import JSMediaBrowser
+import Then
 
 class ExampleViewController: UIViewController {
     
@@ -113,20 +114,26 @@ class ExampleViewController: UIViewController {
     
     @objc func handleImageButtonEvent(sender: QMUIButton) -> Void {
         let browser: MediaBrowserViewController = MediaBrowserViewController()
-        /// 设置全局Block, 待优化block调用的机制
-        browser.imageViewForZoomViewBlock = { (browserVC: MediaBrowserViewController, zoomImageView: ZoomImageView) -> UIImageView in
-            let imageView = SDAnimatedImageView()
-            imageView.autoPlayAnimatedImage = false
-            return imageView
+        browser.sourceViewDelegate = self
+        browser.webImageMediator = SDWebImageMediator()
+        browser.additionalViews = [PageControl(), ShareControl()]
+        browser.imageViewForZoomView = { (_, _) in
+            return SDAnimatedImageView().then { $0.autoPlayAnimatedImage = false }
         }
-        browser.webImageMediatorBlock = { (browserVC: MediaBrowserViewController, sourceItem: SourceProtocol) -> WebImageMediatorProtocol in
-            return SDWebImageMediator()
+        
+        var sourceItems: Array<SourceProtocol> = [];
+        for (_, urlString) in self.dataSource.enumerated() {
+            if urlString.contains("mp4") {
+                let videoEntity = VideoEntity(sourceRect: CGRect.zero, thumbImage: nil, videoUrl: URL(string: urlString))
+                sourceItems.append(videoEntity)
+            } else {
+                let imageEntity = ImageEntity(sourceRect: CGRect.zero, thumbImage: nil, imageUrl: URL(string: urlString))
+                sourceItems.append(imageEntity)
+            }
         }
-        browser.toolViewsBlock = { (browserVC: MediaBrowserViewController) -> Array<UIView & ToolViewProtocol> in
-            let pageControl: PageControl = PageControl()
-            let shareControl: ShareControl = ShareControl()
-            return [pageControl, shareControl]
-        }
+        browser.sourceItems = sourceItems
+        browser.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
+        
         browser.configureCellBlock = { (browserVC: MediaBrowserViewController, cell: UICollectionViewCell, index: Int) in
             if let cell = cell as? BasisCell {
                 if cell.pieProgressView.tintColor != .white {
@@ -145,21 +152,7 @@ class ExampleViewController: UIViewController {
             browserVC.sourceItems = sourceItems
             browserVC.browserView.reloadData()
         }
-        var sourceItems: Array<SourceProtocol> = [];
-        for (_, urlString) in self.dataSource.enumerated() {
-            if urlString.contains("mp4") {
-                let videoEntity = VideoEntity(sourceRect: CGRect.zero, thumbImage: nil, videoUrl: URL(string: urlString))
-                sourceItems.append(videoEntity)
-            } else {
-                let imageEntity = ImageEntity(sourceRect: CGRect.zero, thumbImage: nil, imageUrl: URL(string: urlString))
-                sourceItems.append(imageEntity)
-            }
-        }
-        browser.sourceItems = sourceItems
-        browser.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
-        browser.sourceViewDelegate = self
         browser.show(from: self)
-        
         /// 带导航栏的情况
         //        let nav = UINavigationController(rootViewController: browser)
         //        nav.modalPresentationStyle = .custom
