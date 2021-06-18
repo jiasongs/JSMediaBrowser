@@ -429,11 +429,12 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
         #if BUSINESS_IMAGE
         if let imageCell = self.currentPageCell as? ImageCell {
             let zoomImageView = imageCell.zoomImageView
-            if zoomImageView.zoomScale >= zoomImageView.maximumZoomScale {
-                zoomImageView.setZoom(scale: zoomImageView.finalMinimumZoomScale)
+            let maximumZoomScale = zoomImageView.maximumZoomScale / 1.5;
+            if zoomImageView.zoomScale >= maximumZoomScale {
+                zoomImageView.setZoom(scale: zoomImageView.minimumZoomScale)
             } else {
                 let gesturePoint: CGPoint = gestureRecognizer.location(in: gestureRecognizer.view)
-                zoomImageView.zoom(to: gesturePoint)
+                zoomImageView.zoom(to: gesturePoint, maximumZoomScale: maximumZoomScale)
             }
         }
         #endif

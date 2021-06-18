@@ -17,7 +17,7 @@ open class ZoomImageView: BasisMediaView {
         let scrollView = UIScrollView(frame: CGRect(origin: CGPoint.zero, size: frame.size))
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
-        scrollView.minimumZoomScale = 0
+        scrollView.minimumZoomScale = 1
         scrollView.maximumZoomScale = self.maximumZoomScale
         scrollView.scrollsToTop = false
         scrollView.delaysContentTouches = false
@@ -198,15 +198,7 @@ extension ZoomImageView {
 
 extension ZoomImageView {
     
-    open var finalEnabledZoom: Bool {
-        var enabledZoom: Bool = self.enabledZoom
-        if self.contentView == nil {
-            enabledZoom = false
-        }
-        return enabledZoom
-    }
-    
-    open var finalMinimumZoomScale: CGFloat {
+    open var minimumZoomScale: CGFloat {
         if self.contentView == nil || (self.image == nil && self.livePhoto == nil) {
             return 1
         }
@@ -253,13 +245,12 @@ extension ZoomImageView {
         }
     }
     
-    open func zoom(to point: CGPoint, animated: Bool = true) -> Void {
+    open func zoom(to point: CGPoint, maximumZoomScale: CGFloat = 2.0, animated: Bool = true) -> Void {
         guard let cententView = self.contentView else { return }
-        let newZoomScale: CGFloat = self.maximumZoomScale
         let tapPoint: CGPoint = cententView.convert(point, from: self.scrollView)
         var zoomRect: CGRect = CGRect.zero
-        zoomRect.size.width = self.scrollView.bounds.width / newZoomScale
-        zoomRect.size.height = self.scrollView.bounds.height / newZoomScale
+        zoomRect.size.width = self.scrollView.bounds.width / maximumZoomScale
+        zoomRect.size.height = self.scrollView.bounds.height / maximumZoomScale
         zoomRect.origin.x = tapPoint.x - zoomRect.width / 2
         zoomRect.origin.y = tapPoint.y - zoomRect.height / 2
         self.zoom(to: zoomRect, animated: animated)
@@ -279,13 +270,13 @@ extension ZoomImageView {
         if self.bounds.isEmpty {
             return
         }
-        let finalEnabledZoom: Bool = self.finalEnabledZoom
-        let minimumZoomScale: CGFloat = self.finalMinimumZoomScale
-        let maximumZoomScale: CGFloat = max(finalEnabledZoom ? self.maximumZoomScale : minimumZoomScale, minimumZoomScale)
+        let enabledZoom: Bool = self.enabledZoom
+        let minimumZoomScale: CGFloat = self.minimumZoomScale
+        let maximumZoomScale: CGFloat = max(enabledZoom ? self.maximumZoomScale : minimumZoomScale, minimumZoomScale)
         let zoomScale: CGFloat = minimumZoomScale
         let shouldFireDidZoomingManual: Bool = zoomScale == self.zoomScale
-        self.scrollView.panGestureRecognizer.isEnabled = finalEnabledZoom
-        self.scrollView.pinchGestureRecognizer?.isEnabled = finalEnabledZoom
+        self.scrollView.panGestureRecognizer.isEnabled = enabledZoom
+        self.scrollView.pinchGestureRecognizer?.isEnabled = enabledZoom
         self.scrollView.minimumZoomScale = minimumZoomScale
         self.scrollView.maximumZoomScale = maximumZoomScale
         /// 重置Frame
