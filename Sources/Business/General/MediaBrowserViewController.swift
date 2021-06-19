@@ -178,18 +178,12 @@ extension MediaBrowserViewController {
             self.hasAlreadyViewWillAppear = true
             /// 提前reloadData, 可以拿到currentPageCell
             self.browserView.reloadData()
-            self.browserView.collectionView.layoutIfNeeded()
         }
     }
     
     open override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.setNeedsStatusBarAppearanceUpdate()
-        
-        /// 修复动态图或视频可能不播放的问题
-        if let cell = self.currentPageCell {
-            self.mediaBrowserView(self.browserView, willDisplay: cell, forItemAt: self.currentPage)
-        }
     }
     
     open override func viewWillDisappear(_ animated: Bool) {

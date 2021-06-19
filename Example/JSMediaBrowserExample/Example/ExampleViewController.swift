@@ -114,13 +114,14 @@ class ExampleViewController: UIViewController {
     
     @objc func handleImageButtonEvent(sender: QMUIButton) -> Void {
         let browser: MediaBrowserViewController = MediaBrowserViewController()
+        /// 配置
         browser.sourceViewDelegate = self
         browser.webImageMediator = SDWebImageMediator()
         browser.additionalViews = [PageControl(), ShareControl()]
         browser.imageViewForZoomView = { (_, _) in
             return SDAnimatedImageView().then { $0.autoPlayAnimatedImage = false }
         }
-        browser.willDisplayEmptyView = { (browserVC: MediaBrowserViewController, cell: UICollectionViewCell, emptyView: EmptyView, error: NSError) in
+        browser.willDisplayEmptyView = { (_, _, emptyView: EmptyView, error: NSError) in
             emptyView.image = UIImage(named: "picture_fail")
             emptyView.title = "\(String(describing: error.localizedDescription))"
         }
@@ -140,11 +141,11 @@ class ExampleViewController: UIViewController {
         
         browser.show(from: self)
         /// 带导航栏的情况
-        //        let nav = UINavigationController(rootViewController: browser)
-        //        nav.modalPresentationStyle = .custom
-        //        nav.modalPresentationCapturesStatusBarAppearance = true
-        //        nav.transitioningDelegate = browser
-        //        self.present(nav, animated: true, completion: nil)
+//        let nav = UINavigationController(rootViewController: browser)
+//        nav.modalPresentationStyle = .custom
+//        nav.modalPresentationCapturesStatusBarAppearance = true
+//        nav.transitioningDelegate = browser
+//        self.present(nav, animated: true, completion: nil)
     }
     
     override var prefersStatusBarHidden: Bool {
