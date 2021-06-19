@@ -245,14 +245,12 @@ extension ZoomImageView {
         }
     }
     
-    open func zoom(to point: CGPoint, maximumZoomScale: CGFloat = 2.0, animated: Bool = true) -> Void {
-        guard let cententView = self.contentView else { return }
-        let tapPoint: CGPoint = cententView.convert(point, from: self.scrollView)
+    open func zoom(to point: CGPoint, scale: CGFloat = 2.0, animated: Bool = true) -> Void {
         var zoomRect: CGRect = CGRect.zero
-        zoomRect.size.width = self.scrollView.bounds.width / maximumZoomScale
-        zoomRect.size.height = self.scrollView.bounds.height / maximumZoomScale
-        zoomRect.origin.x = tapPoint.x - zoomRect.width / 2
-        zoomRect.origin.y = tapPoint.y - zoomRect.height / 2
+        zoomRect.size.width = self.scrollView.frame.width / scale
+        zoomRect.size.height = self.scrollView.frame.height / scale
+        zoomRect.origin.x = point.x - zoomRect.width / 2
+        zoomRect.origin.y = point.y - zoomRect.height / 2
         self.zoom(to: zoomRect, animated: animated)
     }
     
