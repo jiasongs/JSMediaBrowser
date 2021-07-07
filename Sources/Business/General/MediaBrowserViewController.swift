@@ -194,7 +194,7 @@ extension MediaBrowserViewController {
 extension MediaBrowserViewController {
     
     open override var prefersStatusBarHidden: Bool {
-        return true
+        return false
     }
     
     open override var preferredStatusBarStyle: UIStatusBarStyle {
