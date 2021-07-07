@@ -114,6 +114,7 @@ open class MediaBrowserViewController: UIViewController {
     private static let imageCellIdentifier: String = "ImageCellIdentifier"
     private static let videoCellIdentifier: String = "VideoCellIdentifier"
     fileprivate var hasAlreadyViewWillAppear: Bool = false
+    fileprivate weak var presentedFromViewController: UIViewController?
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -181,16 +182,6 @@ extension MediaBrowserViewController {
         }
     }
     
-    open override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        self.setNeedsStatusBarAppearanceUpdate()
-    }
-    
-    open override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        self.setNeedsStatusBarAppearanceUpdate()
-    }
-    
     open override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         if let sourceView = self.transitionSourceView, sourceView.isHidden {
@@ -198,31 +189,50 @@ extension MediaBrowserViewController {
         }
     }
     
+}
+
+extension MediaBrowserViewController {
+    
     open override var prefersStatusBarHidden: Bool {
         return true
+    }
+    
+    open override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
     }
     
     open override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
         return .fade
     }
     
+}
+
+extension MediaBrowserViewController {
+    
     open override var shouldAutorotate: Bool {
-        return true
+        return self.presentedFromViewController?.shouldAutorotate ?? true
     }
     
     open override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .allButUpsideDown
+        return self.presentedFromViewController?.supportedInterfaceOrientations ?? .allButUpsideDown
     }
     
 }
 
 extension MediaBrowserViewController {
     
-    open func show(from sender: UIViewController, animated: Bool = true, completion: (() -> Void)? = nil) {
-        self.modalPresentationStyle = .custom
-        self.modalPresentationCapturesStatusBarAppearance = true
-        self.transitioningDelegate = self
-        sender.present(self, animated: animated, completion: completion)
+    open func show(from sender: UIViewController,
+                   navigationController: UINavigationController? = nil,
+                   animated: Bool = true,
+                   completion: (() -> Void)? = nil) {
+        /// 保存下sender
+        self.presentedFromViewController = sender
+        
+        let viewController = navigationController ?? self
+        viewController.modalPresentationStyle = .custom
+        viewController.modalPresentationCapturesStatusBarAppearance = true
+        viewController.transitioningDelegate = self
+        sender.present(viewController, animated: animated, completion: completion)
     }
     
     open func hide(animated: Bool = true, completion: (() -> Void)? = nil) {

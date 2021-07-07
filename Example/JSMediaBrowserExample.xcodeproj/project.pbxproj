@@ -25,6 +25,8 @@
 		7A61E078259486FA001C58FA /* PageControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A61E076259486FA001C58FA /* PageControl.swift */; };
 		7A80A5AB25974B0100E9927C /* ShareControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A80A5AA25974B0100E9927C /* ShareControl.swift */; };
 		7A80A5AC25974B0100E9927C /* ShareControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A80A5AA25974B0100E9927C /* ShareControl.swift */; };
+		7AA090CA269593AA004B8FF2 /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA090C9269593AA004B8FF2 /* NavigationController.swift */; };
+		7AA090CB269593AA004B8FF2 /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA090C9269593AA004B8FF2 /* NavigationController.swift */; };
 		7AF4197025981013009E7FEE /* data1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 7AF4196E25981013009E7FEE /* data1.jpg */; };
 		7AF4197125981013009E7FEE /* data1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 7AF4196E25981013009E7FEE /* data1.jpg */; };
 		7AF4197225981013009E7FEE /* data2.gif in Resources */ = {isa = PBXBuildFile; fileRef = 7AF4196F25981013009E7FEE /* data2.gif */; };
@@ -52,6 +54,7 @@
 		7A5F728C265B7E2A0048EF56 /* data3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = data3.jpg; sourceTree = "<group>"; };
 		7A61E076259486FA001C58FA /* PageControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageControl.swift; sourceTree = "<group>"; };
 		7A80A5AA25974B0100E9927C /* ShareControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareControl.swift; sourceTree = "<group>"; };
+		7AA090C9269593AA004B8FF2 /* NavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
 		7AEF5DCA25837379006550CE /* JSMediaBrowserExample-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "JSMediaBrowserExample-Bridging-Header.h"; sourceTree = "<group>"; };
 		7AF4196E25981013009E7FEE /* data1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = data1.jpg; sourceTree = "<group>"; };
 		7AF4196F25981013009E7FEE /* data2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = data2.gif; sourceTree = "<group>"; };
@@ -152,6 +155,7 @@
 			isa = PBXGroup;
 			children = (
 				7A23CD5E2581F365004B4033 /* ExampleViewController.swift */,
+				7AA090C9269593AA004B8FF2 /* NavigationController.swift */,
 			);
 			path = Example;
 			sourceTree = "<group>";
@@ -381,6 +385,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7A61E077259486FA001C58FA /* PageControl.swift in Sources */,
+				7AA090CA269593AA004B8FF2 /* NavigationController.swift in Sources */,
 				7A320035264774B9005BDC71 /* JSFloatLayoutView.m in Sources */,
 				7A23CD5F2581F365004B4033 /* ExampleViewController.swift in Sources */,
 				7A23CD5B2581F365004B4033 /* AppDelegate.swift in Sources */,
@@ -393,6 +398,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7A61E078259486FA001C58FA /* PageControl.swift in Sources */,
+				7AA090CB269593AA004B8FF2 /* NavigationController.swift in Sources */,
 				7A320036264774B9005BDC71 /* JSFloatLayoutView.m in Sources */,
 				7A23CD762581F3C1004B4033 /* ExampleViewController.swift in Sources */,
 				7A23CD772581F3C1004B4033 /* AppDelegate.swift in Sources */,

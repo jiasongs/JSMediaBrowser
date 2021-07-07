@@ -139,13 +139,7 @@ class ExampleViewController: UIViewController {
         browser.sourceItems = sourceItems
         browser.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
         
-        browser.show(from: self)
-        /// 带导航栏的情况
-//        let nav = UINavigationController(rootViewController: browser)
-//        nav.modalPresentationStyle = .custom
-//        nav.modalPresentationCapturesStatusBarAppearance = true
-//        nav.transitioningDelegate = browser
-//        self.present(nav, animated: true, completion: nil)
+        browser.show(from: self, navigationController: NavigationController(rootViewController: browser))
     }
     
     override var prefersStatusBarHidden: Bool {
@@ -154,6 +148,14 @@ class ExampleViewController: UIViewController {
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return UIStatusBarStyle.lightContent
+    }
+    
+    override var shouldAutorotate: Bool {
+        return true
+    }
+    
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .allButUpsideDown
     }
     
     func getVideoFirstImage(with url: URL) -> UIImage? {
