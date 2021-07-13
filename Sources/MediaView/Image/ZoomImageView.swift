@@ -199,33 +199,34 @@ extension ZoomImageView {
 extension ZoomImageView {
     
     open var minimumZoomScale: CGFloat {
-        if self.contentView == nil || (self.image == nil && self.livePhoto == nil) {
-            return 1
-        }
-        let viewport: CGRect = self.finalViewportRect
         var mediaSize: CGSize = CGSize.zero
         if let image = self.image {
             mediaSize = image.size
         } else if let livePhoto = self.livePhoto {
             mediaSize = livePhoto.size
         }
-        var contentMode = self.contentMode
-        var minScale: CGFloat = 1
-        let scaleX: CGFloat = viewport.width / mediaSize.width
-        let scaleY: CGFloat = viewport.height / mediaSize.height
-        let finalHeight: CGFloat = mediaSize.width > viewport.width ? viewport.width * (mediaSize.height / mediaSize.width) : mediaSize.height
-        if finalHeight > viewport.height {
-            contentMode = .scaleAspectFill
-        }
-        if contentMode == .scaleAspectFit {
-            minScale = min(scaleX, scaleY)
-        } else if contentMode == .scaleAspectFill {
-            minScale = max(scaleX, scaleY)
-        } else if contentMode == .center {
-            if scaleX >= 1 && scaleY >= 1 {
-                minScale = 1
-            } else {
+        var minScale: CGFloat = 1.0
+        if self.contentView == nil || mediaSize.width <= 0 || mediaSize.height <= 0 {
+            minScale = 1.0
+        } else {
+            let viewport: CGRect = self.finalViewportRect
+            var contentMode = self.contentMode
+            let scaleX: CGFloat = viewport.width / mediaSize.width
+            let scaleY: CGFloat = viewport.height / mediaSize.height
+            let finalHeight: CGFloat = mediaSize.width > viewport.width ? viewport.width * (mediaSize.height / mediaSize.width) : mediaSize.height
+            if finalHeight > viewport.height {
+                contentMode = .scaleAspectFill
+            }
+            if contentMode == .scaleAspectFit {
                 minScale = min(scaleX, scaleY)
+            } else if contentMode == .scaleAspectFill {
+                minScale = max(scaleX, scaleY)
+            } else if contentMode == .center {
+                if scaleX >= 1 && scaleY >= 1 {
+                    minScale = 1.0
+                } else {
+                    minScale = min(scaleX, scaleY)
+                }
             }
         }
         return minScale
@@ -245,10 +246,12 @@ extension ZoomImageView {
         }
     }
     
-    open func zoom(to point: CGPoint, scale: CGFloat = 2.0, animated: Bool = true) -> Void {
+    open func zoom(to point: CGPoint, scale: CGFloat = 3.0, animated: Bool = true) -> Void {
+        guard scale > 0 else { return }
+        let minimumZoomScale: CGFloat = self.minimumZoomScale
         var zoomRect: CGRect = CGRect.zero
-        zoomRect.size.width = self.scrollView.frame.width / scale
-        zoomRect.size.height = self.scrollView.frame.height / scale
+        zoomRect.size.width = self.scrollView.frame.width / scale / minimumZoomScale
+        zoomRect.size.height = self.scrollView.frame.height / scale / minimumZoomScale
         zoomRect.origin.x = point.x - zoomRect.width / 2
         zoomRect.origin.y = point.y - zoomRect.height / 2
         self.zoom(to: zoomRect, animated: animated)
@@ -271,8 +274,7 @@ extension ZoomImageView {
         let enabledZoom: Bool = self.enabledZoom
         let minimumZoomScale: CGFloat = self.minimumZoomScale
         let maximumZoomScale: CGFloat = max(enabledZoom ? self.maximumZoomScale : minimumZoomScale, minimumZoomScale)
-        let zoomScale: CGFloat = minimumZoomScale
-        let shouldFireDidZoomingManual: Bool = zoomScale == self.zoomScale
+        let shouldFireDidZoomingManual: Bool = self.zoomScale == minimumZoomScale
         self.scrollView.panGestureRecognizer.isEnabled = enabledZoom
         self.scrollView.pinchGestureRecognizer?.isEnabled = enabledZoom
         self.scrollView.minimumZoomScale = minimumZoomScale
@@ -282,7 +284,7 @@ extension ZoomImageView {
             self.contentView?.frame = CGRect(x: 0, y: 0, width: contentView.frame.width, height: contentView.frame.height)
         }
         /// 重置ZoomScale
-        self.setZoom(scale: zoomScale, animated: false)
+        self.setZoom(scale: minimumZoomScale, animated: false)
         /// 手动触发一次缩放
         if shouldFireDidZoomingManual {
             self.handleDidEndZooming()

@@ -9,6 +9,7 @@ import UIKit
 import JSCoreKit
 import JSMediaBrowser
 import SnapKit
+import QMUIKit
 
 class ShareControl: UIButton, AdditionalViewProtocol {
     
@@ -16,7 +17,7 @@ class ShareControl: UIButton, AdditionalViewProtocol {
     
     func prepare(in viewController: MediaBrowserViewController) {
         self.browserViewController = viewController
-        self.setTitle("分享", for: UIControl.State.normal)
+        self.setTitle("分享和保存", for: UIControl.State.normal)
         self.setTitleColor(.white, for: UIControl.State.normal)
         self.snp.makeConstraints { (make) in
             make.height.equalTo(30)
@@ -47,6 +48,8 @@ class ShareControl: UIButton, AdditionalViewProtocol {
     }
     
     @objc func onPress() {
+        guard let browserViewController = self.browserViewController else { return }
+        /// 跳转
         let vc = UIViewController()
         vc.qmui_visibleStateDidChangeBlock = { (vc, state) in
             if state == .viewDidLoad {
@@ -55,7 +58,21 @@ class ShareControl: UIButton, AdditionalViewProtocol {
                 vc.navigationController?.setNavigationBarHidden(false, animated: false)
             }
         }
-        self.browserViewController?.navigationController?.pushViewController(vc, animated: true)
+        browserViewController.navigationController?.pushViewController(vc, animated: true)
+        /// 保存
+        if let entity: ImageSourceProtocol = browserViewController.loaderItems[browserViewController.currentPage].sourceItem as? ImageSourceProtocol {
+            if let image = entity.image {
+                PHPhotoLibrary.shared().performChanges {
+                    if let imageData = image.sd_imageData() {
+                        PHAssetCreationRequest.forAsset().addResource(with: .photo, data: imageData, options: nil)
+                    }
+                } completionHandler: { success, error in
+                    DispatchQueue.main.async {
+                        QMUITips.show(withText: success ? "保存成功" : error?.localizedDescription)
+                    }
+                }
+            }
+        }
     }
     
 }
