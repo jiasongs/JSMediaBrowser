@@ -12,7 +12,7 @@ open class BasisMediaView: UIView {
     public var isEnableVerticalSafeArea = false
     public var viewportRect: CGRect = .zero
     /// 以下属性viewportRect为zero时才会生效, 若自定义viewportRect, 请自行实现
-    public var viewportRectMaxWidth: CGFloat = 700
+    public var viewportRectMaxWidth: CGFloat = 580
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
