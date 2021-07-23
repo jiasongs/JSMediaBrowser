@@ -29,6 +29,8 @@ class ShareControl: UIButton, AdditionalViewProtocol {
             }
         }
         self.addTarget(self, action: #selector(self.onPress), for: UIControl.Event.touchUpInside)
+        
+        self.accessibilityLabel = "分享和保存"
     }
     
     func layout(in viewController: MediaBrowserViewController) {

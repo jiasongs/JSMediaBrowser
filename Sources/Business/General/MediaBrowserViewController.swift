@@ -132,6 +132,7 @@ open class MediaBrowserViewController: UIViewController {
             self.automaticallyAdjustsScrollViewInsets = false
         }
         self.extendedLayoutIncludesOpaqueBars = true
+        self.accessibilityViewIsModal = true
     }
     
 }

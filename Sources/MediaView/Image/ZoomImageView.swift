@@ -33,6 +33,7 @@ open class ZoomImageView: BasisMediaView {
         isImageViewInitialized = true
         var imageView: UIImageView = self.delegate?.zoomImageViewLazyBuildImageView(self) ?? UIImageView()
         imageView.isHidden = true
+        imageView.isAccessibilityElement = true
         self.scrollView.addSubview(imageView)
         return imageView
     }()
@@ -43,6 +44,7 @@ open class ZoomImageView: BasisMediaView {
         var livePhotoView: PHLivePhotoView = self.delegate?.zoomImageViewLazyBuildLivePhotoView(self) ?? PHLivePhotoView()
         livePhotoView.isHidden = true
         livePhotoView.delegate = self
+        livePhotoView.isAccessibilityElement = true
         self.scrollView.addSubview(livePhotoView)
         return livePhotoView
     }()
