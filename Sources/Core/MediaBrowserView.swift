@@ -106,6 +106,10 @@ open class MediaBrowserView: UIView {
         self.addGestureRecognizer(self.dismissingGesture)
         
         self.singleTapGesture.require(toFail: self.doubleTapGesture)
+        
+        if UIAccessibility.isVoiceOverRunning {
+            UIAccessibility.post(notification: UIAccessibility.Notification.layoutChanged, argument: "轻点两下退出预览")
+        }
     }
     
 }
