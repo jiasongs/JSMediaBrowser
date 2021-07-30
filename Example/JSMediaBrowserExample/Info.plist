@@ -25,7 +25,7 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
-	<key>Privacy - Photo Library Usage Description.</key>
+	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>使用相册</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>

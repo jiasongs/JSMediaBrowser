@@ -113,7 +113,6 @@ open class MediaBrowserViewController: UIViewController {
     
     private static let imageCellIdentifier: String = "ImageCellIdentifier"
     private static let videoCellIdentifier: String = "VideoCellIdentifier"
-    fileprivate var hasAlreadyViewWillAppear: Bool = false
     fileprivate weak var presentedFromViewController: UIViewController?
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -175,12 +174,6 @@ extension MediaBrowserViewController {
         if let sourceView = self.transitionSourceView, !sourceView.isHidden {
             sourceView.isHidden = true
         }
-        
-        if !self.hasAlreadyViewWillAppear {
-            self.hasAlreadyViewWillAppear = true
-            /// 提前reloadData, 可以拿到currentPageCell
-            self.browserView.reloadData()
-        }
     }
     
     open override func viewDidDisappear(_ animated: Bool) {
@@ -230,7 +223,11 @@ extension MediaBrowserViewController {
         self.presentedFromViewController = sender
         
         let viewController = navigationController ?? self
-        viewController.modalPresentationStyle = .custom
+        if sender.tabBarController == nil || sender.hidesBottomBarWhenPushed {
+            viewController.modalPresentationStyle = .overCurrentContext
+        } else {
+            viewController.modalPresentationStyle = .custom
+        }
         viewController.modalPresentationCapturesStatusBarAppearance = true
         viewController.transitioningDelegate = self
         sender.present(viewController, animated: animated, completion: completion)

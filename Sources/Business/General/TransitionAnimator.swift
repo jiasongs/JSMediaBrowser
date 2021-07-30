@@ -44,11 +44,12 @@ open class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     }()
     
     public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        let fromViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from)
-        let toViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to)
+        guard let fromViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from) else { return }
+        guard let toViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to) else { return }
+        
         let isEntering = self.animatorType == .presenting || self.animatorType == .push
         let presentingViewController = isEntering ? fromViewController : toViewController
-        let shouldAppearanceTransitionManually: Bool = presentingViewController?.modalPresentationStyle != UIModalPresentationStyle.fullScreen// 触发背后界面的生命周期，从而配合屏幕旋转那边做一些强制旋转的操作
+        let shouldAppearanceTransitionManually: Bool = presentingViewController.modalPresentationStyle != UIModalPresentationStyle.fullScreen// 触发背后界面的生命周期，从而配合屏幕旋转那边做一些强制旋转的操作
         
         let containerView: UIView = transitionContext.containerView
         let fromView: UIView? = transitionContext.view(forKey: UITransitionContextViewKey.from)
@@ -58,21 +59,22 @@ open class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
                 containerView.addSubview(toView)
             }
             if shouldAppearanceTransitionManually {
-                presentingViewController?.beginAppearanceTransition(false, animated: true)
+                presentingViewController.beginAppearanceTransition(false, animated: true)
             }
         } else {
             if let toView = toView, let fromView = fromView {
                 containerView.insertSubview(toView, belowSubview: fromView)
             }
-            presentingViewController?.beginAppearanceTransition(true, animated: true)
+            presentingViewController.beginAppearanceTransition(true, animated: true)
         }
         
         /// 强制更新Frame
         fromView?.setNeedsLayout()
         fromView?.layoutIfNeeded()
+        /// 先赋值再强制更新Frame
+        toView?.frame = transitionContext.finalFrame(for: toViewController)
         toView?.setNeedsLayout()
         toView?.layoutIfNeeded()
-        toView?.frame = containerView.bounds
         
         var style: TransitioningStyle = isEntering ? self.enteringStyle : self.exitingStyle
         let sourceView = self.delegate?.transitionSourceView
@@ -96,7 +98,7 @@ open class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         UIView.animate(withDuration: self.duration, delay: 0, options: UIView.AnimationOptions.curveEaseInOut) {
             self.handleAnimationProcessing(style: style, isEntering: isEntering, fromViewController: fromViewController, toViewController: toViewController, sourceView: sourceView)
         } completion: { (finished) in
-            presentingViewController?.endAppearanceTransition()
+            presentingViewController.endAppearanceTransition()
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
             self.handleAnimationCompletion(style: style, isEntering: isEntering, fromViewController: fromViewController, toViewController: toViewController, sourceView: sourceView)
         }
