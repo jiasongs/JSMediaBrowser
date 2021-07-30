@@ -223,7 +223,7 @@ extension MediaBrowserViewController {
         self.presentedFromViewController = sender
         
         let viewController = navigationController ?? self
-        if sender.tabBarController == nil || sender.hidesBottomBarWhenPushed {
+        if sender.tabBarController == nil || (sender.tabBarController?.tabBar.isHidden == true) || sender.hidesBottomBarWhenPushed {
             viewController.modalPresentationStyle = .overCurrentContext
         } else {
             viewController.modalPresentationStyle = .custom
