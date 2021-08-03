@@ -49,7 +49,7 @@ open class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         
         let isEntering = self.type == .presenting
         let presentingViewController = isEntering ? fromViewController : toViewController
-        let shouldAppearanceTransitionManually: Bool = presentingViewController.modalPresentationStyle != UIModalPresentationStyle.fullScreen
+        let shouldAppearanceTransitionManually: Bool = presentingViewController.modalPresentationStyle != .fullScreen
         let containerView: UIView = transitionContext.containerView
         if isEntering {
             if let toView = toView {
