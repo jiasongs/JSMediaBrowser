@@ -523,14 +523,14 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     
     public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         if let animator = transitioningAnimator as? TransitionAnimator {
-            animator.animatorType = .presenting
+            animator.type = .presenting
         }
         return self.transitioningAnimator
     }
     
     public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         if let animator = transitioningAnimator as? TransitionAnimator {
-            animator.animatorType = .dismiss
+            animator.type = .dismiss
         }
         return self.transitioningAnimator
     }
