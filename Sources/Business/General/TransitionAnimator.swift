@@ -42,10 +42,10 @@ open class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     }()
     
     public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        guard let fromViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from) else { return }
-        guard let toViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to) else { return }
-        let fromView: UIView? = transitionContext.view(forKey: UITransitionContextViewKey.from)
-        let toView: UIView? = transitionContext.view(forKey: UITransitionContextViewKey.to)
+        guard let fromViewController = transitionContext.viewController(forKey: .from) else { return }
+        guard let toViewController = transitionContext.viewController(forKey: .to) else { return }
+        let fromView: UIView? = transitionContext.view(forKey: .from)
+        let toView: UIView? = transitionContext.view(forKey: .to)
         
         let isEntering = self.type == .presenting
         let presentingViewController = isEntering ? fromViewController : toViewController
@@ -64,6 +64,9 @@ open class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             }
             presentingViewController.beginAppearanceTransition(true, animated: true)
         }
+        /// 添加ImageView
+        self.imageView.removeFromSuperview()
+        containerView.addSubview(self.imageView)
         
         /// 强制更新Frame
         fromView?.setNeedsLayout()
@@ -80,14 +83,14 @@ open class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         var style: TransitioningStyle = isEntering ? self.enteringStyle : self.exitingStyle
         let sourceView = self.delegate?.transitionSourceView
         var sourceRect = self.delegate?.transitionSourceRect ?? CGRect.zero
-        if style == .zoom, let needView: UIView = isEntering ? toView : fromView {
+        if style == .zoom, let currentView: UIView = isEntering ? toView : fromView {
             if !sourceRect.isEmpty {
-                sourceRect = needView.convert(sourceRect, from: nil)
+                sourceRect = currentView.convert(sourceRect, from: nil)
             } else if let sourceView = sourceView {
-                sourceRect = needView.convert(sourceView.frame, from: sourceView.superview)
+                sourceRect = currentView.convert(sourceView.frame, from: sourceView.superview)
             }
             /// 判断sourceRect是否与needView相交
-            if !sourceRect.isEmpty && !sourceRect.intersects(needView.frame) {
+            if !sourceRect.isEmpty && !sourceRect.intersects(currentView.frame) {
                 sourceRect = CGRect.zero
             }
         }
@@ -95,15 +98,18 @@ open class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         let contentViewFrame = self.delegate?.transitionTargetFrame ?? CGRect.zero
         style = style == .zoom && (sourceRect.isEmpty || contentViewFrame.isEmpty) ? .fade : style
         
-        self.handleAnimationEntering(style: style, isEntering: isEntering, fromViewController: fromViewController, toViewController: toViewController, sourceView: sourceView, sourceRect: sourceRect)
+        /// will
+        self.handleAnimationEntering(style: style, isEntering: isEntering, fromView: fromView, toView: toView, sourceRect: sourceRect)
         UIView.animate(withDuration: self.duration, delay: 0, options: UIView.AnimationOptions.curveEaseInOut) {
-            self.handleAnimationProcessing(style: style, isEntering: isEntering, fromViewController: fromViewController, toViewController: toViewController, sourceView: sourceView)
+            /// processing
+            self.handleAnimationProcessing(style: style, isEntering: isEntering, fromView: fromView, toView: toView)
         } completion: { (finished) in
             if shouldAppearanceTransitionManually || !isEntering {
                 presentingViewController.endAppearanceTransition()
             }
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
-            self.handleAnimationCompletion(style: style, isEntering: isEntering, fromViewController: fromViewController, toViewController: toViewController, sourceView: sourceView)
+            /// did
+            self.handleAnimationCompletion(style: style, isEntering: isEntering, fromView: fromView, toView: toView)
         }
         
     }
@@ -116,8 +122,8 @@ open class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
 
 extension TransitionAnimator {
     
-    func handleAnimationEntering(style: TransitioningStyle, isEntering: Bool, fromViewController: UIViewController?, toViewController: UIViewController?, sourceView: UIView?, sourceRect: CGRect) -> Void {
-        let needViewController = isEntering ? toViewController : fromViewController
+    func handleAnimationEntering(style: TransitioningStyle, isEntering: Bool, fromView: UIView?, toView: UIView?, sourceRect: CGRect) -> Void {
+        let currentView: UIView? = isEntering ? toView : fromView
         if let animatorViews = self.delegate?.transitionAnimatorViews {
             for view in animatorViews {
                 if isEntering {
@@ -126,22 +132,16 @@ extension TransitionAnimator {
             }
         }
         if style == .fade {
-            needViewController?.view.alpha = isEntering ? 0 : 1
+            currentView?.alpha = isEntering ? 0 : 1
         } else if style == .zoom {
             let zoomView = self.delegate?.transitionTargetView
             let zoomContentViewFrame = self.delegate?.transitionTargetFrame ?? CGRect.zero
-            let zoomContentViewFrameInView = needViewController?.view.convert(zoomContentViewFrame, from: zoomView) ?? CGRect.zero
+            let zoomContentViewFrameInView = currentView?.convert(zoomContentViewFrame, from: zoomView) ?? CGRect.zero
             let zoomContentViewBoundsInView = CGRect(origin: CGPoint.zero, size: zoomContentViewFrameInView.size)
-            /// 判断是否截取image
-            if let thumbImage = self.delegate?.transitionThumbImage {
-                self.imageView.image = thumbImage
-            }
             /// 隐藏目标视图
             zoomView?.isHidden = true
-            /// 添加imageView
-            self.imageView.removeFromSuperview()
-            needViewController?.view.addSubview(self.imageView)
             /// 设置下Frame
+            self.imageView.image = self.delegate?.transitionThumbImage
             self.imageView.frame = isEntering ? sourceRect : zoomContentViewFrameInView
             /// 计算position
             let sourceCenter = CGPoint(x: sourceRect.midX, y: sourceRect.midY)
@@ -170,23 +170,22 @@ extension TransitionAnimator {
         }
     }
     
-    func handleAnimationProcessing(style: TransitioningStyle, isEntering: Bool, fromViewController: UIViewController?, toViewController: UIViewController?, sourceView: UIView?) -> Void {
-        let needViewController = isEntering ? toViewController : fromViewController
+    func handleAnimationProcessing(style: TransitioningStyle, isEntering: Bool, fromView: UIView?, toView: UIView?) -> Void {
+        let currentView: UIView? = isEntering ? toView : fromView
         if let animatorViews = self.delegate?.transitionAnimatorViews {
             for view in animatorViews {
                 view.alpha = isEntering ? 1 : 0
             }
         }
         if style == .fade {
-            needViewController?.view.alpha = isEntering ? 1 : 0
+            currentView?.alpha = isEntering ? 1 : 0
         }
     }
     
-    func handleAnimationCompletion(style: TransitioningStyle, isEntering: Bool, fromViewController: UIViewController?, toViewController: UIViewController?, sourceView: UIView?) -> Void {
-        /// 还原设置
-        let needViewController = isEntering ? toViewController : fromViewController
+    func handleAnimationCompletion(style: TransitioningStyle, isEntering: Bool, fromView: UIView?, toView: UIView?) -> Void {
+        let currentView: UIView? = isEntering ? toView : fromView
         if style == .fade {
-            needViewController?.view.alpha = 1
+            currentView?.alpha = 1
         } else if style == .zoom {
             self.delegate?.transitionTargetView?.isHidden = false
         }
