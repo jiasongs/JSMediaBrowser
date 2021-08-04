@@ -46,38 +46,44 @@ open class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         guard let toViewController = transitionContext.viewController(forKey: .to) else { return }
         let fromView: UIView? = transitionContext.view(forKey: .from)
         let toView: UIView? = transitionContext.view(forKey: .to)
-        
-        let isEntering = self.type == .presenting
-        let presentingViewController = isEntering ? fromViewController : toViewController
-        let shouldAppearanceTransitionManually: Bool = presentingViewController.modalPresentationStyle != .fullScreen
         let containerView: UIView = transitionContext.containerView
+        
+        /// 添加视图
+        let isEntering = self.type == .presenting
         if isEntering {
             if let toView = toView {
                 containerView.addSubview(toView)
-            }
-            if shouldAppearanceTransitionManually {
-                presentingViewController.beginAppearanceTransition(false, animated: true)
             }
         } else {
             if let toView = toView, let fromView = fromView {
                 containerView.insertSubview(toView, belowSubview: fromView)
             }
-            presentingViewController.beginAppearanceTransition(true, animated: true)
         }
         /// 添加ImageView
         self.imageView.removeFromSuperview()
         containerView.addSubview(self.imageView)
         
-        /// 强制更新Frame
+        /// 触发fromView的布局
         fromView?.setNeedsLayout()
         if fromView?.window != nil {
             fromView?.layoutIfNeeded()
         }
-        /// 先赋值再强制更新Frame
+        /// 触发toView的布局
         toView?.frame = transitionContext.finalFrame(for: toViewController)
         toView?.setNeedsLayout()
         if toView?.window != nil {
             toView?.layoutIfNeeded()
+        }
+        
+        /// AppearanceTransition ViewState
+        let presentingViewController: UIViewController = isEntering ? fromViewController : toViewController
+        let presentedModalPresentationStyle: UIModalPresentationStyle = (isEntering ? toViewController : fromViewController).modalPresentationStyle
+        let shouldAppearanceTransitionManually: Bool = (presentedModalPresentationStyle == .custom ||
+                                                            presentedModalPresentationStyle == .overFullScreen ||
+                                                            presentedModalPresentationStyle == .overCurrentContext)
+        /// 其他style会自动调用AppearanceTransition, 这里就不用管了, 否则会触发警告: Unbalanced calls to begin/end
+        if shouldAppearanceTransitionManually {
+            presentingViewController.beginAppearanceTransition(!isEntering, animated: true)
         }
         
         var style: TransitioningStyle = isEntering ? self.enteringStyle : self.exitingStyle
@@ -104,7 +110,7 @@ open class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             /// processing
             self.handleAnimationProcessing(style: style, isEntering: isEntering, fromView: fromView, toView: toView)
         } completion: { (finished) in
-            if shouldAppearanceTransitionManually || !isEntering {
+            if shouldAppearanceTransitionManually {
                 presentingViewController.endAppearanceTransition()
             }
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
