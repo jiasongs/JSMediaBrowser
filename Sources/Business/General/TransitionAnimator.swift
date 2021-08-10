@@ -24,7 +24,7 @@ public enum TransitionAnimatorType: Int {
     case dismiss
 }
 
-open class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
+open class TransitionAnimator: NSObject {
     
     open weak var delegate: TransitionAnimatorDelegate?
     open var duration: TimeInterval = 0.25
@@ -40,6 +40,10 @@ open class TransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         imageView.clipsToBounds = true
         return imageView
     }()
+    
+}
+
+extension TransitionAnimator: UIViewControllerAnimatedTransitioning {
     
     public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         guard let fromViewController = transitionContext.viewController(forKey: .from) else { return }
