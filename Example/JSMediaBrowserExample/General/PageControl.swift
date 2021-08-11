@@ -48,7 +48,7 @@ class PageControl: UIPageControl, AdditionalViewProtocol {
     }
     
     @objc func handlePageControlEvent() -> Void {
-        self.browserViewController?.browserView.setCurrentPage(self.currentPage, animated: false)
+        self.browserViewController?.browserView.setCurrentPage(self.currentPage, animated: true)
     }
     
     

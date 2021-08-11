@@ -69,9 +69,10 @@ open class MediaBrowserView: UIView {
     
     public var currentPage: Int = 0 {
         didSet {
-            if self.isNeededScrollToItem {
-                self.setCurrentPage(self.currentPage, animated: false)
+            guard self.isNeededScrollToItem else {
+                return
             }
+            self.setCurrentPage(self.currentPage, animated: false)
         }
     }
     
@@ -80,7 +81,7 @@ open class MediaBrowserView: UIView {
     }
     
     private var isChangingCollectionViewFrame: Bool = false
-    private var previousPageOffsetRatio: CGFloat = 0
+    private var previousPageOffsetRatio: CGFloat = 0.0
     private var isNeededScrollToItem: Bool = true
     private var gestureBeganLocation: CGPoint = CGPoint.zero
     
@@ -132,26 +133,32 @@ extension MediaBrowserView {
 extension MediaBrowserView {
     
     open func setCurrentPage(_ index: Int, animated: Bool = true) -> Void {
-        /// iOS 14, 当isPagingEnabled为true, 若不reloadData则无法滚动到相应Item
-        /// https://stackoverflow.com/questions/41884645/uicollectionview-scroll-to-item-not-working-with-horizontal-direction
-        self.reloadData()
-        /// 滚动到指定位置
-        self.scrollToPage(at: index, animated: animated)
         self.isNeededScrollToItem = false
         self.currentPage = index
         self.isNeededScrollToItem = true
+        /// 滚动到index
+        if !self.collectionView.bounds.isEmpty {
+            /// iOS 14, 当isPagingEnabled为true, 若不reloadData则无法滚动到相应Item
+            /// https://stackoverflow.com/questions/41884645/uicollectionview-scroll-to-item-not-working-with-horizontal-direction
+            self.reloadData()
+            /// 滚动到指定位置
+            self.scrollToPage(at: index, animated: animated)
+        }
     }
     
     fileprivate func scrollToPage(at index: Int, animated: Bool = true) -> Void {
-        /// 第一次产生实际性滚动的时候, 需要赋值当前的偏移率
-        if self.previousPageOffsetRatio == 0 {
-            self.previousPageOffsetRatio = self.pageOffsetRatio
+        guard !self.collectionView.bounds.isEmpty else {
+            return
         }
         if index >= 0 && index < self.totalUnitPage {
             let indexPath = IndexPath(item: index, section: 0)
             self.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: animated)
-            /// 立即滚动, 若不调用某些场景下可能无法滚动
+            /// 立即滚动, 若不调用某些场景(例如: contentSize为Empty时)下可能无法滚动
             self.collectionView.layoutIfNeeded()
+            /// 当第一次产生滚动的时候, 需要赋值当前的偏移率
+            if self.previousPageOffsetRatio == 0.0 {
+                self.previousPageOffsetRatio = self.pageOffsetRatio
+            }
         }
     }
     
