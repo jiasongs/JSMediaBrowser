@@ -95,7 +95,7 @@ extension TransitionAnimator: UIViewControllerAnimatedTransitioning {
         var sourceRect = self.delegate?.transitionSourceRect ?? CGRect.zero
         if style == .zoom, let currentView: UIView = isEntering ? toView : fromView {
             if !sourceRect.isEmpty {
-                sourceRect = currentView.convert(sourceRect, from: nil)
+                sourceRect = currentView.convert(sourceRect, to: currentView)
             } else if let sourceView = sourceView {
                 sourceRect = currentView.convert(sourceView.frame, from: sourceView.superview)
             }
