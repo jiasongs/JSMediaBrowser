@@ -62,8 +62,24 @@ extension PagingLayout {
 
 extension PagingLayout {
     
+    open override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
+        return self.collectionView?.bounds.size != newBounds.size
+    }
+    
+    open override func invalidationContext(forBoundsChange newBounds: CGRect) -> UICollectionViewLayoutInvalidationContext {
+        let context: UICollectionViewLayoutInvalidationContext = super.invalidationContext(forBoundsChange: newBounds)
+        if let flowContext: UICollectionViewFlowLayoutInvalidationContext = context as? UICollectionViewFlowLayoutInvalidationContext {
+            flowContext.invalidateFlowLayoutDelegateMetrics = self.shouldInvalidateLayout(forBoundsChange: newBounds)
+            flowContext.invalidateFlowLayoutAttributes = self.shouldInvalidateLayout(forBoundsChange: newBounds)
+        }
+        return context
+    }
+    
+}
+
+extension PagingLayout {
+    
     open override func initialLayoutAttributesForAppearingItem(at itemIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        /// 去掉进入时的动画效果
         let attributes: UICollectionViewLayoutAttributes? = super.initialLayoutAttributesForAppearingItem(at: itemIndexPath)
         attributes?.alpha = 1.0
         return attributes
@@ -79,7 +95,6 @@ extension PagingLayout {
 extension PagingLayout {
     
     open override func initialLayoutAttributesForAppearingSupplementaryElement(ofKind elementKind: String, at elementIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        /// 去掉进入时的动画效果
         let attributes: UICollectionViewLayoutAttributes? = super.initialLayoutAttributesForAppearingSupplementaryElement(ofKind: elementKind,
                                                                                                                           at: elementIndexPath)
         attributes?.alpha = 1.0
@@ -97,7 +112,6 @@ extension PagingLayout {
 extension PagingLayout {
     
     open override func initialLayoutAttributesForAppearingDecorationElement(ofKind elementKind: String, at decorationIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        /// 去掉进入时的动画效果
         let attributes: UICollectionViewLayoutAttributes? = super.initialLayoutAttributesForAppearingDecorationElement(ofKind: elementKind,
                                                                                                                        at: decorationIndexPath)
         attributes?.alpha = 1.0
@@ -108,22 +122,6 @@ extension PagingLayout {
         let attributes: UICollectionViewLayoutAttributes? = super.finalLayoutAttributesForDisappearingDecorationElement(ofKind: elementKind,
                                                                                                                         at: decorationIndexPath)
         return attributes
-    }
-    
-}
-
-extension PagingLayout {
-    
-    open override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
-        return true
-    }
-    
-    open override func invalidationContext(forBoundsChange newBounds: CGRect) -> UICollectionViewLayoutInvalidationContext {
-        let context: UICollectionViewLayoutInvalidationContext = super.invalidationContext(forBoundsChange: newBounds)
-        if let flowContext: UICollectionViewFlowLayoutInvalidationContext = context as? UICollectionViewFlowLayoutInvalidationContext {
-            flowContext.invalidateFlowLayoutDelegateMetrics = self.collectionView?.bounds.size != newBounds.size
-        }
-        return context
     }
     
 }
