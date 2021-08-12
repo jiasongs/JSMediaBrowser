@@ -256,9 +256,10 @@ extension MediaBrowserView: UIScrollViewDelegate {
     }
     
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView != self.collectionView || self.isChangingCollectionViewFrame {
+        guard scrollView == self.collectionView && !self.isChangingCollectionViewFrame else {
             return
         }
+        
         let betweenOrEqual =  { (minimumValue: CGFloat, value: CGFloat, maximumValue: CGFloat) -> Bool in
             return minimumValue <= value && value <= maximumValue
         }
@@ -282,9 +283,10 @@ extension MediaBrowserView: UIScrollViewDelegate {
     }
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        if scrollView != self.collectionView {
+        guard scrollView == self.collectionView else {
             return
         }
+        
         self.delegate?.mediaBrowserView(self, didScrollTo: self.currentPage)
     }
     
