@@ -26,7 +26,7 @@ class ExampleViewController: UIViewController {
         view.itemMargins = UIEdgeInsets(top: QMUIHelper.pixelOne, left: QMUIHelper.pixelOne, bottom: 0, right: 0);
         return view
     }()
-    lazy var dataSource: Array<String> = []
+    lazy var dataSource: [String] = []
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -42,7 +42,7 @@ class ExampleViewController: UIViewController {
         super.viewDidLoad()
         self.view.backgroundColor = .black
         if let data = try? Data(contentsOf: NSURL.fileURL(withPath: Bundle.main.path(forResource: "data", ofType: "json") ?? "")) {
-            var array = try? JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.fragmentsAllowed) as? Array<String>
+            var array = try? JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.fragmentsAllowed) as? [String]
             if let data1 = Bundle.main.path(forResource: "data1", ofType: "jpg") {
                 array?.append(URL(fileURLWithPath: data1).absoluteString)
             }
@@ -126,7 +126,7 @@ class ExampleViewController: UIViewController {
             emptyView.title = "\(String(describing: error.localizedDescription))"
         }
         
-        var sourceItems: Array<SourceProtocol> = [];
+        var sourceItems: [SourceProtocol] = [];
         for (_, urlString) in self.dataSource.enumerated() {
             if urlString.contains("mp4") {
                 let videoEntity = VideoEntity(sourceRect: CGRect.zero, thumbImage: nil, videoUrl: URL(string: urlString))

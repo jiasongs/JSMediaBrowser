@@ -63,7 +63,6 @@ open class BasisCell: UICollectionViewCell, CellProtocol {
     }
     
     public func setProgress(_ progress: Progress) {
-        self.layoutIfNeeded()
         self.pieProgressView.setProgress(Float(progress.fractionCompleted))
     }
     

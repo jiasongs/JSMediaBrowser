@@ -85,21 +85,8 @@ open class PieProgressView: UIControl {
         self.progress = 0.0
         self.animationDuration = 0.3
         
-        self.layer.contentsScale = UIScreen.main.scale
-        self.layer.setNeedsDisplay()
-    }
-    
-}
-
-extension PieProgressView {
-    
-    open func setProgress(_ progress: Float, animated: Bool = true) -> Void {
-        needSetProgress = false
-        self.progress = fmax(self.minimumProgress, fmin(1.0, progress))
-        needSetProgress = true
-        self.progressLayer.shouldChangeProgressWithAnimation = animated
-        self.progressLayer.progress = self.progress
-        self.sendActions(for: UIControl.Event.valueChanged)
+        self.progressLayer.contentsScale = UIScreen.main.scale
+        self.progressLayer.setNeedsDisplay()
     }
     
 }
@@ -115,6 +102,20 @@ extension PieProgressView {
         self.progressLayer.fillColor = self.tintColor
         self.progressLayer.strokeColor = self.tintColor
         self.progressLayer.borderColor = self.tintColor.cgColor
+    }
+    
+}
+
+extension PieProgressView {
+    
+    open func setProgress(_ progress: Float, animated: Bool = true) -> Void {
+        needSetProgress = false
+        self.progress = fmax(self.minimumProgress, fmin(1.0, progress))
+        needSetProgress = true
+        self.progressLayer.shouldChangeProgressWithAnimation = animated
+        self.progressLayer.progress = self.progress
+        self.progressLayer.setNeedsDisplay()
+        self.sendActions(for: UIControl.Event.valueChanged)
     }
     
 }

@@ -41,10 +41,6 @@ open class BasisMediaView: UIView {
     }
     
     open var finalViewportRect: CGRect {
-        if self.containerView.bounds.size != self.bounds.size {
-            self.setNeedsLayout()
-            self.layoutIfNeeded()
-        }
         var safeAreaInsets: UIEdgeInsets = UIEdgeInsets.zero
         if #available(iOS 11.0, *) {
             safeAreaInsets = self.safeAreaInsets

@@ -33,25 +33,29 @@ open class PagingLayout: UICollectionViewFlowLayout {
 extension PagingLayout {
     
     open override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        guard let collectionView = self.collectionView else {
-            return []
-        }
-        guard let delegate = collectionView.delegate as? UICollectionViewDelegateFlowLayout else {
-            return []
-        }
-        var attributes: [UICollectionViewLayoutAttributes] = []
-        let superAttributes: Array<UICollectionViewLayoutAttributes> = super.layoutAttributesForElements(in: rect) ?? []
-        for attributesItem in superAttributes {
-            if let newAttributesItem = attributesItem.copy() as? UICollectionViewLayoutAttributes, newAttributesItem.frame.intersects(rect) {
-                let itemSize: CGSize = delegate.collectionView?(collectionView, layout: self, sizeForItemAt: newAttributesItem.indexPath) ?? CGSize.zero
-                let halfWidth: CGFloat = itemSize.width / 2.0
-                let centerX: CGFloat = collectionView.contentOffset.x + halfWidth
-                newAttributesItem.center = CGPoint(x: newAttributesItem.center.x + (newAttributesItem.center.x - centerX) / halfWidth * self.pageSpacing / 2, y: newAttributesItem.center.y)
-                newAttributesItem.size = itemSize
-                attributes.append(newAttributesItem)
+        var resultAttributes: [UICollectionViewLayoutAttributes] = []
+        let originalAttributes: [UICollectionViewLayoutAttributes] = super.layoutAttributesForElements(in: rect) ?? []
+        for originalAttributesItem in originalAttributes {
+            if let attributesItem = self.layoutAttributesForItem(at: originalAttributesItem.indexPath), attributesItem.frame.intersects(rect) {
+                resultAttributes.append(attributesItem)
             }
         }
-        return attributes
+        return resultAttributes
+    }
+    
+    open override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+        guard let collectionView = self.collectionView else {
+            return nil
+        }
+        if let attributesItem = super.layoutAttributesForItem(at: indexPath)?.copy() as? UICollectionViewLayoutAttributes {
+            let halfWidth: CGFloat = attributesItem.size.width / 2.0
+            let centerX: CGFloat = collectionView.contentOffset.x + halfWidth
+            attributesItem.center = CGPoint(x: attributesItem.center.x + (attributesItem.center.x - centerX) / halfWidth * self.pageSpacing / 2,
+                                            y: attributesItem.center.y)
+            return attributesItem
+        } else {
+            return nil
+        }
     }
     
 }

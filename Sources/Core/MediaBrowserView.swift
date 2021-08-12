@@ -72,7 +72,7 @@ open class MediaBrowserView: UIView {
             guard self.isNeededScrollToItem else {
                 return
             }
-            self.setCurrentPage(self.currentPage, animated: false)
+            self.scrollToPage(at: self.currentPage, animated: false)
         }
     }
     
@@ -122,6 +122,8 @@ extension MediaBrowserView {
         
         if self.collectionView.bounds.size != self.bounds.size {
             self.collectionView.frame = self.bounds
+            /// 立即布局, 否则contentSize可能为不正确的值, 导致scrollToPage滚动不正确
+//            self.collectionView.layoutIfNeeded()
             self.scrollToPage(at: self.currentPage, animated: false)
         }
     }
@@ -134,34 +136,19 @@ extension MediaBrowserView {
         self.isNeededScrollToItem = false
         self.currentPage = index
         self.isNeededScrollToItem = true
-        /// 滚动到index
-        if !self.collectionView.bounds.isEmpty {
-            /// iOS 14, 当isPagingEnabled为true, 若不reloadData则无法滚动到相应Item
-            /// https://stackoverflow.com/questions/41884645/uicollectionview-scroll-to-item-not-working-with-horizontal-direction
-            self.reloadData()
-            /// 滚动到指定位置
-            self.scrollToPage(at: index, animated: animated)
-        }
-    }
-    
-    fileprivate func scrollToPage(at index: Int, animated: Bool = true) -> Void {
-        guard !self.collectionView.bounds.isEmpty else {
-            return
-        }
-        if index >= 0 && index < self.totalUnitPage {
-            let indexPath = IndexPath(item: index, section: 0)
-            self.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: animated)
-            /// 立即滚动, 若不调用某些场景(例如: contentSize为Empty时)下可能无法滚动
-            self.collectionView.layoutIfNeeded()
-        }
+
+        /// iOS 14, 当isPagingEnabled为true, scrollToItem有bug
+        /// https://stackoverflow.com/questions/41884645/uicollectionview-scroll-to-item-not-working-with-horizontal-direction
+        /// 滚动到指定位置
+        self.scrollToPage(at: index, animated: animated)
     }
     
     open func reloadData() -> Void {
         self.collectionView.reloadData()
     }
     
-    open func reloadPages(at indexs: Array<Int>) {
-        var indexPaths: Array<IndexPath> = []
+    open func reloadPages(at indexs: [Int]) {
+        var indexPaths: [IndexPath] = []
         for index in indexs {
             indexPaths.append(IndexPath(item: index, section: 0))
         }
@@ -207,6 +194,17 @@ extension MediaBrowserView {
             self.dimmingView?.alpha = 1.0
             animations?()
         }, completion: nil)
+    }
+    
+    fileprivate func scrollToPage(at index: Int, animated: Bool = true) -> Void {
+        guard !self.collectionView.bounds.isEmpty else {
+            return
+        }
+        if index >= 0 && index < self.totalUnitPage {
+            let contentOffset = CGPoint(x: self.collectionView.bounds.width * CGFloat(index),
+                                        y: self.collectionView.contentOffset.y)
+            self.collectionView.setContentOffset(contentOffset, animated: animated)
+        }
     }
     
 }

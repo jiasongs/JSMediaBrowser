@@ -122,11 +122,11 @@ open class VideoPlayerView: BasisMediaView {
         return imageView
     }()
     
-    private var playerItemObservers = Array<NSKeyValueObservation>()
-    private var playerObservers = Array<NSKeyValueObservation>()
-    private var playerItemCenterObservers = Array<AnyObject>()
-    private var playerTimeObservers = Array<Any>()
-    private var systemObservers = Array<AnyObject>()
+    fileprivate var playerItemObservers = [NSKeyValueObservation]()
+    fileprivate var playerObservers = [NSKeyValueObservation]()
+    fileprivate var playerItemCenterObservers = [AnyObject]()
+    fileprivate var playerTimeObservers = [Any]()
+    fileprivate var systemObservers = [AnyObject]()
     
     open override func didInitialize(frame: CGRect) -> Void {
         super.didInitialize(frame: frame)
@@ -284,7 +284,7 @@ extension VideoPlayerView {
             /// loadedTimeRanges
             self.playerItemObservers.append(
                 playerItem.observe(\.loadedTimeRanges, options: .new, changeHandler: { [weak self](playerItem: AVPlayerItem, change) in
-                    let loadedTimeRanges: Array<NSValue> = playerItem.loadedTimeRanges
+                    let loadedTimeRanges: [NSValue] = playerItem.loadedTimeRanges
                     if loadedTimeRanges.count > 0 {
                         // 获取缓冲区域
                         let timeRange: CMTimeRange =  loadedTimeRanges.first?.timeRangeValue ?? CMTimeRange.zero
