@@ -63,7 +63,7 @@ extension PagingLayout {
 extension PagingLayout {
     
     open override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
-        return self.collectionView?.bounds.size != newBounds.size
+        return true
     }
     
     open override func invalidationContext(forBoundsChange newBounds: CGRect) -> UICollectionViewLayoutInvalidationContext {
