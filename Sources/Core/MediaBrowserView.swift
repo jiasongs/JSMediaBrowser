@@ -80,10 +80,9 @@ open class MediaBrowserView: UIView {
         return self.collectionView(self.collectionView, numberOfItemsInSection: 0)
     }
     
-    private var isChangingCollectionViewFrame: Bool = false
-    private var previousPageOffsetRatio: CGFloat = 0.0
-    private var isNeededScrollToItem: Bool = true
-    private var gestureBeganLocation: CGPoint = CGPoint.zero
+    fileprivate var previousPageOffsetRatio: CGFloat = 0.0
+    fileprivate var isNeededScrollToItem: Bool = true
+    fileprivate var gestureBeganLocation: CGPoint = CGPoint.zero
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -120,11 +119,10 @@ extension MediaBrowserView {
     open override func layoutSubviews() {
         super.layoutSubviews()
         self.dimmingView?.frame = self.bounds
+        
         if self.collectionView.bounds.size != self.bounds.size {
-            self.isChangingCollectionViewFrame = true
             self.collectionView.frame = self.bounds
             self.scrollToPage(at: self.currentPage, animated: false)
-            self.isChangingCollectionViewFrame = false
         }
     }
     
@@ -155,10 +153,6 @@ extension MediaBrowserView {
             self.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: animated)
             /// 立即滚动, 若不调用某些场景(例如: contentSize为Empty时)下可能无法滚动
             self.collectionView.layoutIfNeeded()
-            /// 当第一次产生滚动的时候, 需要赋值当前的偏移率
-            if self.previousPageOffsetRatio == 0.0 {
-                self.previousPageOffsetRatio = self.pageOffsetRatio
-            }
         }
     }
     
@@ -256,7 +250,7 @@ extension MediaBrowserView: UIScrollViewDelegate {
     }
     
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard scrollView == self.collectionView && !self.isChangingCollectionViewFrame else {
+        guard scrollView == self.collectionView && !self.collectionView.bounds.isEmpty else {
             return
         }
         
