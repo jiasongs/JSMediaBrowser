@@ -202,7 +202,6 @@ extension MediaBrowserView {
             return
         }
         if index >= 0 && index < self.totalUnitPage {
-            /// TODO: 转制版上, 拖拽窗口时会抖动
             let contentOffset = CGPoint(x: self.collectionView.bounds.width * CGFloat(index),
                                         y: self.collectionView.contentOffset.y)
             self.collectionView.setContentOffset(contentOffset, animated: animated)
