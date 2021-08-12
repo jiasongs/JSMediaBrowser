@@ -112,9 +112,10 @@ extension PieProgressView {
         needSetProgress = false
         self.progress = fmax(self.minimumProgress, fmin(1.0, progress))
         needSetProgress = true
+        
         self.progressLayer.shouldChangeProgressWithAnimation = animated
         self.progressLayer.progress = self.progress
-        self.progressLayer.setNeedsDisplay()
+        // self.progressLayer.setNeedsDisplay()
         self.sendActions(for: UIControl.Event.valueChanged)
     }
     

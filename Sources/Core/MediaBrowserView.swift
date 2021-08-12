@@ -80,6 +80,7 @@ open class MediaBrowserView: UIView {
         return self.collectionView(self.collectionView, numberOfItemsInSection: 0)
     }
     
+    fileprivate var isChangingCollectionViewBounds: Bool = false
     fileprivate var previousPageOffsetRatio: CGFloat = 0.0
     fileprivate var isNeededScrollToItem: Bool = true
     fileprivate var gestureBeganLocation: CGPoint = CGPoint.zero
@@ -121,9 +122,9 @@ extension MediaBrowserView {
         self.dimmingView?.frame = self.bounds
         
         if self.collectionView.bounds.size != self.bounds.size {
+            self.isChangingCollectionViewBounds = true
             self.collectionView.frame = self.bounds
-            /// 立即布局, 否则contentSize可能为不正确的值, 导致scrollToPage滚动不正确
-//            self.collectionView.layoutIfNeeded()
+            self.isChangingCollectionViewBounds = false
             self.scrollToPage(at: self.currentPage, animated: false)
         }
     }
@@ -248,7 +249,8 @@ extension MediaBrowserView: UIScrollViewDelegate {
     }
     
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard scrollView == self.collectionView && !self.collectionView.bounds.isEmpty else {
+        /// 横竖屏旋转会触发scrollViewDidScroll, 会导致self.currentPage被改变, 所以这里加个isChangingCollectionViewBounds控制下。
+        guard scrollView == self.collectionView && !self.collectionView.bounds.isEmpty && !self.isChangingCollectionViewBounds else {
             return
         }
         
