@@ -297,8 +297,6 @@ extension ZoomImageView {
     
     fileprivate func handleDidEndZooming() -> Void {
         guard let contentView = self.contentView else { return }
-        /// 不需要setNeedsLayout, 当没有标记时, 说明已经布局完毕, 当存在标记时才立刻调用layoutSubviews
-        self.layoutIfNeeded()
         let viewport: CGRect = self.finalViewportRect
         let contentViewFrame: CGRect = self.contentViewFrame
         var contentInset: UIEdgeInsets = UIEdgeInsets.zero
