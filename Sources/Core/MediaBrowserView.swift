@@ -94,7 +94,7 @@ open class MediaBrowserView: UIView {
         self.didInitialize(frame: CGRect.zero)
     }
     
-    open func didInitialize(frame: CGRect) -> Void {
+    open func didInitialize(frame: CGRect) {
         self.dimmingView = UIView()
         self.dimmingView?.backgroundColor = .black
         
@@ -132,7 +132,7 @@ extension MediaBrowserView {
 
 extension MediaBrowserView {
     
-    open func setCurrentPage(_ index: Int, animated: Bool = true) -> Void {
+    open func setCurrentPage(_ index: Int, animated: Bool = true) {
         self.isNeededScrollToItem = false
         self.currentPage = index
         self.isNeededScrollToItem = true
@@ -141,7 +141,7 @@ extension MediaBrowserView {
         self.scrollToPage(at: index, animated: animated)
     }
     
-    open func reloadData() -> Void {
+    open func reloadData() {
         self.collectionView.reloadData()
     }
     
@@ -165,7 +165,7 @@ extension MediaBrowserView {
         return self.collectionView.cellForItem(at: indexPath) as? Cell
     }
     
-    open func registerClass(_ cellClass: AnyClass, forCellWithReuseIdentifier identifier: String) -> Void {
+    open func registerClass(_ cellClass: AnyClass, forCellWithReuseIdentifier identifier: String) {
         let nibPath: String? = Bundle(for: cellClass).path(forResource: NSStringFromClass(cellClass), ofType: "nib")
         if nibPath != nil {
             let nib: UINib? = UINib(nibName: NSStringFromClass(cellClass), bundle: Bundle(for: cellClass))
@@ -185,7 +185,7 @@ extension MediaBrowserView {
         return self.collectionView.cellForItem(at: indexPath)
     }
     
-    fileprivate func scrollToPage(at index: Int, animated: Bool = true) -> Void {
+    fileprivate func scrollToPage(at index: Int, animated: Bool = true) {
         guard !self.collectionView.bounds.isEmpty else {
             return
         }
@@ -278,15 +278,15 @@ extension MediaBrowserView: UIScrollViewDelegate {
 
 extension MediaBrowserView: UIGestureRecognizerDelegate {
     
-    @objc public func handleSingleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) -> Void {
+    @objc public func handleSingleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
         self.gestureDelegate?.mediaBrowserView(self, singleTouch: gestureRecognizer)
     }
     
-    @objc public func handleDoubleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) -> Void {
+    @objc public func handleDoubleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
         self.gestureDelegate?.mediaBrowserView(self, doubleTouch: gestureRecognizer)
     }
     
-    @objc public func handleLongPressGesture(_ gestureRecognizer: UILongPressGestureRecognizer) -> Void {
+    @objc public func handleLongPressGesture(_ gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state == .began {
             self.gestureDelegate?.mediaBrowserView(self, longPress: gestureRecognizer)
         }
@@ -300,7 +300,7 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
         }
     }
     
-    @objc func handleDismissingGesture(gestureRecognizer: UIPanGestureRecognizer) -> Void {
+    @objc func handleDismissingGesture(gestureRecognizer: UIPanGestureRecognizer) {
         self.gestureDelegate?.mediaBrowserView(self, dismissingChanged: gestureRecognizer)
     }
     

@@ -21,7 +21,7 @@ open class PagingLayout: UICollectionViewFlowLayout {
         self.didInitialize()
     }
     
-    open func didInitialize() -> Void {
+    open func didInitialize() {
         self.minimumLineSpacing = 0
         self.minimumInteritemSpacing = 0
         self.scrollDirection = .horizontal

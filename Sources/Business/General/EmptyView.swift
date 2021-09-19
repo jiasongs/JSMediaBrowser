@@ -82,7 +82,7 @@ open class EmptyView: UIView {
         self.didInitialize()
     }
     
-    open func didInitialize() -> Void {
+    open func didInitialize() {
         self.addSubview(self.imageView)
         self.addSubview(self.titleLabel)
         self.addSubview(self.subtitleLabel)
@@ -125,7 +125,7 @@ open class EmptyView: UIView {
         actionButton.isHidden = buttonSize.height == 0
     }
     
-    @objc func handleAction(button: UIButton) -> Void {
+    @objc func handleAction(button: UIButton) {
         self.onPressAction?(button)
     }
     

@@ -127,7 +127,7 @@ open class MediaBrowserViewController: UIViewController {
         self.didInitialize()
     }
     
-    open func didInitialize() -> Void {
+    open func didInitialize() {
         if #available(iOS 11.0, *) {
         } else {
             self.automaticallyAdjustsScrollViewInsets = false
@@ -237,7 +237,7 @@ extension MediaBrowserViewController {
         self.dismiss(animated: animated, completion: completion)
     }
     
-    public func registerClass(_ cellClass: AnyClass, forCellWithReuseIdentifier identifier: String) -> Void {
+    public func registerClass(_ cellClass: AnyClass, forCellWithReuseIdentifier identifier: String) {
         self.browserView.registerClass(cellClass, forCellWithReuseIdentifier: identifier)
     }
     
@@ -245,7 +245,7 @@ extension MediaBrowserViewController {
         return self.browserView.dequeueReusableCell(withReuseIdentifier: identifier, at: index)
     }
     
-    open func setCurrentPage(_ index: Int, animated: Bool = true) -> Void {
+    open func setCurrentPage(_ index: Int, animated: Bool = true) {
         self.browserView.setCurrentPage(index, animated: animated)
     }
     
@@ -302,7 +302,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         return cell!
     }
     
-    private func configureCell(_ cell: BasisCell, at index: Int) -> Void {
+    private func configureCell(_ cell: BasisCell, at index: Int) {
         cell.onEmptyPressAction = { [weak self] (cell: UICollectionViewCell) in
             if let index: Int = self?.browserView.index(for: cell), index != NSNotFound {
                 self?.browserView.reloadPages(at: [index])
@@ -326,7 +326,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     }
     
     #if BUSINESS_IMAGE
-    private func configureImageCell(_ cell: ImageCell, at index: Int) -> Void {
+    private func configureImageCell(_ cell: ImageCell, at index: Int) {
         /// 先设置代理
         cell.zoomImageView.delegate = self
         /// 当dismissingGesture失败时才会去响应scrollView的手势
@@ -353,7 +353,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     #endif
     
     #if BUSINESS_VIDEO
-    private func configureVideoCell(_ cell: VideoCell, at index: Int) -> Void {
+    private func configureVideoCell(_ cell: VideoCell, at index: Int) {
         if  let sourceItem: VideoSourceProtocol = self.loaderItems[index].sourceItem as? VideoSourceProtocol {
             cell.videoPlayerView.thumbImage = sourceItem.thumbImage
             /// 前后url不相同时需要释放之前的player, 否则会先显示之前的画面, 再显示当前的

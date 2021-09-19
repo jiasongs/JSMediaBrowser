@@ -128,7 +128,7 @@ open class VideoPlayerView: BasisMediaView {
     fileprivate var playerTimeObservers = [Any]()
     fileprivate var systemObservers = [AnyObject]()
     
-    open override func didInitialize(frame: CGRect) -> Void {
+    open override func didInitialize(frame: CGRect) {
         super.didInitialize(frame: frame)
         self.addSubview(self.playerView)
         self.addObserverForSystem()
@@ -186,7 +186,7 @@ extension VideoPlayerView {
         return self.playerLayer.isReadyForDisplay
     }
     
-    open func play() -> Void {
+    open func play() {
         if self.status == .ready || self.status == .paused {
             self.player.play()
             self.status = .playing
@@ -194,19 +194,19 @@ extension VideoPlayerView {
         }
     }
     
-    open func pause() -> Void {
+    open func pause() {
         self.player.pause()
         self.status = .paused
     }
     
-    open func reset() -> Void {
+    open func reset() {
         self.player.pause()
         self.seek(to: 0) { (finished) in
             self.status = .ready
         }
     }
     
-    open func releasePlayer() -> Void {
+    open func releasePlayer() {
         self.playerItem = nil
         self.player.replaceCurrentItem(with: nil)
         self.status = .stopped
@@ -225,7 +225,7 @@ extension VideoPlayerView {
 
 extension VideoPlayerView {
     
-    private func releaseThumbImage() -> Void {
+    private func releaseThumbImage() {
         if self.thumbImage != nil && self.isReadyForDisplay {
             self.thumbImage = nil
         }
@@ -235,7 +235,7 @@ extension VideoPlayerView {
 
 extension VideoPlayerView {
     
-    func addObserverForPlayer() -> Void {
+    func addObserverForPlayer() {
         /// progress
         self.playerTimeObservers.append(
             self.player.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: DispatchQueue.main, using: { [weak self](time: CMTime) in
@@ -254,7 +254,7 @@ extension VideoPlayerView {
         )
     }
     
-    func addObserverForPlayerItem() -> Void {
+    func addObserverForPlayerItem() {
         if let playerItem = self.playerItem {
             /// status
             self.playerItemObservers.append(
@@ -303,7 +303,7 @@ extension VideoPlayerView {
         }
     }
     
-    func removeObserverForPlayer() -> Void {
+    func removeObserverForPlayer() {
         /// 移除playerObservers
         for observer in self.playerObservers {
             observer.invalidate()
@@ -316,7 +316,7 @@ extension VideoPlayerView {
         self.playerTimeObservers.removeAll()
     }
     
-    func removeObserverForPlayerItem() -> Void {
+    func removeObserverForPlayerItem() {
         /// 移除playerItemObservers
         for observer in self.playerItemObservers {
             observer.invalidate()
@@ -329,7 +329,7 @@ extension VideoPlayerView {
         self.playerItemCenterObservers.removeAll()
     }
     
-    func addObserverForSystem() -> Void {
+    func addObserverForSystem() {
         self.systemObservers.append(
             NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: OperationQueue.main, using: { [weak self](notification: Notification) in
                 if let strongSelf = self, strongSelf.status == .playing {
@@ -339,7 +339,7 @@ extension VideoPlayerView {
         )
     }
     
-    func removeObserverForSystem() -> Void {
+    func removeObserverForSystem() {
         for observer in self.systemObservers {
             NotificationCenter.default.removeObserver(observer)
         }

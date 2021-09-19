@@ -91,15 +91,11 @@ extension TransitionInteractiver {
     }
     
     fileprivate func checkInteractiveBegan() {
-        guard self.isInteractive else {
-            fatalError("可能未调用begin(), 请检查代码, 保证begin与finish、cancel成对出现")
-        }
+        assert(self.isInteractive, "可能未调用begin(), 请检查代码, 保证begin与finish、cancel成对出现")
     }
     
     fileprivate func checkInteractiveEnd() {
-        guard !self.isInteractive else {
-            fatalError("可能未调用finish()或者cancel(), 请检查代码, 保证begin与finish、cancel成对出现")
-        }
+        assert(!self.isInteractive, "可能未调用finish()或者cancel(), 请检查代码, 保证begin与finish、cancel成对出现")
     }
     
 }

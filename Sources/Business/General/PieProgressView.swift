@@ -76,7 +76,7 @@ open class PieProgressView: UIControl {
         self.tintColorDidChange()
     }
     
-    func didInitialize() -> Void {
+    func didInitialize() {
         self.backgroundColor = UIColor(white: 0, alpha: 0)
         self.tintColor = UIColor.red
         self.borderWidth = 1.0
@@ -108,7 +108,7 @@ extension PieProgressView {
 
 extension PieProgressView {
     
-    open func setProgress(_ progress: Float, animated: Bool = true) -> Void {
+    open func setProgress(_ progress: Float, animated: Bool = true) {
         needSetProgress = false
         self.progress = fmax(self.minimumProgress, fmin(1.0, progress))
         needSetProgress = true

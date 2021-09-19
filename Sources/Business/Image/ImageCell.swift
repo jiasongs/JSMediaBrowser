@@ -13,13 +13,13 @@ open class ImageCell: BasisCell {
         return ZoomImageView()
     }()
     
-    open override func didInitialize() -> Void {
+    open override func didInitialize() {
         super.didInitialize()
         self.contentView.addSubview(self.zoomImageView)
         self.contentView.sendSubviewToBack(self.zoomImageView)
     }
     
-    open override func prepareForReuse() -> Void {
+    open override func prepareForReuse() {
         super.prepareForReuse()
         self.zoomImageView.stopAnimating()
         self.zoomImageView.image = nil

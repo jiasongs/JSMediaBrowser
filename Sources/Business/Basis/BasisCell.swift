@@ -40,12 +40,12 @@ open class BasisCell: UICollectionViewCell, CellProtocol {
         self.didInitialize()
     }
     
-    open func didInitialize() -> Void {
+    open func didInitialize() {
         self.contentView.addSubview(self.emptyView)
         self.contentView.addSubview(self.pieProgressView)
     }
     
-    open override func prepareForReuse() -> Void {
+    open override func prepareForReuse() {
         super.prepareForReuse()
         self.contentView.bringSubviewToFront(self.pieProgressView)
         self.emptyView.isHidden = true

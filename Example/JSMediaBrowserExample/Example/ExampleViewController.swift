@@ -112,7 +112,7 @@ class ExampleViewController: UIViewController {
         self.scrollView.contentSize = self.floatLayoutView.bounds.size
     }
     
-    @objc func handleImageButtonEvent(sender: QMUIButton) -> Void {
+    @objc func handleImageButtonEvent(sender: QMUIButton) {
         let browser: MediaBrowserViewController = MediaBrowserViewController()
         /// 配置
         browser.sourceViewDelegate = self

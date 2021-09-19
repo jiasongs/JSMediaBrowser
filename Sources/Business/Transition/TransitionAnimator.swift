@@ -113,7 +113,7 @@ extension TransitionAnimator {
 
 extension TransitionAnimator {
     
-    fileprivate func handleAnimationEntering(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView, sourceRect: CGRect) -> Void {
+    fileprivate func handleAnimationEntering(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView, sourceRect: CGRect) {
         let currentView: UIView? = isEntering ? toView : fromView
         if let animatorViews = self.delegate?.transitionAnimatorViews {
             for view in animatorViews {
@@ -161,7 +161,7 @@ extension TransitionAnimator {
         }
     }
     
-    fileprivate func handleAnimationProcessing(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView) -> Void {
+    fileprivate func handleAnimationProcessing(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView) {
         let currentView: UIView? = isEntering ? toView : fromView
         if let animatorViews = self.delegate?.transitionAnimatorViews {
             for view in animatorViews {
@@ -173,7 +173,7 @@ extension TransitionAnimator {
         }
     }
     
-    fileprivate func handleAnimationCompletion(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView) -> Void {
+    fileprivate func handleAnimationCompletion(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView) {
         let currentView: UIView? = isEntering ? toView : fromView
         if style == .fade {
             currentView?.alpha = 1

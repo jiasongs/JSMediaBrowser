@@ -96,7 +96,7 @@ open class ZoomImageView: BasisMediaView {
     fileprivate var isLivePhotoPlaying: Bool = false
     fileprivate var failGestureRecognizer: UIGestureRecognizer?
     
-    open override func didInitialize(frame: CGRect) -> Void {
+    open override func didInitialize(frame: CGRect) {
         super.didInitialize(frame: frame)
         self.contentMode = .center
         
@@ -174,7 +174,7 @@ extension ZoomImageView {
         return false
     }
     
-    open func startAnimating() -> Void {
+    open func startAnimating() {
         guard !self.isAnimating else {
             return
         }
@@ -185,7 +185,7 @@ extension ZoomImageView {
         }
     }
     
-    open func stopAnimating() -> Void {
+    open func stopAnimating() {
         guard self.isAnimating else {
             return
         }
@@ -238,7 +238,7 @@ extension ZoomImageView {
         return self.scrollView.zoomScale
     }
     
-    open func setZoom(scale: CGFloat, animated: Bool = true) -> Void {
+    open func setZoom(scale: CGFloat, animated: Bool = true) {
         if animated {
             UIView.animate(withDuration: 0.25, delay: 0.0, options: AnimationOptionsCurveOut, animations: {
                 self.scrollView.zoomScale = scale
@@ -248,7 +248,7 @@ extension ZoomImageView {
         }
     }
     
-    open func zoom(to point: CGPoint, scale: CGFloat = 3.0, animated: Bool = true) -> Void {
+    open func zoom(to point: CGPoint, scale: CGFloat = 3.0, animated: Bool = true) {
         guard scale > 0 else { return }
         let minimumZoomScale: CGFloat = self.minimumZoomScale
         var zoomRect: CGRect = CGRect.zero
@@ -259,7 +259,7 @@ extension ZoomImageView {
         self.zoom(to: zoomRect, animated: animated)
     }
     
-    open func zoom(to rect: CGRect, animated: Bool = true) -> Void {
+    open func zoom(to rect: CGRect, animated: Bool = true) {
         if animated {
             UIView.animate(withDuration: 0.25, delay: 0.0, options: AnimationOptionsCurveOut, animations: {
                 self.scrollView.zoom(to: rect, animated: false)
@@ -269,7 +269,7 @@ extension ZoomImageView {
         }
     }
     
-    open func revertZooming() -> Void {
+    open func revertZooming() {
         if self.bounds.isEmpty {
             return
         }
@@ -295,7 +295,7 @@ extension ZoomImageView {
         self.revertContentOffset(animated: false)
     }
     
-    fileprivate func handleDidEndZooming() -> Void {
+    fileprivate func handleDidEndZooming() {
         guard let contentView = self.contentView else { return }
         let viewport: CGRect = self.finalViewportRect
         let contentViewFrame: CGRect = self.contentViewFrame
@@ -334,7 +334,7 @@ extension ZoomImageView {
                        y: scrollView.contentSize.height + contentInset.bottom - scrollView.bounds.height)
     }
     
-    open func revertContentOffset(animated: Bool = true) -> Void {
+    open func revertContentOffset(animated: Bool = true) {
         var x: CGFloat = self.scrollView.contentOffset.x
         var y: CGFloat = self.scrollView.contentOffset.y
         let viewport: CGRect = self.finalViewportRect
