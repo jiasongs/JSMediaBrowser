@@ -482,41 +482,35 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
             self.hide()
             break
         case .changed:
-            if let _ = self.transitionInteractiver.context, let pageCell = self.currentPageCell {
-                let location: CGPoint = gestureRecognizer.location(in: gestureRecognizerView)
-                let horizontalDistance: CGFloat = location.x - self.gestureBeganLocation.x
-                var verticalDistance: CGFloat = location.y - self.gestureBeganLocation.y
-                let height: NSNumber = NSNumber(value: Float(gestureRecognizerView.bounds.height / 2))
-                var ratio: CGFloat = 1.0
-                var alpha: CGFloat = 1.0
-                if  verticalDistance > 0 {
-                    ratio = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.4], extrapolateLeft: .clamp, extrapolateRight: .clamp)
-                    alpha = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.2], extrapolateLeft: .clamp, extrapolateRight: .clamp)
-                } else {
-                    let a: CGFloat = self.gestureBeganLocation.y + 200
-                    let b: CGFloat = 1 - pow((a - abs(verticalDistance)) / a, 2)
-                    let c: CGFloat = gestureRecognizerView.bounds.height / 2
-                    verticalDistance = -c * b
-                }
-                let transform = CGAffineTransform(translationX: horizontalDistance, y: verticalDistance).scaledBy(x: ratio, y: ratio)
-                pageCell.transform = transform
-                
-                for additionalView in self.additionalViews {
-                    additionalView.alpha = alpha
-                }
-                self.browserView.dimmingView?.alpha = alpha
-                self.transitionInteractiver.update(alpha)
+            let location: CGPoint = gestureRecognizer.location(in: gestureRecognizerView)
+            let horizontalDistance: CGFloat = location.x - self.gestureBeganLocation.x
+            var verticalDistance: CGFloat = location.y - self.gestureBeganLocation.y
+            let height: NSNumber = NSNumber(value: Float(gestureRecognizerView.bounds.height / 2))
+            var ratio: CGFloat = 1.0
+            var alpha: CGFloat = 1.0
+            if  verticalDistance > 0 {
+                ratio = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.4], extrapolateLeft: .clamp, extrapolateRight: .clamp)
+                alpha = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.2], extrapolateLeft: .clamp, extrapolateRight: .clamp)
+            } else {
+                let a: CGFloat = self.gestureBeganLocation.y + 200
+                let b: CGFloat = 1 - pow((a - abs(verticalDistance)) / a, 2)
+                let c: CGFloat = gestureRecognizerView.bounds.height / 2
+                verticalDistance = -c * b
             }
+            let transform = CGAffineTransform(translationX: horizontalDistance, y: verticalDistance).scaledBy(x: ratio, y: ratio)
+            self.currentPageCell?.transform = transform
+            
+            for additionalView in self.additionalViews {
+                additionalView.alpha = alpha
+            }
+            self.browserView.dimmingView?.alpha = alpha
+            self.transitionInteractiver.update(alpha)
             break
         case .ended, .cancelled, .failed:
-            if let _ = self.transitionInteractiver.context {
-                let location: CGPoint = gestureRecognizer.location(in: gestureRecognizer.view)
-                let verticalDistance: CGFloat = location.y - self.gestureBeganLocation.y
-                if verticalDistance > self.dismissWhenSlidingDistance {
-                    self.beginDismissingAnimation()
-                } else {
-                    self.resetDismissingAnimation()
-                }
+            let location: CGPoint = gestureRecognizer.location(in: gestureRecognizer.view)
+            let verticalDistance: CGFloat = location.y - self.gestureBeganLocation.y
+            if verticalDistance > self.dismissWhenSlidingDistance {
+                self.beginDismissingAnimation()
             } else {
                 self.resetDismissingAnimation()
             }
