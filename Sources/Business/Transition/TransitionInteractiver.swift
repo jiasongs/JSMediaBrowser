@@ -20,46 +20,62 @@ public class TransitionInteractiver: Transitioner {
     
 }
 
-extension TransitionInteractiver {
-    
-    public func begin() {
-        self.isInteractive = true
-    }
-    
-    public func update(_ percentComplete: CGFloat) {
-        guard let context = self.context else {
-            return
-        }
-        
-        context.updateInteractiveTransition(percentComplete)
-    }
-    
-    public func finish() {
-        guard let context = self.context else {
-            return
-        }
-        
-        self.isInteractive = false
-        context.finishInteractiveTransition()
-        self.endTransition(context, isEntering: self.type == .presenting)
-    }
-    
-    public func cancel() {
-        guard let context = self.context else {
-            return
-        }
-        
-        self.isInteractive = false
-        context.cancelInteractiveTransition()
-        self.endTransition(context, isEntering: self.type == .presenting)
-    }
-    
-}
-
 extension TransitionInteractiver: UIViewControllerInteractiveTransitioning {
     
     public func startInteractiveTransition(_ transitionContext: UIViewControllerContextTransitioning) {
         self.beginTransition(transitionContext, isEntering: self.type == .presenting)
+    }
+    
+}
+
+extension TransitionInteractiver {
+    
+    public func begin() {
+        self.checkInteractiveEnd()
+        
+        self.isInteractive = true
+    }
+    
+    public func update(_ percentComplete: CGFloat) {
+        self.checkInteractiveBegan()
+        
+        if let context = self.context {
+            context.updateInteractiveTransition(percentComplete)
+        }
+    }
+    
+    public func finish() {
+        self.checkInteractiveBegan()
+        
+        self.isInteractive = false
+        
+        if let context = self.context {
+            context.finishInteractiveTransition()
+            self.endTransition(context, isEntering: self.type == .presenting)
+        }
+    }
+    
+    public func cancel() {
+        self.checkInteractiveBegan()
+        
+        self.isInteractive = false
+        
+        if let context = self.context {
+            context.cancelInteractiveTransition()
+            self.endTransition(context, isEntering: self.type == .presenting)
+        }
+    }
+    
+    fileprivate func checkInteractiveBegan() {
+        guard self.isInteractive else {
+            fatalError("需要调用begin()")
+        }
+    }
+    
+    fileprivate func checkInteractiveEnd() {
+        guard !self.isInteractive else {
+            fatalError("需要调用finish()或者cancel")
+        }
     }
     
 }

@@ -46,6 +46,23 @@ open class TransitionAnimator: Transitioner {
 extension TransitionAnimator: UIViewControllerAnimatedTransitioning {
     
     public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+        let isEntering = self.type == .presenting
+        
+        self.beginTransition(transitionContext, isEntering: isEntering)
+        self.performAnimation(using: transitionContext, isEntering: isEntering) { finished in
+            self.endTransition(transitionContext, isEntering: isEntering)
+        }
+    }
+    
+    public func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
+        return self.duration
+    }
+    
+}
+
+extension TransitionAnimator {
+    
+    public func performAnimation(using transitionContext: UIViewControllerContextTransitioning, isEntering: Bool, completion: @escaping ((Bool) -> Void)) {
         guard let fromViewController = transitionContext.viewController(forKey: .from) else {
             return
         }
@@ -55,10 +72,6 @@ extension TransitionAnimator: UIViewControllerAnimatedTransitioning {
         let fromView: UIView = transitionContext.view(forKey: .from) ?? fromViewController.view
         let toView: UIView = transitionContext.view(forKey: .to) ?? toViewController.view
         let containerView: UIView = transitionContext.containerView
-        
-        let isEntering = self.type == .presenting
-        
-        self.beginTransition(transitionContext, isEntering: isEntering)
         
         /// 最后添加ImageView, 保证在最上层
         self.imageView.removeFromSuperview()
@@ -92,20 +105,15 @@ extension TransitionAnimator: UIViewControllerAnimatedTransitioning {
             /// did
             self.handleAnimationCompletion(style: style, isEntering: isEntering, fromView: fromView, toView: toView)
             
-            self.endTransition(transitionContext, isEntering: isEntering)
+            completion(finished)
         }
-        
-    }
-    
-    public func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return self.duration
     }
     
 }
 
 extension TransitionAnimator {
     
-    func handleAnimationEntering(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView, sourceRect: CGRect) -> Void {
+    fileprivate func handleAnimationEntering(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView, sourceRect: CGRect) -> Void {
         let currentView: UIView? = isEntering ? toView : fromView
         if let animatorViews = self.delegate?.transitionAnimatorViews {
             for view in animatorViews {
@@ -153,7 +161,7 @@ extension TransitionAnimator {
         }
     }
     
-    func handleAnimationProcessing(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView) -> Void {
+    fileprivate func handleAnimationProcessing(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView) -> Void {
         let currentView: UIView? = isEntering ? toView : fromView
         if let animatorViews = self.delegate?.transitionAnimatorViews {
             for view in animatorViews {
@@ -165,7 +173,7 @@ extension TransitionAnimator {
         }
     }
     
-    func handleAnimationCompletion(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView) -> Void {
+    fileprivate func handleAnimationCompletion(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView) -> Void {
         let currentView: UIView? = isEntering ? toView : fromView
         if style == .fade {
             currentView?.alpha = 1

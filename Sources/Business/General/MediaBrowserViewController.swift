@@ -21,24 +21,25 @@ open class MediaBrowserViewController: UIViewController {
         return browserView
     }()
     
-    open lazy var transitioningAnimator: UIViewControllerAnimatedTransitioning = {
+    open lazy var transitionAnimator: TransitionAnimator = {
         let animator = TransitionAnimator()
         animator.delegate = self
         return animator
     }()
     
+    open lazy var transitionInteractiver: TransitionInteractiver = {
+        let interactiver = TransitionInteractiver()
+        return interactiver
+    }()
+    
     open var enteringStyle: TransitioningStyle = .zoom {
         didSet {
-            if let animator = transitioningAnimator as? TransitionAnimator {
-                animator.enteringStyle = enteringStyle
-            }
+            self.transitionAnimator.enteringStyle = enteringStyle
         }
     }
     open var exitingStyle: TransitioningStyle = .zoom {
         didSet {
-            if let animator = transitioningAnimator as? TransitionAnimator {
-                animator.exitingStyle = exitingStyle
-            }
+            self.transitionAnimator.exitingStyle = exitingStyle
         }
     }
     
@@ -114,6 +115,7 @@ open class MediaBrowserViewController: UIViewController {
     private static let imageCellIdentifier: String = "ImageCellIdentifier"
     private static let videoCellIdentifier: String = "VideoCellIdentifier"
     fileprivate weak var presentedFromViewController: UIViewController?
+    fileprivate var gestureBeganLocation: CGPoint = CGPoint.zero
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -471,33 +473,75 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
         #endif
     }
     
-    public func mediaBrowserView(_ browserView: MediaBrowserView, dismissingChanged gestureRecognizer: UIPanGestureRecognizer, verticalDistance: CGFloat) {
+    public func mediaBrowserView(_ browserView: MediaBrowserView, dismissingChanged gestureRecognizer: UIPanGestureRecognizer) {
+        let gestureRecognizerView: UIView = gestureRecognizer.view ?? self.browserView
         switch gestureRecognizer.state {
         case .began:
+            self.gestureBeganLocation = gestureRecognizer.location(in: gestureRecognizerView)
+            self.transitionInteractiver.begin()
+            self.hide()
             break
         case .changed:
-            var alpha: CGFloat = 1
-            let height: NSNumber = NSNumber(value: Float(browserView.bounds.height / 2))
-            if verticalDistance > 0 {
-                alpha = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.2], extrapolateLeft: .clamp, extrapolateRight: .clamp)
-            }
-            for additionalView in self.additionalViews {
-                additionalView.alpha = alpha
+            if let pageCell = self.currentPageCell {
+                let location: CGPoint = gestureRecognizer.location(in: gestureRecognizerView)
+                let horizontalDistance: CGFloat = location.x - self.gestureBeganLocation.x
+                var verticalDistance: CGFloat = location.y - self.gestureBeganLocation.y
+                let height: NSNumber = NSNumber(value: Float(gestureRecognizerView.bounds.height / 2))
+                var ratio: CGFloat = 1.0
+                var alpha: CGFloat = 1.0
+                if  verticalDistance > 0 {
+                    ratio = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.4], extrapolateLeft: .clamp, extrapolateRight: .clamp)
+                    alpha = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.2], extrapolateLeft: .clamp, extrapolateRight: .clamp)
+                } else {
+                    let a: CGFloat = self.gestureBeganLocation.y + 200
+                    let b: CGFloat = 1 - pow((a - abs(verticalDistance)) / a, 2)
+                    let c: CGFloat = gestureRecognizerView.bounds.height / 2
+                    verticalDistance = -c * b
+                }
+                let transform = CGAffineTransform(translationX: horizontalDistance, y: verticalDistance).scaledBy(x: ratio, y: ratio)
+                pageCell.transform = transform
+                
+                for additionalView in self.additionalViews {
+                    additionalView.alpha = alpha
+                }
+                self.browserView.dimmingView?.alpha = alpha
+                self.transitionInteractiver.update(alpha)
             }
             break
-        case .ended:
+        case .ended, .cancelled, .failed:
+            let location: CGPoint = gestureRecognizer.location(in: gestureRecognizer.view)
+            let verticalDistance: CGFloat = location.y - self.gestureBeganLocation.y
             if verticalDistance > self.dismissWhenSlidingDistance {
-                self.hide()
+                self.beginDismissingAnimation()
             } else {
-                browserView.resetDismissingGesture(withAnimations: { () -> Void in
-                    for additionalView in self.additionalViews {
-                        additionalView.alpha = 1.0
-                    }
-                })
+                self.resetDismissingAnimation()
             }
             break
         default:
             break
+        }
+    }
+    
+    fileprivate func beginDismissingAnimation() {
+        if let context = self.transitionInteractiver.context {
+            self.transitionAnimator.performAnimation(using: context, isEntering: false) { finished in
+                self.transitionInteractiver.finish()
+            }
+        } else {
+            self.resetDismissingAnimation()
+        }
+    }
+    
+    fileprivate func resetDismissingAnimation() {
+        self.gestureBeganLocation = CGPoint.zero
+        UIView.animate(withDuration: self.transitionAnimator.duration, delay: 0, options: AnimationOptionsCurveOut, animations: {
+            self.currentPageCell?.transform = CGAffineTransform.identity
+            self.browserView.dimmingView?.alpha = 1.0
+            for additionalView in self.additionalViews {
+                additionalView.alpha = 1.0
+            }
+        }) { finished in
+            self.transitionInteractiver.cancel()
         }
     }
     
@@ -520,17 +564,23 @@ extension MediaBrowserViewController: ZoomImageViewDelegate {
 extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, TransitionAnimatorDelegate {
     
     public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        if let animator = transitioningAnimator as? TransitionAnimator {
-            animator.type = .presenting
-        }
-        return self.transitioningAnimator
+        self.transitionAnimator.type = .presenting
+        return self.transitionAnimator
     }
     
     public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        if let animator = transitioningAnimator as? TransitionAnimator {
-            animator.type = .dismiss
-        }
-        return self.transitioningAnimator
+        self.transitionAnimator.type = .dismiss
+        return self.transitionAnimator
+    }
+    
+    public func interactionControllerForPresentation(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        self.transitionInteractiver.type = .presenting
+        return self.transitionInteractiver.isInteractive ? self.transitionInteractiver : nil
+    }
+    
+    public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        self.transitionInteractiver.type = .dismiss
+        return self.transitionInteractiver.isInteractive ? self.transitionInteractiver : nil
     }
     
     public var transitionSourceRect: CGRect {

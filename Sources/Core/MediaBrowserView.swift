@@ -83,7 +83,6 @@ open class MediaBrowserView: UIView {
     fileprivate var isChangingCollectionViewBounds: Bool = false
     fileprivate var previousPageOffsetRatio: CGFloat = 0.0
     fileprivate var isNeededScrollToItem: Bool = true
-    fileprivate var gestureBeganLocation: CGPoint = CGPoint.zero
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -137,9 +136,7 @@ extension MediaBrowserView {
         self.isNeededScrollToItem = false
         self.currentPage = index
         self.isNeededScrollToItem = true
-
-        /// iOS 14, 当isPagingEnabled为true, scrollToItem有bug
-        /// https://stackoverflow.com/questions/41884645/uicollectionview-scroll-to-item-not-working-with-horizontal-direction
+        
         /// 滚动到指定位置
         self.scrollToPage(at: index, animated: animated)
     }
@@ -188,20 +185,13 @@ extension MediaBrowserView {
         return self.collectionView.cellForItem(at: indexPath)
     }
     
-    open func resetDismissingGesture(withAnimations animations: (() -> Void)? = nil) -> Void {
-        self.gestureBeganLocation = CGPoint.zero
-        UIView.animate(withDuration: 0.25, delay: 0, options: AnimationOptionsCurveOut, animations: {
-            self.currentPageCell?.transform = CGAffineTransform.identity
-            self.dimmingView?.alpha = 1.0
-            animations?()
-        }, completion: nil)
-    }
-    
     fileprivate func scrollToPage(at index: Int, animated: Bool = true) -> Void {
         guard !self.collectionView.bounds.isEmpty else {
             return
         }
         if index >= 0 && index < self.totalUnitPage {
+            /// iOS 14, 当isPagingEnabled为true, scrollToItem有bug
+            /// https://stackoverflow.com/questions/41884645/uicollectionview-scroll-to-item-not-working-with-horizontal-direction
             let contentOffset = CGPoint(x: self.collectionView.bounds.width * CGFloat(index),
                                         y: self.collectionView.contentOffset.y)
             self.collectionView.setContentOffset(contentOffset, animated: animated)
@@ -302,74 +292,23 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
         }
     }
     
-    @objc func handleDismissingGesture(gesture: UIPanGestureRecognizer) -> Void {
-        switch gesture.state {
-        case .began:
-            self.gestureBeganLocation = gesture.location(in: gesture.view)
-            self.toggleDismissingGestureDelegate(gesture, verticalDistance: 0)
-            break
-        case .changed:
-            if let pageCell = self.currentPageCell {
-                let location: CGPoint = gesture.location(in: self)
-                let horizontalDistance: CGFloat = location.x - self.gestureBeganLocation.x
-                var verticalDistance: CGFloat = location.y - self.gestureBeganLocation.y
-                let height: NSNumber = NSNumber(value: Float(self.bounds.height / 2))
-                var ratio: CGFloat = 1.0
-                var alpha: CGFloat = 1.0
-                if  verticalDistance > 0 {
-                    ratio = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.4], extrapolateLeft: .clamp, extrapolateRight: .clamp)
-                    alpha = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.2], extrapolateLeft: .clamp, extrapolateRight: .clamp)
-                } else {
-                    let a: CGFloat = self.gestureBeganLocation.y + 200
-                    let b: CGFloat = 1 - pow((a - abs(verticalDistance)) / a, 2)
-                    let c: CGFloat = self.bounds.height / 2
-                    verticalDistance = -c * b
-                }
-                let transform = CGAffineTransform(translationX: horizontalDistance, y: verticalDistance).scaledBy(x: ratio, y: ratio)
-                pageCell.transform = transform
-                self.dimmingView?.alpha = alpha
-                self.toggleDismissingGestureDelegate(gesture, verticalDistance: verticalDistance)
-            }
-            break
-        case .ended:
-            let location: CGPoint = gesture.location(in: self)
-            let verticalDistance: CGFloat = location.y - self.gestureBeganLocation.y
-            self.endDismissingGesture(gesture, verticalDistance: verticalDistance)
-            break
-        default:
-            self.resetDismissingGesture()
-            break
-        }
+    @objc func handleDismissingGesture(gestureRecognizer: UIPanGestureRecognizer) -> Void {
+        self.gestureDelegate?.mediaBrowserView(self, dismissingChanged: gestureRecognizer)
     }
     
     public override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if gestureRecognizer == self.dismissingGesture {
             return self.gestureDelegate?.mediaBrowserView(self, dismissingShouldBegin: self.dismissingGesture) ?? true
+        } else {
+            return super.gestureRecognizerShouldBegin(gestureRecognizer)
         }
-        return super.gestureRecognizerShouldBegin(gestureRecognizer)
     }
     
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         if let _ = touch.view as? UISlider {
             return false
-        }
-        return true
-    }
-    
-    fileprivate func endDismissingGesture(_ gesture: UIPanGestureRecognizer, verticalDistance: CGFloat) -> Void {
-        if self.toggleDismissingGestureDelegate(gesture, verticalDistance: verticalDistance) {
-            self.gestureBeganLocation = CGPoint.zero
         } else {
-            self.resetDismissingGesture()
-        }
-    }
-    
-    @discardableResult
-    fileprivate func toggleDismissingGestureDelegate(_ gesture: UIPanGestureRecognizer, verticalDistance: CGFloat) -> Bool {
-        if let _ = self.gestureDelegate?.mediaBrowserView(self, dismissingChanged: gesture, verticalDistance: verticalDistance) {
             return true
-        } else {
-            return false
         }
     }
     
