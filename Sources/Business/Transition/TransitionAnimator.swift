@@ -24,7 +24,7 @@ public enum TransitionAnimatorType: Int {
     case dismiss
 }
 
-open class TransitionAnimator: NSObject {
+open class TransitionAnimator: Transitioner {
     
     open weak var delegate: TransitionAnimatorDelegate?
     open var duration: TimeInterval = 0.25
@@ -56,47 +56,13 @@ extension TransitionAnimator: UIViewControllerAnimatedTransitioning {
         let toView: UIView = transitionContext.view(forKey: .to) ?? toViewController.view
         let containerView: UIView = transitionContext.containerView
         
-        /// 添加视图
         let isEntering = self.type == .presenting
-        if isEntering {
-            if toView.superview == nil {
-                containerView.addSubview(toView)
-            }
-        } else {
-            if toView.superview == nil && fromView.superview == containerView {
-                containerView.insertSubview(toView, belowSubview: fromView)
-            }
-        }
-        /// 添加ImageView
+        
+        self.beginTransition(transitionContext, isEntering: isEntering)
+        
+        /// 最后添加ImageView, 保证在最上层
         self.imageView.removeFromSuperview()
         containerView.addSubview(self.imageView)
-        
-        /// 触发fromView的布局
-        fromView.setNeedsLayout()
-        if fromView.window != nil {
-            fromView.layoutIfNeeded()
-        }
-        let finalFrame: CGRect = transitionContext.finalFrame(for: toViewController)
-        /// dissmiss时finalFrame可能与原视图的frame不一致, 导致一些UI异常
-        if !finalFrame.isEmpty && isEntering {
-            toView.frame = transitionContext.finalFrame(for: toViewController)
-        }
-        /// 触发toView的布局
-        toView.setNeedsLayout()
-        if toView.window != nil {
-            toView.layoutIfNeeded()
-        }
-        
-        /// AppearanceTransition ViewState
-        let presentingViewController: UIViewController = isEntering ? fromViewController : toViewController
-        let presentedModalPresentationStyle: UIModalPresentationStyle = (isEntering ? toViewController : fromViewController).modalPresentationStyle
-        let shouldAppearanceTransitionManually: Bool = (presentedModalPresentationStyle == .custom ||
-                                                            presentedModalPresentationStyle == .overFullScreen ||
-                                                            presentedModalPresentationStyle == .overCurrentContext)
-        /// 其他style会自动调用AppearanceTransition, 这里就不用管了, 否则会触发警告: Unbalanced calls to begin/end
-        if shouldAppearanceTransitionManually {
-            presentingViewController.beginAppearanceTransition(!isEntering, animated: true)
-        }
         
         var style: TransitioningStyle = isEntering ? self.enteringStyle : self.exitingStyle
         let sourceView = self.delegate?.transitionSourceView
@@ -123,12 +89,10 @@ extension TransitionAnimator: UIViewControllerAnimatedTransitioning {
             /// processing
             self.handleAnimationProcessing(style: style, isEntering: isEntering, fromView: fromView, toView: toView)
         } completion: { (finished) in
-            if shouldAppearanceTransitionManually {
-                presentingViewController.endAppearanceTransition()
-            }
-            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
             /// did
             self.handleAnimationCompletion(style: style, isEntering: isEntering, fromView: fromView, toView: toView)
+            
+            self.endTransition(transitionContext, isEntering: isEntering)
         }
         
     }
@@ -141,7 +105,7 @@ extension TransitionAnimator: UIViewControllerAnimatedTransitioning {
 
 extension TransitionAnimator {
     
-    func handleAnimationEntering(style: TransitioningStyle, isEntering: Bool, fromView: UIView?, toView: UIView?, sourceRect: CGRect) -> Void {
+    func handleAnimationEntering(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView, sourceRect: CGRect) -> Void {
         let currentView: UIView? = isEntering ? toView : fromView
         if let animatorViews = self.delegate?.transitionAnimatorViews {
             for view in animatorViews {
@@ -189,7 +153,7 @@ extension TransitionAnimator {
         }
     }
     
-    func handleAnimationProcessing(style: TransitioningStyle, isEntering: Bool, fromView: UIView?, toView: UIView?) -> Void {
+    func handleAnimationProcessing(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView) -> Void {
         let currentView: UIView? = isEntering ? toView : fromView
         if let animatorViews = self.delegate?.transitionAnimatorViews {
             for view in animatorViews {
@@ -201,7 +165,7 @@ extension TransitionAnimator {
         }
     }
     
-    func handleAnimationCompletion(style: TransitioningStyle, isEntering: Bool, fromView: UIView?, toView: UIView?) -> Void {
+    func handleAnimationCompletion(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView) -> Void {
         let currentView: UIView? = isEntering ? toView : fromView
         if style == .fade {
             currentView?.alpha = 1

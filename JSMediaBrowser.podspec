@@ -43,7 +43,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "Business" do |ss|
-    ss.source_files = "Sources/Business/General/*.{swift,h,m}", "Sources/Business/Basis/*.{swift,h,m}", "Sources/Business/Protocol/*.{swift,h,m}"
+    ss.source_files = "Sources/Business/General/*.{swift,h,m}", "Sources/Business/Transition/*.{swift,h,m}", "Sources/Business/Basis/*.{swift,h,m}", "Sources/Business/Protocol/*.{swift,h,m}"
     ss.frameworks   = "PhotosUI", "CoreGraphics", "QuartzCore"
     ss.dependency "JSMediaBrowser/Core"
   end
