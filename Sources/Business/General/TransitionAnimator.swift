@@ -46,20 +46,24 @@ open class TransitionAnimator: NSObject {
 extension TransitionAnimator: UIViewControllerAnimatedTransitioning {
     
     public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        guard let fromViewController = transitionContext.viewController(forKey: .from) else { return }
-        guard let toViewController = transitionContext.viewController(forKey: .to) else { return }
-        let fromView: UIView? = transitionContext.view(forKey: .from)
-        let toView: UIView? = transitionContext.view(forKey: .to)
+        guard let fromViewController = transitionContext.viewController(forKey: .from) else {
+            return
+        }
+        guard let toViewController = transitionContext.viewController(forKey: .to) else {
+            return
+        }
+        let fromView: UIView = transitionContext.view(forKey: .from) ?? fromViewController.view
+        let toView: UIView = transitionContext.view(forKey: .to) ?? toViewController.view
         let containerView: UIView = transitionContext.containerView
         
         /// 添加视图
         let isEntering = self.type == .presenting
         if isEntering {
-            if let toView = toView {
+            if toView.superview == nil {
                 containerView.addSubview(toView)
             }
         } else {
-            if let toView = toView, let fromView = fromView {
+            if toView.superview == nil && fromView.superview == containerView {
                 containerView.insertSubview(toView, belowSubview: fromView)
             }
         }
@@ -68,15 +72,19 @@ extension TransitionAnimator: UIViewControllerAnimatedTransitioning {
         containerView.addSubview(self.imageView)
         
         /// 触发fromView的布局
-        fromView?.setNeedsLayout()
-        if fromView?.window != nil {
-            fromView?.layoutIfNeeded()
+        fromView.setNeedsLayout()
+        if fromView.window != nil {
+            fromView.layoutIfNeeded()
+        }
+        let finalFrame: CGRect = transitionContext.finalFrame(for: toViewController)
+        /// dissmiss时finalFrame可能与原视图的frame不一致, 导致一些UI异常
+        if !finalFrame.isEmpty && isEntering {
+            toView.frame = transitionContext.finalFrame(for: toViewController)
         }
         /// 触发toView的布局
-        toView?.frame = transitionContext.finalFrame(for: toViewController)
-        toView?.setNeedsLayout()
-        if toView?.window != nil {
-            toView?.layoutIfNeeded()
+        toView.setNeedsLayout()
+        if toView.window != nil {
+            toView.layoutIfNeeded()
         }
         
         /// AppearanceTransition ViewState
@@ -93,7 +101,8 @@ extension TransitionAnimator: UIViewControllerAnimatedTransitioning {
         var style: TransitioningStyle = isEntering ? self.enteringStyle : self.exitingStyle
         let sourceView = self.delegate?.transitionSourceView
         var sourceRect = self.delegate?.transitionSourceRect ?? CGRect.zero
-        if style == .zoom, let currentView: UIView = isEntering ? toView : fromView {
+        if style == .zoom {
+            let currentView: UIView = isEntering ? toView : fromView
             if !sourceRect.isEmpty {
                 sourceRect = currentView.convert(sourceRect, to: currentView)
             } else if let sourceView = sourceView {
