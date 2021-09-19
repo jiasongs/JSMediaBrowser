@@ -18,19 +18,18 @@
 + (void)load {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        OverrideImplementation([UIViewController class], @selector(willDealloc), ^id(__unsafe_unretained Class originClass, SEL originCMD, IMP (^originalIMPProvider)(void)) {
+        OverrideImplementation(UIViewController.class, @selector(willDealloc), ^id(__unsafe_unretained Class originClass, SEL originCMD, IMP (^originalIMPProvider)(void)) {
             return ^(UIViewController *selfObject) {
                 BOOL shouldCallSuper = YES;
                 
                 if (selfObject.beingDismissed && [selfObject conformsToProtocol:@protocol(UIViewControllerTransitioningDelegate)]) {
-                    id<UIViewControllerTransitioningDelegate> transitionViewController = (id<UIViewControllerTransitioningDelegate>)selfObject;
                     id<UIViewControllerAnimatedTransitioning> animatedTransitioning = nil;
                     id<UIViewControllerInteractiveTransitioning> interactiveTransitioning = nil;
-                    if ([transitionViewController respondsToSelector:@selector(animationControllerForDismissedController:)]) {
-                        animatedTransitioning = [(id<UIViewControllerTransitioningDelegate>)selfObject animationControllerForDismissedController:selfObject];
+                    if ([selfObject.transitioningDelegate respondsToSelector:@selector(animationControllerForDismissedController:)]) {
+                        animatedTransitioning = [selfObject.transitioningDelegate animationControllerForDismissedController:selfObject];
                     }
-                    if ([transitionViewController respondsToSelector:@selector(interactionControllerForDismissal:)]) {
-                        interactiveTransitioning =  [(id<UIViewControllerTransitioningDelegate>)selfObject interactionControllerForDismissal:animatedTransitioning];
+                    if ([selfObject.transitioningDelegate respondsToSelector:@selector(interactionControllerForDismissal:)]) {
+                        interactiveTransitioning = [selfObject.transitioningDelegate interactionControllerForDismissal:animatedTransitioning];
                     }
                     if (interactiveTransitioning != nil) {
                         shouldCallSuper = NO;

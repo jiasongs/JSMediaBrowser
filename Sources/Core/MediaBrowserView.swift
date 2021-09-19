@@ -292,16 +292,16 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
         }
     }
     
-    @objc func handleDismissingGesture(gestureRecognizer: UIPanGestureRecognizer) -> Void {
-        self.gestureDelegate?.mediaBrowserView(self, dismissingChanged: gestureRecognizer)
-    }
-    
     public override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if gestureRecognizer == self.dismissingGesture {
             return self.gestureDelegate?.mediaBrowserView(self, dismissingShouldBegin: self.dismissingGesture) ?? true
         } else {
             return super.gestureRecognizerShouldBegin(gestureRecognizer)
         }
+    }
+    
+    @objc func handleDismissingGesture(gestureRecognizer: UIPanGestureRecognizer) -> Void {
+        self.gestureDelegate?.mediaBrowserView(self, dismissingChanged: gestureRecognizer)
     }
     
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
