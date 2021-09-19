@@ -482,7 +482,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
             self.hide()
             break
         case .changed:
-            if let pageCell = self.currentPageCell {
+            if let _ = self.transitionInteractiver.context, let pageCell = self.currentPageCell {
                 let location: CGPoint = gestureRecognizer.location(in: gestureRecognizerView)
                 let horizontalDistance: CGFloat = location.x - self.gestureBeganLocation.x
                 var verticalDistance: CGFloat = location.y - self.gestureBeganLocation.y
@@ -509,10 +509,14 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
             }
             break
         case .ended, .cancelled, .failed:
-            let location: CGPoint = gestureRecognizer.location(in: gestureRecognizer.view)
-            let verticalDistance: CGFloat = location.y - self.gestureBeganLocation.y
-            if verticalDistance > self.dismissWhenSlidingDistance {
-                self.beginDismissingAnimation()
+            if let _ = self.transitionInteractiver.context {
+                let location: CGPoint = gestureRecognizer.location(in: gestureRecognizer.view)
+                let verticalDistance: CGFloat = location.y - self.gestureBeganLocation.y
+                if verticalDistance > self.dismissWhenSlidingDistance {
+                    self.beginDismissingAnimation()
+                } else {
+                    self.resetDismissingAnimation()
+                }
             } else {
                 self.resetDismissingAnimation()
             }

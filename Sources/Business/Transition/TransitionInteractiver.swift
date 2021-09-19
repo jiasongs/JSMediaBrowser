@@ -23,7 +23,31 @@ public class TransitionInteractiver: Transitioner {
 extension TransitionInteractiver: UIViewControllerInteractiveTransitioning {
     
     public func startInteractiveTransition(_ transitionContext: UIViewControllerContextTransitioning) {
-        self.beginTransition(transitionContext, isEntering: self.type == .presenting)
+        let isEntering = self.type == .presenting
+        
+        if self.isInteractive {
+            self.beginTransition(transitionContext, isEntering: isEntering)
+        } else {
+            /// 极端情况下isInteractive已经设置为false, 但是此时未处理transitionContext时会出现异常
+            /// 所以这里规避下, 出现异常时直接取消
+            /// 此时若执行取消, 后续获取transitionWasCancelled还是false, 所以直接在这里结束还是会存在异常，顺延到下一个runloop执行
+            DispatchQueue.main.async {
+                transitionContext.cancelInteractiveTransition()
+                self.endTransition(transitionContext, isEntering: isEntering)
+            }
+        }
+    }
+    
+    public var completionSpeed: CGFloat {
+        return 1.0
+    }
+    
+    public var completionCurve: UIView.AnimationCurve {
+        return .easeInOut
+    }
+    
+    public var wantsInteractiveStart: Bool {
+        return self.isInteractive
     }
     
 }
@@ -68,13 +92,13 @@ extension TransitionInteractiver {
     
     fileprivate func checkInteractiveBegan() {
         guard self.isInteractive else {
-            fatalError("需要调用begin()")
+            fatalError("可能未调用begin(), 请检查代码, 保证begin与finish、cancel成对出现")
         }
     }
     
     fileprivate func checkInteractiveEnd() {
         guard !self.isInteractive else {
-            fatalError("需要调用finish()或者cancel")
+            fatalError("可能未调用finish()或者cancel(), 请检查代码, 保证begin与finish、cancel成对出现")
         }
     }
     
