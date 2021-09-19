@@ -13,20 +13,12 @@ open class Transitioner: NSObject {
     
     fileprivate var shouldAppearanceTransitionManually: Bool = false
     
-    #if DEBUG
-    fileprivate var isCallCompleteTransitions: [Int: Bool] = [:]
-    #endif
-    
     public override init() {
         super.init()
     }
     
     deinit {
-        #if DEBUG
-        for (_, value) in self.isCallCompleteTransitions {
-            assert(value, "未调用completion回调, 可能存在问题, 请检查代码")
-        }
-        #endif
+        assert(self.context == nil, "transitionContext未释放, 检查beginTransition或endTransition是否成对调用")
     }
     
 }
@@ -83,10 +75,6 @@ extension Transitioner {
         if self.shouldAppearanceTransitionManually {
             presentingViewController.beginAppearanceTransition(!isEntering, animated: true)
         }
-        
-        #if DEBUG
-        self.isCallCompleteTransitions[isEntering ? 0 : 1] = false
-        #endif
     }
     
     public func endTransition(_ transitionContext: UIViewControllerContextTransitioning, isEntering: Bool) {
@@ -100,10 +88,6 @@ extension Transitioner {
         }
         
         transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
-        
-        #if DEBUG
-        self.isCallCompleteTransitions[isEntering ? 0 : 1] = true
-        #endif
     }
     
 }
