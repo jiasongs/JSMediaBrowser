@@ -78,8 +78,12 @@ extension Transitioner {
     }
     
     public func endTransition(_ transitionContext: UIViewControllerContextTransitioning, isEntering: Bool) {
-        guard let fromViewController = transitionContext.viewController(forKey: .from) else { return }
-        guard let toViewController = transitionContext.viewController(forKey: .to) else { return }
+        guard let fromViewController = transitionContext.viewController(forKey: .from) else {
+            return
+        }
+        guard let toViewController = transitionContext.viewController(forKey: .to) else {
+            return
+        }
         
         let presentingViewController: UIViewController = isEntering ? fromViewController : toViewController
         if self.shouldAppearanceTransitionManually {
