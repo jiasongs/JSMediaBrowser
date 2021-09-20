@@ -44,7 +44,7 @@ extension Transitioner {
                 containerView.addSubview(toView)
             }
         } else {
-            if toView.superview == nil && fromView.superview == containerView {
+            if toView.superview == nil {
                 containerView.insertSubview(toView, belowSubview: fromView)
             }
         }
