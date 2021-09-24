@@ -70,7 +70,7 @@ extension PagingLayout {
         let context: UICollectionViewLayoutInvalidationContext = super.invalidationContext(forBoundsChange: newBounds)
         if let collectionView = self.collectionView, let flowContext = context as? UICollectionViewFlowLayoutInvalidationContext {
             flowContext.invalidateFlowLayoutDelegateMetrics = true
-            flowContext.invalidateFlowLayoutAttributes = !newBounds.origin.equalTo(collectionView.bounds.origin)
+            flowContext.invalidateFlowLayoutAttributes = collectionView.bounds.origin != newBounds.origin
         }
         return context
     }
