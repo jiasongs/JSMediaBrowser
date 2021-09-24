@@ -68,9 +68,9 @@ extension PagingLayout {
     
     open override func invalidationContext(forBoundsChange newBounds: CGRect) -> UICollectionViewLayoutInvalidationContext {
         let context: UICollectionViewLayoutInvalidationContext = super.invalidationContext(forBoundsChange: newBounds)
-        if let flowContext: UICollectionViewFlowLayoutInvalidationContext = context as? UICollectionViewFlowLayoutInvalidationContext {
-            flowContext.invalidateFlowLayoutDelegateMetrics = self.shouldInvalidateLayout(forBoundsChange: newBounds)
-            flowContext.invalidateFlowLayoutAttributes = self.shouldInvalidateLayout(forBoundsChange: newBounds)
+        if let collectionView = self.collectionView, let flowContext = context as? UICollectionViewFlowLayoutInvalidationContext {
+            flowContext.invalidateFlowLayoutDelegateMetrics = true
+            flowContext.invalidateFlowLayoutAttributes = !newBounds.origin.equalTo(collectionView.bounds.origin)
         }
         return context
     }
