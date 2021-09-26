@@ -283,7 +283,7 @@ extension ZoomImageView {
         self.scrollView.maximumZoomScale = maximumZoomScale
         /// 重置Frame
         if let contentView = self.contentView {
-            self.contentView?.frame = CGRect(x: 0, y: 0, width: contentView.frame.width, height: contentView.frame.height)
+            contentView.frame = CGRect(x: 0, y: 0, width: contentView.frame.width, height: contentView.frame.height)
         }
         /// 重置ZoomScale
         self.setZoom(scale: minimumZoomScale, animated: false)
@@ -296,7 +296,9 @@ extension ZoomImageView {
     }
     
     fileprivate func handleDidEndZooming() {
-        guard let contentView = self.contentView else { return }
+        guard let contentView = self.contentView else {
+            return
+        }
         let viewport: CGRect = self.finalViewportRect
         let contentViewFrame: CGRect = self.contentViewFrame
         var contentInset: UIEdgeInsets = UIEdgeInsets.zero
