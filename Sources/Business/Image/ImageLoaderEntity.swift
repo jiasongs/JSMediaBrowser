@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import JSCoreKit
 
 public class ImageLoaderEntity: ImageLoaderProtocol {
     
@@ -20,20 +19,16 @@ public class ImageLoaderEntity: ImageLoaderProtocol {
         if var sourceItem = self.sourceItem as? ImageSourceProtocol {
             /// 如果存在image, 且imageUrl为nil时, 则代表是本地图片, 无须网络请求
             if let image = sourceItem.image, sourceItem.imageUrl == nil {
-                JSAsyncExecuteOnMainQueue {
-                    self.isFinished = true
-                    completed?(self, image, nil, nil, false, true)
-                }
+                self.isFinished = true
+                completed?(self, image, nil, nil, false, true)
             } else {
                 let url: URL? = sourceItem.imageUrl
                 self.webImageMediator?.setImage(for: imageView, url: url, thumbImage: sourceItem.thumbImage, setImageBlock: { (image: UIImage?, imageData: Data?) in
                     setDataBlock?(self, image, imageData)
                 }, progress: { (receivedSize: Int64, expectedSize: Int64) in
-                    JSAsyncExecuteOnMainQueue {
-                        self.progress.completedUnitCount = receivedSize
-                        self.progress.totalUnitCount = expectedSize
-                        downloadProgress?(self, self.progress)
-                    }
+                    self.progress.completedUnitCount = receivedSize
+                    self.progress.totalUnitCount = expectedSize
+                    downloadProgress?(self, self.progress)
                 }, completed: { (image: UIImage?, imageData: Data?, error: NSError?, cancelled: Bool, finished: Bool) in
                     self.error = error
                     if image != nil && error == nil && finished {
@@ -41,10 +36,8 @@ public class ImageLoaderEntity: ImageLoaderProtocol {
                         /// sourceItem有可能是struct类型, 所以这里需要赋值
                         self.sourceItem = sourceItem
                     }
-                    JSAsyncExecuteOnMainQueue {
-                        self.isFinished = finished
-                        completed?(self, image, imageData, error, cancelled, finished)
-                    }
+                    self.isFinished = finished
+                    completed?(self, image, imageData, error, cancelled, finished)
                 })
             }
         }

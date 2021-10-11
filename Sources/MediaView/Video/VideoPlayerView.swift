@@ -170,7 +170,7 @@ extension VideoPlayerView {
             let horizontalRatio: CGFloat = viewport.width / image.size.width
             let verticalRatio: CGFloat = viewport.height / image.size.height
             let ratio: CGFloat = min(horizontalRatio, verticalRatio)
-            let resizedSize: CGSize = CGSize(width: JSCGFlatSpecificScale(image.size.width * ratio, image.scale), height: JSCGFlatSpecificScale(image.size.height * ratio, image.scale))
+            let resizedSize: CGSize = CGSize(width: image.size.width * ratio, height: image.size.height * ratio)
             var rect: CGRect = CGRect(origin: CGPoint.zero, size: resizedSize)
             rect.origin.x = viewport.minX + (viewport.width - resizedSize.width) / 2.0
             rect.origin.y = viewport.minY + (viewport.height - resizedSize.height) / 2.0

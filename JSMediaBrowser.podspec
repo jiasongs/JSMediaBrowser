@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name         = "JSMediaBrowser"
-  s.version      = "0.6.6"
+  s.version      = "0.6.7"
   s.summary      = "图片、视频浏览器"
   s.homepage     = "https://github.com/jiasongs/JSMediaBrowser"
   s.author       = { "jiasong" => "593908937@qq.com" }
@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.frameworks   = "UIKit"
   s.license      = "MIT"
   
-  s.dependency "JSCoreKit", "~> 0.2.1"
+  s.dependency "JSCoreKit", "~> 0.2.2"
   
   s.default_subspec = "Core"
   s.subspec "Core" do |ss|

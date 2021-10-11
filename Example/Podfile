@@ -14,8 +14,7 @@ end
 
 target "JSMediaBrowserExample" do
   pod_Common
-  # 调试工具
-  pod "LookinServer", :configurations => ["Debug"]
+  pod "LookinServer", "~> 1.0.4", :configurations => ["Debug"]
   pod "MLeaksFinder", :configurations => ["Debug"]
   pod "FBRetainCycleDetector", :git => "https://github.com/jiasongs/FBRetainCycleDetector.git", :configurations => ["Debug"]
 end
