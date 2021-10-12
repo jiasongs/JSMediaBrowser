@@ -7,5 +7,5 @@
 
 import UIKit
 
-let AnimationOptionsCurveOut = UIView.AnimationOptions(rawValue: 7<<16)
-let AnimationOptionsCurveIn = UIView.AnimationOptions(rawValue: 8<<16)
+internal let AnimationOptionsCurveOut = UIView.AnimationOptions(rawValue: 7<<16)
+internal let AnimationOptionsCurveIn = UIView.AnimationOptions(rawValue: 8<<16)
