@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.frameworks   = "UIKit"
   s.license      = "MIT"
   
-  s.dependency "JSCoreKit", "~> 0.2.2"
+  s.dependency "JSCoreKit", "~> 0.2.3"
   
   s.default_subspec = "Core"
   s.subspec "Core" do |ss|
