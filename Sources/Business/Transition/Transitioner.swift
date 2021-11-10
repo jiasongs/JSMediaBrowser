@@ -57,7 +57,7 @@ extension Transitioner {
         let finalFrame: CGRect = transitionContext.finalFrame(for: toViewController)
         /// dismiss时finalFrame可能与原视图的frame不一致, 导致一些UI异常
         if !finalFrame.isEmpty && isEntering {
-            toView.frame = transitionContext.finalFrame(for: toViewController)
+            toView.frame = finalFrame
         }
         /// 触发toView的布局
         toView.setNeedsLayout()
