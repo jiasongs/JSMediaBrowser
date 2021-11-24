@@ -485,17 +485,14 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
             let location: CGPoint = gestureRecognizer.location(in: gestureRecognizerView)
             let horizontalDistance: CGFloat = location.x - self.gestureBeganLocation.x
             var verticalDistance: CGFloat = location.y - self.gestureBeganLocation.y
-            let height: NSNumber = NSNumber(value: Float(gestureRecognizerView.bounds.height / 2))
+            let height: NSNumber = NSNumber(value: Double(gestureRecognizerView.bounds.height / 2))
             var ratio: CGFloat = 1.0
             var alpha: CGFloat = 1.0
             if  verticalDistance > 0 {
                 ratio = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.4], extrapolateLeft: .clamp, extrapolateRight: .clamp)
                 alpha = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.2], extrapolateLeft: .clamp, extrapolateRight: .clamp)
             } else {
-                let a: CGFloat = self.gestureBeganLocation.y + 200
-                let b: CGFloat = 1 - pow((a - abs(verticalDistance)) / a, 2)
-                let c: CGFloat = gestureRecognizerView.bounds.height / 2
-                verticalDistance = -c * b
+                verticalDistance = -JSCoreHelper.bounce(fromValue: 0, toValue: height.doubleValue, time: abs(verticalDistance) / height.doubleValue, coeff: 0.9)
             }
             let transform = CGAffineTransform(translationX: horizontalDistance, y: verticalDistance).scaledBy(x: ratio, y: ratio)
             self.currentPageCell?.transform = transform
