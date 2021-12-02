@@ -11,8 +11,6 @@ open class Transitioner: NSObject {
     
     open weak var context: UIViewControllerContextTransitioning?
     
-    fileprivate var shouldAppearanceTransitionManually: Bool = false
-    
     public override init() {
         super.init()
     }
@@ -64,33 +62,9 @@ extension Transitioner {
         if toView.window != nil {
             toView.layoutIfNeeded()
         }
-        
-        /// AppearanceTransition ViewState
-        let presentingViewController: UIViewController = isEntering ? fromViewController : toViewController
-        let presentedModalPresentationStyle: UIModalPresentationStyle = (isEntering ? toViewController : fromViewController).modalPresentationStyle
-        self.shouldAppearanceTransitionManually = (presentedModalPresentationStyle == .custom ||
-                                                    presentedModalPresentationStyle == .overFullScreen ||
-                                                    presentedModalPresentationStyle == .overCurrentContext)
-        /// 其他style会自动调用AppearanceTransition, 这里就不用管了, 否则会触发警告: Unbalanced calls to begin/end
-        if self.shouldAppearanceTransitionManually {
-            presentingViewController.beginAppearanceTransition(!isEntering, animated: true)
-        }
     }
     
     public func endTransition(_ transitionContext: UIViewControllerContextTransitioning, isEntering: Bool) {
-        guard let fromViewController = transitionContext.viewController(forKey: .from) else {
-            return
-        }
-        guard let toViewController = transitionContext.viewController(forKey: .to) else {
-            return
-        }
-        
-        let presentingViewController: UIViewController = isEntering ? fromViewController : toViewController
-        if self.shouldAppearanceTransitionManually {
-            self.shouldAppearanceTransitionManually = false
-            presentingViewController.endAppearanceTransition()
-        }
-        
         transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
     }
     
