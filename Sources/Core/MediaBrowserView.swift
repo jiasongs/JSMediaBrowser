@@ -83,6 +83,7 @@ open class MediaBrowserView: UIView {
     fileprivate var isChangingCollectionViewBounds: Bool = false
     fileprivate var previousPageOffsetRatio: CGFloat = 0.0
     fileprivate var isNeededScrollToItem: Bool = true
+    fileprivate var registeredCellIdentifiers: NSMutableSet = NSMutableSet();
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -160,24 +161,32 @@ extension MediaBrowserView {
         return NSNotFound
     }
     
-    open func pageCellForItem<Cell>(at index: Int) -> Cell? where Cell : UICollectionViewCell {
+    open func pageCellForItem<Cell: UICollectionViewCell>(at index: Int) -> Cell? {
         let indexPath: IndexPath = IndexPath(item: index, section: 0)
         return self.collectionView.cellForItem(at: indexPath) as? Cell
     }
     
-    open func registerClass(_ cellClass: AnyClass, forCellWithReuseIdentifier identifier: String) {
-        let nibPath: String? = Bundle(for: cellClass).path(forResource: NSStringFromClass(cellClass), ofType: "nib")
-        if nibPath != nil {
-            let nib: UINib? = UINib(nibName: NSStringFromClass(cellClass), bundle: Bundle(for: cellClass))
-            self.collectionView.register(nib, forCellWithReuseIdentifier: identifier)
-        } else {
+    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ cellClass: Cell.Type = Cell.self, at index: Int) -> Cell {
+        let identifier = "Item_\(cellClass)"
+        if !self.registeredCellIdentifiers.contains(identifier) {
+            self.registeredCellIdentifiers.add(identifier)
             self.collectionView.register(cellClass, forCellWithReuseIdentifier: identifier)
         }
+        let indexPath = IndexPath(item: index, section: 0)
+        let cell = self.collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! Cell
+        return cell
     }
     
-    open func dequeueReusableCell<Cell>(withReuseIdentifier identifier: String, at index: Int) -> Cell where Cell : UICollectionViewCell {
+    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ nibName: String, bundle: Bundle? = Bundle.main, at index: Int) -> Cell {
+        let identifier = "Item_Nib_\(nibName)"
+        if !self.registeredCellIdentifiers.contains(identifier) {
+            self.registeredCellIdentifiers.add(identifier)
+            let nib = UINib(nibName: nibName, bundle: bundle)
+            self.collectionView.register(nib, forCellWithReuseIdentifier: identifier)
+        }
         let indexPath = IndexPath(item: index, section: 0)
-        return self.collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! Cell
+        let cell = self.collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! Cell
+        return cell
     }
     
     open var currentPageCell: UICollectionViewCell? {
