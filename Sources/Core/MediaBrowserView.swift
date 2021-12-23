@@ -166,7 +166,7 @@ extension MediaBrowserView {
         return self.collectionView.cellForItem(at: indexPath) as? Cell
     }
     
-    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ cellClass: Cell.Type = Cell.self, at index: Int) -> Cell {
+    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ cellClass: Cell.Type, at index: Int) -> Cell {
         let identifier = "Item_\(cellClass)"
         if !self.registeredCellIdentifiers.contains(identifier) {
             self.registeredCellIdentifiers.add(identifier)

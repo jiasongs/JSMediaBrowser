@@ -227,7 +227,7 @@ extension MediaBrowserViewController {
         self.dismiss(animated: animated, completion: completion)
     }
     
-    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ cellClass: Cell.Type = Cell.self, at index: Int) -> Cell {
+    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ cellClass: Cell.Type, at index: Int) -> Cell {
         return self.browserView.dequeueReusableCell(cellClass, at: index)
     }
     
