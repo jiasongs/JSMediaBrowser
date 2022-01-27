@@ -112,7 +112,8 @@ open class MediaBrowserViewController: UIViewController {
     
     open var dismissWhenSlidingDistance: CGFloat = 60
     
-    fileprivate weak var presentedFromViewController: UIViewController?
+    open private(set) weak var presentedFromViewController: UIViewController?
+    
     fileprivate var gestureBeganLocation: CGPoint = CGPoint.zero
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -211,6 +212,8 @@ extension MediaBrowserViewController {
                    navigationController: UINavigationController? = nil,
                    animated: Bool = true,
                    completion: (() -> Void)? = nil) {
+        self.presentedFromViewController = sender
+        
         let viewController = navigationController ?? self
         viewController.modalPresentationStyle = .overCurrentContext
         viewController.modalPresentationCapturesStatusBarAppearance = true
@@ -219,7 +222,6 @@ extension MediaBrowserViewController {
         if let tabBarController = sender.tabBarController, (!tabBarController.tabBar.isHidden && !sender.hidesBottomBarWhenPushed) {
             senderViewController = tabBarController
         }
-        self.presentedFromViewController = senderViewController
         senderViewController.present(viewController, animated: animated, completion: completion)
     }
     
