@@ -25,7 +25,7 @@ open class VideoCell: BasisCell {
         super.prepareForReuse()
         self.pieProgressView.isHidden = true
         self.videoPlayerView.thumbImage = nil
-        self.videoPlayerView.delegate = self
+        self.videoPlayerView.plugin = self
     }
     
     open override func layoutSubviews() {
@@ -34,6 +34,8 @@ open class VideoCell: BasisCell {
     }
     
 }
+
+
 
 extension VideoCell: VideoPlayerViewDelegate {
     

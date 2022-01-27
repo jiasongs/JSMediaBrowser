@@ -14,7 +14,7 @@ public class ImageLoaderEntity: ImageLoaderProtocol {
     public var progress: Progress = Progress()
     public var error: NSError?
     public var isFinished: Bool = false
-    public var webImageMediator: WebImageMediatorProtocol?
+    public var webImageMediator: WebImageMediator?
     
     public func request(for imageView: UIImageView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) {
         if var sourceItem = self.sourceItem as? ImageSourceProtocol {

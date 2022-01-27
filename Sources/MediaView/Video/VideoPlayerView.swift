@@ -20,7 +20,7 @@ public enum Stauts: Int {
 
 open class VideoPlayerView: BasisMediaView {
     
-    weak var delegate: VideoPlayerViewDelegate?
+    var plugin: VideoPlayerViewPlugin?
     
     var url: URL? {
         didSet {
@@ -96,11 +96,11 @@ open class VideoPlayerView: BasisMediaView {
     open var status: Stauts = .stopped {
         didSet {
             if status == .ready {
-                self.delegate?.videoPlayerViewDidReadyForDisplay(self)
+                self.plugin?.didReadyForDisplay(self)
             } else if status == .failed {
-                self.delegate?.videoPlayerView(self, didFailed: self.player.error as NSError?)
+                self.plugin?.didFailed(self, error: self.player.error as NSError?)
             } else if status == .ended || status == .stopped {
-                self.delegate?.videoPlayerViewDidPlayToEndTime(self)
+                self.plugin?.didPlayToEndTime(self)
             }
         }
     }
@@ -239,9 +239,11 @@ extension VideoPlayerView {
         /// progress
         self.playerTimeObservers.append(
             self.player.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: DispatchQueue.main, using: { [weak self](time: CMTime) in
-                if let strongSelf = self {
-                    strongSelf.delegate?.videoPlayerView(strongSelf, progress: CGFloat(CMTimeGetSeconds(time)), totalDuration: strongSelf.totalDuration)
+                guard let self = self else {
+                    return
                 }
+                
+                self.plugin?.periodicTime(CGFloat(CMTimeGetSeconds(time)), totalDuration: self.totalDuration)
             })
         )
         /// isReadyForDisplay
@@ -283,7 +285,7 @@ extension VideoPlayerView {
             )
             /// loadedTimeRanges
             self.playerItemObservers.append(
-                playerItem.observe(\.loadedTimeRanges, options: .new, changeHandler: { [weak self](playerItem: AVPlayerItem, change) in
+                playerItem.observe(\.loadedTimeRanges, options: .new, changeHandler: { (playerItem: AVPlayerItem, change) in
                     let loadedTimeRanges: [NSValue] = playerItem.loadedTimeRanges
                     if loadedTimeRanges.count > 0 {
                         // 获取缓冲区域
@@ -294,9 +296,6 @@ extension VideoPlayerView {
                         let durationSeconds: TimeInterval = CMTimeGetSeconds(timeRange.duration)
                         // 计算缓冲总时间
                         let _: TimeInterval = startSeconds + durationSeconds
-                        if let _ = self?.delegate {
-                            
-                        }
                     }
                 })
             )

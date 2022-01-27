@@ -40,7 +40,7 @@ open class BasisMediaView: UIView {
         return CGRect.zero
     }
     
-    open var finalViewportRect: CGRect {
+    internal var finalViewportRect: CGRect {
         var safeAreaInsets: UIEdgeInsets = UIEdgeInsets.zero
         if #available(iOS 11.0, *) {
             safeAreaInsets = self.safeAreaInsets

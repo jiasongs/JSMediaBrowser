@@ -11,7 +11,7 @@ import JSCoreKit
 
 open class ZoomImageView: BasisMediaView {
     
-    weak var delegate: ZoomImageViewDelegate?
+    open var modifier: ZoomImageViewModifier = AnyZoomImageViewModifier()
     
     private(set) lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView(frame: CGRect(origin: CGPoint.zero, size: frame.size))
@@ -31,7 +31,7 @@ open class ZoomImageView: BasisMediaView {
     private var isImageViewInitialized: Bool = false
     private(set) lazy var imageView: UIImageView = {
         isImageViewInitialized = true
-        var imageView: UIImageView = self.delegate?.zoomImageViewLazyBuildImageView(self) ?? UIImageView()
+        var imageView: UIImageView = self.modifier.imageView(in: self)
         imageView.isHidden = true
         imageView.isAccessibilityElement = true
         self.scrollView.addSubview(imageView)
@@ -41,7 +41,7 @@ open class ZoomImageView: BasisMediaView {
     private var isLivePhotoViewInitialized: Bool = false
     private(set) lazy var livePhotoView: PHLivePhotoView = {
         isLivePhotoViewInitialized = true
-        var livePhotoView: PHLivePhotoView = self.delegate?.zoomImageViewLazyBuildLivePhotoView(self) ?? PHLivePhotoView()
+        var livePhotoView: PHLivePhotoView = self.modifier.livePhotoView(in: self)
         livePhotoView.isHidden = true
         livePhotoView.delegate = self
         livePhotoView.isAccessibilityElement = true
@@ -121,14 +121,6 @@ open class ZoomImageView: BasisMediaView {
         return self.convert(contentView.frame, from: contentView.superview)
     }
     
-    open override var finalViewportRect: CGRect {
-        var resultRect = super.finalViewportRect
-        if let viewportRect = self.delegate?.zoomImageView(self, finalViewportRect: resultRect), !viewportRect.isEmpty {
-            resultRect = viewportRect
-        }
-        return resultRect
-    }
-    
 }
 
 extension ZoomImageView {
@@ -151,6 +143,11 @@ extension ZoomImageView {
                 self.revertZooming()
             }
         }
+    }
+    
+    fileprivate var calculateViewportRect: CGRect {
+        let resultRect = self.modifier.viewportRect(in: self)
+        return !resultRect.isEmpty ? resultRect : self.finalViewportRect
     }
     
 }
@@ -211,7 +208,7 @@ extension ZoomImageView {
         if self.contentView == nil || mediaSize.width <= 0 || mediaSize.height <= 0 {
             minScale = 1.0
         } else {
-            let viewport: CGRect = self.finalViewportRect
+            let viewport: CGRect = self.calculateViewportRect
             var contentMode = self.contentMode
             let scaleX: CGFloat = viewport.width / mediaSize.width
             let scaleY: CGFloat = viewport.height / mediaSize.height
@@ -299,7 +296,7 @@ extension ZoomImageView {
         guard let contentView = self.contentView else {
             return
         }
-        let viewport: CGRect = self.finalViewportRect
+        let viewport: CGRect = self.calculateViewportRect
         let contentViewFrame: CGRect = self.contentViewFrame
         var contentInset: UIEdgeInsets = UIEdgeInsets.zero
         contentInset.top = viewport.minY
@@ -339,7 +336,7 @@ extension ZoomImageView {
     open func revertContentOffset(animated: Bool = true) {
         var x: CGFloat = self.scrollView.contentOffset.x
         var y: CGFloat = self.scrollView.contentOffset.y
-        let viewport: CGRect = self.finalViewportRect
+        let viewport: CGRect = self.calculateViewportRect
         if let contentView = self.contentView, !viewport.isEmpty {
             if viewport.width < contentView.frame.width {
                 x = (contentView.frame.width - viewport.width) / 2 - viewport.minX

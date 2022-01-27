@@ -83,7 +83,7 @@ open class MediaBrowserViewController: UIViewController {
     }
     
 #if BUSINESS_IMAGE
-    open var webImageMediator: WebImageMediatorProtocol?
+    open var webImageMediator: WebImageMediator?
     open var imageViewForZoomView: ((MediaBrowserViewController, ZoomImageView) -> UIImageView)?
     open var livePhotoViewForZoomView: ((MediaBrowserViewController, ZoomImageView) -> PHLivePhotoView)?
 #endif
@@ -328,8 +328,6 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     
 #if BUSINESS_IMAGE
     private func configureImageCell(_ cell: ImageCell, at index: Int) {
-        /// 先设置代理
-        cell.zoomImageView.delegate = self
         /// 当dismissingGesture失败时才会去响应scrollView的手势
         cell.zoomImageView.require(toFail: self.browserView.dismissingGesture)
         if let loaderItem: ImageLoaderProtocol = loaderItems[index] as? ImageLoaderProtocol {
@@ -542,20 +540,6 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     }
     
 }
-
-#if BUSINESS_IMAGE
-extension MediaBrowserViewController: ZoomImageViewDelegate {
-    
-    public func zoomImageViewLazyBuildImageView(_ zoomImageView: ZoomImageView) -> UIImageView {
-        return self.imageViewForZoomView?(self, zoomImageView) ?? UIImageView()
-    }
-    
-    public func zoomImageViewLazyBuildLivePhotoView(_ zoomImageView: ZoomImageView) -> PHLivePhotoView {
-        return self.livePhotoViewForZoomView?(self, zoomImageView) ?? PHLivePhotoView()
-    }
-    
-}
-#endif
 
 extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, TransitionAnimatorDelegate {
     

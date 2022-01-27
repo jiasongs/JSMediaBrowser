@@ -20,7 +20,7 @@ public protocol ImageSourceProtocol: SourceProtocol {
 
 public protocol ImageLoaderProtocol: LoaderProtocol {
     
-    var webImageMediator: WebImageMediatorProtocol? { get set }
+    var webImageMediator: WebImageMediator? { get set }
     
     func request(for imageView: UIImageView, setDataBlock: SetDataBlock?, downloadProgress: DownloadProgressBlock?, completed: CompletedBlock?) -> Void
     func cancelRequest(for imageView: UIImageView)
