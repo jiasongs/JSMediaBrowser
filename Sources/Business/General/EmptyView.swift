@@ -7,14 +7,14 @@
 
 import UIKit
 
-open class EmptyView: UIView {
+public class EmptyView: UIView {
     
-    open lazy var imageView: UIImageView = {
+    public lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         return imageView
     }()
     
-    open lazy var titleLabel: UILabel = {
+    public lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16)
         label.numberOfLines = 2
@@ -23,7 +23,7 @@ open class EmptyView: UIView {
         return label
     }()
     
-    open lazy var subtitleLabel: UILabel = {
+    public lazy var subtitleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
         label.numberOfLines = 3
@@ -32,7 +32,7 @@ open class EmptyView: UIView {
         return label
     }()
     
-    open lazy var actionButton: UIButton = {
+    public lazy var actionButton: UIButton = {
         let button = UIButton()
         button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         button.setTitleColor(.white, for: UIControl.State.normal)
@@ -40,37 +40,37 @@ open class EmptyView: UIView {
         return button
     }()
     
-    open var image: UIImage? {
+    public var image: UIImage? {
         didSet {
             imageView.image = image
             self.setNeedsLayout()
         }
     }
-    open var imageViewSize: CGSize = CGSize.zero {
+    public var imageViewSize: CGSize = CGSize.zero {
         didSet {
             self.setNeedsLayout()
         }
     }
-    open var title: String? {
+    public var title: String? {
         didSet {
             titleLabel.text = title
             self.setNeedsLayout()
         }
     }
-    open var subtitle: String? {
+    public var subtitle: String? {
         didSet {
             subtitleLabel.text = subtitle
             self.setNeedsLayout()
         }
     }
-    open var actionTitle: String? {
+    public var actionTitle: String? {
         didSet {
             actionButton.setTitle(actionTitle, for: UIControl.State.normal)
             self.setNeedsLayout()
         }
     }
     
-    open var onPressAction: ((UIButton) -> Void)?
+    public var onPressAction: ((UIButton) -> Void)?
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -82,14 +82,14 @@ open class EmptyView: UIView {
         self.didInitialize()
     }
     
-    open func didInitialize() {
+    public func didInitialize() {
         self.addSubview(self.imageView)
         self.addSubview(self.titleLabel)
         self.addSubview(self.subtitleLabel)
         self.addSubview(self.actionButton)
     }
     
-    open override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
         var imageSize: CGSize = self.imageViewSize
         if imageSize == CGSize.zero {

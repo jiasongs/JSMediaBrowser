@@ -7,7 +7,7 @@
 
 import UIKit
 
-open class PagingCollectionView: UICollectionView {
+public class PagingCollectionView: UICollectionView {
     
     public override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: layout)
@@ -19,7 +19,7 @@ open class PagingCollectionView: UICollectionView {
         self.didInitialize()
     }
     
-    open func didInitialize() {
+    public func didInitialize() {
         self.backgroundColor = UIColor(white: 0, alpha: 0)
         self.showsHorizontalScrollIndicator = false
         self.showsVerticalScrollIndicator = false

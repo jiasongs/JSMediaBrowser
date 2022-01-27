@@ -24,13 +24,13 @@ public enum TransitionAnimatorType: Int {
     case dismiss
 }
 
-open class TransitionAnimator: Transitioner {
+public class TransitionAnimator: Transitioner {
     
-    open weak var delegate: TransitionAnimatorDelegate?
-    open var duration: TimeInterval = 0.25
-    open var enteringStyle: TransitioningStyle = .zoom
-    open var exitingStyle: TransitioningStyle = .zoom
-    open var type: TransitionAnimatorType = .presenting
+    public weak var delegate: TransitionAnimatorDelegate?
+    public var duration: TimeInterval = 0.25
+    public var enteringStyle: TransitioningStyle = .zoom
+    public var exitingStyle: TransitioningStyle = .zoom
+    public var type: TransitionAnimatorType = .presenting
     
     fileprivate let animationGroupKey: String = "AnimationGroupKey"
     

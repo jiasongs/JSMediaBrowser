@@ -14,7 +14,7 @@ public enum TransitionInteractiverType: Int {
 
 public class TransitionInteractiver: Transitioner {
     
-    open var type: TransitionInteractiverType = .presenting
+    public var type: TransitionInteractiverType = .presenting
     
     internal var isInteractive: Bool = false
     

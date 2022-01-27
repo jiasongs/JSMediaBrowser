@@ -12,15 +12,15 @@ public enum Shape: Int {
     case ring
 }
 
-open class PieProgressView: UIControl {
+public class PieProgressView: UIControl {
     
-    open var animationDuration: CFTimeInterval = 0.5 {
+    public var animationDuration: CFTimeInterval = 0.5 {
         didSet {
             self.progressLayer.animationDuration = animationDuration
         }
     }
     
-    open var progress: Float = 0.0 {
+    public var progress: Float = 0.0 {
         didSet {
             if needSetProgress {
                 self.setProgress(self.progress, animated: false)
@@ -28,31 +28,31 @@ open class PieProgressView: UIControl {
         }
     }
     
-    open var minimumProgress: Float = 0.0 {
+    public var minimumProgress: Float = 0.0 {
         didSet {
             self.progress = Float(self.progress)
         }
     }
     
-    open var borderWidth: CGFloat = 1.0 {
+    public var borderWidth: CGFloat = 1.0 {
         didSet {
             self.progressLayer.borderWidth = borderWidth
         }
     }
     
-    open var borderInset: CGFloat = 3.0 {
+    public var borderInset: CGFloat = 3.0 {
         didSet {
             self.progressLayer.borderInset = borderInset
         }
     }
     
-    open var lineWidth: CGFloat = 0.0 {
+    public var lineWidth: CGFloat = 0.0 {
         didSet {
             self.progressLayer.lineWidth = lineWidth
         }
     }
     
-    open var shape: Shape = .sector {
+    public var shape: Shape = .sector {
         didSet {
             self.progressLayer.shape = shape
             self.borderWidth = CGFloat(borderWidth)
@@ -93,11 +93,11 @@ open class PieProgressView: UIControl {
 
 extension PieProgressView {
     
-    open override class var layerClass: AnyClass {
+    public override class var layerClass: AnyClass {
         return PieProgressLayer.self
     }
     
-    open override func tintColorDidChange() {
+    public override func tintColorDidChange() {
         super.tintColorDidChange()
         self.progressLayer.fillColor = self.tintColor
         self.progressLayer.strokeColor = self.tintColor
@@ -108,7 +108,7 @@ extension PieProgressView {
 
 extension PieProgressView {
     
-    open func setProgress(_ progress: Float, animated: Bool = true) {
+    public func setProgress(_ progress: Float, animated: Bool = true) {
         needSetProgress = false
         self.progress = fmax(self.minimumProgress, fmin(1.0, progress))
         needSetProgress = true

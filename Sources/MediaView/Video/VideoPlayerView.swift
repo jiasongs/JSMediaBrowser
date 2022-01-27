@@ -18,7 +18,7 @@ public enum Stauts: Int {
     case failed
 }
 
-open class VideoPlayerView: BasisMediaView {
+public class VideoPlayerView: BasisMediaView {
     
     var plugin: VideoPlayerViewPlugin?
     
@@ -76,13 +76,13 @@ open class VideoPlayerView: BasisMediaView {
         return self.playerView.layer as! AVPlayerLayer
     }
     
-    open var currentTime: CGFloat {
+    public var currentTime: CGFloat {
         return CGFloat(CMTimeGetSeconds(self.player.currentTime()))
     }
     
-    private(set) open var totalDuration: CGFloat = 0.0
+    private(set) public var totalDuration: CGFloat = 0.0
     
-    open var rate: CGFloat {
+    public var rate: CGFloat {
         get {
             return CGFloat(self.player.rate)
         }
@@ -91,9 +91,9 @@ open class VideoPlayerView: BasisMediaView {
         }
     }
     
-    open var isAutoPlay: Bool = true
+    public var isAutoPlay: Bool = true
     
-    open var status: Stauts = .stopped {
+    public var status: Stauts = .stopped {
         didSet {
             if status == .ready {
                 self.plugin?.didReadyForDisplay(self)
@@ -128,22 +128,22 @@ open class VideoPlayerView: BasisMediaView {
     fileprivate var playerTimeObservers = [Any]()
     fileprivate var systemObservers = [AnyObject]()
     
-    open override func didInitialize(frame: CGRect) {
+    public override func didInitialize(frame: CGRect) {
         super.didInitialize(frame: frame)
         self.addSubview(self.playerView)
         self.addObserverForSystem()
         self.addObserverForPlayer()
     }
     
-    open override var containerView: UIView {
+    public override var containerView: UIView {
         return self
     }
     
-    open override var contentView: UIView? {
+    public override var contentView: UIView? {
         return self.playerView
     }
     
-    open override var contentViewFrame: CGRect {
+    public override var contentViewFrame: CGRect {
         if self.isReadyForDisplay {
             return self.convert(self.playerLayer.videoRect, from: self.playerView)
         } else {
@@ -161,7 +161,7 @@ open class VideoPlayerView: BasisMediaView {
 
 extension VideoPlayerView {
     
-    open override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
         let viewport = self.finalViewportRect
         self.playerView.js_frameApplyTransform = viewport
@@ -182,11 +182,11 @@ extension VideoPlayerView {
 
 extension VideoPlayerView {
     
-    open var isReadyForDisplay: Bool {
+    public var isReadyForDisplay: Bool {
         return self.playerLayer.isReadyForDisplay
     }
     
-    open func play() {
+    public func play() {
         if self.status == .ready || self.status == .paused {
             self.player.play()
             self.status = .playing
@@ -194,25 +194,25 @@ extension VideoPlayerView {
         }
     }
     
-    open func pause() {
+    public func pause() {
         self.player.pause()
         self.status = .paused
     }
     
-    open func reset() {
+    public func reset() {
         self.player.pause()
         self.seek(to: 0) { (finished) in
             self.status = .ready
         }
     }
     
-    open func releasePlayer() {
+    public func releasePlayer() {
         self.playerItem = nil
         self.player.replaceCurrentItem(with: nil)
         self.status = .stopped
     }
     
-    open func seek(to time: CGFloat, completionHandler: ((Bool) -> Void)? = nil) {
+    public func seek(to time: CGFloat, completionHandler: ((Bool) -> Void)? = nil) {
         let startTime: CMTime = CMTimeMakeWithSeconds(Float64(time), preferredTimescale: player.currentTime().timescale)
         if !CMTIME_IS_INDEFINITE(startTime) && !CMTIME_IS_INVALID(startTime) {
             player.seek(to: startTime, toleranceBefore: CMTimeMake(value: 1, timescale: 1000), toleranceAfter: CMTimeMake(value: 1, timescale: 1000), completionHandler: { (finished) in
@@ -349,7 +349,7 @@ extension VideoPlayerView {
 
 fileprivate class AVPlayerView: UIView {
     
-    open override class var layerClass: AnyClass {
+    public override class var layerClass: AnyClass {
         return AVPlayerLayer.self
     }
     

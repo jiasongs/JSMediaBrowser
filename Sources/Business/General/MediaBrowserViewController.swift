@@ -277,43 +277,54 @@ extension MediaBrowserViewController {
     
 }
 
-extension MediaBrowserViewController: MediaBrowserViewDataSource {
+open class AnyMediaBrowserViewModifier: MediaBrowserViewModifier {
     
-    public func numberOfPagesInMediaBrowserView(_ browserView: MediaBrowserView) -> Int {
-        return self.loaderItems.count
+    weak var mediaBrowserViewController: MediaBrowserViewController?
+    
+    public func numberOfPages(in mediaBrowserView: MediaBrowserView) -> Int {
+        guard let mediaBrowserViewController = self.mediaBrowserViewController else {
+            return 0
+        }
+        return mediaBrowserViewController.loaderItems.count
     }
     
-    public func mediaBrowserView(_ browserView: MediaBrowserView, cellForItemAt index: Int) -> UICollectionViewCell {
-        var cell: UICollectionViewCell? = self.cellForItemAtPage?(self, index)
-        let loaderItem: LoaderProtocol = self.loaderItems[index]
+    public func cellForPage(at index: Int, in mediaBrowserView: MediaBrowserView) -> UICollectionViewCell {
+        guard let mediaBrowserViewController = self.mediaBrowserViewController else {
+            return mediaBrowserView.dequeueReusableCell(UICollectionViewCell.self, at: index)
+        }
+        
+        var cell: UICollectionViewCell? = nil
+        let loaderItem: LoaderProtocol = mediaBrowserViewController.loaderItems[index]
 #if BUSINESS_IMAGE
-        if cell == nil, let _ = loaderItem as? ImageLoaderProtocol {
-            cell = self.dequeueReusableCell(ImageCell.self, at: index)
+        if let _ = loaderItem as? ImageLoaderProtocol {
+            cell = mediaBrowserView.dequeueReusableCell(ImageCell.self, at: index)
         }
 #endif
 #if BUSINESS_VIDEO
-        if cell == nil, let _ = loaderItem as? VideoLoaderProtocol {
-            cell = self.dequeueReusableCell(VideoCell.self, at: index)
+        if let _ = loaderItem as? VideoLoaderProtocol {
+            cell = mediaBrowserView.dequeueReusableCell(VideoCell.self, at: index)
         }
 #endif
         if let basisCell = cell as? BasisCell {
             self.configureCell(basisCell, at: index)
         }
-        self.configureCell?(self, cell!, index)
         return cell!
     }
     
     private func configureCell(_ cell: BasisCell, at index: Int) {
-        cell.onEmptyPressAction = { [weak self] (cell: UICollectionViewCell) in
-            if let index: Int = self?.browserView.index(for: cell), index != NSNotFound {
-                self?.browserView.reloadPages(at: [index])
-            }
+        guard let mediaBrowserViewController = self.mediaBrowserViewController else {
+            return
         }
-        cell.willDisplayEmptyView = { [weak self] (cell: UICollectionViewCell, emptyView: EmptyView, error: NSError) in
-            if let strongSelf = self {
-                self?.willDisplayEmptyView?(strongSelf, cell, emptyView, error)
-            }
-        }
+//        cell.onEmptyPressAction = { [weak self] (cell: UICollectionViewCell) in
+//            if let index: Int = self?.browserView.index(for: cell), index != NSNotFound {
+//                self?.browserView.reloadPages(at: [index])
+//            }
+//        }
+//        cell.willDisplayEmptyView = { [weak self] (cell: UICollectionViewCell, emptyView: EmptyView, error: NSError) in
+//            if let strongSelf = self {
+//                self?.willDisplayEmptyView?(strongSelf, cell, emptyView, error)
+//            }
+//        }
 #if BUSINESS_IMAGE
         if let imageCell = cell as? ImageCell {
             self.configureImageCell(imageCell, at: index)

@@ -9,7 +9,7 @@ import UIKit
 
 open class PagingLayout: UICollectionViewFlowLayout {
     
-    public var pageSpacing: CGFloat = 10
+    open var pageSpacing: CGFloat = 10
     
     public override init() {
         super.init()

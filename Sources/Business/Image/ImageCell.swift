@@ -7,26 +7,26 @@
 
 import UIKit
 
-open class ImageCell: BasisCell {
+public class ImageCell: BasisCell {
     
-    open lazy var zoomImageView: ZoomImageView = {
+    public lazy var zoomImageView: ZoomImageView = {
         return ZoomImageView()
     }()
     
-    open override func didInitialize() {
+    public override func didInitialize() {
         super.didInitialize()
         self.contentView.addSubview(self.zoomImageView)
         self.contentView.sendSubviewToBack(self.zoomImageView)
     }
     
-    open override func prepareForReuse() {
+    public override func prepareForReuse() {
         super.prepareForReuse()
         self.zoomImageView.stopAnimating()
         self.zoomImageView.image = nil
         self.zoomImageView.livePhoto = nil
     }
     
-    open override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
         self.zoomImageView.js_frameApplyTransform = self.contentView.bounds
     }

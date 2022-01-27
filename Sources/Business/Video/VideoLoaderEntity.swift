@@ -7,7 +7,7 @@
 
 import Foundation
 
-open class VideoLoaderEntity: VideoLoaderProtocol {
+public class VideoLoaderEntity: VideoLoaderProtocol {
     
     public var sourceItem: SourceProtocol?
     public var progress: Progress = Progress()

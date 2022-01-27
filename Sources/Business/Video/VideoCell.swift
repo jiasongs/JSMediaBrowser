@@ -8,51 +8,51 @@
 import UIKit
 import JSCoreKit
 
-open class VideoCell: BasisCell {
+public class VideoCell: BasisCell {
     
-    open lazy var videoPlayerView: VideoPlayerView = {
+    public lazy var videoPlayerView: VideoPlayerView = {
         return VideoPlayerView()
     }()
     
-    open override func didInitialize() {
+    public override func didInitialize() {
         super.didInitialize()
         self.pieProgressView.isHidden = true
         self.contentView.addSubview(self.videoPlayerView)
         self.contentView.sendSubviewToBack(self.videoPlayerView)
     }
     
-    open override func prepareForReuse() {
+    public override func prepareForReuse() {
         super.prepareForReuse()
         self.pieProgressView.isHidden = true
         self.videoPlayerView.thumbImage = nil
-        self.videoPlayerView.plugin = self
+        self.videoPlayerView.plugin = VideoCellPlayerPlugin(cell: self)
     }
     
-    open override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
         self.videoPlayerView.js_frameApplyTransform = self.contentView.bounds
     }
     
 }
 
-
-
-extension VideoCell: VideoPlayerViewDelegate {
+fileprivate struct VideoCellPlayerPlugin: VideoPlayerViewPlugin {
     
-    public func videoPlayerViewDidReadyForDisplay(_ videoPlayerView: VideoPlayerView) {
-        self.setError(nil, cancelled: false, finished: true)
+    weak var cell: VideoCell?
+    
+    func didReadyForDisplay(_ videoPlayerView: VideoPlayerView) {
+        self.cell?.setError(nil, cancelled: false, finished: true)
     }
     
-    public func videoPlayerView(_ videoPlayerView: VideoPlayerView, progress currentTime: CGFloat, totalDuration: CGFloat) {
+    func periodicTime(_ currentTime: CGFloat, totalDuration: CGFloat) {
         
     }
     
-    public func videoPlayerViewDidPlayToEndTime(_ videoPlayerView: VideoPlayerView) {
+    func didPlayToEndTime(_ videoPlayerView: VideoPlayerView) {
         
     }
     
-    public func videoPlayerView(_ videoPlayerView: VideoPlayerView, didFailed error: NSError?) {
-        self.setError(error, cancelled: false, finished: true)
+    func didFailed(_ videoPlayerView: VideoPlayerView, error: NSError?) {
+        self.cell?.setError(error, cancelled: false, finished: true)
     }
     
 }

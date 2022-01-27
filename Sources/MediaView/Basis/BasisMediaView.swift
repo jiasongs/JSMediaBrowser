@@ -7,7 +7,7 @@
 
 import UIKit
 
-open class BasisMediaView: UIView {
+public class BasisMediaView: UIView {
     
     public var isEnableVerticalSafeArea = false
     public var viewportRect: CGRect = .zero
@@ -24,19 +24,19 @@ open class BasisMediaView: UIView {
         self.didInitialize(frame: CGRect.zero)
     }
     
-    open func didInitialize(frame: CGRect) {
+    public func didInitialize(frame: CGRect) {
         
     }
     
-    open var containerView: UIView {
+    public var containerView: UIView {
         return self
     }
     
-    open var contentView: UIView? {
+    public var contentView: UIView? {
         return nil
     }
     
-    open var contentViewFrame: CGRect {
+    public var contentViewFrame: CGRect {
         return CGRect.zero
     }
     

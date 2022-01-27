@@ -7,20 +7,20 @@
 
 import UIKit
 
-open class SliderView: UISlider {
+public class SliderView: UISlider {
     
-    open var trackHeight: CGFloat = 0
-    open var thumbSize: CGSize = CGSize.zero {
+    public var trackHeight: CGFloat = 0
+    public var thumbSize: CGSize = CGSize.zero {
         didSet {
             self.updateThumbImage()
         }
     }
-    open var thumbColor: UIColor? {
+    public var thumbColor: UIColor? {
         didSet {
             self.updateThumbImage()
         }
     }
-    open var thumbShadowColor: UIColor? {
+    public var thumbShadowColor: UIColor? {
         didSet {
             if let thumbView = self.thumbViewIfExist {
                 thumbView.layer.shadowColor = thumbShadowColor?.cgColor
@@ -28,14 +28,14 @@ open class SliderView: UISlider {
             }
         }
     }
-    open var thumbShadowOffset: CGSize = CGSize.zero {
+    public var thumbShadowOffset: CGSize = CGSize.zero {
         didSet {
             if let thumbView = self.thumbViewIfExist {
                 thumbView.layer.shadowOffset = thumbShadowOffset
             }
         }
     }
-    open var thumbShadowRadius: CGFloat = 0 {
+    public var thumbShadowRadius: CGFloat = 0 {
         didSet {
             if let thumbView = self.thumbViewIfExist {
                 thumbView.layer.shadowRadius = thumbShadowRadius
@@ -63,7 +63,7 @@ open class SliderView: UISlider {
 
 extension SliderView {
     
-    open override func trackRect(forBounds bounds: CGRect) -> CGRect {
+    public override func trackRect(forBounds bounds: CGRect) -> CGRect {
         var rect = super.trackRect(forBounds: bounds)
         if self.trackHeight > 0 {
             rect.size.height = self.trackHeight
@@ -73,7 +73,7 @@ extension SliderView {
         return rect
     }
     
-    open override func didAddSubview(_ subview: UIView) {
+    public override func didAddSubview(_ subview: UIView) {
         super.didAddSubview(subview)
         if let thumbView: UIView = self.thumbViewIfExist, thumbView == subview {
             thumbView.layer.shadowColor = self.thumbShadowColor?.cgColor
