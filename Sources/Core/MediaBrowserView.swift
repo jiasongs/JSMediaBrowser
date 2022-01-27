@@ -166,8 +166,10 @@ extension MediaBrowserView {
         return self.collectionView.cellForItem(at: indexPath) as? Cell
     }
     
-    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ cellClass: Cell.Type, at index: Int) -> Cell {
-        let identifier = "Item_\(cellClass)"
+    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ cellClass: Cell.Type,
+                                                              reuseIdentifier: String? = nil,
+                                                              at index: Int) -> Cell {
+        let identifier: String = reuseIdentifier ?? "Item_\(cellClass)"
         if !self.registeredCellIdentifiers.contains(identifier) {
             self.registeredCellIdentifiers.add(identifier)
             self.collectionView.register(cellClass, forCellWithReuseIdentifier: identifier)
@@ -177,13 +179,23 @@ extension MediaBrowserView {
         return cell
     }
     
-    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ nibName: String, bundle: Bundle? = Bundle.main, at index: Int) -> Cell {
-        let identifier = "Item_Nib_\(nibName)"
+    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ nibName: String,
+                                                              bundle: Bundle? = Bundle.main,
+                                                              reuseIdentifier: String? = nil,
+                                                              at index: Int) -> Cell {
+        let identifier: String = reuseIdentifier ?? "Item_Nib_\(nibName)"
         if !self.registeredCellIdentifiers.contains(identifier) {
             self.registeredCellIdentifiers.add(identifier)
             let nib = UINib(nibName: nibName, bundle: bundle)
             self.collectionView.register(nib, forCellWithReuseIdentifier: identifier)
         }
+        let indexPath = IndexPath(item: index, section: 0)
+        let cell = self.collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! Cell
+        return cell
+    }
+    
+    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ storyboardReuseIdentifier: String, at index: Int) -> Cell {
+        let identifier: String = storyboardReuseIdentifier
         let indexPath = IndexPath(item: index, section: 0)
         let cell = self.collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! Cell
         return cell

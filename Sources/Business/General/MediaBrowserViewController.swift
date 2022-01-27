@@ -229,12 +229,21 @@ extension MediaBrowserViewController {
         self.dismiss(animated: animated, completion: completion)
     }
     
-    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ cellClass: Cell.Type, at index: Int) -> Cell {
-        return self.browserView.dequeueReusableCell(cellClass, at: index)
+    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ cellClass: Cell.Type,
+                                                              reuseIdentifier: String? = nil,
+                                                              at index: Int) -> Cell {
+        return self.browserView.dequeueReusableCell(cellClass, reuseIdentifier: reuseIdentifier, at: index)
     }
     
-    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ nibName: String, bundle: Bundle? = Bundle.main, at index: Int) -> Cell {
-        return self.browserView.dequeueReusableCell(nibName, bundle: bundle, at: index)
+    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ nibName: String,
+                                                              bundle: Bundle? = Bundle.main,
+                                                              reuseIdentifier: String? = nil,
+                                                              at index: Int) -> Cell {
+        return self.browserView.dequeueReusableCell(nibName, bundle: bundle, reuseIdentifier: reuseIdentifier, at: index)
+    }
+    
+    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ storyboardReuseIdentifier: String, at index: Int) -> Cell {
+        return self.browserView.dequeueReusableCell(storyboardReuseIdentifier, at: index)
     }
     
     open func setCurrentPage(_ index: Int, animated: Bool = true) {
