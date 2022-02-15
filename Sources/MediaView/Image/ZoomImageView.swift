@@ -11,7 +11,7 @@ import JSCoreKit
 
 public class ZoomImageView: BasisMediaView {
     
-    public var modifier: ZoomImageViewModifier = AnyZoomImageViewModifier()
+    public var modifier: ZoomImageViewModifier = DefaultZoomImageViewModifier()
     
     private(set) lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView(frame: CGRect(origin: CGPoint.zero, size: frame.size))
@@ -378,5 +378,9 @@ extension ZoomImageView: PHLivePhotoViewDelegate {
     public func livePhotoView(_ livePhotoView: PHLivePhotoView, didEndPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) {
         self.isLivePhotoPlaying = false
     }
+    
+}
+
+fileprivate struct DefaultZoomImageViewModifier: ZoomImageViewModifier {
     
 }

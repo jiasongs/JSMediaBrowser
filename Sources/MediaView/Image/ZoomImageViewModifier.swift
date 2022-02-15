@@ -18,7 +18,8 @@ public protocol ZoomImageViewModifier {
     
 }
 
-public struct AnyZoomImageViewModifier: ZoomImageViewModifier {
+/// options
+extension ZoomImageViewModifier {
     
     public func imageView(in zoomImageView: ZoomImageView) -> UIImageView {
         return UIImageView()

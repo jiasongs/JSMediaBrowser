@@ -10,7 +10,7 @@ import JSCoreKit
 
 public class MediaBrowserView: UIView {
     
-    public var dataSource: MediaBrowserViewModifier? {
+    public var modifier: MediaBrowserViewModifier = DefaultMediaBrowserViewModifier() {
         didSet {
             self.collectionView.dataSource = self
         }
@@ -19,6 +19,12 @@ public class MediaBrowserView: UIView {
     public var plugin: MediaBrowserViewPlugin? {
         didSet {
             self.collectionView.delegate = self
+        }
+    }
+    
+    public var gesturePlugin: MediaBrowserViewGesturePlugin? {
+        didSet {
+            
         }
     }
     
@@ -224,11 +230,11 @@ extension MediaBrowserView {
 extension MediaBrowserView: UICollectionViewDataSource {
     
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.dataSource?.numberOfPages(in: self) ?? 0
+        return self.modifier.numberOfPages(in: self)
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        return self.dataSource?.cellForPage(at: indexPath.item, in: self) ?? self.dequeueReusableCell(UICollectionViewCell.self, at: indexPath.item)
+        return self.modifier.cellForPage(at: indexPath.item, in: self)
     }
     
 }
@@ -300,29 +306,29 @@ extension MediaBrowserView: UIScrollViewDelegate {
 extension MediaBrowserView: UIGestureRecognizerDelegate {
     
     @objc public func handleSingleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
-        self.plugin?.singleTouch(gestureRecognizer, in: self)
+        self.gesturePlugin?.singleTouch(gestureRecognizer, in: self)
     }
     
     @objc public func handleDoubleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
-        self.plugin?.doubleTouch(gestureRecognizer, in: self)
+        self.gesturePlugin?.doubleTouch(gestureRecognizer, in: self)
     }
     
     @objc public func handleLongPressGesture(_ gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state == .began {
-            self.plugin?.longPress(gestureRecognizer, in: self)
+            self.gesturePlugin?.longPress(gestureRecognizer, in: self)
         }
     }
     
     public override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if gestureRecognizer == self.dismissingGesture {
-            return self.plugin?.dismissingShouldBegin(self.dismissingGesture, in: self) ?? true
+            return self.gesturePlugin?.dismissingShouldBegin(self.dismissingGesture, in: self) ?? true
         } else {
             return super.gestureRecognizerShouldBegin(gestureRecognizer)
         }
     }
     
     @objc func handleDismissingGesture(gestureRecognizer: UIPanGestureRecognizer) {
-        self.plugin?.dismissingChanged(gestureRecognizer, in: self)
+        self.gesturePlugin?.dismissingChanged(gestureRecognizer, in: self)
     }
     
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
@@ -331,6 +337,18 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
         } else {
             return true
         }
+    }
+    
+}
+
+fileprivate struct DefaultMediaBrowserViewModifier: MediaBrowserViewModifier {
+    
+    func numberOfPages(in mediaBrowserView: MediaBrowserView) -> Int {
+        return 0
+    }
+    
+    func cellForPage(at index: Int, in mediaBrowserView: MediaBrowserView) -> UICollectionViewCell {
+        return mediaBrowserView.dequeueReusableCell(UICollectionViewCell.self, at: index)
     }
     
 }

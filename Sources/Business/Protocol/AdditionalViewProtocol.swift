@@ -9,24 +9,29 @@ import UIKit
 
 public protocol AdditionalViewProtocol {
     
-    func prepare(in viewController: MediaBrowserViewController)
+    func prepare(in mediaBrowser: MediaBrowserViewController)
     
-    func layout(in viewController: MediaBrowserViewController)
+    func layout(in mediaBrowser: MediaBrowserViewController)
     
-    func totalUnitPageDidChange(_ totalUnitPage: Int, in viewController: MediaBrowserViewController)
+    func totalUnitPageDidChange(_ totalUnitPage: Int, in mediaBrowser: MediaBrowserViewController)
     
-    func willScrollHalf(fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController)
+    func willScrollHalf(fromIndex: Int, toIndex: Int, in mediaBrowser: MediaBrowserViewController)
     
-    func didScroll(to index: Int, in viewController: MediaBrowserViewController)
+    func didScroll(to index: Int, in mediaBrowser: MediaBrowserViewController)
     
 }
 
+/// options
 extension AdditionalViewProtocol {
     
-    func prepare(in viewController: MediaBrowserViewController) {}
-    func layout(in viewController: MediaBrowserViewController) {}
-    func totalUnitPageDidChange(_ totalUnitPage: Int, in viewController: MediaBrowserViewController) {}
-    func willScrollHalf(fromIndex: Int, toIndex: Int, in viewController: MediaBrowserViewController) {}
-    func didScroll(to index: Int, in viewController: MediaBrowserViewController) {}
+    public func prepare(in mediaBrowser: MediaBrowserViewController) {}
+    
+    public func layout(in mediaBrowser: MediaBrowserViewController) {}
+    
+    public func totalUnitPageDidChange(_ totalUnitPage: Int, in mediaBrowser: MediaBrowserViewController) {}
+    
+    public func willScrollHalf(fromIndex: Int, toIndex: Int, in mediaBrowser: MediaBrowserViewController) {}
+    
+    public func didScroll(to index: Int, in mediaBrowser: MediaBrowserViewController) {}
     
 }

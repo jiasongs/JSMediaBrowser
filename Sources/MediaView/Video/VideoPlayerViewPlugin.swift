@@ -11,10 +11,23 @@ public protocol VideoPlayerViewPlugin {
     
     func didReadyForDisplay(_ videoPlayerView: VideoPlayerView)
     
-    func periodicTime(_ currentTime: CGFloat, totalDuration: CGFloat)
+    func periodicTime(_ currentTime: CGFloat, totalDuration: CGFloat, in videoPlayerView: VideoPlayerView)
     
     func didPlayToEndTime(_ videoPlayerView: VideoPlayerView)
     
     func didFailed(_ videoPlayerView: VideoPlayerView, error: NSError?)
+    
+}
+
+/// options
+extension VideoPlayerViewPlugin {
+    
+    public func didReadyForDisplay(_ videoPlayerView: VideoPlayerView) {}
+    
+    public func periodicTime(_ currentTime: CGFloat, totalDuration: CGFloat, in videoPlayerView: VideoPlayerView) {}
+    
+    public func didPlayToEndTime(_ videoPlayerView: VideoPlayerView) {}
+    
+    public func didFailed(_ videoPlayerView: VideoPlayerView, error: NSError?) {}
     
 }
