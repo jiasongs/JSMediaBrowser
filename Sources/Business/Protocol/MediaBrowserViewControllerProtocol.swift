@@ -18,11 +18,11 @@ public protocol MediaBrowserViewControllerSourceViewDelegate: AnyObject {
 
 extension MediaBrowserViewControllerSourceViewDelegate {
     
-    func sourceViewForPageAtIndex(_ index: Int) -> UIView? {
+    public func sourceViewForPageAtIndex(_ index: Int) -> UIView? {
         return nil
     }
     
-    func sourceViewCornerRadiusForPageAtIndex(_ index: Int) -> CGFloat {
+    public func sourceViewCornerRadiusForPageAtIndex(_ index: Int) -> CGFloat {
         return 0
     }
     

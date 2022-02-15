@@ -20,11 +20,11 @@ public protocol ZoomImageViewDelegate: AnyObject {
 
 extension ZoomImageViewDelegate {
     
-    func zoomImageViewLazyBuildImageView(_ zoomImageView: ZoomImageView) -> UIImageView {
+    public func zoomImageViewLazyBuildImageView(_ zoomImageView: ZoomImageView) -> UIImageView {
         return UIImageView()
     }
     
-    func zoomImageViewLazyBuildLivePhotoView(_ zoomImageView: ZoomImageView) -> PHLivePhotoView {
+    public func zoomImageViewLazyBuildLivePhotoView(_ zoomImageView: ZoomImageView) -> PHLivePhotoView {
         return PHLivePhotoView()
     }
     

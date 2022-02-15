@@ -16,7 +16,7 @@ public protocol CellProtocol {
 
 extension CellProtocol {
     
-    func setProgress(_ progress: Progress) {}
-    func setError(_ error: NSError?, cancelled: Bool, finished: Bool) {}
+    public func setProgress(_ progress: Progress) {}
+    public func setError(_ error: NSError?, cancelled: Bool, finished: Bool) {}
     
 }
