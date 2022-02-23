@@ -57,36 +57,34 @@ open class ZoomImageView: BasisMediaView {
     
     public weak var image: UIImage? {
         didSet {
-            if image == nil && !isImageViewInitialized {
+            if self.image == nil && !self.isImageViewInitialized {
                 return
             }
-            if oldValue != image {
-                if isLivePhotoViewInitialized {
+            if oldValue != self.image {
+                if self.isLivePhotoViewInitialized {
                     self.livePhotoView.isHidden = true
                     self.livePhotoView.livePhoto = nil
                 }
                 self.imageView.isHidden = false
-                self.imageView.image = image
-                self.imageView.js_frameApplyTransform = CGRect(origin: CGPoint.zero, size: image?.size ?? CGSize.zero)
-                self.revertZooming()
+                self.imageView.image = self.image
+                self.setNeedsRevertZoom()
             }
         }
     }
     
     public weak var livePhoto: PHLivePhoto? {
         didSet {
-            if livePhoto == nil && !isLivePhotoViewInitialized {
+            if self.livePhoto == nil && !self.isLivePhotoViewInitialized {
                 return
             }
-            if oldValue != livePhoto {
-                if isImageViewInitialized {
+            if oldValue != self.livePhoto {
+                if self.isImageViewInitialized {
                     self.imageView.isHidden = true
                     self.imageView.image = nil
                 }
                 self.livePhotoView.isHidden = false
-                self.livePhotoView.livePhoto = livePhoto
-                self.livePhotoView.js_frameApplyTransform = CGRect(origin: CGPoint.zero, size: livePhoto?.size ?? CGSize.zero)
-                self.revertZooming()
+                self.livePhotoView.livePhoto = self.livePhoto
+                self.setNeedsRevertZoom()
             }
         }
     }
@@ -95,6 +93,7 @@ open class ZoomImageView: BasisMediaView {
     
     fileprivate var isLivePhotoPlaying: Bool = false
     fileprivate var failGestureRecognizer: UIGestureRecognizer?
+    fileprivate var isNeededRevertZoom: Bool = false
     
     open override func didInitialize(frame: CGRect) {
         super.didInitialize(frame: frame)
@@ -138,17 +137,31 @@ extension ZoomImageView {
         if self.bounds.isEmpty {
             return
         }
-        let oldValue = self.scrollView.bounds.size
-        if oldValue != self.bounds.size {
+        /// scrollView
+        let previousSize = self.scrollView.bounds.size
+        if previousSize != self.bounds.size {
             self.scrollView.js_frameApplyTransform = self.bounds
-            self.revertZooming()
+            self.setNeedsRevertZoom()
         }
+        /// contentView
+        if let contentView = self.contentView {
+            var contentSize = CGSize.zero
+            if self.isDisplayImageView, let imageSize = self.image?.size {
+                contentSize = imageSize
+            } else if self.isDisplayLivePhotoView, let livePhotoSize = self.livePhoto?.size {
+                contentSize = livePhotoSize
+            }
+            contentView.js_frameApplyTransform = CGRect(origin: CGPoint.zero, size: contentSize)
+            contentView.js_origin = CGPoint.zero
+        }
+        
+        self.revertZoomIfNeeded()
     }
     
     open override var contentMode: UIView.ContentMode {
         didSet {
             if oldValue != self.contentMode {
-                self.revertZooming()
+                self.setNeedsRevertZoom()
             }
         }
     }
@@ -281,10 +294,6 @@ extension ZoomImageView {
         self.scrollView.pinchGestureRecognizer?.isEnabled = enabledZoom
         self.scrollView.minimumZoomScale = minimumZoomScale
         self.scrollView.maximumZoomScale = maximumZoomScale
-        /// 重置Frame
-        if let contentView = self.contentView {
-            contentView.frame = CGRect(x: 0, y: 0, width: contentView.frame.width, height: contentView.frame.height)
-        }
         /// 重置ZoomScale
         self.setZoom(scale: minimumZoomScale, animated: false)
         /// 手动触发一次缩放
@@ -293,6 +302,18 @@ extension ZoomImageView {
         }
         /// 重置ContentOffset
         self.revertContentOffset(animated: false)
+    }
+    
+    fileprivate func setNeedsRevertZoom() {
+        self.isNeededRevertZoom = true
+        self.setNeedsLayout()
+    }
+    
+    fileprivate func revertZoomIfNeeded() {
+        if self.isNeededRevertZoom {
+            self.isNeededRevertZoom = false
+            self.revertZooming()
+        }
     }
     
     fileprivate func handleDidEndZooming() {
