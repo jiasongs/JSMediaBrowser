@@ -203,7 +203,19 @@ extension MediaBrowserView {
     
     open var currentPageCell: UICollectionViewCell? {
         let indexPath = IndexPath(item: self.currentPage, section: 0)
-        return self.collectionView.cellForItem(at: indexPath)
+        if let cell = self.collectionView.cellForItem(at: indexPath) {
+            return cell
+        } else {
+            return self.collectionView.visibleCells.last
+        }
+    }
+    
+    open func pageCellForItem(at point: CGPoint) -> UICollectionViewCell? {
+        if let indexPath =  self.collectionView.indexPathForItem(at: point) {
+            return self.collectionView.cellForItem(at: indexPath)
+        } else {
+            return nil
+        }
     }
     
     fileprivate func scrollToPage(at index: Int, animated: Bool = true) {
@@ -253,9 +265,8 @@ extension MediaBrowserView: UIScrollViewDelegate {
     
     private var pageOffsetRatio: CGFloat {
         let pageWidth: CGFloat = self.collectionView(collectionView, layout: collectionViewLayout, sizeForItemAt: IndexPath(item: 0, section: 0)).width
-        let pageHorizontalMargin: CGFloat = self.collectionViewLayout.pageSpacing
         let contentOffsetX: CGFloat = self.collectionView.contentOffset.x
-        let pageOffsetRatio: CGFloat = contentOffsetX / (pageWidth + pageHorizontalMargin)
+        let pageOffsetRatio: CGFloat = contentOffsetX / pageWidth
         return pageOffsetRatio
     }
     
@@ -277,6 +288,7 @@ extension MediaBrowserView: UIScrollViewDelegate {
         if  turnPageToRight || turnPageToLeft {
             let previousIndex = min(Int(round(self.previousPageOffsetRatio)), self.totalUnitPage - 1)
             let index = Int(round(pageOffsetRatio))
+            assert(previousIndex != index, "当前index与将要滚动到的index相同, 可能存在问题, 请检查self.pageOffsetRatio")
             if index >= 0 && index < self.totalUnitPage {
                 self.isNeededScrollToItem = false
                 self.currentPage = index
