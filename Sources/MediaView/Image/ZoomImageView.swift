@@ -91,8 +91,8 @@ open class ZoomImageView: BasisMediaView {
     
     public var enabledZoom: Bool = true
     
+    fileprivate weak var failGestureRecognizer: UIGestureRecognizer?
     fileprivate var isLivePhotoPlaying: Bool = false
-    fileprivate var failGestureRecognizer: UIGestureRecognizer?
     fileprivate var isNeededRevertZoom: Bool = false
     
     open override func didInitialize(frame: CGRect) {
@@ -116,7 +116,9 @@ open class ZoomImageView: BasisMediaView {
     }
     
     open override var contentViewFrame: CGRect {
-        guard let contentView = self.contentView else { return CGRect.zero }
+        guard let contentView = self.contentView else {
+            return CGRect.zero
+        }
         return self.convert(contentView.frame, from: contentView.superview)
     }
     
@@ -262,7 +264,9 @@ extension ZoomImageView {
     }
     
     open func zoom(to point: CGPoint, scale: CGFloat = 3.0, animated: Bool = true) {
-        guard scale > 0 else { return }
+        guard scale > 0 else {
+            return
+        }
         let minimumZoomScale: CGFloat = self.minimumZoomScale
         var zoomRect: CGRect = CGRect.zero
         zoomRect.size.width = self.scrollView.frame.width / scale / minimumZoomScale
@@ -373,10 +377,11 @@ extension ZoomImageView {
     }
     
     open func require(toFail otherGestureRecognizer: UIGestureRecognizer) {
-        if self.failGestureRecognizer != otherGestureRecognizer {
-            self.failGestureRecognizer = otherGestureRecognizer
-            self.scrollView.panGestureRecognizer.require(toFail: otherGestureRecognizer)
+        guard self.failGestureRecognizer != otherGestureRecognizer else {
+            return
         }
+        self.failGestureRecognizer = otherGestureRecognizer
+        self.scrollView.panGestureRecognizer.require(toFail: otherGestureRecognizer)
     }
     
 }

@@ -83,7 +83,7 @@ open class MediaBrowserView: UIView {
     fileprivate var isChangingCollectionViewBounds: Bool = false
     fileprivate var previousPageOffsetRatio: CGFloat = 0.0
     fileprivate var isNeededScrollToItem: Bool = true
-    fileprivate var registeredCellIdentifiers: NSMutableSet = NSMutableSet();
+    fileprivate var registeredCellIdentifiers: NSMutableSet = NSMutableSet()
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -285,7 +285,7 @@ extension MediaBrowserView: UIScrollViewDelegate {
         let fastToLeft: Bool = (floor(self.previousPageOffsetRatio) - floor(pageOffsetRatio) >= 1.0) && (self.previousPageOffsetRatio - ceil(pageOffsetRatio) > 0.5)
         let turnPageToLeft: Bool = fastToLeft || betweenOrEqual(pageOffsetRatio, floor(pageOffsetRatio) + 0.5, self.previousPageOffsetRatio)
         
-        if  turnPageToRight || turnPageToLeft {
+        if turnPageToRight || turnPageToLeft {
             let previousIndex = min(Int(round(self.previousPageOffsetRatio)), self.totalUnitPage - 1)
             let index = Int(round(pageOffsetRatio))
             assert(previousIndex != index, "当前index与将要滚动到的index相同, 可能存在问题, 请检查self.pageOffsetRatio")
@@ -295,8 +295,8 @@ extension MediaBrowserView: UIScrollViewDelegate {
                 self.isNeededScrollToItem = true
                 self.delegate?.mediaBrowserView(self, willScrollHalf: previousIndex, toIndex: index)
             }
+            self.previousPageOffsetRatio = pageOffsetRatio
         }
-        self.previousPageOffsetRatio = pageOffsetRatio
     }
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
