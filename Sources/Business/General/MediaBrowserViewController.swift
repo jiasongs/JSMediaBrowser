@@ -502,7 +502,6 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
                 additionalView.alpha = alpha
             }
             self.browserView.dimmingView?.alpha = alpha
-            self.transitionInteractiver.update(alpha)
             break
         case .ended, .cancelled, .failed:
             let location: CGPoint = gestureRecognizer.location(in: gestureRecognizer.view)
@@ -559,24 +558,40 @@ extension MediaBrowserViewController: ZoomImageViewDelegate {
 
 extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, TransitionAnimatorDelegate {
     
+    fileprivate func animator(type: TransitionerType) -> TransitionAnimator? {
+        let animator = self.transitionAnimator
+        animator.type = type
+        
+        guard animator.delegate != nil else {
+            return nil
+        }
+        return animator
+    }
+    
+    fileprivate func interactiver(type: TransitionerType) -> TransitionInteractiver? {
+        let interactiver = self.transitionInteractiver
+        interactiver.type = type
+        
+        guard interactiver.wantsInteractiveStart else {
+            return nil
+        }
+        return interactiver
+    }
+    
     public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        self.transitionAnimator.type = .presenting
-        return self.transitionAnimator
+        return self.animator(type: .presenting)
     }
     
     public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        self.transitionAnimator.type = .dismiss
-        return self.transitionAnimator
+        return self.animator(type: .dismiss)
     }
     
     public func interactionControllerForPresentation(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        self.transitionInteractiver.type = .presenting
-        return self.transitionInteractiver.isInteractive ? self.transitionInteractiver : nil
+        return self.interactiver(type: .presenting)
     }
     
     public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        self.transitionInteractiver.type = .dismiss
-        return self.transitionInteractiver.isInteractive ? self.transitionInteractiver : nil
+        return self.interactiver(type: .dismiss)
     }
     
     public var transitionSourceRect: CGRect {

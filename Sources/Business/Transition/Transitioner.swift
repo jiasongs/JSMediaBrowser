@@ -7,7 +7,16 @@
 
 import UIKit
 
+public enum TransitionerType: Int {
+    case presenting
+    case dismiss
+    case push
+    case poping
+}
+
 open class Transitioner: NSObject {
+    
+    open var type: TransitionerType = .presenting
     
     open weak var context: UIViewControllerContextTransitioning?
     
@@ -64,7 +73,7 @@ extension Transitioner {
         }
     }
     
-    public func endTransition(_ transitionContext: UIViewControllerContextTransitioning, isEntering: Bool) {
+    public func endTransition(_ transitionContext: UIViewControllerContextTransitioning) {
         transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
     }
     

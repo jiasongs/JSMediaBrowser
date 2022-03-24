@@ -19,18 +19,12 @@ public protocol TransitionAnimatorDelegate: AnyObject {
     
 }
 
-public enum TransitionAnimatorType: Int {
-    case presenting
-    case dismiss
-}
-
 open class TransitionAnimator: Transitioner {
     
     open weak var delegate: TransitionAnimatorDelegate?
     open var duration: TimeInterval = 0.25
     open var enteringStyle: TransitioningStyle = .zoom
     open var exitingStyle: TransitioningStyle = .zoom
-    open var type: TransitionAnimatorType = .presenting
     
     fileprivate let animationGroupKey: String = "AnimationGroupKey"
     
@@ -46,11 +40,11 @@ open class TransitionAnimator: Transitioner {
 extension TransitionAnimator: UIViewControllerAnimatedTransitioning {
     
     public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        let isEntering = self.type == .presenting
+        let isEntering = self.type == .presenting || self.type == .push
         
         self.beginTransition(transitionContext, isEntering: isEntering)
         self.performAnimation(using: transitionContext, isEntering: isEntering) { finished in
-            self.endTransition(transitionContext, isEntering: isEntering)
+            self.endTransition(transitionContext)
         }
     }
     
