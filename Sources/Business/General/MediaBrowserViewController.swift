@@ -470,7 +470,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
             return false
         }
 #else
-        return true
+        return false
 #endif
     }
     
