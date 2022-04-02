@@ -153,8 +153,10 @@ extension ZoomImageView {
             } else if self.isDisplayLivePhotoView, let livePhotoSize = self.livePhoto?.size {
                 contentSize = livePhotoSize
             }
-            contentView.js_frameApplyTransform = CGRect(origin: CGPoint.zero, size: contentSize)
-            contentView.js_origin = CGPoint.zero
+            let contentRect = JSCGRectApplyAffineTransformWithAnchorPoint(CGRect(origin: CGPoint.zero, size: contentSize),
+                                                                          contentView.transform,
+                                                                          contentView.layer.anchorPoint)
+            contentView.frame = CGRect(origin: CGPoint.zero, size: contentRect.size)
         }
         
         self.revertZoomIfNeeded()
