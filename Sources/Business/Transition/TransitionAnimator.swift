@@ -151,6 +151,13 @@ extension TransitionAnimator {
             groupAnimation.fillMode = .forwards
             groupAnimation.isRemovedOnCompletion = false
             groupAnimation.animations = [positionAnimation, boundsAnimation, cornerRadiusAnimation]
+            if #available(iOS 15.0, *) {
+                let preferredFrameRateRange = CAFrameRateRange(minimum: 60, maximum: 120, preferred: 120)
+                groupAnimation.preferredFrameRateRange = preferredFrameRateRange
+                groupAnimation.animations?.forEach({ animation in
+                    animation.preferredFrameRateRange = preferredFrameRateRange
+                })
+            }
             self.imageView.layer.add(groupAnimation, forKey: animationGroupKey)
         }
     }
