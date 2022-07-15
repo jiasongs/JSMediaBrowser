@@ -16,7 +16,7 @@ public class TransitionInteractiver: Transitioner {
 extension TransitionInteractiver: UIViewControllerInteractiveTransitioning {
     
     public func startInteractiveTransition(_ transitionContext: UIViewControllerContextTransitioning) {
-        let isEntering = self.type == .presenting || self.type == .push
+        let isEntering = self.type == .presenting
         
         if self.isInteractive {
             self.beginTransition(transitionContext, isEntering: isEntering)

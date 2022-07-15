@@ -10,8 +10,6 @@ import UIKit
 public enum TransitionerType: Int {
     case presenting
     case dismiss
-    case push
-    case poping
 }
 
 open class Transitioner: NSObject {
@@ -56,7 +54,7 @@ extension Transitioner {
             }
         }
         
-        /// 触发fromView的布局
+        /// 触发fromView的布局, 获得当前fromView内视图的Frame, 用作后续动画使用
         fromView.setNeedsLayout()
         if fromView.window != nil {
             fromView.layoutIfNeeded()
@@ -66,7 +64,7 @@ extension Transitioner {
         if !finalFrame.isEmpty && isEntering {
             toView.frame = finalFrame
         }
-        /// 触发toView的布局
+        /// 触发toView的布局, 提前获得toView内视图的Frame, 用作后续动画使用
         toView.setNeedsLayout()
         if toView.window != nil {
             toView.layoutIfNeeded()

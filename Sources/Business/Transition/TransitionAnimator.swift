@@ -40,7 +40,7 @@ open class TransitionAnimator: Transitioner {
 extension TransitionAnimator: UIViewControllerAnimatedTransitioning {
     
     public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        let isEntering = self.type == .presenting || self.type == .push
+        let isEntering = self.type == .presenting
         
         self.beginTransition(transitionContext, isEntering: isEntering)
         self.performAnimation(using: transitionContext, isEntering: isEntering) { finished in
