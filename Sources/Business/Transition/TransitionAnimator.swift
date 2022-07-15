@@ -12,10 +12,10 @@ public protocol TransitionAnimatorDelegate: AnyObject {
     var transitionSourceRect: CGRect { get }
     var transitionSourceView: UIView? { get }
     var transitionCornerRadius: CGFloat { get }
-    var transitionThumbImage: UIImage? { get }
     var transitionAnimatorViews: [UIView]? { get }
     var transitionTargetView: UIView? { get }
     var transitionTargetFrame: CGRect { get }
+    var transitionTargetContainerView: UIView? { get }
     
 }
 
@@ -27,13 +27,7 @@ open class TransitionAnimator: Transitioner {
     open var exitingStyle: TransitioningStyle = .zoom
     
     fileprivate let animationGroupKey: String = "AnimationGroupKey"
-    
-    fileprivate lazy var imageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        return imageView
-    }()
+    fileprivate var snapshotTargetView: UIView?
     
 }
 
@@ -67,10 +61,20 @@ extension TransitionAnimator {
         let toView: UIView = transitionContext.view(forKey: .to) ?? toViewController.view
         let containerView: UIView = transitionContext.containerView
         
-        /// 最后添加ImageView, 保证在最上层
-        self.imageView.removeFromSuperview()
-        containerView.addSubview(self.imageView)
+        /// 最后添加snapshotTargetView, 保证在最上层
+        let targetView = self.delegate?.transitionTargetView
+        self.snapshotTargetView?.removeFromSuperview()
+        self.snapshotTargetView = targetView?.snapshotView(afterScreenUpdates: true)
+        if let snapshotTargetView = self.snapshotTargetView {
+            /// 将frame设置为空
+            snapshotTargetView.frame = CGRect.zero
+            containerView.addSubview(snapshotTargetView)
+        }
         
+        if let targetContainerView = self.delegate?.transitionTargetContainerView, !targetContainerView.isHidden {
+            targetContainerView.isHidden = true
+        }
+ 
         var style: TransitioningStyle = isEntering ? self.enteringStyle : self.exitingStyle
         let sourceView = self.delegate?.transitionSourceView
         var sourceRect = self.delegate?.transitionSourceRect ?? CGRect.zero
@@ -119,15 +123,15 @@ extension TransitionAnimator {
         if style == .fade {
             currentView?.alpha = isEntering ? 0 : 1
         } else if style == .zoom {
-            let zoomView = self.delegate?.transitionTargetView
+            let targetContainerView = self.delegate?.transitionTargetContainerView
             let zoomContentViewFrame = self.delegate?.transitionTargetFrame ?? CGRect.zero
-            let zoomContentViewFrameInView = currentView?.convert(zoomContentViewFrame, from: zoomView) ?? CGRect.zero
+            let zoomContentViewFrameInView = currentView?.convert(zoomContentViewFrame, from: targetContainerView) ?? CGRect.zero
             let zoomContentViewBoundsInView = CGRect(origin: CGPoint.zero, size: zoomContentViewFrameInView.size)
-            /// 隐藏目标视图
-            zoomView?.isHidden = true
+
+            print("\(self.snapshotTargetView)")
             /// 设置下Frame
-            self.imageView.image = self.delegate?.transitionThumbImage
-            self.imageView.frame = isEntering ? sourceRect : zoomContentViewFrameInView
+            self.snapshotTargetView?.frame = isEntering ? sourceRect : zoomContentViewFrameInView
+
             /// 计算position
             let sourceCenter = CGPoint(x: sourceRect.midX, y: sourceRect.midY)
             let zoomContentViewCenterInView = CGPoint(x: zoomContentViewFrameInView.midX, y: zoomContentViewFrameInView.midY)
@@ -158,7 +162,7 @@ extension TransitionAnimator {
                     animation.preferredFrameRateRange = preferredFrameRateRange
                 })
             }
-            self.imageView.layer.add(groupAnimation, forKey: animationGroupKey)
+            self.snapshotTargetView?.layer.add(groupAnimation, forKey: animationGroupKey)
         }
     }
     
@@ -178,13 +182,16 @@ extension TransitionAnimator {
         let currentView: UIView? = isEntering ? toView : fromView
         if style == .fade {
             currentView?.alpha = 1
-        } else if style == .zoom {
-            self.delegate?.transitionTargetView?.isHidden = false
         }
+        
+        if let targetContainerView = self.delegate?.transitionTargetContainerView, targetContainerView.isHidden {
+            targetContainerView.isHidden = false
+        }
+        
         /// 释放资源
-        self.imageView.removeFromSuperview()
-        self.imageView.layer.removeAnimation(forKey: animationGroupKey)
-        self.imageView.image = nil
+        self.snapshotTargetView?.removeFromSuperview()
+        self.snapshotTargetView?.layer.removeAnimation(forKey: animationGroupKey)
+        self.snapshotTargetView = nil
     }
     
 }

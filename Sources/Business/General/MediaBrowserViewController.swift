@@ -607,21 +607,6 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
         return self.sourceViewDelegate?.sourceViewCornerRadiusForPageAtIndex(self.currentPage) ?? 0
     }
     
-    public var transitionThumbImage: UIImage? {
-        let currentPage = self.currentPage
-#if BUSINESS_IMAGE
-        if let sourceItem = self.loaderItems[currentPage].sourceItem as? ImageSourceProtocol {
-            return (sourceItem.image != nil) ? sourceItem.image : sourceItem.thumbImage
-        }
-#endif
-#if BUSINESS_VIDEO
-        if let sourceItem = self.loaderItems[currentPage].sourceItem as? VideoSourceProtocol {
-            return sourceItem.thumbImage
-        }
-#endif
-        return nil
-    }
-    
     public var transitionAnimatorViews: [UIView]? {
         var animatorViews: [UIView] = self.additionalViews
         if let dimmingView = self.browserView.dimmingView {
@@ -631,9 +616,16 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     }
     
     public var transitionTargetView: UIView? {
-        if let cell = self.currentPageCell {
-            return cell
+#if BUSINESS_IMAGE
+        if let imageCell = self.currentPageCell as? ImageCell {
+            return imageCell.zoomImageView.contentView
         }
+#endif
+#if BUSINESS_VIDEO
+        if let videoCell = self.currentPageCell as? VideoCell {
+            return videoCell.videoPlayerView.contentView
+        }
+#endif
         return nil
     }
     
@@ -649,6 +641,10 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
         }
 #endif
         return CGRect.zero
+    }
+    
+    public var transitionTargetContainerView: UIView? {
+        return self.currentPageCell
     }
     
 }
