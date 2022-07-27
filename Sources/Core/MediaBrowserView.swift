@@ -80,7 +80,6 @@ open class MediaBrowserView: UIView {
         return self.collectionView(self.collectionView, numberOfItemsInSection: 0)
     }
     
-    fileprivate var isChangingCollectionViewBounds: Bool = false
     fileprivate var previousPageOffsetRatio: CGFloat = 0.0
     fileprivate var isNeededScrollToItem: Bool = true
     fileprivate var registeredCellIdentifiers: NSMutableSet = NSMutableSet()
@@ -122,9 +121,7 @@ extension MediaBrowserView {
         self.dimmingView?.frame = self.bounds
         
         if self.collectionView.bounds.size != self.bounds.size {
-            self.isChangingCollectionViewBounds = true
             self.collectionView.frame = self.bounds
-            self.isChangingCollectionViewBounds = false
             self.scrollToPage(at: self.currentPage, animated: false)
         }
     }
@@ -270,9 +267,17 @@ extension MediaBrowserView: UIScrollViewDelegate {
         return pageOffsetRatio
     }
     
+    private var isPossiblyRotating: Bool {
+        guard let animationKeys = self.collectionView.layer.animationKeys() else {
+            return false
+        }
+        let rotationAnimationKeys = ["position", "bounds.origin", "bounds.size"]
+        return animationKeys.contains(where: { rotationAnimationKeys.contains($0) })
+    }
+    
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        /// 横竖屏旋转会触发scrollViewDidScroll, 会导致self.currentPage被改变, 所以这里加个isChangingCollectionViewBounds控制下。
-        guard scrollView == self.collectionView && !self.collectionView.bounds.isEmpty && !self.isChangingCollectionViewBounds else {
+        /// 横竖屏旋转会触发scrollViewDidScroll, 会导致self.currentPage被改变, 所以这里加个isPossiblyRotating控制下。
+        guard scrollView == self.collectionView && !self.collectionView.bounds.isEmpty && !self.isPossiblyRotating else {
             return
         }
         
