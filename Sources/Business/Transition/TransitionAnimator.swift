@@ -50,7 +50,7 @@ extension TransitionAnimator: UIViewControllerAnimatedTransitioning {
         
         self.beginTransition(transitionContext, isEntering: isEntering)
         self.performAnimation(using: transitionContext, isEntering: isEntering) { finished in
-            self.endTransition(transitionContext, isEntering: isEntering)
+            self.endTransition(transitionContext)
         }
     }
     
@@ -157,6 +157,13 @@ extension TransitionAnimator {
             groupAnimation.fillMode = .forwards
             groupAnimation.isRemovedOnCompletion = false
             groupAnimation.animations = [positionAnimation, boundsAnimation, cornerRadiusAnimation]
+            if #available(iOS 15.0, *) {
+                let preferredFrameRateRange = CAFrameRateRange(minimum: 60, maximum: 120, preferred: 120)
+                groupAnimation.preferredFrameRateRange = preferredFrameRateRange
+                groupAnimation.animations?.forEach({ animation in
+                    animation.preferredFrameRateRange = preferredFrameRateRange
+                })
+            }
             self.imageView.layer.add(groupAnimation, forKey: animationGroupKey)
         }
     }

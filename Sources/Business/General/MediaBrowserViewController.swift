@@ -589,7 +589,7 @@ public struct AnyMediaBrowserViewGesturePlugin: MediaBrowserViewGesturePlugin {
             return false
         }
 #else
-        return true
+        return false
 #endif
     }
     

@@ -7,16 +7,9 @@
 
 import UIKit
 
-public enum TransitionInteractiverType: Int {
-    case presenting
-    case dismiss
-}
-
 public class TransitionInteractiver: Transitioner {
     
-    public var type: TransitionInteractiverType = .presenting
-    
-    internal var isInteractive: Bool = false
+    fileprivate var isInteractive: Bool = false
     
 }
 
@@ -33,7 +26,7 @@ extension TransitionInteractiver: UIViewControllerInteractiveTransitioning {
             /// 此时若执行取消, 后续获取transitionWasCancelled还是false, 所以直接在这里结束还是会存在异常，顺延到下一个runloop执行
             DispatchQueue.main.async {
                 transitionContext.cancelInteractiveTransition()
-                self.endTransition(transitionContext, isEntering: isEntering)
+                self.endTransition(transitionContext)
             }
         }
     }
@@ -60,14 +53,6 @@ extension TransitionInteractiver {
         self.isInteractive = true
     }
     
-    public func update(_ percentComplete: CGFloat) {
-        self.checkInteractiveBegan()
-        
-        if let context = self.context {
-            context.updateInteractiveTransition(percentComplete)
-        }
-    }
-    
     public func finish() {
         self.checkInteractiveBegan()
         
@@ -75,7 +60,7 @@ extension TransitionInteractiver {
         
         if let context = self.context {
             context.finishInteractiveTransition()
-            self.endTransition(context, isEntering: self.type == .presenting)
+            self.endTransition(context)
         }
     }
     
@@ -86,7 +71,7 @@ extension TransitionInteractiver {
         
         if let context = self.context {
             context.cancelInteractiveTransition()
-            self.endTransition(context, isEntering: self.type == .presenting)
+            self.endTransition(context)
         }
     }
     

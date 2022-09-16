@@ -86,10 +86,9 @@ public class MediaBrowserView: UIView {
         return self.collectionView(self.collectionView, numberOfItemsInSection: 0)
     }
     
-    fileprivate var isChangingCollectionViewBounds: Bool = false
     fileprivate var previousPageOffsetRatio: CGFloat = 0.0
     fileprivate var isNeededScrollToItem: Bool = true
-    fileprivate var registeredCellIdentifiers: NSMutableSet = NSMutableSet();
+    fileprivate var registeredCellIdentifiers: NSMutableSet = NSMutableSet()
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -128,9 +127,7 @@ extension MediaBrowserView {
         self.dimmingView?.frame = self.bounds
         
         if self.collectionView.bounds.size != self.bounds.size {
-            self.isChangingCollectionViewBounds = true
             self.collectionView.frame = self.bounds
-            self.isChangingCollectionViewBounds = false
             self.scrollToPage(at: self.currentPage, animated: false)
         }
     }
@@ -209,7 +206,19 @@ extension MediaBrowserView {
     
     public var currentPageCell: UICollectionViewCell? {
         let indexPath = IndexPath(item: self.currentPage, section: 0)
-        return self.collectionView.cellForItem(at: indexPath)
+        if let cell = self.collectionView.cellForItem(at: indexPath) {
+            return cell
+        } else {
+            return self.collectionView.visibleCells.last
+        }
+    }
+    
+    open func pageCellForItem(at point: CGPoint) -> UICollectionViewCell? {
+        if let indexPath =  self.collectionView.indexPathForItem(at: point) {
+            return self.collectionView.cellForItem(at: indexPath)
+        } else {
+            return nil
+        }
     }
     
     fileprivate func scrollToPage(at index: Int, animated: Bool = true) {
@@ -259,15 +268,22 @@ extension MediaBrowserView: UIScrollViewDelegate {
     
     private var pageOffsetRatio: CGFloat {
         let pageWidth: CGFloat = self.collectionView(collectionView, layout: collectionViewLayout, sizeForItemAt: IndexPath(item: 0, section: 0)).width
-        let pageHorizontalMargin: CGFloat = self.collectionViewLayout.pageSpacing
         let contentOffsetX: CGFloat = self.collectionView.contentOffset.x
-        let pageOffsetRatio: CGFloat = contentOffsetX / (pageWidth + pageHorizontalMargin)
+        let pageOffsetRatio: CGFloat = contentOffsetX / pageWidth
         return pageOffsetRatio
     }
     
+    private var isPossiblyRotating: Bool {
+        guard let animationKeys = self.collectionView.layer.animationKeys() else {
+            return false
+        }
+        let rotationAnimationKeys = ["position", "bounds.origin", "bounds.size"]
+        return animationKeys.contains(where: { rotationAnimationKeys.contains($0) })
+    }
+    
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        /// 横竖屏旋转会触发scrollViewDidScroll, 会导致self.currentPage被改变, 所以这里加个isChangingCollectionViewBounds控制下。
-        guard scrollView == self.collectionView && !self.collectionView.bounds.isEmpty && !self.isChangingCollectionViewBounds else {
+        /// 横竖屏旋转会触发scrollViewDidScroll, 会导致self.currentPage被改变, 所以这里加个isPossiblyRotating控制下。
+        guard scrollView == self.collectionView && !self.collectionView.bounds.isEmpty && !self.isPossiblyRotating else {
             return
         }
         
@@ -280,17 +296,18 @@ extension MediaBrowserView: UIScrollViewDelegate {
         let fastToLeft: Bool = (floor(self.previousPageOffsetRatio) - floor(pageOffsetRatio) >= 1.0) && (self.previousPageOffsetRatio - ceil(pageOffsetRatio) > 0.5)
         let turnPageToLeft: Bool = fastToLeft || betweenOrEqual(pageOffsetRatio, floor(pageOffsetRatio) + 0.5, self.previousPageOffsetRatio)
         
-        if  turnPageToRight || turnPageToLeft {
+        if turnPageToRight || turnPageToLeft {
             let previousIndex = min(Int(round(self.previousPageOffsetRatio)), self.totalUnitPage - 1)
             let index = Int(round(pageOffsetRatio))
+            assert(previousIndex != index, "当前index与将要滚动到的index相同, 可能存在问题, 请检查self.pageOffsetRatio")
             if index >= 0 && index < self.totalUnitPage {
                 self.isNeededScrollToItem = false
                 self.currentPage = index
                 self.isNeededScrollToItem = true
                 self.plugin?.willScrollHalfFrom(previousIndex, toIndex: index, in: self)
             }
+            self.previousPageOffsetRatio = pageOffsetRatio
         }
-        self.previousPageOffsetRatio = pageOffsetRatio
     }
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {

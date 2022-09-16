@@ -28,6 +28,10 @@ class ExampleViewController: UIViewController {
     }()
     lazy var dataSource: [String] = []
     
+    var videoFormats: [String] {
+        return ["mp4", "flv"]
+    }
+    
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         SDImageCache.shared.clearMemory()
@@ -52,7 +56,6 @@ class ExampleViewController: UIViewController {
             if let data3 = Bundle.main.path(forResource: "data3", ofType: "jpg") {
                 array?.append(URL(fileURLWithPath: data3).absoluteString)
             }
-            array = array?.filter { !$0.contains("mp4") }
             self.dataSource = array ?? []
         }
         self.view.addSubview(self.scrollView)
@@ -109,7 +112,7 @@ class ExampleViewController: UIViewController {
             self.floatLayoutView.layoutIfNeeded()
         }
         self.scrollView.frame = self.view.bounds
-        self.scrollView.contentSize = self.floatLayoutView.bounds.size
+        self.scrollView.contentSize = CGSize(width: self.floatLayoutView.frame.width, height: self.floatLayoutView.frame.maxY + self.view.qmui_safeAreaInsets.bottom)
     }
     
     @objc func handleImageButtonEvent(sender: QMUIButton) {
@@ -128,7 +131,14 @@ class ExampleViewController: UIViewController {
         
         var sourceItems: [SourceProtocol] = [];
         for (_, urlString) in self.dataSource.enumerated() {
-            if urlString.contains("mp4") {
+            var isVideo = false
+            for format in self.videoFormats {
+                if urlString.contains(format) {
+                    isVideo = true
+                    break
+                }
+            }
+            if isVideo {
                 let videoEntity = VideoEntity(sourceRect: CGRect.zero, thumbImage: nil, videoUrl: URL(string: urlString))
                 sourceItems.append(videoEntity)
             } else {
