@@ -48,6 +48,10 @@ extension PagingLayout {
             return nil
         }
         if let attributesItem = super.layoutAttributesForItem(at: indexPath)?.copy() as? UICollectionViewLayoutAttributes {
+            if attributesItem.size.width <= 0 || attributesItem.size.height <= 0 {
+                return attributesItem
+            }
+            
             let halfWidth: CGFloat = attributesItem.size.width / 2.0
             let centerX: CGFloat = collectionView.contentOffset.x + halfWidth
             attributesItem.center = CGPoint(x: attributesItem.center.x + (attributesItem.center.x - centerX) / halfWidth * self.pageSpacing / 2,
