@@ -130,7 +130,7 @@ extension MediaBrowserView {
 
 extension MediaBrowserView {
     
-    open func setCurrentPage(_ index: Int, animated: Bool = true) {
+    public func setCurrentPage(_ index: Int, animated: Bool = true) {
         self.isNeededScrollToItem = false
         self.currentPage = index
         self.isNeededScrollToItem = true
@@ -139,11 +139,11 @@ extension MediaBrowserView {
         self.scrollToPage(at: index, animated: animated)
     }
     
-    open func reloadData() {
+    public func reloadData() {
         self.collectionView.reloadData()
     }
     
-    open func reloadPages(at indexs: [Int]) {
+    public func reloadPages(at indexs: [Int]) {
         var indexPaths: [IndexPath] = []
         for index in indexs {
             indexPaths.append(IndexPath(item: index, section: 0))
@@ -151,21 +151,21 @@ extension MediaBrowserView {
         self.collectionView.reloadItems(at: indexPaths)
     }
     
-    open func index(for pageCell: UICollectionViewCell) -> Int {
+    public func index(for pageCell: UICollectionViewCell) -> Int {
         if let indexPath: IndexPath = self.collectionView.indexPath(for: pageCell) {
             return indexPath.item
         }
         return NSNotFound
     }
     
-    open func pageCellForItem<Cell: UICollectionViewCell>(at index: Int) -> Cell? {
+    public func pageCellForItem<Cell: UICollectionViewCell>(at index: Int) -> Cell? {
         let indexPath: IndexPath = IndexPath(item: index, section: 0)
         return self.collectionView.cellForItem(at: indexPath) as? Cell
     }
     
-    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ cellClass: Cell.Type,
-                                                              reuseIdentifier: String? = nil,
-                                                              at index: Int) -> Cell {
+    public func dequeueReusableCell<Cell: UICollectionViewCell>(_ cellClass: Cell.Type,
+                                                                reuseIdentifier: String? = nil,
+                                                                at index: Int) -> Cell {
         let identifier: String = reuseIdentifier ?? "Item_\(cellClass)"
         if !self.registeredCellIdentifiers.contains(identifier) {
             self.registeredCellIdentifiers.add(identifier)
@@ -176,10 +176,10 @@ extension MediaBrowserView {
         return cell
     }
     
-    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ nibName: String,
-                                                              bundle: Bundle? = Bundle.main,
-                                                              reuseIdentifier: String? = nil,
-                                                              at index: Int) -> Cell {
+    public func dequeueReusableCell<Cell: UICollectionViewCell>(_ nibName: String,
+                                                                bundle: Bundle? = Bundle.main,
+                                                                reuseIdentifier: String? = nil,
+                                                                at index: Int) -> Cell {
         let identifier: String = reuseIdentifier ?? "Item_Nib_\(nibName)"
         if !self.registeredCellIdentifiers.contains(identifier) {
             self.registeredCellIdentifiers.add(identifier)
@@ -191,14 +191,14 @@ extension MediaBrowserView {
         return cell
     }
     
-    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ storyboardReuseIdentifier: String, at index: Int) -> Cell {
+    public func dequeueReusableCell<Cell: UICollectionViewCell>(_ storyboardReuseIdentifier: String, at index: Int) -> Cell {
         let identifier: String = storyboardReuseIdentifier
         let indexPath = IndexPath(item: index, section: 0)
         let cell = self.collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! Cell
         return cell
     }
     
-    open var currentPageCell: UICollectionViewCell? {
+    public var currentPageCell: UICollectionViewCell? {
         let indexPath = IndexPath(item: self.currentPage, section: 0)
         if let cell = self.collectionView.cellForItem(at: indexPath) {
             return cell
@@ -207,7 +207,7 @@ extension MediaBrowserView {
         }
     }
     
-    open func pageCellForItem(at point: CGPoint) -> UICollectionViewCell? {
+    public func pageCellForItem(at point: CGPoint) -> UICollectionViewCell? {
         if let indexPath =  self.collectionView.indexPathForItem(at: point) {
             return self.collectionView.cellForItem(at: indexPath)
         } else {

@@ -182,11 +182,11 @@ extension VideoPlayerView {
 
 extension VideoPlayerView {
     
-    open var isReadyForDisplay: Bool {
+    public var isReadyForDisplay: Bool {
         return self.playerLayer.isReadyForDisplay
     }
     
-    open func play() {
+    public func play() {
         if self.status == .ready || self.status == .paused {
             self.player.play()
             self.status = .playing
@@ -194,25 +194,25 @@ extension VideoPlayerView {
         }
     }
     
-    open func pause() {
+    public func pause() {
         self.player.pause()
         self.status = .paused
     }
     
-    open func reset() {
+    public func reset() {
         self.player.pause()
         self.seek(to: 0) { (finished) in
             self.status = .ready
         }
     }
     
-    open func releasePlayer() {
+    public func releasePlayer() {
         self.playerItem = nil
         self.player.replaceCurrentItem(with: nil)
         self.status = .stopped
     }
     
-    open func seek(to time: CGFloat, completionHandler: ((Bool) -> Void)? = nil) {
+    public func seek(to time: CGFloat, completionHandler: ((Bool) -> Void)? = nil) {
         let startTime: CMTime = CMTimeMakeWithSeconds(Float64(time), preferredTimescale: player.currentTime().timescale)
         if !CMTIME_IS_INDEFINITE(startTime) && !CMTIME_IS_INVALID(startTime) {
             player.seek(to: startTime, toleranceBefore: CMTimeMake(value: 1, timescale: 1000), toleranceAfter: CMTimeMake(value: 1, timescale: 1000), completionHandler: { (finished) in

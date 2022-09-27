@@ -108,7 +108,7 @@ extension PieProgressView {
 
 extension PieProgressView {
     
-    open func setProgress(_ progress: Float, animated: Bool = true) {
+    public func setProgress(_ progress: Float, animated: Bool = true) {
         needSetProgress = false
         self.progress = fmax(self.minimumProgress, fmin(1.0, progress))
         needSetProgress = true

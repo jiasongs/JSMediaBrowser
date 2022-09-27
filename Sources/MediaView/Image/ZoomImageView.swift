@@ -174,11 +174,11 @@ extension ZoomImageView {
 
 extension ZoomImageView {
     
-    open var isDisplayImageView: Bool {
+    public var isDisplayImageView: Bool {
         return isImageViewInitialized && !self.imageView.isHidden
     }
     
-    open var isDisplayLivePhotoView: Bool {
+    public var isDisplayLivePhotoView: Bool {
         return isLivePhotoViewInitialized && !self.livePhotoView.isHidden
     }
     
@@ -191,7 +191,7 @@ extension ZoomImageView {
         return false
     }
     
-    open func startAnimating() {
+    public func startAnimating() {
         guard !self.isAnimating else {
             return
         }
@@ -202,7 +202,7 @@ extension ZoomImageView {
         }
     }
     
-    open func stopAnimating() {
+    public func stopAnimating() {
         guard self.isAnimating else {
             return
         }
@@ -217,7 +217,7 @@ extension ZoomImageView {
 
 extension ZoomImageView {
     
-    open var minimumZoomScale: CGFloat {
+    public var minimumZoomScale: CGFloat {
         var mediaSize: CGSize = CGSize.zero
         if let image = self.image {
             mediaSize = image.size
@@ -251,11 +251,11 @@ extension ZoomImageView {
         return minScale
     }
     
-    open var zoomScale: CGFloat {
+    public var zoomScale: CGFloat {
         return self.scrollView.zoomScale
     }
     
-    open func setZoom(scale: CGFloat, animated: Bool = true) {
+    public func setZoom(scale: CGFloat, animated: Bool = true) {
         if animated {
             UIView.animate(withDuration: 0.25, delay: 0.0, options: AnimationOptionsCurveOut, animations: {
                 self.scrollView.zoomScale = scale
@@ -265,7 +265,7 @@ extension ZoomImageView {
         }
     }
     
-    open func zoom(to point: CGPoint, scale: CGFloat = 3.0, animated: Bool = true) {
+    public func zoom(to point: CGPoint, scale: CGFloat = 3.0, animated: Bool = true) {
         guard scale > 0 else {
             return
         }
@@ -278,7 +278,7 @@ extension ZoomImageView {
         self.zoom(to: zoomRect, animated: animated)
     }
     
-    open func zoom(to rect: CGRect, animated: Bool = true) {
+    public func zoom(to rect: CGRect, animated: Bool = true) {
         if animated {
             UIView.animate(withDuration: 0.25, delay: 0.0, options: AnimationOptionsCurveOut, animations: {
                 self.scrollView.zoom(to: rect, animated: false)
@@ -288,7 +288,7 @@ extension ZoomImageView {
         }
     }
     
-    open func revertZooming() {
+    public func revertZooming() {
         if self.bounds.isEmpty {
             return
         }
@@ -349,21 +349,21 @@ extension ZoomImageView {
 
 extension ZoomImageView {
     
-    open var minContentOffset: CGPoint {
+    public var minContentOffset: CGPoint {
         let scrollView: UIScrollView = self.scrollView
         let contentInset: UIEdgeInsets = scrollView.contentInset
         return CGPoint(x: -contentInset.left,
                        y: -contentInset.top)
     }
     
-    open var maxContentOffset: CGPoint {
+    public var maxContentOffset: CGPoint {
         let scrollView: UIScrollView = self.scrollView
         let contentInset: UIEdgeInsets = scrollView.contentInset
         return CGPoint(x: scrollView.contentSize.width + contentInset.right - scrollView.bounds.width,
                        y: scrollView.contentSize.height + contentInset.bottom - scrollView.bounds.height)
     }
     
-    open func revertContentOffset(animated: Bool = true) {
+    public func revertContentOffset(animated: Bool = true) {
         var x: CGFloat = self.scrollView.contentOffset.x
         var y: CGFloat = self.scrollView.contentOffset.y
         let viewport: CGRect = self.finalViewportRect
@@ -378,7 +378,7 @@ extension ZoomImageView {
         self.scrollView.setContentOffset(CGPoint(x: x, y: y), animated: animated)
     }
     
-    open func require(toFail otherGestureRecognizer: UIGestureRecognizer) {
+    public func require(toFail otherGestureRecognizer: UIGestureRecognizer) {
         guard self.failGestureRecognizer != otherGestureRecognizer else {
             return
         }

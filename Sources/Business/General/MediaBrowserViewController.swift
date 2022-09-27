@@ -208,10 +208,10 @@ extension MediaBrowserViewController {
 
 extension MediaBrowserViewController {
     
-    open func show(from sender: UIViewController,
-                   navigationController: UINavigationController? = nil,
-                   animated: Bool = true,
-                   completion: (() -> Void)? = nil) {
+    public func show(from sender: UIViewController,
+                     navigationController: UINavigationController? = nil,
+                     animated: Bool = true,
+                     completion: (() -> Void)? = nil) {
         self.presentedFromViewController = sender
         
         let viewController = navigationController ?? self
@@ -225,28 +225,28 @@ extension MediaBrowserViewController {
         senderViewController.present(viewController, animated: animated, completion: completion)
     }
     
-    open func hide(animated: Bool = true, completion: (() -> Void)? = nil) {
+    public func hide(animated: Bool = true, completion: (() -> Void)? = nil) {
         self.dismiss(animated: animated, completion: completion)
     }
     
-    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ cellClass: Cell.Type,
-                                                              reuseIdentifier: String? = nil,
-                                                              at index: Int) -> Cell {
+    public func dequeueReusableCell<Cell: UICollectionViewCell>(_ cellClass: Cell.Type,
+                                                                reuseIdentifier: String? = nil,
+                                                                at index: Int) -> Cell {
         return self.browserView.dequeueReusableCell(cellClass, reuseIdentifier: reuseIdentifier, at: index)
     }
     
-    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ nibName: String,
-                                                              bundle: Bundle? = Bundle.main,
-                                                              reuseIdentifier: String? = nil,
-                                                              at index: Int) -> Cell {
+    public func dequeueReusableCell<Cell: UICollectionViewCell>(_ nibName: String,
+                                                                bundle: Bundle? = Bundle.main,
+                                                                reuseIdentifier: String? = nil,
+                                                                at index: Int) -> Cell {
         return self.browserView.dequeueReusableCell(nibName, bundle: bundle, reuseIdentifier: reuseIdentifier, at: index)
     }
     
-    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ storyboardReuseIdentifier: String, at index: Int) -> Cell {
+    public func dequeueReusableCell<Cell: UICollectionViewCell>(_ storyboardReuseIdentifier: String, at index: Int) -> Cell {
         return self.browserView.dequeueReusableCell(storyboardReuseIdentifier, at: index)
     }
     
-    open func setCurrentPage(_ index: Int, animated: Bool = true) {
+    public func setCurrentPage(_ index: Int, animated: Bool = true) {
         self.browserView.setCurrentPage(index, animated: animated)
     }
     
