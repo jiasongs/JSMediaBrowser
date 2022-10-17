@@ -10,12 +10,12 @@ def pod_Common
   pod "SDWebImage"
   pod "Kingfisher"
   pod "Then"
+  pod "LookinServer", :subspecs => ['Swift'], :configurations => ["Debug"]
+  pod "MLeaksFinder", :configurations => ["Debug"]
 end
 
 target "JSMediaBrowserExample" do
   pod_Common
-  pod "LookinServer", "~> 1.0.4", :configurations => ["Debug"]
-  pod "MLeaksFinder", :configurations => ["Debug"]
   pod "FBRetainCycleDetector", :git => "https://github.com/jiasongs/FBRetainCycleDetector.git", :configurations => ["Debug"]
 end
 
