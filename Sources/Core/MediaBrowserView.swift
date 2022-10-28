@@ -43,6 +43,8 @@ open class MediaBrowserView: UIView {
         let gesture = UITapGestureRecognizer(target: self, action: #selector(self.handleSingleTapGesture))
         gesture.numberOfTapsRequired = 1
         gesture.numberOfTouchesRequired = 1
+        gesture.delaysTouchesBegan = false
+        gesture.delaysTouchesEnded = false
         return gesture
     }()
     
@@ -50,6 +52,7 @@ open class MediaBrowserView: UIView {
         let gesture = UITapGestureRecognizer(target: self, action: #selector(self.handleDoubleTapGesture))
         gesture.numberOfTapsRequired = 2
         gesture.numberOfTouchesRequired = 1
+        gesture.delaysTouchesEnded = false
         return gesture
     }()
     
