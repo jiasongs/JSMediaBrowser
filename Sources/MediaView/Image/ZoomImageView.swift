@@ -11,7 +11,7 @@ import JSCoreKit
 
 public class ZoomImageView: BasisMediaView {
     
-    public var modifier: ZoomImageViewModifier = DefaultZoomImageViewModifier()
+    public weak var modifier: ZoomImageViewModifier?
     
     private(set) lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView(frame: CGRect(origin: CGPoint.zero, size: frame.size))
@@ -26,20 +26,20 @@ public class ZoomImageView: BasisMediaView {
         return scrollView
     }()
     
-    private var isImageViewInitialized: Bool = false
+    fileprivate var isImageViewInitialized: Bool = false
     private(set) lazy var imageView: UIImageView = {
         isImageViewInitialized = true
-        var imageView: UIImageView = self.modifier.imageView(in: self)
+        var imageView: UIImageView = self.modifier?.imageView(in: self) ?? UIImageView()
         imageView.isHidden = true
         imageView.isAccessibilityElement = true
         self.scrollView.addSubview(imageView)
         return imageView
     }()
     
-    private var isLivePhotoViewInitialized: Bool = false
+    fileprivate var isLivePhotoViewInitialized: Bool = false
     private(set) lazy var livePhotoView: PHLivePhotoView = {
         isLivePhotoViewInitialized = true
-        var livePhotoView: PHLivePhotoView = self.modifier.livePhotoView(in: self)
+        var livePhotoView: PHLivePhotoView = self.modifier?.livePhotoView(in: self) ?? PHLivePhotoView()
         livePhotoView.isHidden = true
         livePhotoView.delegate = self
         livePhotoView.isAccessibilityElement = true
@@ -161,7 +161,7 @@ extension ZoomImageView {
     }
     
     fileprivate var calculateViewportRect: CGRect {
-        let resultRect = self.modifier.viewportRect(in: self)
+        let resultRect = self.modifier?.viewportRect(in: self) ?? CGRect.zero
         return !resultRect.isEmpty ? resultRect : self.finalViewportRect
     }
     
@@ -404,9 +404,5 @@ extension ZoomImageView: PHLivePhotoViewDelegate {
     public func livePhotoView(_ livePhotoView: PHLivePhotoView, didEndPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) {
         self.isLivePhotoPlaying = false
     }
-    
-}
-
-fileprivate struct DefaultZoomImageViewModifier: ZoomImageViewModifier {
     
 }

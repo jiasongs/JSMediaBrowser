@@ -97,7 +97,7 @@ class ExampleViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         let top = self.qmui_navigationBarMaxYInViewCoordinator
-        let margins: UIEdgeInsets = UIEdgeInsets(top: top + 5, left: 24 + self.view.qmui_safeAreaInsets.left, bottom: 24, right: 24 + self.view.qmui_safeAreaInsets.right);
+        let margins: UIEdgeInsets = UIEdgeInsets(top: top + 5, left: 24 + self.view.safeAreaInsets.left, bottom: 24, right: 24 + self.view.safeAreaInsets.right);
         let contentWidth: CGFloat = self.view.qmui_width - UIEdgeInsetsGetHorizontalValue(margins);
         let column: Int = self.view.qmui_width > 700 ? 8 : 3
         let horizontalValue: CGFloat = CGFloat((column - 1)) * UIEdgeInsetsGetHorizontalValue(self.floatLayoutView.itemMargins);
@@ -112,18 +112,14 @@ class ExampleViewController: UIViewController {
             self.floatLayoutView.layoutIfNeeded()
         }
         self.scrollView.frame = self.view.bounds
-        self.scrollView.contentSize = CGSize(width: self.floatLayoutView.frame.width, height: self.floatLayoutView.frame.maxY + self.view.qmui_safeAreaInsets.bottom)
+        self.scrollView.contentSize = CGSize(width: self.floatLayoutView.frame.width, height: self.floatLayoutView.frame.maxY + self.view.safeAreaInsets.bottom)
     }
     
     @objc func handleImageButtonEvent(sender: QMUIButton) {
         let browser: MediaBrowserViewController = MediaBrowserViewController()
         /// 配置
-        browser.sourceViewDelegate = self
-        browser.webImageMediator = SDWebImageMediator()
-        browser.additionalViews = [PageControl(), ShareControl()]
-        browser.imageViewForZoomView = { (_, _) in
-            return SDAnimatedImageView().then { $0.autoPlayAnimatedImage = false }
-        }
+        browser.webImageMediator = SDWebImageMediator.defaultMediator
+        browser.zoomImageViewModifier = SDZoomImageViewModifier.defaultModifier
         browser.willDisplayEmptyView = { (_, _, emptyView: EmptyView, error: NSError) in
             emptyView.image = UIImage(named: "picture_fail")
             emptyView.title = "\(String(describing: error.localizedDescription))"
@@ -139,10 +135,10 @@ class ExampleViewController: UIViewController {
                 }
             }
             if isVideo {
-                let videoEntity = VideoEntity(sourceRect: CGRect.zero, thumbImage: nil, videoUrl: URL(string: urlString))
+                let videoEntity = VideoEntity(videoUrl: URL(string: urlString))
                 sourceItems.append(videoEntity)
             } else {
-                let imageEntity = ImageEntity(sourceRect: CGRect.zero, thumbImage: nil, imageUrl: URL(string: urlString))
+                let imageEntity = ImageEntity(imageUrl: URL(string: urlString))
                 sourceItems.append(imageEntity)
             }
         }
@@ -179,18 +175,6 @@ class ExampleViewController: UIViewController {
             return UIImage(cgImage: cgImage)
         }
         return nil
-    }
-    
-}
-
-extension ExampleViewController: MediaBrowserViewControllerSourceViewDelegate {
-    
-    func sourceViewForPageAtIndex(_ index: Int) -> UIView? {
-        return self.floatLayoutView.subviews[index]
-    }
-    
-    func sourceViewCornerRadiusForPageAtIndex(_ index: Int) -> CGFloat {
-        return 0
     }
     
 }

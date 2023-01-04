@@ -25,7 +25,7 @@ public class VideoCell: BasisCell {
         super.prepareForReuse()
         self.pieProgressView.isHidden = true
         self.videoPlayerView.thumbImage = nil
-        self.videoPlayerView.plugin = VideoCellPlayerPlugin(cell: self)
+        self.videoPlayerView.delegate = self
     }
     
     public override func layoutSubviews() {
@@ -35,24 +35,22 @@ public class VideoCell: BasisCell {
     
 }
 
-fileprivate struct VideoCellPlayerPlugin: VideoPlayerViewPlugin {
+extension VideoCell: VideoPlayerViewDelegate {
     
-    weak var cell: VideoCell?
-    
-    func didReadyForDisplay(_ videoPlayerView: VideoPlayerView) {
-        self.cell?.setError(nil, cancelled: false, finished: true)
+    public func didReadyForDisplay(_ videoPlayerView: VideoPlayerView) {
+        self.setError(nil, cancelled: false, finished: true)
     }
     
-    func periodicTime(_ currentTime: CGFloat, totalDuration: CGFloat) {
+    public func periodicTime(_ currentTime: CGFloat, totalDuration: CGFloat, in videoPlayerView: VideoPlayerView) {
         
     }
     
-    func didPlayToEndTime(_ videoPlayerView: VideoPlayerView) {
+    public func didPlayToEndTime(_ videoPlayerView: VideoPlayerView) {
         
     }
     
-    func didFailed(_ videoPlayerView: VideoPlayerView, error: NSError?) {
-        self.cell?.setError(error, cancelled: false, finished: true)
+    public func didFailed(_ videoPlayerView: VideoPlayerView, error: NSError?) {
+        self.setError(error, cancelled: false, finished: true)
     }
     
 }

@@ -1,5 +1,5 @@
 //
-//  MediaBrowserViewModifier.swift
+//  MediaBrowserViewDataSource.swift
 //  JSMediaBrowser
 //
 //  Created by jiasong on 2022/1/27.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-public protocol MediaBrowserViewModifier {
+public protocol MediaBrowserViewDataSource: AnyObject {
     
     func numberOfPages(in mediaBrowserView: MediaBrowserView) -> Int
     

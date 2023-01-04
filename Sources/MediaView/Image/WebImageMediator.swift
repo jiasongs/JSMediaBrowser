@@ -11,7 +11,7 @@ public typealias WebImageMediatorSetImageBlock = (_ image: UIImage?, _ imageData
 public typealias WebImageMediatorDownloadProgress = (_ receivedSize: Int64, _ expectedSize: Int64) -> Void
 public typealias WebImageMediatorCompleted = (_ image: UIImage?, _ imageData: Data?, _ error: NSError?, _ cancelled: Bool, _ finished: Bool) -> Void
 
-public protocol WebImageMediator {
+public protocol WebImageMediator: AnyObject {
     
     func setImage(for imageView: UIImageView,
                   url: URL?,

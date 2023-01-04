@@ -15,10 +15,6 @@ public protocol VideoSourceProtocol: SourceProtocol {
     
 }
 
-public protocol VideoLoaderProtocol: LoaderProtocol {
-    
-}
-
 public protocol ViedeoActionViewProtocol {
     
     

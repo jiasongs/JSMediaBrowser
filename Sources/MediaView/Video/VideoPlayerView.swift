@@ -20,9 +20,9 @@ public enum Stauts: Int {
 
 public class VideoPlayerView: BasisMediaView {
     
-    var plugin: VideoPlayerViewPlugin?
+    public weak var delegate: VideoPlayerViewDelegate?
     
-    var url: URL? {
+    public var url: URL? {
         didSet {
             if let url = self.url {
                 if oldValue != url {
@@ -33,7 +33,7 @@ public class VideoPlayerView: BasisMediaView {
         }
     }
     
-    var asset: AVAsset? {
+    public var asset: AVAsset? {
         didSet {
             if let asset = self.asset {
                 if oldValue != asset {
@@ -44,7 +44,7 @@ public class VideoPlayerView: BasisMediaView {
         }
     }
     
-    var playerItem: AVPlayerItem? {
+    public var playerItem: AVPlayerItem? {
         willSet {
             if newValue != nil && newValue != self.playerItem {
                 self.removeObserverForPlayerItem()
@@ -58,22 +58,6 @@ public class VideoPlayerView: BasisMediaView {
                 }
             }
         }
-    }
-    
-    private lazy var player: AVPlayer = {
-        let player = AVPlayer(playerItem: nil)
-        self.playerLayer.player = player
-        self.playerLayer.videoGravity = .resizeAspect
-        return player
-    }()
-    
-    private lazy var playerView: AVPlayerView = {
-        let playerView = AVPlayerView()
-        return playerView
-    }()
-    
-    private var playerLayer: AVPlayerLayer {
-        return self.playerView.layer as! AVPlayerLayer
     }
     
     public var currentTime: CGFloat {
@@ -96,21 +80,37 @@ public class VideoPlayerView: BasisMediaView {
     public var status: Stauts = .stopped {
         didSet {
             if status == .ready {
-                self.plugin?.didReadyForDisplay(self)
+                self.delegate?.didReadyForDisplay(self)
             } else if status == .failed {
-                self.plugin?.didFailed(self, error: self.player.error as NSError?)
+                self.delegate?.didFailed(self, error: self.player.error as NSError?)
             } else if status == .ended || status == .stopped {
-                self.plugin?.didPlayToEndTime(self)
+                self.delegate?.didPlayToEndTime(self)
             }
         }
     }
     
-    var thumbImage: UIImage? {
+    public var thumbImage: UIImage? {
         didSet {
             self.thumbImageView.image = self.thumbImage
             self.thumbImageView.isHidden = self.thumbImage == nil
             self.setNeedsLayout()
         }
+    }
+    
+    private lazy var player: AVPlayer = {
+        let player = AVPlayer(playerItem: nil)
+        self.playerLayer.player = player
+        self.playerLayer.videoGravity = .resizeAspect
+        return player
+    }()
+    
+    private lazy var playerView: AVPlayerView = {
+        let playerView = AVPlayerView()
+        return playerView
+    }()
+    
+    private var playerLayer: AVPlayerLayer {
+        return self.playerView.layer as! AVPlayerLayer
     }
     
     private lazy var thumbImageView: UIImageView = {
@@ -243,7 +243,7 @@ extension VideoPlayerView {
                     return
                 }
                 
-                self.plugin?.periodicTime(CGFloat(CMTimeGetSeconds(time)), totalDuration: self.totalDuration)
+                self.delegate?.periodicTime(CGFloat(CMTimeGetSeconds(time)), totalDuration: self.totalDuration, in: self)
             })
         )
         /// isReadyForDisplay

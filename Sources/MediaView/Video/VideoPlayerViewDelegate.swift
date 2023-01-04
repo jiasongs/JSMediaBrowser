@@ -1,5 +1,5 @@
 //
-//  VideoPlayerViewPlugin.swift
+//  VideoPlayerViewDelegate.swift
 //  JSMediaBrowser
 //
 //  Created by jiasong on 2021/1/3.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-public protocol VideoPlayerViewPlugin {
+public protocol VideoPlayerViewDelegate: AnyObject {
     
     func didReadyForDisplay(_ videoPlayerView: VideoPlayerView)
     
@@ -20,7 +20,7 @@ public protocol VideoPlayerViewPlugin {
 }
 
 /// options
-extension VideoPlayerViewPlugin {
+extension VideoPlayerViewDelegate {
     
     public func didReadyForDisplay(_ videoPlayerView: VideoPlayerView) {}
     
