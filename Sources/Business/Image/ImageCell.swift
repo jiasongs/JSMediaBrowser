@@ -15,8 +15,7 @@ public class ImageCell: BasisCell {
     
     public override func didInitialize() {
         super.didInitialize()
-        self.contentView.addSubview(self.zoomImageView)
-        self.contentView.sendSubviewToBack(self.zoomImageView)
+        self.contentView.insertSubview(self.zoomImageView, at: 0)
     }
     
     public override func prepareForReuse() {

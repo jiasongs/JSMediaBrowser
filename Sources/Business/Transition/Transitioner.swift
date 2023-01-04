@@ -12,11 +12,11 @@ public enum TransitionerType: Int {
     case dismiss
 }
 
-open class Transitioner: NSObject {
+public class Transitioner: NSObject {
     
-    open var type: TransitionerType = .presenting
+    public var type: TransitionerType = .presenting
     
-    open weak var context: UIViewControllerContextTransitioning?
+    public weak var context: UIViewControllerContextTransitioning?
     
     public override init() {
         super.init()

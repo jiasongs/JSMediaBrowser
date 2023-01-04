@@ -5,14 +5,14 @@ Pod::Spec.new do |s|
   s.summary      = "图片、视频浏览器"
   s.homepage     = "https://github.com/jiasongs/JSMediaBrowser"
   s.author       = { "jiasong" => "593908937@qq.com" }
-  s.platform     = :ios, "10.0"
+  s.platform     = :ios, "11.0"
   s.swift_versions = ["4.2", "5.0"]
   s.requires_arc = true
   s.source       = { :git => "https://github.com/jiasongs/JSMediaBrowser.git", :tag => "#{s.version}" }
   s.frameworks   = "UIKit"
   s.license      = "MIT"
   
-  s.dependency "JSCoreKit", "~> 0.2.5"
+  s.dependency "JSCoreKit", "~> 0.2.7"
   
   s.default_subspec = "Core"
   s.subspec "Core" do |ss|
@@ -43,22 +43,9 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "Business" do |ss|
-    ss.source_files = "Sources/Business/General/*.{swift,h,m}", "Sources/Business/Transition/*.{swift,h,m}", "Sources/Business/Basis/*.{swift,h,m}", "Sources/Business/Protocol/*.{swift,h,m}"
-    ss.frameworks   = "PhotosUI", "CoreGraphics", "QuartzCore"
+    ss.source_files = "Sources/Business/**/*.{swift,h,m}"
     ss.dependency "JSMediaBrowser/Core"
-  end
-  
-  s.subspec "BusinessForImage" do |ss|
-    ss.source_files = "Sources/Business/Image/*.{swift,h,m}"
-    ss.dependency "JSMediaBrowser/Business"
-    ss.dependency "JSMediaBrowser/MediaImage"
-    ss.pod_target_xcconfig = { "OTHER_SWIFT_FLAGS" => "-D BUSINESS_IMAGE" }
-  end
-
-  s.subspec "BusinessForVideo" do |ss|
-    ss.source_files = "Sources/Business/Video/*.{swift,h,m}"
-    ss.dependency "JSMediaBrowser/Business"
     ss.dependency "JSMediaBrowser/MediaVideo"
-    ss.pod_target_xcconfig = { "OTHER_SWIFT_FLAGS" => "-D BUSINESS_VIDEO" }
+    ss.dependency "JSMediaBrowser/MediaImage"
   end
 end

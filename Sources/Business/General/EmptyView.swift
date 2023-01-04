@@ -114,15 +114,15 @@ public class EmptyView: UIView {
         let margin: CGFloat = 12.0
         let buttonMarginTop: CGFloat = 15.0
         let subviewsHeight = imageSize.height + titleSize.height + subtitleSize.height + buttonSize.height + margin * 2 + buttonMarginTop
-        imageView.frame = CGRect(x: (self.frame.width - imageSize.width) / 2, y: (self.frame.height - subviewsHeight) / 2, width: imageSize.width, height: imageSize.height)
-        titleLabel.frame = CGRect(origin: CGPoint(x: (self.frame.width - titleSize.width) / 2, y: imageView.frame.maxY + margin), size: titleSize)
-        subtitleLabel.frame = CGRect(origin: CGPoint(x: (self.frame.width - subtitleSize.width) / 2, y: titleLabel.frame.maxY + margin), size: subtitleSize)
-        actionButton.frame = CGRect(origin: CGPoint(x: (self.frame.width - buttonSize.width) / 2, y: subtitleLabel.frame.maxY + buttonMarginTop), size: buttonSize)
+        self.imageView.frame = CGRect(x: (self.frame.width - imageSize.width) / 2, y: (self.frame.height - subviewsHeight) / 2, width: imageSize.width, height: imageSize.height)
+        self.titleLabel.frame = CGRect(origin: CGPoint(x: (self.frame.width - titleSize.width) / 2, y: imageView.frame.maxY + margin), size: titleSize)
+        self.subtitleLabel.frame = CGRect(origin: CGPoint(x: (self.frame.width - subtitleSize.width) / 2, y: titleLabel.frame.maxY + margin), size: subtitleSize)
+        self.actionButton.frame = CGRect(origin: CGPoint(x: (self.frame.width - buttonSize.width) / 2, y: subtitleLabel.frame.maxY + buttonMarginTop), size: buttonSize)
         
-        imageView.isHidden = imageSize == CGSize.zero
-        titleLabel.isHidden = titleSize.height == 0
-        subtitleLabel.isHidden = subtitleSize.height == 0
-        actionButton.isHidden = buttonSize.height == 0
+        self.imageView.isHidden = imageSize == CGSize.zero
+        self.titleLabel.isHidden = titleSize.height == 0
+        self.subtitleLabel.isHidden = subtitleSize.height == 0
+        self.actionButton.isHidden = buttonSize.height == 0
     }
     
     @objc func handleAction(button: UIButton) {

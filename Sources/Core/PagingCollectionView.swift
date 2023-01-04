@@ -27,9 +27,7 @@ public class PagingCollectionView: UICollectionView {
         self.delaysContentTouches = false
         self.decelerationRate = .fast
         self.isPagingEnabled = true
-        if #available(iOS 11.0, *) {
-            self.contentInsetAdjustmentBehavior = .never
-        }
+        self.contentInsetAdjustmentBehavior = .never
     }
     
 }

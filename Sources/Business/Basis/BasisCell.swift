@@ -7,28 +7,23 @@
 
 import UIKit
 
-open class BasisCell: UICollectionViewCell, CellProtocol {
+public class BasisCell: UICollectionViewCell {
     
-    open lazy var emptyView: EmptyView = {
+    public lazy var emptyView: EmptyView = {
         let view = EmptyView()
         view.isHidden = true
-        view.onPressAction = { [weak self] (sender: UIButton) in
-            if let strongSelf = self {
-                strongSelf.onEmptyPressAction?(strongSelf)
-            }
-        }
         return view
     }()
     
-    open lazy var pieProgressView: PieProgressView = {
+    public lazy var pieProgressView: PieProgressView = {
         let view = PieProgressView()
         view.tintColor = .white
         view.minimumProgress = 0.05
         return view
     }()
     
-    open var onEmptyPressAction: ((UICollectionViewCell) -> Void)?
-    open var willDisplayEmptyView: ((UICollectionViewCell, EmptyView, NSError) -> Void)?
+    public var onPressEmpty: ((UICollectionViewCell) -> Void)?
+    public var willDisplayEmptyView: ((UICollectionViewCell, EmptyView, NSError) -> Void)?
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -40,12 +35,19 @@ open class BasisCell: UICollectionViewCell, CellProtocol {
         self.didInitialize()
     }
     
-    open func didInitialize() {
+    public func didInitialize() {
         self.contentView.addSubview(self.emptyView)
         self.contentView.addSubview(self.pieProgressView)
+        
+        self.emptyView.onPressAction = { [weak self] (sender: UIButton) in
+            guard let self = self else {
+                return
+            }
+            self.onPressEmpty?(self)
+        }
     }
     
-    open override func prepareForReuse() {
+    public override func prepareForReuse() {
         super.prepareForReuse()
         self.contentView.bringSubviewToFront(self.pieProgressView)
         self.emptyView.isHidden = true
@@ -53,7 +55,7 @@ open class BasisCell: UICollectionViewCell, CellProtocol {
         self.pieProgressView.progress = 0.0
     }
     
-    open override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
         self.emptyView.frame = self.bounds
         let width = min(self.bounds.width * 0.12, 86)
@@ -62,11 +64,11 @@ open class BasisCell: UICollectionViewCell, CellProtocol {
         self.pieProgressView.frame = CGRect(origin: progressPoint, size: progressSize)
     }
     
-    open func setProgress(_ progress: Progress) {
+    public func setProgress(_ progress: Progress) {
         self.pieProgressView.setProgress(Float(progress.fractionCompleted))
     }
     
-    open func setError(_ error: NSError?, cancelled: Bool, finished: Bool) {
+    public func setError(_ error: NSError?, cancelled: Bool, finished: Bool) {
         if cancelled {
             self.pieProgressView.isHidden = false
         } else {

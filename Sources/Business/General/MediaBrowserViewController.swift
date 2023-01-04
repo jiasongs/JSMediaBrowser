@@ -14,66 +14,31 @@ public enum TransitioningStyle: Int {
     case fade
 }
 
-open class MediaBrowserViewController: UIViewController {
+public class MediaBrowserViewController: UIViewController {
     
-    open lazy var mediaBrowserView: MediaBrowserView = {
+    public lazy var mediaBrowserView: MediaBrowserView = {
         let mediaBrowserView = MediaBrowserView()
         return mediaBrowserView
     }()
     
-    open lazy var transitionAnimator: TransitionAnimator = {
-        let animator = TransitionAnimator()
-        animator.delegate = self
-        return animator
-    }()
-    
-    open lazy var transitionInteractiver: TransitionInteractiver = {
-        let interactiver = TransitionInteractiver()
-        return interactiver
-    }()
-    
-    open var enteringStyle: TransitioningStyle = .zoom {
+    public var enteringStyle: TransitioningStyle = .zoom {
         didSet {
             self.transitionAnimator.enteringStyle = enteringStyle
         }
     }
-    open var exitingStyle: TransitioningStyle = .zoom {
+    public var exitingStyle: TransitioningStyle = .zoom {
         didSet {
             self.transitionAnimator.exitingStyle = exitingStyle
         }
     }
     
-    open var sourceItems: [SourceProtocol] = [] {
-        didSet {
-            var loaderItems: [LoaderProtocol] = []
-            self.sourceItems.forEach({ (item) in
-#if BUSINESS_IMAGE
-                if let _ = item as? ImageSourceProtocol {
-                    let loader: ImageLoaderEntity = ImageLoaderEntity()
-                    loader.sourceItem = item
-                    loader.webImageMediator = self.webImageMediator
-                    loaderItems.append(loader)
-                }
-#endif
-#if BUSINESS_VIDEO
-                if let _ = item as? VideoSourceProtocol {
-                    let loader: VideoLoaderEntity = VideoLoaderEntity()
-                    loader.sourceItem = item
-                    loaderItems.append(loader)
-                }
-#endif
-            })
-            self.loaderItems = loaderItems
-            
+    public var sourceItems: [SourceProtocol] = [] {
+        didSet {            
             self.toggleTotalUnitPageDidChange()
         }
     }
     
-    open private(set) var loaderItems: [LoaderProtocol] = []
-    
-    open var modifier: MediaBrowserViewControllerModifier?
-    
-    open var additionalViews: [UIView & AdditionalViewProtocol] = [] {
+    public var additionalViews: [UIView & AdditionalViewProtocol] = [] {
         didSet {
             for additionalView in oldValue {
                 additionalView.removeFromSuperview()
@@ -82,18 +47,16 @@ open class MediaBrowserViewController: UIViewController {
         }
     }
     
-#if BUSINESS_IMAGE
-    open var webImageMediator: WebImageMediator?
-    open var imageViewForZoomView: ((MediaBrowserViewController, ZoomImageView) -> UIImageView)?
-    open var livePhotoViewForZoomView: ((MediaBrowserViewController, ZoomImageView) -> PHLivePhotoView)?
-#endif
+    public weak var modifier: MediaBrowserViewControllerModifier?
+    public var zoomImageViewModifier: ZoomImageViewModifier?
+    public var webImageMediator: WebImageMediator?
+  
+    public var cellForItemAtPage: ((MediaBrowserViewController, Int) -> UICollectionViewCell?)?
+    public var configureCell: ((MediaBrowserViewController, UICollectionViewCell, Int) -> Void)?
+    public var willDisplayEmptyView: ((MediaBrowserViewController, UICollectionViewCell, EmptyView, NSError) -> Void)?
+    public var onLongPress: ((MediaBrowserViewController) -> Void)?
     
-    open var cellForItemAtPage: ((MediaBrowserViewController, Int) -> UICollectionViewCell?)?
-    open var configureCell: ((MediaBrowserViewController, UICollectionViewCell, Int) -> Void)?
-    open var willDisplayEmptyView: ((MediaBrowserViewController, UICollectionViewCell, EmptyView, NSError) -> Void)?
-    open var onLongPress: ((MediaBrowserViewController) -> Void)?
-    
-    open var currentPage: Int {
+    public var currentPage: Int {
         set {
             self.mediaBrowserView.currentPage = newValue
         }
@@ -102,17 +65,20 @@ open class MediaBrowserViewController: UIViewController {
         }
     }
     
-    open var totalUnitPage: Int {
-        return self.mediaBrowserView.totalUnitPage
-    }
+    public var dismissWhenSlidingDistance: CGFloat = 60
     
-    open var currentPageCell: UICollectionViewCell? {
-        return self.mediaBrowserView.currentPageCell
-    }
+    public private(set) weak var presentedFromViewController: UIViewController?
     
-    open var dismissWhenSlidingDistance: CGFloat = 60
+    fileprivate lazy var transitionAnimator: TransitionAnimator = {
+        let animator = TransitionAnimator()
+        animator.delegate = self
+        return animator
+    }()
     
-    open private(set) weak var presentedFromViewController: UIViewController?
+    fileprivate lazy var transitionInteractiver: TransitionInteractiver = {
+        let interactiver = TransitionInteractiver()
+        return interactiver
+    }()
     
     fileprivate var gestureBeganLocation: CGPoint = CGPoint.zero
     
@@ -126,11 +92,7 @@ open class MediaBrowserViewController: UIViewController {
         self.didInitialize()
     }
     
-    open func didInitialize() {
-        if #available(iOS 11.0, *) {
-        } else {
-            self.automaticallyAdjustsScrollViewInsets = false
-        }
+    public func didInitialize() {
         self.extendedLayoutIncludesOpaqueBars = true
         self.accessibilityViewIsModal = true
     }
@@ -139,18 +101,18 @@ open class MediaBrowserViewController: UIViewController {
 
 extension MediaBrowserViewController {
     
-    open override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor(white: 0, alpha: 0)
+        self.view.addSubview(self.mediaBrowserView)
         self.mediaBrowserView.modifier = AnyMediaBrowserViewModifier(mediaBrowser: self)
         self.mediaBrowserView.plugin = AnyMediaBrowserViewPlugin(mediaBrowser: self)
-        self.mediaBrowserView.gesturePlugin = self
-        self.view.addSubview(self.mediaBrowserView)
+        self.mediaBrowserView.gesturePlugin = AnyMediaBrowserViewGesturePlugin(mediaBrowser: self)
         
         self.togglePrepareAdditionalViews()
     }
     
-    open override func viewDidLayoutSubviews() {
+    public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         self.mediaBrowserView.js_frameApplyTransform = self.view.bounds
         
@@ -159,7 +121,7 @@ extension MediaBrowserViewController {
         }
     }
     
-    open override func viewWillAppear(_ animated: Bool) {
+    public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         /// 外部可能设置导航栏, 这里需要隐藏
         self.navigationController?.setNavigationBarHidden(true, animated: false)
@@ -169,7 +131,7 @@ extension MediaBrowserViewController {
         }
     }
     
-    open override func viewDidDisappear(_ animated: Bool) {
+    public override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         if let sourceView = self.transitionSourceView, sourceView.isHidden {
             sourceView.isHidden = false
@@ -180,38 +142,18 @@ extension MediaBrowserViewController {
 
 extension MediaBrowserViewController {
     
-    open override var prefersStatusBarHidden: Bool {
-        return false
+    public var totalUnitPage: Int {
+        return self.mediaBrowserView.totalUnitPage
     }
     
-    open override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
+    public var currentPageCell: UICollectionViewCell? {
+        return self.mediaBrowserView.currentPageCell
     }
     
-    open override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
-        return .fade
-    }
-    
-}
-
-extension MediaBrowserViewController {
-    
-    open override var shouldAutorotate: Bool {
-        return self.presentedFromViewController?.shouldAutorotate ?? true
-    }
-    
-    open override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return self.presentedFromViewController?.supportedInterfaceOrientations ?? .allButUpsideDown
-    }
-    
-}
-
-extension MediaBrowserViewController {
-    
-    open func show(from sender: UIViewController,
-                   navigationController: UINavigationController? = nil,
-                   animated: Bool = true,
-                   completion: (() -> Void)? = nil) {
+    public func show(from sender: UIViewController,
+                     navigationController: UINavigationController? = nil,
+                     animated: Bool = true,
+                     completion: (() -> Void)? = nil) {
         self.presentedFromViewController = sender
         
         let viewController = navigationController ?? self
@@ -225,28 +167,28 @@ extension MediaBrowserViewController {
         senderViewController.present(viewController, animated: animated, completion: completion)
     }
     
-    open func hide(animated: Bool = true, completion: (() -> Void)? = nil) {
+    public func hide(animated: Bool = true, completion: (() -> Void)? = nil) {
         self.dismiss(animated: animated, completion: completion)
     }
     
-    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ cellClass: Cell.Type,
+    public func dequeueReusableCell<Cell: UICollectionViewCell>(_ cellClass: Cell.Type,
                                                               reuseIdentifier: String? = nil,
                                                               at index: Int) -> Cell {
         return self.mediaBrowserView.dequeueReusableCell(cellClass, reuseIdentifier: reuseIdentifier, at: index)
     }
     
-    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ nibName: String,
+    public func dequeueReusableCell<Cell: UICollectionViewCell>(_ nibName: String,
                                                               bundle: Bundle? = Bundle.main,
                                                               reuseIdentifier: String? = nil,
                                                               at index: Int) -> Cell {
         return self.mediaBrowserView.dequeueReusableCell(nibName, bundle: bundle, reuseIdentifier: reuseIdentifier, at: index)
     }
     
-    open func dequeueReusableCell<Cell: UICollectionViewCell>(_ storyboardReuseIdentifier: String, at index: Int) -> Cell {
+    public func dequeueReusableCell<Cell: UICollectionViewCell>(_ storyboardReuseIdentifier: String, at index: Int) -> Cell {
         return self.mediaBrowserView.dequeueReusableCell(storyboardReuseIdentifier, at: index)
     }
     
-    open func setCurrentPage(_ index: Int, animated: Bool = true) {
+    public func setCurrentPage(_ index: Int, animated: Bool = true) {
         self.mediaBrowserView.setCurrentPage(index, animated: animated)
     }
     
@@ -277,6 +219,34 @@ extension MediaBrowserViewController {
     
 }
 
+extension MediaBrowserViewController {
+    
+    public override var prefersStatusBarHidden: Bool {
+        return false
+    }
+    
+    public override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    
+    public override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+        return .fade
+    }
+    
+}
+
+extension MediaBrowserViewController {
+    
+    public override var shouldAutorotate: Bool {
+        return self.presentedFromViewController?.shouldAutorotate ?? true
+    }
+    
+    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return self.presentedFromViewController?.supportedInterfaceOrientations ?? .allButUpsideDown
+    }
+    
+}
+
 extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, TransitionAnimatorDelegate {
     
     public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
@@ -291,17 +261,12 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     
     public func interactionControllerForPresentation(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         self.transitionInteractiver.type = .presenting
-        return self.transitionInteractiver.isInteractive ? self.transitionInteractiver : nil
+        return self.transitionInteractiver.wantsInteractiveStart ? self.transitionInteractiver : nil
     }
     
     public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         self.transitionInteractiver.type = .dismiss
-        return self.transitionInteractiver.isInteractive ? self.transitionInteractiver : nil
-    }
-    
-    public var transitionSourceRect: CGRect {
-        let sourceItem = self.loaderItems[self.currentPage].sourceItem
-        return sourceItem?.sourceRect ?? CGRect.zero
+        return self.transitionInteractiver.wantsInteractiveStart ? self.transitionInteractiver : nil
     }
     
     public var transitionSourceView: UIView? {
@@ -313,17 +278,12 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     }
     
     public var transitionThumbImage: UIImage? {
-        let currentPage = self.currentPage
-#if BUSINESS_IMAGE
-        if let sourceItem = self.loaderItems[currentPage].sourceItem as? ImageSourceProtocol {
-            return (sourceItem.image != nil) ? sourceItem.image : sourceItem.thumbImage
-        }
-#endif
-#if BUSINESS_VIDEO
-        if let sourceItem = self.loaderItems[currentPage].sourceItem as? VideoSourceProtocol {
+        let sourceItem = self.sourceItems[self.currentPage]
+        if let sourceItem = sourceItem as? ImageSourceProtocol {
+            return sourceItem.image != nil ? sourceItem.image : sourceItem.thumbImage
+        } else if let sourceItem = sourceItem as? VideoSourceProtocol {
             return sourceItem.thumbImage
         }
-#endif
         return nil
     }
     
@@ -336,23 +296,15 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     }
     
     public var transitionTargetView: UIView? {
-        if let cell = self.currentPageCell {
-            return cell
-        }
-        return nil
+        return self.currentPageCell
     }
     
     public var transitionTargetFrame: CGRect {
-#if BUSINESS_IMAGE
         if let imageCell = self.currentPageCell as? ImageCell {
             return imageCell.zoomImageView.contentViewFrame
-        }
-#endif
-#if BUSINESS_VIDEO
-        if let videoCell = self.currentPageCell as? VideoCell {
+        } else if let videoCell = self.currentPageCell as? VideoCell {
             return videoCell.videoPlayerView.contentViewFrame
         }
-#endif
         return CGRect.zero
     }
     
@@ -366,7 +318,7 @@ public struct AnyMediaBrowserViewModifier: MediaBrowserViewModifier {
         guard let mediaBrowserViewController = self.mediaBrowser else {
             return 0
         }
-        return mediaBrowserViewController.loaderItems.count
+        return mediaBrowserViewController.sourceItems.count
     }
     
     public func cellForPage(at index: Int, in mediaBrowserView: MediaBrowserView) -> UICollectionViewCell {
@@ -375,17 +327,12 @@ public struct AnyMediaBrowserViewModifier: MediaBrowserViewModifier {
         }
         
         var cell: UICollectionViewCell? = nil
-        let loaderItem: LoaderProtocol = mediaBrowserViewController.loaderItems[index]
-#if BUSINESS_IMAGE
-        if let _ = loaderItem as? ImageLoaderProtocol {
+        let sourceItem = mediaBrowserViewController.sourceItems[index]
+        if let _ = sourceItem as? ImageSourceProtocol {
             cell = mediaBrowserView.dequeueReusableCell(ImageCell.self, at: index)
-        }
-#endif
-#if BUSINESS_VIDEO
-        if let _ = loaderItem as? VideoLoaderProtocol {
+        } else if let _ = sourceItem as? VideoSourceProtocol {
             cell = mediaBrowserView.dequeueReusableCell(VideoCell.self, at: index)
         }
-#endif
         if let basisCell = cell as? BasisCell {
             self.configureCell(basisCell, at: index)
         }
@@ -393,8 +340,8 @@ public struct AnyMediaBrowserViewModifier: MediaBrowserViewModifier {
     }
     
     private func configureCell(_ cell: BasisCell, at index: Int) {
-        cell.onEmptyPressAction = { (cell: UICollectionViewCell) in
-            if let index: Int = self.mediaBrowser?.mediaBrowserView.index(for: cell), index != NSNotFound {
+        cell.onPressEmpty = { (cell: UICollectionViewCell) in
+            if let index: Int = self.mediaBrowser?.mediaBrowserView.index(for: cell) {
                 self.mediaBrowser?.mediaBrowserView.reloadPages(at: [index])
             }
         }
@@ -404,19 +351,13 @@ public struct AnyMediaBrowserViewModifier: MediaBrowserViewModifier {
             }
             self.mediaBrowser?.willDisplayEmptyView?(mediaBrowserViewController, cell, emptyView, error)
         }
-#if BUSINESS_IMAGE
         if let imageCell = cell as? ImageCell {
             self.configureImageCell(imageCell, at: index)
-        }
-#endif
-#if BUSINESS_VIDEO
-        if let videoCell = cell as? VideoCell {
+        } else if let videoCell = cell as? VideoCell {
             self.configureVideoCell(videoCell, at: index)
         }
-#endif
     }
     
-#if BUSINESS_IMAGE
     private func configureImageCell(_ cell: ImageCell, at index: Int) {
         guard let mediaBrowserViewController = self.mediaBrowser else {
             return
@@ -442,9 +383,9 @@ public struct AnyMediaBrowserViewModifier: MediaBrowserViewModifier {
             }
         }
     }
-#endif
+
     
-#if BUSINESS_VIDEO
+
     private func configureVideoCell(_ cell: VideoCell, at index: Int) {
         guard let mediaBrowserViewController = self.mediaBrowser else {
             return
@@ -458,7 +399,7 @@ public struct AnyMediaBrowserViewModifier: MediaBrowserViewModifier {
             cell.videoPlayerView.url = sourceItem.videoUrl
         }
     }
-#endif
+
     
 }
 

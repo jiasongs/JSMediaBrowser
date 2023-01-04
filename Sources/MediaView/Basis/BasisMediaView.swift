@@ -10,21 +10,22 @@ import UIKit
 public class BasisMediaView: UIView {
     
     public var isEnableVerticalSafeArea = false
+    
     public var viewportRect: CGRect = .zero
     /// 以下属性viewportRect为zero时才会生效, 若自定义viewportRect, 请自行实现
     public var viewportRectMaxWidth: CGFloat = 580
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
-        self.didInitialize(frame: frame)
+        self.didInitialize()
     }
     
     required public init?(coder: NSCoder) {
         super.init(coder: coder)
-        self.didInitialize(frame: CGRect.zero)
+        self.didInitialize()
     }
     
-    public func didInitialize(frame: CGRect) {
+    public func didInitialize() {
         
     }
     
@@ -40,15 +41,12 @@ public class BasisMediaView: UIView {
         return CGRect.zero
     }
     
-    internal var finalViewportRect: CGRect {
-        var safeAreaInsets: UIEdgeInsets = UIEdgeInsets.zero
-        if #available(iOS 11.0, *) {
-            safeAreaInsets = self.safeAreaInsets
-            if !self.isEnableVerticalSafeArea {
-                /// 关闭垂直的安全区域
-                safeAreaInsets.top = 0
-                safeAreaInsets.bottom = 0
-            }
+    var finalViewportRect: CGRect {
+        var safeAreaInsets: UIEdgeInsets = self.safeAreaInsets
+        if !self.isEnableVerticalSafeArea {
+            /// 关闭垂直的安全区域
+            safeAreaInsets.top = 0
+            safeAreaInsets.bottom = 0
         }
         var rect: CGRect = self.viewportRect
         if rect.isEmpty && !self.bounds.isEmpty {

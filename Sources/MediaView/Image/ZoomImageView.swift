@@ -22,9 +22,7 @@ public class ZoomImageView: BasisMediaView {
         scrollView.scrollsToTop = false
         scrollView.delaysContentTouches = false
         scrollView.delegate = self
-        if #available(iOS 11.0, *) {
-            scrollView.contentInsetAdjustmentBehavior = .never
-        }
+        scrollView.contentInsetAdjustmentBehavior = .never
         return scrollView
     }()
     
@@ -89,14 +87,22 @@ public class ZoomImageView: BasisMediaView {
         }
     }
     
+    public override var contentMode: UIView.ContentMode {
+        didSet {
+            if oldValue != self.contentMode {
+                self.setNeedsRevertZoom()
+            }
+        }
+    }
+    
     public var enabledZoom: Bool = true
     
     fileprivate weak var failGestureRecognizer: UIGestureRecognizer?
     fileprivate var isLivePhotoPlaying: Bool = false
     fileprivate var isNeededRevertZoom: Bool = false
     
-    public override func didInitialize(frame: CGRect) {
-        super.didInitialize(frame: frame)
+    public override func didInitialize() {
+        super.didInitialize()
         self.contentMode = .center
         
         self.addSubview(self.scrollView)
@@ -116,7 +122,9 @@ public class ZoomImageView: BasisMediaView {
     }
     
     public override var contentViewFrame: CGRect {
-        guard let contentView = self.contentView else { return CGRect.zero }
+        guard let contentView = self.contentView else {
+            return CGRect.zero
+        }
         return self.convert(contentView.frame, from: contentView.superview)
     }
     
@@ -152,17 +160,50 @@ extension ZoomImageView {
         self.revertZoomIfNeeded()
     }
     
-    public override var contentMode: UIView.ContentMode {
-        didSet {
-            if oldValue != self.contentMode {
-                self.setNeedsRevertZoom()
-            }
-        }
-    }
-    
     fileprivate var calculateViewportRect: CGRect {
         let resultRect = self.modifier.viewportRect(in: self)
         return !resultRect.isEmpty ? resultRect : self.finalViewportRect
+    }
+    
+}
+
+extension ZoomImageView {
+    
+    public var minContentOffset: CGPoint {
+        let scrollView: UIScrollView = self.scrollView
+        let contentInset: UIEdgeInsets = scrollView.adjustedContentInset
+        return CGPoint(x: -contentInset.left,
+                       y: -contentInset.top)
+    }
+    
+    public var maxContentOffset: CGPoint {
+        let scrollView: UIScrollView = self.scrollView
+        let contentInset: UIEdgeInsets = scrollView.adjustedContentInset
+        return CGPoint(x: scrollView.contentSize.width + contentInset.right - scrollView.bounds.width,
+                       y: scrollView.contentSize.height + contentInset.bottom - scrollView.bounds.height)
+    }
+    
+    public func revertContentOffset(animated: Bool = true) {
+        var x: CGFloat = self.scrollView.contentOffset.x
+        var y: CGFloat = self.scrollView.contentOffset.y
+        let viewport: CGRect = self.calculateViewportRect
+        if let contentView = self.contentView, !viewport.isEmpty {
+            if viewport.width < contentView.frame.width {
+                x = (contentView.frame.width - viewport.width) / 2 - viewport.minX
+            }
+            if viewport.height < contentView.frame.height {
+                y = -self.scrollView.contentInset.top
+            }
+        }
+        self.scrollView.setContentOffset(CGPoint(x: x, y: y), animated: animated)
+    }
+    
+    public func require(toFail otherGestureRecognizer: UIGestureRecognizer) {
+        guard self.failGestureRecognizer != otherGestureRecognizer else {
+            return
+        }
+        self.failGestureRecognizer = otherGestureRecognizer
+        self.scrollView.panGestureRecognizer.require(toFail: otherGestureRecognizer)
     }
     
 }
@@ -261,7 +302,9 @@ extension ZoomImageView {
     }
     
     public func zoom(to point: CGPoint, scale: CGFloat = 3.0, animated: Bool = true) {
-        guard scale > 0 else { return }
+        guard scale > 0 else {
+            return
+        }
         let minimumZoomScale: CGFloat = self.minimumZoomScale
         var zoomRect: CGRect = CGRect.zero
         zoomRect.size.width = self.scrollView.frame.width / scale / minimumZoomScale
@@ -336,47 +379,6 @@ extension ZoomImageView {
         }
         self.scrollView.contentInset = contentInset
         self.scrollView.contentSize = contentView.frame.size
-    }
-    
-}
-
-extension ZoomImageView {
-    
-    public var minContentOffset: CGPoint {
-        let scrollView: UIScrollView = self.scrollView
-        let contentInset: UIEdgeInsets = scrollView.contentInset
-        return CGPoint(x: -contentInset.left,
-                       y: -contentInset.top)
-    }
-    
-    public var maxContentOffset: CGPoint {
-        let scrollView: UIScrollView = self.scrollView
-        let contentInset: UIEdgeInsets = scrollView.contentInset
-        return CGPoint(x: scrollView.contentSize.width + contentInset.right - scrollView.bounds.width,
-                       y: scrollView.contentSize.height + contentInset.bottom - scrollView.bounds.height)
-    }
-    
-    public func revertContentOffset(animated: Bool = true) {
-        var x: CGFloat = self.scrollView.contentOffset.x
-        var y: CGFloat = self.scrollView.contentOffset.y
-        let viewport: CGRect = self.calculateViewportRect
-        if let contentView = self.contentView, !viewport.isEmpty {
-            if viewport.width < contentView.frame.width {
-                x = (contentView.frame.width - viewport.width) / 2 - viewport.minX
-            }
-            if viewport.height < contentView.frame.height {
-                y = -scrollView.contentInset.top
-            }
-        }
-        self.scrollView.setContentOffset(CGPoint(x: x, y: y), animated: animated)
-    }
-    
-    open func require(toFail otherGestureRecognizer: UIGestureRecognizer) {
-        guard self.failGestureRecognizer != otherGestureRecognizer else {
-            return
-        }
-        self.failGestureRecognizer = otherGestureRecognizer
-        self.scrollView.panGestureRecognizer.require(toFail: otherGestureRecognizer)
     }
     
 }

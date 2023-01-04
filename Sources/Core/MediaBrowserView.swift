@@ -10,7 +10,7 @@ import JSCoreKit
 
 public class MediaBrowserView: UIView {
     
-    public var modifier: MediaBrowserViewModifier = DefaultMediaBrowserViewModifier() {
+    public var modifier: MediaBrowserViewModifier? {
         didSet {
             self.collectionView.dataSource = self
         }
@@ -49,6 +49,8 @@ public class MediaBrowserView: UIView {
         let gesture = UITapGestureRecognizer(target: self, action: #selector(self.handleSingleTapGesture))
         gesture.numberOfTapsRequired = 1
         gesture.numberOfTouchesRequired = 1
+        gesture.delaysTouchesBegan = false
+        gesture.delaysTouchesEnded = false
         return gesture
     }()
     
@@ -56,6 +58,7 @@ public class MediaBrowserView: UIView {
         let gesture = UITapGestureRecognizer(target: self, action: #selector(self.handleDoubleTapGesture))
         gesture.numberOfTapsRequired = 2
         gesture.numberOfTouchesRequired = 1
+        gesture.delaysTouchesEnded = false
         return gesture
     }()
     
@@ -92,15 +95,15 @@ public class MediaBrowserView: UIView {
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
-        self.didInitialize(frame: frame)
+        self.didInitialize()
     }
     
     required public init?(coder: NSCoder) {
         super.init(coder: coder)
-        self.didInitialize(frame: CGRect.zero)
+        self.didInitialize()
     }
     
-    public func didInitialize(frame: CGRect) {
+    public func didInitialize() {
         self.dimmingView = UIView()
         self.dimmingView?.backgroundColor = .black
         
@@ -157,16 +160,33 @@ extension MediaBrowserView {
         self.collectionView.reloadItems(at: indexPaths)
     }
     
-    public func index(for pageCell: UICollectionViewCell) -> Int {
+    public func index(for pageCell: UICollectionViewCell) -> Int? {
         if let indexPath: IndexPath = self.collectionView.indexPath(for: pageCell) {
             return indexPath.item
         }
-        return NSNotFound
+        return nil
     }
     
     public func pageCellForItem<Cell: UICollectionViewCell>(at index: Int) -> Cell? {
         let indexPath: IndexPath = IndexPath(item: index, section: 0)
         return self.collectionView.cellForItem(at: indexPath) as? Cell
+    }
+    
+    public func pageCellForItem(at point: CGPoint) -> UICollectionViewCell? {
+        if let indexPath =  self.collectionView.indexPathForItem(at: point) {
+            return self.collectionView.cellForItem(at: indexPath)
+        } else {
+            return nil
+        }
+    }
+    
+    public var currentPageCell: UICollectionViewCell? {
+        let indexPath = IndexPath(item: self.currentPage, section: 0)
+        if let cell = self.collectionView.cellForItem(at: indexPath) {
+            return cell
+        } else {
+            return self.collectionView.visibleCells.last
+        }
     }
     
     public func dequeueReusableCell<Cell: UICollectionViewCell>(_ cellClass: Cell.Type,
@@ -204,23 +224,6 @@ extension MediaBrowserView {
         return cell
     }
     
-    public var currentPageCell: UICollectionViewCell? {
-        let indexPath = IndexPath(item: self.currentPage, section: 0)
-        if let cell = self.collectionView.cellForItem(at: indexPath) {
-            return cell
-        } else {
-            return self.collectionView.visibleCells.last
-        }
-    }
-    
-    open func pageCellForItem(at point: CGPoint) -> UICollectionViewCell? {
-        if let indexPath =  self.collectionView.indexPathForItem(at: point) {
-            return self.collectionView.cellForItem(at: indexPath)
-        } else {
-            return nil
-        }
-    }
-    
     fileprivate func scrollToPage(at index: Int, animated: Bool = true) {
         guard !self.collectionView.bounds.isEmpty else {
             return
@@ -239,11 +242,11 @@ extension MediaBrowserView {
 extension MediaBrowserView: UICollectionViewDataSource {
     
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.modifier.numberOfPages(in: self)
+        return self.modifier?.numberOfPages(in: self) ?? 0
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        return self.modifier.cellForPage(at: indexPath.item, in: self)
+        return self.modifier?.cellForPage(at: indexPath.item, in: self) ?? self.dequeueReusableCell(UICollectionViewCell.self, at: indexPath.item)
     }
     
 }
@@ -354,18 +357,6 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
         } else {
             return true
         }
-    }
-    
-}
-
-fileprivate struct DefaultMediaBrowserViewModifier: MediaBrowserViewModifier {
-    
-    func numberOfPages(in mediaBrowserView: MediaBrowserView) -> Int {
-        return 0
-    }
-    
-    func cellForPage(at index: Int, in mediaBrowserView: MediaBrowserView) -> UICollectionViewCell {
-        return mediaBrowserView.dequeueReusableCell(UICollectionViewCell.self, at: index)
     }
     
 }

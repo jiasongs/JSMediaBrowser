@@ -128,8 +128,8 @@ public class VideoPlayerView: BasisMediaView {
     fileprivate var playerTimeObservers = [Any]()
     fileprivate var systemObservers = [AnyObject]()
     
-    public override func didInitialize(frame: CGRect) {
-        super.didInitialize(frame: frame)
+    public override func didInitialize() {
+        super.didInitialize()
         self.addSubview(self.playerView)
         self.addObserverForSystem()
         self.addObserverForPlayer()

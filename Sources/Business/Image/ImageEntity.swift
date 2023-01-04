@@ -9,17 +9,15 @@ import UIKit
 
 public struct ImageEntity: ImageSourceProtocol {
     
-    public var sourceRect: CGRect = CGRect.zero
     public var thumbImage: UIImage?
 
     public var image: UIImage?
     public var imageUrl: URL?
     
-    public init(sourceRect: CGRect = CGRect.zero, thumbImage: UIImage? = nil, image: UIImage? = nil, imageUrl: URL? = nil) {
-        self.sourceRect = sourceRect
-        self.thumbImage = thumbImage
+    public init(image: UIImage? = nil, imageUrl: URL? = nil, thumbImage: UIImage? = nil) {
         self.image = image
         self.imageUrl = imageUrl
+        self.thumbImage = thumbImage
     }
     
 }

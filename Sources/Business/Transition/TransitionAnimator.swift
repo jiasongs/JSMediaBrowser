@@ -9,7 +9,6 @@ import UIKit
 
 public protocol TransitionAnimatorDelegate: AnyObject {
     
-    var transitionSourceRect: CGRect { get }
     var transitionSourceView: UIView? { get }
     var transitionCornerRadius: CGFloat { get }
     var transitionThumbImage: UIImage? { get }
@@ -30,7 +29,6 @@ public class TransitionAnimator: Transitioner {
     public var duration: TimeInterval = 0.25
     public var enteringStyle: TransitioningStyle = .zoom
     public var exitingStyle: TransitioningStyle = .zoom
-    public var type: TransitionAnimatorType = .presenting
     
     fileprivate let animationGroupKey: String = "AnimationGroupKey"
     
@@ -79,12 +77,10 @@ extension TransitionAnimator {
         
         var style: TransitioningStyle = isEntering ? self.enteringStyle : self.exitingStyle
         let sourceView = self.delegate?.transitionSourceView
-        var sourceRect = self.delegate?.transitionSourceRect ?? CGRect.zero
+        var sourceRect = CGRect.zero
         if style == .zoom {
             let currentView: UIView = isEntering ? toView : fromView
-            if !sourceRect.isEmpty {
-                sourceRect = currentView.convert(sourceRect, to: currentView)
-            } else if let sourceView = sourceView {
+            if let sourceView = sourceView {
                 sourceRect = currentView.convert(sourceView.frame, from: sourceView.superview)
             }
             /// 判断sourceRect是否与needView相交

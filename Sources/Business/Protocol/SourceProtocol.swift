@@ -9,7 +9,6 @@ import UIKit
 
 public protocol SourceProtocol {
     
-    var sourceRect: CGRect { get set }
     var thumbImage: UIImage? { get set }
     
 }
