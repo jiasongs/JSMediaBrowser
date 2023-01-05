@@ -10,10 +10,10 @@
 		7A03EFF82591BE530029C59F /* data.json in Resources */ = {isa = PBXBuildFile; fileRef = 7A03EFF72591BE530029C59F /* data.json */; };
 		7A03EFF92591BE530029C59F /* data.json in Resources */ = {isa = PBXBuildFile; fileRef = 7A03EFF72591BE530029C59F /* data.json */; };
 		7A23CD5B2581F365004B4033 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A23CD5A2581F365004B4033 /* AppDelegate.swift */; };
-		7A23CD5F2581F365004B4033 /* ExampleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A23CD5E2581F365004B4033 /* ExampleViewController.swift */; };
+		7A23CD5F2581F365004B4033 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A23CD5E2581F365004B4033 /* HomeViewController.swift */; };
 		7A23CD642581F367004B4033 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7A23CD632581F367004B4033 /* Assets.xcassets */; };
 		7A23CD672581F367004B4033 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7A23CD652581F367004B4033 /* LaunchScreen.storyboard */; };
-		7A23CD762581F3C1004B4033 /* ExampleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A23CD5E2581F365004B4033 /* ExampleViewController.swift */; };
+		7A23CD762581F3C1004B4033 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A23CD5E2581F365004B4033 /* HomeViewController.swift */; };
 		7A23CD772581F3C1004B4033 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A23CD5A2581F365004B4033 /* AppDelegate.swift */; };
 		7A23CD7A2581F3C1004B4033 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7A23CD652581F367004B4033 /* LaunchScreen.storyboard */; };
 		7A23CD7B2581F3C1004B4033 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7A23CD632581F367004B4033 /* Assets.xcassets */; };
@@ -43,7 +43,7 @@
 		7A03EFF72591BE530029C59F /* data.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = data.json; sourceTree = "<group>"; };
 		7A23CD572581F365004B4033 /* JSMediaBrowserExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JSMediaBrowserExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A23CD5A2581F365004B4033 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		7A23CD5E2581F365004B4033 /* ExampleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleViewController.swift; sourceTree = "<group>"; };
+		7A23CD5E2581F365004B4033 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		7A23CD632581F367004B4033 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7A23CD662581F367004B4033 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7A23CD682581F367004B4033 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -185,7 +185,7 @@
 		7AF419922598439F009E7FEE /* Home */ = {
 			isa = PBXGroup;
 			children = (
-				7A23CD5E2581F365004B4033 /* ExampleViewController.swift */,
+				7A23CD5E2581F365004B4033 /* HomeViewController.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -399,7 +399,7 @@
 				7A61E077259486FA001C58FA /* PageControl.swift in Sources */,
 				7A51AE272966BCD90060B964 /* JSMediaBrowserViewController.swift in Sources */,
 				7A320035264774B9005BDC71 /* JSFloatLayoutView.m in Sources */,
-				7A23CD5F2581F365004B4033 /* ExampleViewController.swift in Sources */,
+				7A23CD5F2581F365004B4033 /* HomeViewController.swift in Sources */,
 				7A25377726F75B87009E80A2 /* UIViewController+Debug.m in Sources */,
 				7A23CD5B2581F365004B4033 /* AppDelegate.swift in Sources */,
 				7A80A5AB25974B0100E9927C /* ShareControl.swift in Sources */,
@@ -413,7 +413,7 @@
 				7A61E078259486FA001C58FA /* PageControl.swift in Sources */,
 				7A51AE282966BCD90060B964 /* JSMediaBrowserViewController.swift in Sources */,
 				7A320036264774B9005BDC71 /* JSFloatLayoutView.m in Sources */,
-				7A23CD762581F3C1004B4033 /* ExampleViewController.swift in Sources */,
+				7A23CD762581F3C1004B4033 /* HomeViewController.swift in Sources */,
 				7A25377826F75B87009E80A2 /* UIViewController+Debug.m in Sources */,
 				7A23CD772581F3C1004B4033 /* AppDelegate.swift in Sources */,
 				7A80A5AC25974B0100E9927C /* ShareControl.swift in Sources */,

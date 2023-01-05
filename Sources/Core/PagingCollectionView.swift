@@ -9,6 +9,8 @@ import UIKit
 
 public class PagingCollectionView: UICollectionView {
     
+    public var layoutSubviewsHandler: ((PagingCollectionView) -> Void)?
+    
     public override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: layout)
         self.didInitialize()
@@ -28,6 +30,11 @@ public class PagingCollectionView: UICollectionView {
         self.decelerationRate = .fast
         self.isPagingEnabled = true
         self.contentInsetAdjustmentBehavior = .never
+    }
+    
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        self.layoutSubviewsHandler?(self)
     }
     
 }

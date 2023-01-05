@@ -24,14 +24,6 @@ public class MediaBrowserView: UIView {
     
     public weak var gestureDelegate: MediaBrowserViewGestureDelegate?
     
-    public private(set) lazy var collectionView: PagingCollectionView = {
-        return PagingCollectionView(frame: CGRect.zero, collectionViewLayout: self.collectionViewLayout)
-    }()
-    
-    public private(set) lazy var collectionViewLayout: PagingLayout = {
-        return PagingLayout()
-    }()
-    
     public var dimmingView: UIView? {
         didSet {
             oldValue?.removeFromSuperview()
@@ -84,6 +76,23 @@ public class MediaBrowserView: UIView {
     public var totalUnitPage: Int {
         return self.collectionView.numberOfItems(inSection: 0)
     }
+    
+    public var layoutPageCellsHandler: ((MediaBrowserView) -> Void)?
+    
+    fileprivate lazy var collectionView: PagingCollectionView = {
+        let collectionView = PagingCollectionView(frame: CGRect.zero, collectionViewLayout: self.collectionViewLayout)
+        collectionView.layoutSubviewsHandler = { [weak self] _ in
+            guard let self = self else {
+                return
+            }
+            self.layoutPageCellsHandler?(self)
+        }
+        return collectionView
+    }()
+    
+    fileprivate lazy var collectionViewLayout: PagingLayout = {
+        return PagingLayout()
+    }()
     
     fileprivate var previousPageOffsetRatio: CGFloat = 0.0
     fileprivate var isNeededScrollToItem: Bool = true
@@ -183,6 +192,10 @@ extension MediaBrowserView {
         } else {
             return self.collectionView.visibleCells.last
         }
+    }
+    
+    public var visiblePageCells: [UICollectionViewCell] {
+        return self.collectionView.visibleCells
     }
     
     public func dequeueReusableCell<Cell: UICollectionViewCell>(_ cellClass: Cell.Type,

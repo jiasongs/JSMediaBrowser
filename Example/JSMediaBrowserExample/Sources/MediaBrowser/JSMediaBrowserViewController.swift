@@ -9,6 +9,7 @@
 import UIKit
 import JSMediaBrowser
 import SnapKit
+import QMUIKit
 
 class JSMediaBrowserViewController: MediaBrowserViewController {
     
@@ -28,10 +29,7 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
         super.didInitialize()
         self.webImageMediator = SDWebImageMediator()
         self.zoomImageViewModifier = SDZoomImageViewModifier()
-        self.willDisplayEmptyView = { (_, _, emptyView: EmptyView, error: NSError) in
-            emptyView.image = UIImage(named: "picture_fail")
-            emptyView.title = "\(String(describing: error.localizedDescription))"
-        }
+        self.delegate = self
     }
     
     override func viewDidLoad() {
@@ -51,19 +49,34 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
         }
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        self.pageControl.numberOfPages = self.totalUnitPage
-        self.pageControl.currentPage = self.currentPage
-    }
-
 }
 
 extension JSMediaBrowserViewController {
-   
+    
     override func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, willScrollHalfFrom index: Int, toIndex: Int) {
         super.mediaBrowserView(mediaBrowserView, willScrollHalfFrom: index, toIndex: toIndex)
         self.pageControl.currentPage = toIndex
     }
+    
+    override func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, longPressTouch gestureRecognizer: UILongPressGestureRecognizer) {
+        super.mediaBrowserView(mediaBrowserView, longPressTouch: gestureRecognizer)
+        QMUITips.show(withText: "长按")
+    }
+    
+}
+
+extension JSMediaBrowserViewController: MediaBrowserViewControllerDelegate {
+    
+    public func mediaBrowserViewController(_ mediaBrowserViewController: MediaBrowserViewController, willDisplay emptyView: EmptyView, error: NSError) {
+        emptyView.image = UIImage(named: "picture_fail")
+        emptyView.title = "\(String(describing: error.localizedDescription))"
+    }
+    
+    public func mediaBrowserViewController(_ mediaBrowserViewController: MediaBrowserViewController, layoutPageCells visibleCells: [UICollectionViewCell]) {
+        self.pageControl.numberOfPages = mediaBrowserViewController.totalUnitPage
+        self.pageControl.currentPage = mediaBrowserViewController.currentPage
+    }
+    
+    
     
 }

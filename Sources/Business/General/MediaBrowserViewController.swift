@@ -16,6 +16,8 @@ public enum TransitioningStyle: Int {
 
 open class MediaBrowserViewController: UIViewController {
     
+    open weak var delegate: MediaBrowserViewControllerDelegate?
+    
     open var enteringStyle: TransitioningStyle = .zoom {
         didSet {
             self.transitionAnimator.enteringStyle = enteringStyle
@@ -30,7 +32,7 @@ open class MediaBrowserViewController: UIViewController {
     
     open var sourceItems: [SourceProtocol] = [] {
         didSet {
-            guard self.isNeedsReloadData && self.isViewLoaded else {
+            guard self.isViewLoaded else {
                 return
             }
             self.mediaBrowserView.reloadData()
@@ -41,8 +43,6 @@ open class MediaBrowserViewController: UIViewController {
     open var webImageMediator: WebImageMediator?
     
     open var sourceViewForPageAtIndex: ((MediaBrowserViewController, Int) -> UIView?)?
-    open var willDisplayEmptyView: ((MediaBrowserViewController, UICollectionViewCell, EmptyView, NSError) -> Void)?
-    open var onLongPress: ((MediaBrowserViewController) -> Void)?
     
     open var currentPage: Int {
         set {
@@ -59,6 +59,12 @@ open class MediaBrowserViewController: UIViewController {
     
     fileprivate lazy var mediaBrowserView: MediaBrowserView = {
         let mediaBrowserView = MediaBrowserView()
+        mediaBrowserView.layoutPageCellsHandler = { [weak self] _ in
+            guard let self = self else {
+                return
+            }
+            self.delegate?.mediaBrowserViewController(self, layoutPageCells: self.mediaBrowserView.visiblePageCells)
+        }
         return mediaBrowserView
     }()
     
@@ -74,8 +80,6 @@ open class MediaBrowserViewController: UIViewController {
     }()
     
     fileprivate var gestureBeganLocation: CGPoint = CGPoint.zero
-    
-    fileprivate var isNeedsReloadData: Bool = true
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -148,22 +152,22 @@ extension MediaBrowserViewController {
 
 extension MediaBrowserViewController {
     
-    public var totalUnitPage: Int {
+    @objc open var totalUnitPage: Int {
         return self.mediaBrowserView.totalUnitPage
     }
     
-    public var currentPageCell: UICollectionViewCell? {
+    @objc open var currentPageCell: UICollectionViewCell? {
         return self.mediaBrowserView.currentPageCell
     }
     
-    public func setCurrentPage(_ index: Int, animated: Bool = true) {
+    @objc open func setCurrentPage(_ index: Int, animated: Bool = true) {
         self.mediaBrowserView.setCurrentPage(index, animated: animated)
     }
     
-    public func show(from sender: UIViewController,
-                     navigationController: UINavigationController? = nil,
-                     animated: Bool = true,
-                     completion: (() -> Void)? = nil) {
+    @objc open func show(from sender: UIViewController,
+                         navigationController: UINavigationController? = nil,
+                         animated: Bool = true,
+                         completion: (() -> Void)? = nil) {
         self.presentedFromViewController = sender
         
         let viewController = navigationController ?? self
@@ -177,7 +181,7 @@ extension MediaBrowserViewController {
         senderViewController.present(viewController, animated: animated, completion: completion)
     }
     
-    public func hide(animated: Bool = true, completion: (() -> Void)? = nil) {
+    @objc open func hide(animated: Bool = true, completion: (() -> Void)? = nil) {
         self.dismiss(animated: animated, completion: completion)
     }
     
@@ -214,7 +218,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
             guard let self = self else {
                 return
             }
-            self.willDisplayEmptyView?(self, cell, emptyView, error)
+            self.delegate?.mediaBrowserViewController(self, willDisplay: emptyView, error: error)
         }
         if let imageCell = cell as? ImageCell {
             self.configureImageCell(imageCell, at: index)
@@ -235,37 +239,35 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         /// 取消请求
         self.webImageMediator?.cancelImageRequest(for: cell.zoomImageView.imageView)
         
-        let updateData = { [weak cell] (image: UIImage?, error: NSError?, cancelled: Bool, finished: Bool) in
-            guard let cell = cell else {
-                return
-            }
-            cell.zoomImageView.image = image
-            /// 解决网络图片下载完成后不播放的问题
-            cell.zoomImageView.startAnimating()
-            cell.setError(error, cancelled: cancelled, finished: finished)
-        }
         let updateProgress = { [weak cell] (receivedSize: Int64, expectedSize: Int64) in
-            guard let cell = cell else {
-                return
-            }
             let progress = Progress(totalUnitCount: expectedSize)
             progress.completedUnitCount = receivedSize
-            cell.setProgress(progress)
+            cell?.setProgress(progress)
+        }
+        let updateImage = { [weak cell] (image: UIImage?) in
+            cell?.zoomImageView.image = image
+            /// 解决网络图片下载完成后不播放的问题
+            cell?.zoomImageView.startAnimating()
+        }
+        let updateCell = { [weak cell] (error: NSError?, cancelled: Bool, finished: Bool) in
+            cell?.setError(error, cancelled: cancelled, finished: finished)
         }
         /// 如果存在image, 且imageUrl为nil时, 则代表是本地图片, 无须网络请求
         if let image = sourceItem.image, sourceItem.imageUrl == nil {
-            updateData(image, nil, false, true)
+            updateImage(image)
+            updateCell(nil, false, true)
         } else {
             let url: URL? = sourceItem.imageUrl
             self.webImageMediator?.setImage(for: cell.zoomImageView.imageView,
                                             url: url,
                                             thumbImage: sourceItem.thumbImage,
                                             setImageBlock: { (image: UIImage?, imageData: Data?) in
-                updateData(image, nil, false, true)
+                updateImage(image)
             }, progress: { (receivedSize: Int64, expectedSize: Int64) in
                 updateProgress(receivedSize, expectedSize)
             }, completed: { (image: UIImage?, imageData: Data?, error: NSError?, cancelled: Bool, finished: Bool) in
-                updateData(image, error, cancelled, finished)
+                updateImage(image)
+                updateCell(error, cancelled, finished)
             })
         }
     }
@@ -337,7 +339,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     }
     
     @objc open func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, longPressTouch gestureRecognizer: UILongPressGestureRecognizer) {
-        self.onLongPress?(self)
+        
     }
     
     @objc open func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, dismissingShouldBegin gestureRecognizer: UIPanGestureRecognizer) -> Bool {
@@ -430,31 +432,31 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
 
 extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, TransitionAnimatorDelegate {
     
-    public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    @objc open func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         self.transitionAnimator.type = .presenting
         return self.transitionAnimator
     }
     
-    public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    @objc open func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         self.transitionAnimator.type = .dismiss
         return self.transitionAnimator
     }
     
-    public func interactionControllerForPresentation(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+    @objc open func interactionControllerForPresentation(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         self.transitionInteractiver.type = .presenting
         return self.transitionInteractiver.wantsInteractiveStart ? self.transitionInteractiver : nil
     }
     
-    public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+    @objc open func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         self.transitionInteractiver.type = .dismiss
         return self.transitionInteractiver.wantsInteractiveStart ? self.transitionInteractiver : nil
     }
     
-    public var transitionSourceView: UIView? {
+    @objc open var transitionSourceView: UIView? {
         return self.sourceViewForPageAtIndex?(self, self.currentPage)
     }
     
-    public var transitionThumbImage: UIImage? {
+    @objc open var transitionThumbImage: UIImage? {
         let sourceItem = self.sourceItems[self.currentPage]
         if let sourceItem = sourceItem as? ImageSourceProtocol {
             if let image = sourceItem.image != nil ? sourceItem.image : sourceItem.thumbImage {
@@ -472,11 +474,11 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
         return nil
     }
     
-    public var transitionTargetView: UIView? {
+    @objc open var transitionTargetView: UIView? {
         return self.currentPageCell
     }
     
-    public var transitionTargetFrame: CGRect {
+    @objc open var transitionTargetFrame: CGRect {
         if let imageCell = self.currentPageCell as? ImageCell {
             return imageCell.zoomImageView.contentViewFrame
         } else if let videoCell = self.currentPageCell as? VideoCell {
@@ -485,7 +487,7 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
         return CGRect.zero
     }
     
-    public var transitionAnimatorViews: [UIView]? {
+    @objc open var transitionAnimatorViews: [UIView]? {
         var animatorViews: [UIView] = []
         if let dimmingView = self.mediaBrowserView.dimmingView {
             animatorViews.append(dimmingView)
