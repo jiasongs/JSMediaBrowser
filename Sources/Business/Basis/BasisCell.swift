@@ -58,7 +58,7 @@ public class BasisCell: UICollectionViewCell {
     public override func layoutSubviews() {
         super.layoutSubviews()
         self.emptyView.frame = self.bounds
-        let width = min(self.bounds.width * 0.12, 86)
+        let width = min(self.bounds.width * 0.12, 60)
         let progressSize = CGSize(width: width, height: width)
         let progressPoint = CGPoint(x: (self.bounds.width - progressSize.width) / 2, y: (self.bounds.height - progressSize.height) / 2)
         self.pieProgressView.frame = CGRect(origin: progressPoint, size: progressSize)

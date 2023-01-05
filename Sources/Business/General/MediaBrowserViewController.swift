@@ -240,12 +240,17 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         self.webImageMediator?.cancelImageRequest(for: cell.zoomImageView.imageView)
         
         let setImage = { [weak self, weak cell] (image: UIImage?) in
-            var newSourceItem = sourceItem
-            newSourceItem.image = image
-            self?.sourceItems[index] = newSourceItem
-            cell?.zoomImageView.image = image
+            guard let self = self, let cell = cell else {
+                return
+            }
+            guard var sourceItem = self.sourceItems[index] as? ImageSourceProtocol else {
+                return
+            }
+            sourceItem.image = image
+            self.sourceItems[index] = sourceItem
+            cell.zoomImageView.image = image
             /// 解决网络图片下载完成后不播放的问题
-            cell?.zoomImageView.startAnimating()
+            cell.zoomImageView.startAnimating()
         }
         /// 如果存在image, 且imageUrl为nil时, 则代表是本地图片, 无须网络请求
         if let image = sourceItem.image, sourceItem.imageUrl == nil {
