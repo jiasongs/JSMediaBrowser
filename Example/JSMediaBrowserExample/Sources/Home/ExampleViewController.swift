@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  HomeViewController.swift
 //  JSMediaBrowserExample
 //
 //  Created by jiasong on 2020/12/10.
@@ -12,7 +12,7 @@ import SnapKit
 import JSMediaBrowser
 import Then
 
-class ExampleViewController: UIViewController {
+class HomeViewController: UIViewController {
     
     lazy var scrollView: UIScrollView = {
         let view = UIScrollView()
@@ -21,12 +21,14 @@ class ExampleViewController: UIViewController {
         }
         return view
     }()
+    
     lazy var floatLayoutView: JSFloatLayoutView = {
         let view = JSFloatLayoutView()
         view.itemMargins = UIEdgeInsets(top: QMUIHelper.pixelOne, left: QMUIHelper.pixelOne, bottom: 0, right: 0);
         return view
     }()
-    lazy var dataSource: [String] = []
+    
+    var dataSource: [String] = []
     
     var videoFormats: [String] {
         return ["mp4", "flv"]
@@ -82,7 +84,6 @@ class ExampleViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.title = "图片/视频预览"
-        self.navigationController?.delegate = self
         self.navigationController?.setNavigationBarHidden(false, animated: false)
         self.navigationController?.navigationBar.barStyle = .black
         self.navigationController?.navigationBar.tintColor = .white
@@ -116,15 +117,7 @@ class ExampleViewController: UIViewController {
     }
     
     @objc func handleImageButtonEvent(sender: QMUIButton) {
-        let browserVC = MediaBrowserViewController()
-        /// 配置
-        browserVC.webImageMediator = SDWebImageMediator()
-        browserVC.zoomImageViewModifier = SDZoomImageViewModifier()
-        browserVC.willDisplayEmptyView = { (_, _, emptyView: EmptyView, error: NSError) in
-            emptyView.image = UIImage(named: "picture_fail")
-            emptyView.title = "\(String(describing: error.localizedDescription))"
-        }
-        
+        let browserVC = JSMediaBrowserViewController()
         var sourceItems: [SourceProtocol] = [];
         for (_, urlString) in self.dataSource.enumerated() {
             var isVideo = false
@@ -147,7 +140,7 @@ class ExampleViewController: UIViewController {
         browserVC.sourceViewForPageAtIndex = { [weak self] (vc, index) -> UIView? in
             return self?.floatLayoutView.subviews[index]
         }
-        browserVC.show(from: self, navigationController: UINavigationController(rootViewController: browserVC))
+        browserVC.show(from: self, navigationController: QMUINavigationController(rootViewController: browserVC))
     }
     
     override var prefersStatusBarHidden: Bool {
@@ -178,9 +171,5 @@ class ExampleViewController: UIViewController {
         }
         return nil
     }
-    
-}
-
-extension ExampleViewController: UINavigationControllerDelegate {
     
 }

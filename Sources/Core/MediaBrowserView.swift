@@ -82,7 +82,7 @@ public class MediaBrowserView: UIView {
     }
     
     public var totalUnitPage: Int {
-        return self.collectionView(self.collectionView, numberOfItemsInSection: 0)
+        return self.collectionView.numberOfItems(inSection: 0)
     }
     
     fileprivate var previousPageOffsetRatio: CGFloat = 0.0
@@ -266,7 +266,7 @@ extension MediaBrowserView: UICollectionViewDelegateFlowLayout {
 extension MediaBrowserView: UIScrollViewDelegate {
     
     private var pageOffsetRatio: CGFloat {
-        let pageWidth: CGFloat = self.collectionView(collectionView, layout: collectionViewLayout, sizeForItemAt: IndexPath(item: 0, section: 0)).width
+        let pageWidth: CGFloat = self.collectionView.bounds.width
         let contentOffsetX: CGFloat = self.collectionView.contentOffset.x
         let pageOffsetRatio: CGFloat = contentOffsetX / pageWidth
         return pageOffsetRatio

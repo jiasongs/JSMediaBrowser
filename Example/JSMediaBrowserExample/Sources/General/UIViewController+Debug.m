@@ -18,6 +18,7 @@
 + (void)load {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        [NSObject addClassNamesToWhitelist:@[@"_UIPageControlContentView"]];
         OverrideImplementation(UIViewController.class, @selector(willDealloc), ^id(__unsafe_unretained Class originClass, SEL originCMD, IMP (^originalIMPProvider)(void)) {
             return ^(UIViewController *selfObject) {
                 BOOL shouldCallSuper = YES;

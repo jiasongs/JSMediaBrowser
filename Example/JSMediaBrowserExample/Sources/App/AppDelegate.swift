@@ -16,12 +16,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        #if !targetEnvironment(macCatalyst)
-        NSObject.addClassNames(toWhitelist: ["_UIPageControlContentView"])
-        #endif
-        window = UIWindow.init(frame: UIScreen.main.bounds)
-        window?.rootViewController = NavigationController(rootViewController: ExampleViewController())
-        window?.makeKeyAndVisible()
+        self.window = UIWindow.init(frame: UIScreen.main.bounds)
+        self.window?.rootViewController = QMUINavigationController(rootViewController: HomeViewController())
+        self.window?.makeKeyAndVisible()
         return true
     }
 
