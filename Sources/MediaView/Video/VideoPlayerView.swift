@@ -80,11 +80,11 @@ public class VideoPlayerView: BasisMediaView {
     public var status: Stauts = .stopped {
         didSet {
             if status == .ready {
-                self.delegate?.didReadyForDisplay(self)
+                self.delegate?.videoPlayerViewDidReadyForDisplay(self)
             } else if status == .failed {
-                self.delegate?.didFailed(self, error: self.player.error as NSError?)
+                self.delegate?.videoPlayerView(self, didFailed: self.player.error as NSError?)
             } else if status == .ended || status == .stopped {
-                self.delegate?.didPlayToEndTime(self)
+                self.delegate?.videoPlayerViewDidPlayToEndTime(self)
             }
         }
     }
@@ -242,8 +242,7 @@ extension VideoPlayerView {
                 guard let self = self else {
                     return
                 }
-                
-                self.delegate?.periodicTime(CGFloat(CMTimeGetSeconds(time)), totalDuration: self.totalDuration, in: self)
+                self.delegate?.videoPlayerView(self, periodicTime: CGFloat(CMTimeGetSeconds(time)), totalDuration: self.totalDuration)
             })
         )
         /// isReadyForDisplay

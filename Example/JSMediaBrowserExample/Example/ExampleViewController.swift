@@ -116,11 +116,11 @@ class ExampleViewController: UIViewController {
     }
     
     @objc func handleImageButtonEvent(sender: QMUIButton) {
-        let browser: MediaBrowserViewController = MediaBrowserViewController()
+        let browserVC = MediaBrowserViewController()
         /// 配置
-        browser.webImageMediator = SDWebImageMediator.defaultMediator
-        browser.zoomImageViewModifier = SDZoomImageViewModifier.defaultModifier
-        browser.willDisplayEmptyView = { (_, _, emptyView: EmptyView, error: NSError) in
+        browserVC.webImageMediator = SDWebImageMediator.defaultMediator
+        browserVC.zoomImageViewModifier = SDZoomImageViewModifier.defaultModifier
+        browserVC.willDisplayEmptyView = { (_, _, emptyView: EmptyView, error: NSError) in
             emptyView.image = UIImage(named: "picture_fail")
             emptyView.title = "\(String(describing: error.localizedDescription))"
         }
@@ -142,10 +142,10 @@ class ExampleViewController: UIViewController {
                 sourceItems.append(imageEntity)
             }
         }
-        browser.sourceItems = sourceItems
-        browser.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
+        browserVC.sourceItems = sourceItems
+        browserVC.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
         
-        browser.show(from: self)
+        browserVC.show(from: self, navigationController: UINavigationController(rootViewController: browserVC))
     }
     
     override var prefersStatusBarHidden: Bool {

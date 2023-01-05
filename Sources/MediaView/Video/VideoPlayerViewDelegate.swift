@@ -9,25 +9,25 @@ import UIKit
 
 public protocol VideoPlayerViewDelegate: AnyObject {
     
-    func didReadyForDisplay(_ videoPlayerView: VideoPlayerView)
+    func didReadyForDisplay(in videoPlayerView: VideoPlayerView)
     
-    func periodicTime(_ currentTime: CGFloat, totalDuration: CGFloat, in videoPlayerView: VideoPlayerView)
+    func didPlayToEndTime(in videoPlayerView: VideoPlayerView)
     
-    func didPlayToEndTime(_ videoPlayerView: VideoPlayerView)
+    func videoPlayerView(_ videoPlayerView: VideoPlayerView, periodicTime currentTime: CGFloat, totalDuration: CGFloat)
     
-    func didFailed(_ videoPlayerView: VideoPlayerView, error: NSError?)
+    func videoPlayerView(_ videoPlayerView: VideoPlayerView, didFailed error: NSError?)
     
 }
 
 /// options
 extension VideoPlayerViewDelegate {
     
-    public func didReadyForDisplay(_ videoPlayerView: VideoPlayerView) {}
+    public func didReadyForDisplay(in videoPlayerView: VideoPlayerView) {}
     
-    public func periodicTime(_ currentTime: CGFloat, totalDuration: CGFloat, in videoPlayerView: VideoPlayerView) {}
+    public func didPlayToEndTime(in videoPlayerView: VideoPlayerView) {}
     
-    public func didPlayToEndTime(_ videoPlayerView: VideoPlayerView) {}
+    public func videoPlayerView(_ videoPlayerView: VideoPlayerView, periodicTime currentTime: CGFloat, totalDuration: CGFloat) {}
     
-    public func didFailed(_ videoPlayerView: VideoPlayerView, error: NSError?) {}
+    public func videoPlayerView(_ videoPlayerView: VideoPlayerView, didFailed error: NSError?) {}
     
 }

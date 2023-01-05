@@ -14,8 +14,3 @@ public protocol VideoSourceProtocol: SourceProtocol {
     var videoAsset: AVAsset? { get set }
     
 }
-
-public protocol ViedeoActionViewProtocol {
-    
-    
-}

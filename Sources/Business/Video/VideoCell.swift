@@ -37,19 +37,11 @@ public class VideoCell: BasisCell {
 
 extension VideoCell: VideoPlayerViewDelegate {
     
-    public func didReadyForDisplay(_ videoPlayerView: VideoPlayerView) {
+    public func videoPlayerViewDidReadyForDisplay(_ videoPlayerView: VideoPlayerView) {
         self.setError(nil, cancelled: false, finished: true)
     }
     
-    public func periodicTime(_ currentTime: CGFloat, totalDuration: CGFloat, in videoPlayerView: VideoPlayerView) {
-        
-    }
-    
-    public func didPlayToEndTime(_ videoPlayerView: VideoPlayerView) {
-        
-    }
-    
-    public func didFailed(_ videoPlayerView: VideoPlayerView, error: NSError?) {
+    public func videoPlayerView(_ videoPlayerView: VideoPlayerView, didFailed error: NSError?) {
         self.setError(error, cancelled: false, finished: true)
     }
     

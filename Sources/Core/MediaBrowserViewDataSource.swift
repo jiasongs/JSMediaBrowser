@@ -11,6 +11,6 @@ public protocol MediaBrowserViewDataSource: AnyObject {
     
     func numberOfPages(in mediaBrowserView: MediaBrowserView) -> Int
     
-    func cellForPage(at index: Int, in mediaBrowserView: MediaBrowserView) -> UICollectionViewCell
+    func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, cellForPageAt index: Int) -> UICollectionViewCell
     
 }
