@@ -25,6 +25,10 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
         }
     }()
     
+    lazy var delegator: JSMediaBrowserViewControllerDelegator = {
+        return JSMediaBrowserViewControllerDelegator()
+    }()
+    
     override var sourceItems: [SourceProtocol] {
         didSet {
             self.updatePageControl()
@@ -35,7 +39,7 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
         super.didInitialize()
         self.webImageMediator = SDWebImageMediator()
         self.zoomImageViewModifier = SDZoomImageViewModifier()
-        self.delegate = self
+        self.delegate = self.delegator
     }
     
     override func viewDidLoad() {
@@ -82,7 +86,7 @@ extension JSMediaBrowserViewController {
     
 }
 
-extension JSMediaBrowserViewController: MediaBrowserViewControllerDelegate {
+class JSMediaBrowserViewControllerDelegator: MediaBrowserViewControllerDelegate {
     
     public func mediaBrowserViewController(_ mediaBrowserViewController: MediaBrowserViewController, willDisplay emptyView: EmptyView, error: NSError) {
         emptyView.image = UIImage(named: "picture_fail")
