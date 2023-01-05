@@ -25,6 +25,12 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
         }
     }()
     
+    override var sourceItems: [SourceProtocol] {
+        didSet {
+            self.updatePageControl()
+        }
+    }
+    
     override func didInitialize() {
         super.didInitialize()
         self.webImageMediator = SDWebImageMediator()
@@ -47,6 +53,17 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
             make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(QMUIHelper.isNotchedScreen ? 0 : -20)
             make.height.equalTo(30)
         }
+        
+        self.updatePageControl()
+    }
+    
+}
+
+extension JSMediaBrowserViewController {
+    
+    func updatePageControl() {
+        self.pageControl.numberOfPages = self.totalUnitPage
+        self.pageControl.currentPage = self.currentPage
     }
     
 }
@@ -71,12 +88,5 @@ extension JSMediaBrowserViewController: MediaBrowserViewControllerDelegate {
         emptyView.image = UIImage(named: "picture_fail")
         emptyView.title = "\(String(describing: error.localizedDescription))"
     }
-    
-    public func mediaBrowserViewController(_ mediaBrowserViewController: MediaBrowserViewController, layoutPageCells visibleCells: [UICollectionViewCell]) {
-        self.pageControl.numberOfPages = mediaBrowserViewController.totalUnitPage
-        self.pageControl.currentPage = mediaBrowserViewController.currentPage
-    }
-    
-    
     
 }

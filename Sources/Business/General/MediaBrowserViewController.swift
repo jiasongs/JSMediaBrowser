@@ -58,14 +58,7 @@ open class MediaBrowserViewController: UIViewController {
     open private(set) weak var presentedFromViewController: UIViewController?
     
     fileprivate lazy var mediaBrowserView: MediaBrowserView = {
-        let mediaBrowserView = MediaBrowserView()
-        mediaBrowserView.layoutPageCellsHandler = { [weak self] _ in
-            guard let self = self else {
-                return
-            }
-            self.delegate?.mediaBrowserViewController(self, layoutPageCells: self.mediaBrowserView.visiblePageCells)
-        }
-        return mediaBrowserView
+        return MediaBrowserView()
     }()
     
     fileprivate lazy var transitionAnimator: TransitionAnimator = {

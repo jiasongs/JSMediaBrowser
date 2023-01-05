@@ -77,17 +77,8 @@ public class MediaBrowserView: UIView {
         return self.collectionView.numberOfItems(inSection: 0)
     }
     
-    public var layoutPageCellsHandler: ((MediaBrowserView) -> Void)?
-    
     fileprivate lazy var collectionView: PagingCollectionView = {
-        let collectionView = PagingCollectionView(frame: CGRect.zero, collectionViewLayout: self.collectionViewLayout)
-        collectionView.layoutSubviewsHandler = { [weak self] _ in
-            guard let self = self else {
-                return
-            }
-            self.layoutPageCellsHandler?(self)
-        }
-        return collectionView
+        return PagingCollectionView(frame: CGRect.zero, collectionViewLayout: self.collectionViewLayout)
     }()
     
     fileprivate lazy var collectionViewLayout: PagingLayout = {
