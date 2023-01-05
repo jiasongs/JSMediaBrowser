@@ -8,9 +8,7 @@
 import SDWebImage
 import PhotosUI
 
-public class SDZoomImageViewModifier: ZoomImageViewModifier {
-    
-    public static let defaultModifier: SDZoomImageViewModifier = SDZoomImageViewModifier()
+public struct SDZoomImageViewModifier: ZoomImageViewModifier {
     
     public func imageView(in zoomImageView: ZoomImageView) -> UIImageView {
         let imageView = SDAnimatedImageView()
@@ -24,6 +22,10 @@ public class SDZoomImageViewModifier: ZoomImageViewModifier {
     
     public func viewportRect(in zoomImageView: ZoomImageView) -> CGRect {
         return CGRect.zero
+    }
+    
+    public init() {
+        
     }
     
 }

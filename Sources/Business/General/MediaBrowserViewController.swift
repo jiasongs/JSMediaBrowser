@@ -34,8 +34,8 @@ open class MediaBrowserViewController: UIViewController {
     
     public var sourceItems: [SourceProtocol] = []
     
-    public weak var zoomImageViewModifier: ZoomImageViewModifier?
-    public weak var webImageMediator: WebImageMediator?
+    public var zoomImageViewModifier: ZoomImageViewModifier?
+    public var webImageMediator: WebImageMediator?
     
     public var sourceViewForPageAtIndex: ((MediaBrowserViewController, Int) -> UIView?)?
     public var willDisplayEmptyView: ((MediaBrowserViewController, UICollectionViewCell, EmptyView, NSError) -> Void)?
@@ -175,12 +175,12 @@ extension MediaBrowserViewController {
 }
 
 extension MediaBrowserViewController: MediaBrowserViewDataSource {
-    
+
     public func numberOfPages(in mediaBrowserView: MediaBrowserView) -> Int {
         return self.sourceItems.count
     }
     
-    public func cellForPage(at index: Int, in mediaBrowserView: MediaBrowserView) -> UICollectionViewCell {
+    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, cellForPageAt index: Int) -> UICollectionViewCell {
         var cell: UICollectionViewCell? = nil
         let sourceItem = self.sourceItems[index]
         if let _ = sourceItem as? ImageSourceProtocol {
@@ -188,13 +188,14 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         } else if let _ = sourceItem as? VideoSourceProtocol {
             cell = mediaBrowserView.dequeueReusableCell(VideoCell.self, at: index)
         }
-        if let basisCell = cell as? BasisCell {
-            self.configureCell(basisCell, at: index)
+        guard let basisCell = cell as? BasisCell else {
+            return mediaBrowserView.dequeueReusableCell(UICollectionViewCell.self, at: index)
         }
-        return cell!
+        self.configureCell(basisCell, at: index)
+        return basisCell
     }
     
-    private func configureCell(_ cell: BasisCell, at index: Int) {
+    fileprivate func configureCell(_ cell: BasisCell, at index: Int) {
         cell.onPressEmpty = { [weak self] (cell: UICollectionViewCell) in
             if let index = self?.mediaBrowserView.index(for: cell) {
                 self?.mediaBrowserView.reloadPages(at: [index])
@@ -213,15 +214,20 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         }
     }
     
-    private func configureImageCell(_ cell: ImageCell, at index: Int) {
+    fileprivate func configureImageCell(_ cell: ImageCell, at index: Int) {
         /// 当dismissingGesture失败时才会去响应scrollView的手势
         cell.zoomImageView.require(toFail: self.mediaBrowserView.dismissingGesture)
+        cell.zoomImageView.modifier = self.zoomImageViewModifier
         
         guard let sourceItem = self.sourceItems[index] as? ImageSourceProtocol else {
             return
         }
         self.webImageMediator?.cancelImageRequest(for: cell.zoomImageView.imageView)
+        
         let completed = { (image: UIImage?, imageData: Data?, error: NSError?, cancelled: Bool, finished: Bool) in
+            var newSourceItem = sourceItem
+            newSourceItem.image = image
+            self.sourceItems[index] = newSourceItem
             cell.setError(error, cancelled: cancelled, finished: finished)
             cell.zoomImageView.image = image
             if image != nil && error == nil {
@@ -238,6 +244,9 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
                                             url: url,
                                             thumbImage: sourceItem.thumbImage,
                                             setImageBlock: { (image: UIImage?, imageData: Data?) in
+                var newSourceItem = sourceItem
+                newSourceItem.image = image
+                self.sourceItems[index] = newSourceItem
                 cell.zoomImageView.image = image
             }, progress: { (receivedSize: Int64, expectedSize: Int64) in
                 let progress = Progress(totalUnitCount: expectedSize)
@@ -249,7 +258,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         }
     }
     
-    private func configureVideoCell(_ cell: VideoCell, at index: Int) {
+    fileprivate func configureVideoCell(_ cell: VideoCell, at index: Int) {
         guard let sourceItem = self.sourceItems[index] as? VideoSourceProtocol else {
             return
         }
@@ -264,7 +273,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
 
 extension MediaBrowserViewController: MediaBrowserViewDelegate {
     
-    public func willDisplayCell(_ cell: UICollectionViewCell, forPageAt index: Int, in mediaBrowserView: MediaBrowserView) {
+    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, willDisplay cell: UICollectionViewCell, forPageAt index: Int) {
         if let imageCell = cell as? ImageCell {
             if !imageCell.zoomImageView.isAnimating {
                 imageCell.zoomImageView.startAnimating()
@@ -277,7 +286,7 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
         }
     }
     
-    public func didEndDisplayingCell(_ cell: UICollectionViewCell, forPageAt index: Int, in mediaBrowserView: MediaBrowserView)  {
+    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, didEndDisplaying cell: UICollectionViewCell, forPageAt index: Int) {
         if let imageCell = cell as? ImageCell {
             imageCell.zoomImageView.stopAnimating()
         } else if let videoCell = cell as? VideoCell {
@@ -285,17 +294,13 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
         }
     }
     
-    public func willScrollHalfFrom(_ index: Int, toIndex: Int, in mediaBrowserView: MediaBrowserView) {
+    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, willScrollHalfFrom index: Int, toIndex: Int) {
         if let sourceView = self.sourceViewForPageAtIndex?(self, index) {
             sourceView.isHidden = false
         }
         if let sourceView = self.sourceViewForPageAtIndex?(self, toIndex) {
             sourceView.isHidden = true
         }
-    }
-    
-    public func didScrollTo(_ index: Int, in mediaBrowserView: MediaBrowserView) {
-        
     }
     
 }
@@ -320,7 +325,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
         }
     }
     
-    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, longPress gestureRecognizer: UILongPressGestureRecognizer) {
+    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, longPressTouch gestureRecognizer: UILongPressGestureRecognizer) {
         self.onLongPress?(self)
     }
     
@@ -436,10 +441,6 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     
     public var transitionSourceView: UIView? {
         return self.sourceViewForPageAtIndex?(self, self.currentPage)
-    }
-    
-    public var transitionCornerRadius: CGFloat {
-        return self.sourceViewForPageAtIndex?(self, self.currentPage)?.layer.cornerRadius ?? 0
     }
     
     public var transitionThumbImage: UIImage? {

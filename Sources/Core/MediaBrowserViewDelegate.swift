@@ -19,46 +19,46 @@ public protocol MediaBrowserViewDelegate: AnyObject {
     
 }
 
-public protocol MediaBrowserViewGestureDelegate: AnyObject {
+/// options
+extension MediaBrowserViewDelegate {
     
+    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, willDisplay cell: UICollectionViewCell, forPageAt index: Int) {}
+    
+    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, didEndDisplaying cell: UICollectionViewCell, forPageAt index: Int) {}
+    
+    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, willScrollHalfFrom index: Int, toIndex: Int) {}
+    
+    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, didScrollTo index: Int) {}
+    
+}
+
+public protocol MediaBrowserViewGestureDelegate: AnyObject {
     
     func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, singleTouch gestureRecognizer: UITapGestureRecognizer)
     
-    func doubleTouch(_ gestureRecognizer: UITapGestureRecognizer, in mediaBrowserView: MediaBrowserView)
+    func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, doubleTouch gestureRecognizer: UITapGestureRecognizer)
     
-    func longPress(_ gestureRecognizer: UILongPressGestureRecognizer, in mediaBrowserView: MediaBrowserView)
+    func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, longPressTouch gestureRecognizer: UILongPressGestureRecognizer)
     
-    func dismissingShouldBegin(_ gestureRecognizer: UIPanGestureRecognizer, in mediaBrowserView: MediaBrowserView) -> Bool
+    func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, dismissingShouldBegin gestureRecognizer: UIPanGestureRecognizer) -> Bool
     
-    func dismissingChanged(_ gestureRecognizer: UIPanGestureRecognizer, in mediaBrowserView: MediaBrowserView)
+    func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, dismissingChanged gestureRecognizer: UIPanGestureRecognizer)
     
 }
 
 /// options
-//extension MediaBrowserViewDelegate {
-//    
-//    public func willDisplayCell(_ cell: UICollectionViewCell, forPageAt index: Int, in mediaBrowserView: MediaBrowserView) {}
-//    
-//    public func didEndDisplayingCell(_ cell: UICollectionViewCell, forPageAt index: Int, in mediaBrowserView: MediaBrowserView) {}
-//    
-//    public func willScrollHalfFrom(_ index: Int, toIndex: Int, in mediaBrowserView: MediaBrowserView) {}
-//    
-//    public func didScrollTo(_ index: Int, in mediaBrowserView: MediaBrowserView) {}
-//    
-//}
-//
-//extension MediaBrowserViewGestureDelegate {
-//    
-//    public func singleTouch(_ gestureRecognizer: UITapGestureRecognizer, in mediaBrowserView: MediaBrowserView) {}
-//    
-//    public func doubleTouch(_ gestureRecognizer: UITapGestureRecognizer, in mediaBrowserView: MediaBrowserView) {}
-//    
-//    public func longPress(_ gestureRecognizer: UILongPressGestureRecognizer, in mediaBrowserView: MediaBrowserView) {}
-//    
-//    public func dismissingShouldBegin(_ gestureRecognizer: UIPanGestureRecognizer, in mediaBrowserView: MediaBrowserView) -> Bool {
-//        return true
-//    }
-//    
-//    public func dismissingChanged(_ gestureRecognizer: UIPanGestureRecognizer, in mediaBrowserView: MediaBrowserView) {}
-//    
-//}
+extension MediaBrowserViewGestureDelegate {
+    
+    func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, singleTouch gestureRecognizer: UITapGestureRecognizer) {}
+    
+    func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, doubleTouch gestureRecognizer: UITapGestureRecognizer) {}
+    
+    func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, longPressTouch gestureRecognizer: UILongPressGestureRecognizer) {}
+    
+    func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, dismissingShouldBegin gestureRecognizer: UIPanGestureRecognizer) -> Bool {
+        return true
+    }
+    
+    func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, dismissingChanged gestureRecognizer: UIPanGestureRecognizer) {}
+    
+}

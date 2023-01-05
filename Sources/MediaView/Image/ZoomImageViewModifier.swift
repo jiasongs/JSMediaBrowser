@@ -8,7 +8,7 @@
 import UIKit
 import PhotosUI
 
-public protocol ZoomImageViewModifier: AnyObject {
+public protocol ZoomImageViewModifier {
     
     func imageView(in zoomImageView: ZoomImageView) -> UIImageView
     

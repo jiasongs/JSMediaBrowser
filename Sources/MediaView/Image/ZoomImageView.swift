@@ -11,7 +11,7 @@ import JSCoreKit
 
 public class ZoomImageView: BasisMediaView {
     
-    public weak var modifier: ZoomImageViewModifier?
+    public var modifier: ZoomImageViewModifier?
     
     private(set) lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView(frame: CGRect(origin: CGPoint.zero, size: frame.size))

@@ -141,7 +141,7 @@ extension TransitionAnimator {
             boundsAnimation.fromValue = NSValue(cgRect: isEntering ? sourceBounds : zoomContentViewBoundsInView)
             boundsAnimation.toValue = NSValue(cgRect: isEntering ? zoomContentViewBoundsInView : sourceBounds)
             /// 计算cornerRadius
-            let cornerRadius: CGFloat = self.delegate?.transitionCornerRadius ?? 0
+            let cornerRadius: CGFloat = self.delegate?.transitionSourceView?.layer.cornerRadius ?? 0
             let cornerRadiusAnimation: CABasicAnimation = CABasicAnimation(keyPath: "cornerRadius")
             cornerRadiusAnimation.fromValue = isEntering ? cornerRadius : 0
             cornerRadiusAnimation.toValue = isEntering ? 0 : cornerRadius

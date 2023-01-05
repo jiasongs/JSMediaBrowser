@@ -64,7 +64,7 @@ public class VideoPlayerView: BasisMediaView {
         return CGFloat(CMTimeGetSeconds(self.player.currentTime()))
     }
     
-    private(set) public var totalDuration: CGFloat = 0.0
+    public private(set) var totalDuration: CGFloat = 0.0
     
     public var rate: CGFloat {
         get {
@@ -80,11 +80,11 @@ public class VideoPlayerView: BasisMediaView {
     public var status: Stauts = .stopped {
         didSet {
             if status == .ready {
-                self.delegate?.videoPlayerViewDidReadyForDisplay(self)
+                self.delegate?.didReadyForDisplay(in: self)
             } else if status == .failed {
                 self.delegate?.videoPlayerView(self, didFailed: self.player.error as NSError?)
             } else if status == .ended || status == .stopped {
-                self.delegate?.videoPlayerViewDidPlayToEndTime(self)
+                self.delegate?.didPlayToEndTime(in: self)
             }
         }
     }

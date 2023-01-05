@@ -118,8 +118,8 @@ class ExampleViewController: UIViewController {
     @objc func handleImageButtonEvent(sender: QMUIButton) {
         let browserVC = MediaBrowserViewController()
         /// 配置
-        browserVC.webImageMediator = SDWebImageMediator.defaultMediator
-        browserVC.zoomImageViewModifier = SDZoomImageViewModifier.defaultModifier
+        browserVC.webImageMediator = SDWebImageMediator()
+        browserVC.zoomImageViewModifier = SDZoomImageViewModifier()
         browserVC.willDisplayEmptyView = { (_, _, emptyView: EmptyView, error: NSError) in
             emptyView.image = UIImage(named: "picture_fail")
             emptyView.title = "\(String(describing: error.localizedDescription))"
@@ -144,6 +144,9 @@ class ExampleViewController: UIViewController {
         }
         browserVC.sourceItems = sourceItems
         browserVC.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
+        browserVC.sourceViewForPageAtIndex = { [weak self] (vc, index) -> UIView? in
+            return self?.floatLayoutView.subviews[index]
+        }
         
         browserVC.show(from: self, navigationController: UINavigationController(rootViewController: browserVC))
     }
