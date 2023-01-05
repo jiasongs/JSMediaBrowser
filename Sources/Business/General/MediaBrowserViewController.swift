@@ -30,6 +30,9 @@ open class MediaBrowserViewController: UIViewController {
     
     open var sourceItems: [SourceProtocol] = [] {
         didSet {
+            guard self.isNeedsReloadData && self.isViewLoaded else {
+                return
+            }
             self.mediaBrowserView.reloadData()
         }
     }
@@ -71,6 +74,8 @@ open class MediaBrowserViewController: UIViewController {
     }()
     
     fileprivate var gestureBeganLocation: CGPoint = CGPoint.zero
+
+    fileprivate var isNeedsReloadData: Bool = true
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -85,6 +90,10 @@ open class MediaBrowserViewController: UIViewController {
     open func didInitialize() {
         self.extendedLayoutIncludesOpaqueBars = true
         self.accessibilityViewIsModal = true
+    }
+    
+    deinit {
+        print("mediaBrowser 释放")
     }
     
 }
@@ -234,7 +243,9 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
                 return
             }
             sourceItem.image = image
+            self.isNeedsReloadData = false
             self.sourceItems[index] = sourceItem
+            self.isNeedsReloadData = true
             cell.zoomImageView.image = image
             /// 解决网络图片下载完成后不播放的问题
             cell.zoomImageView.startAnimating()
