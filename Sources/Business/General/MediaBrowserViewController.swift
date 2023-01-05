@@ -74,7 +74,7 @@ open class MediaBrowserViewController: UIViewController {
     }()
     
     fileprivate var gestureBeganLocation: CGPoint = CGPoint.zero
-
+    
     fileprivate var isNeedsReloadData: Bool = true
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -235,39 +235,37 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         /// 取消请求
         self.webImageMediator?.cancelImageRequest(for: cell.zoomImageView.imageView)
         
-        let setImage = { [weak self, weak cell] (image: UIImage?) in
-            guard let self = self, let cell = cell else {
+        let updateData = { [weak cell] (image: UIImage?, error: NSError?, cancelled: Bool, finished: Bool) in
+            guard let cell = cell else {
                 return
             }
-            guard var sourceItem = self.sourceItems[index] as? ImageSourceProtocol else {
-                return
-            }
-            sourceItem.image = image
-            self.isNeedsReloadData = false
-            self.sourceItems[index] = sourceItem
-            self.isNeedsReloadData = true
             cell.zoomImageView.image = image
             /// 解决网络图片下载完成后不播放的问题
             cell.zoomImageView.startAnimating()
+            cell.setError(error, cancelled: cancelled, finished: finished)
+        }
+        let updateProgress = { [weak cell] (receivedSize: Int64, expectedSize: Int64) in
+            guard let cell = cell else {
+                return
+            }
+            let progress = Progress(totalUnitCount: expectedSize)
+            progress.completedUnitCount = receivedSize
+            cell.setProgress(progress)
         }
         /// 如果存在image, 且imageUrl为nil时, 则代表是本地图片, 无须网络请求
         if let image = sourceItem.image, sourceItem.imageUrl == nil {
-            setImage(image)
-            cell.setError(nil, cancelled: false, finished: true)
+            updateData(image, nil, false, true)
         } else {
             let url: URL? = sourceItem.imageUrl
             self.webImageMediator?.setImage(for: cell.zoomImageView.imageView,
                                             url: url,
                                             thumbImage: sourceItem.thumbImage,
                                             setImageBlock: { (image: UIImage?, imageData: Data?) in
-                setImage(image)
-            }, progress: { [weak cell] (receivedSize: Int64, expectedSize: Int64) in
-                let progress = Progress(totalUnitCount: expectedSize)
-                progress.completedUnitCount = receivedSize
-                cell?.setProgress(progress)
-            }, completed: { [weak cell] (image: UIImage?, imageData: Data?, error: NSError?, cancelled: Bool, finished: Bool) in
-                setImage(image)
-                cell?.setError(error, cancelled: cancelled, finished: finished)
+                updateData(image, nil, false, true)
+            }, progress: { (receivedSize: Int64, expectedSize: Int64) in
+                updateProgress(receivedSize, expectedSize)
+            }, completed: { (image: UIImage?, imageData: Data?, error: NSError?, cancelled: Bool, finished: Bool) in
+                updateData(image, error, cancelled, finished)
             })
         }
     }
@@ -459,9 +457,17 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     public var transitionThumbImage: UIImage? {
         let sourceItem = self.sourceItems[self.currentPage]
         if let sourceItem = sourceItem as? ImageSourceProtocol {
-            return sourceItem.image != nil ? sourceItem.image : sourceItem.thumbImage
+            if let image = sourceItem.image != nil ? sourceItem.image : sourceItem.thumbImage {
+                return image
+            } else if let imageCell = self.currentPageCell as? ImageCell {
+                return imageCell.zoomImageView.isDisplayImageView ? imageCell.zoomImageView.image : nil
+            }
         } else if let sourceItem = sourceItem as? VideoSourceProtocol {
-            return sourceItem.thumbImage
+            if let image = sourceItem.thumbImage {
+                return image
+            } else if let videoCell = self.currentPageCell as? VideoCell {
+                return videoCell.videoPlayerView.thumbImage
+            }
         }
         return nil
     }
