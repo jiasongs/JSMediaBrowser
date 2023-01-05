@@ -16,19 +16,23 @@ public enum TransitioningStyle: Int {
 
 open class MediaBrowserViewController: UIViewController {
     
-    public var enteringStyle: TransitioningStyle = .zoom {
+    open var enteringStyle: TransitioningStyle = .zoom {
         didSet {
             self.transitionAnimator.enteringStyle = enteringStyle
         }
     }
     
-    public var exitingStyle: TransitioningStyle = .zoom {
+    open var exitingStyle: TransitioningStyle = .zoom {
         didSet {
             self.transitionAnimator.exitingStyle = exitingStyle
         }
     }
     
-    open var sourceItems: [SourceProtocol] = []
+    open var sourceItems: [SourceProtocol] = [] {
+        didSet {
+            self.mediaBrowserView.reloadData()
+        }
+    }
     
     open var zoomImageViewModifier: ZoomImageViewModifier?
     open var webImageMediator: WebImageMediator?
@@ -143,6 +147,10 @@ extension MediaBrowserViewController {
         return self.mediaBrowserView.currentPageCell
     }
     
+    public func setCurrentPage(_ index: Int, animated: Bool = true) {
+        self.mediaBrowserView.setCurrentPage(index, animated: animated)
+    }
+    
     public func show(from sender: UIViewController,
                      navigationController: UINavigationController? = nil,
                      animated: Bool = true,
@@ -162,27 +170,6 @@ extension MediaBrowserViewController {
     
     public func hide(animated: Bool = true, completion: (() -> Void)? = nil) {
         self.dismiss(animated: animated, completion: completion)
-    }
-    
-    public func dequeueReusableCell<Cell: UICollectionViewCell>(_ cellClass: Cell.Type,
-                                                                reuseIdentifier: String? = nil,
-                                                                at index: Int) -> Cell {
-        return self.mediaBrowserView.dequeueReusableCell(cellClass, reuseIdentifier: reuseIdentifier, at: index)
-    }
-    
-    public func dequeueReusableCell<Cell: UICollectionViewCell>(_ nibName: String,
-                                                                bundle: Bundle? = Bundle.main,
-                                                                reuseIdentifier: String? = nil,
-                                                                at index: Int) -> Cell {
-        return self.mediaBrowserView.dequeueReusableCell(nibName, bundle: bundle, reuseIdentifier: reuseIdentifier, at: index)
-    }
-    
-    public func dequeueReusableCell<Cell: UICollectionViewCell>(_ storyboardReuseIdentifier: String, at index: Int) -> Cell {
-        return self.mediaBrowserView.dequeueReusableCell(storyboardReuseIdentifier, at: index)
-    }
-    
-    public func setCurrentPage(_ index: Int, animated: Bool = true) {
-        self.mediaBrowserView.setCurrentPage(index, animated: animated)
     }
     
 }
