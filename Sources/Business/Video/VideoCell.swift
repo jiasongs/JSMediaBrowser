@@ -35,9 +35,9 @@ public class VideoCell: BasisCell {
     
 }
 
-extension VideoCell: VideoPlayerViewDelegate {
+extension VideoCell: VideoPlayerViewDelegate {    
     
-    public func videoPlayerViewDidReadyForDisplay(_ videoPlayerView: VideoPlayerView) {
+    public func didReadyForDisplay(in videoPlayerView: VideoPlayerView) {
         self.setError(nil, cancelled: false, finished: true)
     }
     

@@ -26,6 +26,7 @@ open class MediaBrowserViewController: UIViewController {
             self.transitionAnimator.enteringStyle = enteringStyle
         }
     }
+    
     public var exitingStyle: TransitioningStyle = .zoom {
         didSet {
             self.transitionAnimator.exitingStyle = exitingStyle
@@ -118,6 +119,18 @@ extension MediaBrowserViewController {
         }
     }
     
+    open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        if let sourceView = self.transitionSourceView, sourceView.isHidden {
+            sourceView.isHidden = false
+        }
+        coordinator.animateAlongsideTransition(in: self.view, animation: nil) { context in
+            if let sourceView = self.transitionSourceView, !sourceView.isHidden {
+                sourceView.isHidden = true
+            }
+        }
+    }
+    
 }
 
 extension MediaBrowserViewController {
@@ -175,24 +188,24 @@ extension MediaBrowserViewController {
 }
 
 extension MediaBrowserViewController: MediaBrowserViewDataSource {
-
+    
     public func numberOfPages(in mediaBrowserView: MediaBrowserView) -> Int {
         return self.sourceItems.count
     }
     
     public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, cellForPageAt index: Int) -> UICollectionViewCell {
-        var cell: UICollectionViewCell? = nil
+        var cell: BasisCell? = nil
         let sourceItem = self.sourceItems[index]
         if let _ = sourceItem as? ImageSourceProtocol {
             cell = mediaBrowserView.dequeueReusableCell(ImageCell.self, at: index)
         } else if let _ = sourceItem as? VideoSourceProtocol {
             cell = mediaBrowserView.dequeueReusableCell(VideoCell.self, at: index)
         }
-        guard let basisCell = cell as? BasisCell else {
+        guard let cell = cell else {
             return mediaBrowserView.dequeueReusableCell(UICollectionViewCell.self, at: index)
         }
-        self.configureCell(basisCell, at: index)
-        return basisCell
+        self.configureCell(cell, at: index)
+        return cell
     }
     
     fileprivate func configureCell(_ cell: BasisCell, at index: Int) {
@@ -215,45 +228,43 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     }
     
     fileprivate func configureImageCell(_ cell: ImageCell, at index: Int) {
-        /// 当dismissingGesture失败时才会去响应scrollView的手势
-        cell.zoomImageView.require(toFail: self.mediaBrowserView.dismissingGesture)
-        cell.zoomImageView.modifier = self.zoomImageViewModifier
-        
         guard let sourceItem = self.sourceItems[index] as? ImageSourceProtocol else {
             return
         }
+        /// 当dismissingGesture失败时才会去响应scrollView的手势
+        cell.zoomImageView.require(toFail: self.mediaBrowserView.dismissingGesture)
+        /// zoomImageView修改器
+        cell.zoomImageView.modifier = self.zoomImageViewModifier
+        
+        /// 取消请求
         self.webImageMediator?.cancelImageRequest(for: cell.zoomImageView.imageView)
         
-        let completed = { (image: UIImage?, imageData: Data?, error: NSError?, cancelled: Bool, finished: Bool) in
+        let setImage = { [weak self, weak cell] (image: UIImage?) in
             var newSourceItem = sourceItem
             newSourceItem.image = image
-            self.sourceItems[index] = newSourceItem
-            cell.setError(error, cancelled: cancelled, finished: finished)
-            cell.zoomImageView.image = image
-            if image != nil && error == nil {
-                /// 解决网络图片下载完成后不播放的问题
-                cell.zoomImageView.startAnimating()
-            }
+            self?.sourceItems[index] = newSourceItem
+            cell?.zoomImageView.image = image
+            /// 解决网络图片下载完成后不播放的问题
+            cell?.zoomImageView.startAnimating()
         }
         /// 如果存在image, 且imageUrl为nil时, 则代表是本地图片, 无须网络请求
         if let image = sourceItem.image, sourceItem.imageUrl == nil {
-            completed(image, nil, nil, false, true)
+            setImage(image)
+            cell.setError(nil, cancelled: false, finished: true)
         } else {
             let url: URL? = sourceItem.imageUrl
             self.webImageMediator?.setImage(for: cell.zoomImageView.imageView,
                                             url: url,
                                             thumbImage: sourceItem.thumbImage,
                                             setImageBlock: { (image: UIImage?, imageData: Data?) in
-                var newSourceItem = sourceItem
-                newSourceItem.image = image
-                self.sourceItems[index] = newSourceItem
-                cell.zoomImageView.image = image
-            }, progress: { (receivedSize: Int64, expectedSize: Int64) in
+                setImage(image)
+            }, progress: { [weak cell] (receivedSize: Int64, expectedSize: Int64) in
                 let progress = Progress(totalUnitCount: expectedSize)
                 progress.completedUnitCount = receivedSize
-                cell.setProgress(progress)
-            }, completed: { (image: UIImage?, imageData: Data?, error: NSError?, cancelled: Bool, finished: Bool) in
-                completed(image, imageData, error, cancelled, finished)
+                cell?.setProgress(progress)
+            }, completed: { [weak cell] (image: UIImage?, imageData: Data?, error: NSError?, cancelled: Bool, finished: Bool) in
+                setImage(image)
+                cell?.setError(error, cancelled: cancelled, finished: finished)
             })
         }
     }
@@ -267,6 +278,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         if cell.videoPlayerView.url != sourceItem.videoUrl {
             cell.videoPlayerView.releasePlayer()
         }
+        cell.videoPlayerView.url = sourceItem.videoUrl
     }
     
 }
@@ -275,9 +287,7 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
     
     public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, willDisplay cell: UICollectionViewCell, forPageAt index: Int) {
         if let imageCell = cell as? ImageCell {
-            if !imageCell.zoomImageView.isAnimating {
-                imageCell.zoomImageView.startAnimating()
-            }
+            imageCell.zoomImageView.startAnimating()
         } else if let videoCell = cell as? VideoCell {
             let status: Stauts = videoCell.videoPlayerView.status
             if status == .ready || status == .paused {
@@ -453,19 +463,6 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
         return nil
     }
     
-    public var transitionAnimatorViews: [UIView]? {
-        var animatorViews: [UIView] = []
-        if let dimmingView = self.mediaBrowserView.dimmingView {
-            animatorViews.append(dimmingView)
-        }
-        self.view.subviews.forEach { (subview) in
-            if subview != self.mediaBrowserView {
-                animatorViews.append(subview)
-            }
-        }
-        return animatorViews
-    }
-    
     public var transitionTargetView: UIView? {
         return self.currentPageCell
     }
@@ -477,6 +474,19 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
             return videoCell.videoPlayerView.contentViewFrame
         }
         return CGRect.zero
+    }
+    
+    public var transitionAnimatorViews: [UIView]? {
+        var animatorViews: [UIView] = []
+        if let dimmingView = self.mediaBrowserView.dimmingView {
+            animatorViews.append(dimmingView)
+        }
+        self.view.subviews.forEach { (subview) in
+            if subview != self.mediaBrowserView {
+                animatorViews.append(subview)
+            }
+        }
+        return animatorViews
     }
     
 }

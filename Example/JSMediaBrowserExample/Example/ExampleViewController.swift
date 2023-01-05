@@ -147,7 +147,6 @@ class ExampleViewController: UIViewController {
         browserVC.sourceViewForPageAtIndex = { [weak self] (vc, index) -> UIView? in
             return self?.floatLayoutView.subviews[index]
         }
-        
         browserVC.show(from: self, navigationController: UINavigationController(rootViewController: browserVC))
     }
     
