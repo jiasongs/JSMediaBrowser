@@ -39,8 +39,15 @@ open class MediaBrowserViewController: UIViewController {
         }
     }
     
-    open var zoomImageViewModifier: ZoomImageViewModifier?
     open var webImageMediator: WebImageMediator?
+    
+    open var zoomImageViewModifier: ZoomImageViewModifier?
+    
+    open var transitionAnimatorModifier: TransitionAnimatorModifier? {
+        didSet {
+            self.transitionAnimator.modifier = self.transitionAnimatorModifier
+        }
+    }
     
     open var sourceViewForPageAtIndex: ((MediaBrowserViewController, Int) -> UIView?)?
     open var sourceRectForPageAtIndex: ((MediaBrowserViewController, Int) -> CGRect)?

@@ -10,6 +10,7 @@ import UIKit
 import JSMediaBrowser
 import SnapKit
 import QMUIKit
+import SDWebImage
 
 class JSMediaBrowserViewController: MediaBrowserViewController {
     
@@ -25,7 +26,7 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
         }
     }()
     
-    lazy var delegator: JSMediaBrowserViewControllerDelegator = {
+    fileprivate lazy var delegator: JSMediaBrowserViewControllerDelegator = {
         return JSMediaBrowserViewControllerDelegator()
     }()
     
@@ -39,6 +40,7 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
         super.didInitialize()
         self.webImageMediator = SDWebImageMediator()
         self.zoomImageViewModifier = SDZoomImageViewModifier()
+        self.transitionAnimatorModifier = JSMediaBrowserTransitionAnimatorModifier()
         self.delegate = self.delegator
     }
     
@@ -86,11 +88,21 @@ extension JSMediaBrowserViewController {
     
 }
 
-class JSMediaBrowserViewControllerDelegator: MediaBrowserViewControllerDelegate {
+fileprivate class JSMediaBrowserViewControllerDelegator: MediaBrowserViewControllerDelegate {
     
     public func mediaBrowserViewController(_ mediaBrowserViewController: MediaBrowserViewController, willDisplay emptyView: EmptyView, error: NSError) {
         emptyView.image = UIImage(named: "picture_fail")
         emptyView.title = "\(String(describing: error.localizedDescription))"
+    }
+    
+}
+
+fileprivate struct JSMediaBrowserTransitionAnimatorModifier: TransitionAnimatorModifier {
+    
+    public func imageView(in transitionAnimator: TransitionAnimator) -> UIImageView {
+        let imageView = SDAnimatedImageView()
+        imageView.autoPlayAnimatedImage = false
+        return imageView
     }
     
 }

@@ -48,4 +48,5 @@ Pod::Spec.new do |s|
     ss.dependency "JSMediaBrowser/MediaVideo"
     ss.dependency "JSMediaBrowser/MediaImage"
   end
+
 end

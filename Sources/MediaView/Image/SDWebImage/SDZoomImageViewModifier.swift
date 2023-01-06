@@ -1,10 +1,11 @@
 //
-//  1.swift
+//  SDZoomImageViewModifier.swift
 //  JSMediaBrowser
 //
 //  Created by jiasong on 2022/1/27.
 //
 
+import UIKit
 import SDWebImage
 import PhotosUI
 

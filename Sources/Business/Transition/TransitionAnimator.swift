@@ -18,6 +18,12 @@ public protocol TransitionAnimatorDelegate: AnyObject {
     
 }
 
+public protocol TransitionAnimatorModifier {
+    
+    func imageView(in transitionAnimator: TransitionAnimator) -> UIImageView
+    
+}
+
 public enum TransitionAnimatorType: Int {
     case presenting
     case dismiss
@@ -26,14 +32,19 @@ public enum TransitionAnimatorType: Int {
 public class TransitionAnimator: Transitioner {
     
     public weak var delegate: TransitionAnimatorDelegate?
+    
+    public var modifier: TransitionAnimatorModifier?
+    
     public var duration: TimeInterval = 0.25
+    
     public var enteringStyle: TransitioningStyle = .zoom
+    
     public var exitingStyle: TransitioningStyle = .zoom
     
     fileprivate static let animationGroupKey: String = "AnimationGroupKey"
     
     fileprivate lazy var imageView: UIImageView = {
-        let imageView = UIImageView()
+        let imageView = self.modifier?.imageView(in: self) ?? UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         return imageView
@@ -125,6 +136,7 @@ extension TransitionAnimator {
             /// 设置下Frame
             self.imageView.image = self.delegate?.transitionThumbImage
             self.imageView.frame = isEntering ? sourceRect : zoomContentViewFrameInView
+            self.imageView.startAnimating()
             /// 计算position
             let sourceCenter = CGPoint(x: sourceRect.midX, y: sourceRect.midY)
             let zoomContentViewCenterInView = CGPoint(x: zoomContentViewFrameInView.midX, y: zoomContentViewFrameInView.midY)
@@ -184,6 +196,7 @@ extension TransitionAnimator {
             self.delegate?.transitionTargetView?.isHidden = false
         }
         /// 释放资源
+        self.imageView.stopAnimating()
         self.imageView.removeFromSuperview()
         self.imageView.layer.removeAnimation(forKey: TransitionAnimator.animationGroupKey)
         self.imageView.image = nil
