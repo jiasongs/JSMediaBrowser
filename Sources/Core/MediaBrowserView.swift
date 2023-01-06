@@ -269,24 +269,9 @@ extension MediaBrowserView: UICollectionViewDelegateFlowLayout {
 
 extension MediaBrowserView: UIScrollViewDelegate {
     
-    private var pageOffsetRatio: CGFloat {
-        let pageWidth: CGFloat = self.collectionView.bounds.width
-        let contentOffsetX: CGFloat = self.collectionView.contentOffset.x
-        let pageOffsetRatio: CGFloat = contentOffsetX / pageWidth
-        return pageOffsetRatio
-    }
-    
-    private var isPossiblyRotating: Bool {
-        guard let animationKeys = self.collectionView.layer.animationKeys() else {
-            return false
-        }
-        let rotationAnimationKeys = ["position", "bounds.origin", "bounds.size"]
-        return animationKeys.contains(where: { rotationAnimationKeys.contains($0) })
-    }
-    
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         /// 横竖屏旋转会触发scrollViewDidScroll, 会导致self.currentPage被改变, 所以这里加个isPossiblyRotating控制下。
-        guard scrollView == self.collectionView && !self.collectionView.bounds.isEmpty && !self.isPossiblyRotating else {
+        guard !self.collectionView.bounds.isEmpty && !self.isPossiblyRotating else {
             return
         }
         
@@ -300,24 +285,45 @@ extension MediaBrowserView: UIScrollViewDelegate {
         let turnPageToLeft: Bool = fastToLeft || betweenOrEqual(pageOffsetRatio, floor(pageOffsetRatio) + 0.5, self.previousPageOffsetRatio)
         
         if turnPageToRight || turnPageToLeft {
-            let previousIndex = min(Int(round(self.previousPageOffsetRatio)), self.totalUnitPage - 1)
             let index = Int(round(pageOffsetRatio))
             if index >= 0 && index < self.totalUnitPage {
+                self.delegate?.mediaBrowserView(self, willScrollHalfFrom: self.currentPage, toIndex: index)
                 self.isNeededScrollToItem = false
                 self.currentPage = index
                 self.isNeededScrollToItem = true
-                self.delegate?.mediaBrowserView(self, willScrollHalfFrom: previousIndex, toIndex: index)
             }
             self.previousPageOffsetRatio = pageOffsetRatio
         }
     }
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        guard scrollView == self.collectionView else {
+        self.delegate?.mediaBrowserView(self, didScrollTo: self.currentPage)
+    }
+    
+    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        guard !decelerate else {
             return
         }
-        
         self.delegate?.mediaBrowserView(self, didScrollTo: self.currentPage)
+    }
+    
+    public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        self.delegate?.mediaBrowserView(self, didScrollTo: self.currentPage)
+    }
+    
+    fileprivate var pageOffsetRatio: CGFloat {
+        let pageWidth: CGFloat = self.collectionView.bounds.width
+        let contentOffsetX: CGFloat = self.collectionView.contentOffset.x
+        let pageOffsetRatio: CGFloat = contentOffsetX / pageWidth
+        return pageOffsetRatio
+    }
+    
+    fileprivate var isPossiblyRotating: Bool {
+        guard let animationKeys = self.collectionView.layer.animationKeys() else {
+            return false
+        }
+        let rotationAnimationKeys = ["position", "bounds.origin", "bounds.size"]
+        return animationKeys.contains(where: { rotationAnimationKeys.contains($0) })
     }
     
 }

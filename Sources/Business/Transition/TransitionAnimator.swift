@@ -30,7 +30,7 @@ public class TransitionAnimator: Transitioner {
     public var enteringStyle: TransitioningStyle = .zoom
     public var exitingStyle: TransitioningStyle = .zoom
     
-    fileprivate let animationGroupKey: String = "AnimationGroupKey"
+    fileprivate static let animationGroupKey: String = "AnimationGroupKey"
     
     fileprivate lazy var imageView: UIImageView = {
         let imageView = UIImageView()
@@ -95,12 +95,12 @@ extension TransitionAnimator {
         style = style == .zoom && (sourceRect.isEmpty || contentViewFrame.isEmpty) ? .fade : style
         
         /// will
-        self.handleAnimationEntering(style: style, isEntering: isEntering, fromView: fromView, toView: toView, sourceRect: sourceRect)
-        UIView.animate(withDuration: self.duration, delay: 0, options: UIView.AnimationOptions.curveEaseInOut) {
+        self.handleAnimationEntering(style: style, isEntering: isEntering, fromView: fromView, toView: toView, sourceView: sourceView, sourceRect: sourceRect)
+        UIView.animate(withDuration: self.duration, delay: 0, options: isEntering ? AnimationOptionsCurveIn : AnimationOptionsCurveOut) {
             /// processing
             self.handleAnimationProcessing(style: style, isEntering: isEntering, fromView: fromView, toView: toView)
         } completion: { (finished) in
-            /// did
+            /// end
             self.handleAnimationCompletion(style: style, isEntering: isEntering, fromView: fromView, toView: toView)
             
             completion(finished)
@@ -111,7 +111,7 @@ extension TransitionAnimator {
 
 extension TransitionAnimator {
     
-    fileprivate func handleAnimationEntering(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView, sourceRect: CGRect) {
+    fileprivate func handleAnimationEntering(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView, sourceView: UIView?, sourceRect: CGRect) {
         let currentView: UIView? = isEntering ? toView : fromView
         if style == .fade {
             currentView?.alpha = isEntering ? 0 : 1
@@ -137,7 +137,7 @@ extension TransitionAnimator {
             boundsAnimation.fromValue = NSValue(cgRect: isEntering ? sourceBounds : zoomContentViewBoundsInView)
             boundsAnimation.toValue = NSValue(cgRect: isEntering ? zoomContentViewBoundsInView : sourceBounds)
             /// 计算cornerRadius
-            let cornerRadius: CGFloat = self.delegate?.transitionSourceView?.layer.cornerRadius ?? 0
+            let cornerRadius: CGFloat = sourceView?.layer.cornerRadius ?? 0
             let cornerRadiusAnimation: CABasicAnimation = CABasicAnimation(keyPath: "cornerRadius")
             cornerRadiusAnimation.fromValue = isEntering ? cornerRadius : 0
             cornerRadiusAnimation.toValue = isEntering ? 0 : cornerRadius
@@ -155,7 +155,7 @@ extension TransitionAnimator {
                     animation.preferredFrameRateRange = preferredFrameRateRange
                 })
             }
-            self.imageView.layer.add(groupAnimation, forKey: animationGroupKey)
+            self.imageView.layer.add(groupAnimation, forKey: TransitionAnimator.animationGroupKey)
         }
         
         if isEntering {
@@ -185,7 +185,7 @@ extension TransitionAnimator {
         }
         /// 释放资源
         self.imageView.removeFromSuperview()
-        self.imageView.layer.removeAnimation(forKey: self.animationGroupKey)
+        self.imageView.layer.removeAnimation(forKey: TransitionAnimator.animationGroupKey)
         self.imageView.image = nil
     }
     

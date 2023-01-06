@@ -10,16 +10,19 @@ import UIKit
 public class SliderView: UISlider {
     
     public var trackHeight: CGFloat = 0
+    
     public var thumbSize: CGSize = CGSize.zero {
         didSet {
             self.updateThumbImage()
         }
     }
+    
     public var thumbColor: UIColor? {
         didSet {
             self.updateThumbImage()
         }
     }
+    
     public var thumbShadowColor: UIColor? {
         didSet {
             if let thumbView = self.thumbViewIfExist {
@@ -28,6 +31,7 @@ public class SliderView: UISlider {
             }
         }
     }
+    
     public var thumbShadowOffset: CGSize = CGSize.zero {
         didSet {
             if let thumbView = self.thumbViewIfExist {
@@ -35,6 +39,7 @@ public class SliderView: UISlider {
             }
         }
     }
+    
     public var thumbShadowRadius: CGFloat = 0 {
         didSet {
             if let thumbView = self.thumbViewIfExist {

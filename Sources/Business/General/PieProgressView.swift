@@ -22,9 +22,10 @@ public class PieProgressView: UIControl {
     
     public var progress: Float = 0.0 {
         didSet {
-            if needSetProgress {
-                self.setProgress(self.progress, animated: false)
+            guard self.needSetProgress else {
+                return
             }
+            self.setProgress(self.progress, animated: false)
         }
     }
     
@@ -137,7 +138,7 @@ fileprivate class PieProgressLayer: CALayer {
     }
     
     override func action(forKey event: String) -> CAAction? {
-        if event == #keyPath(progress) && shouldChangeProgressWithAnimation {
+        if event == #keyPath(progress) && self.shouldChangeProgressWithAnimation {
             let animation: CABasicAnimation = CABasicAnimation(keyPath: event)
             animation.fromValue = self.presentation()?.value(forKey: event)
             animation.duration = self.animationDuration

@@ -75,6 +75,8 @@ open class MediaBrowserViewController: UIViewController {
     
     fileprivate var gestureBeganLocation: CGPoint = CGPoint.zero
     
+    fileprivate weak var cacheSourceView: UIView?
+    
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         self.didInitialize()
@@ -118,27 +120,24 @@ extension MediaBrowserViewController {
         /// 外部可能设置导航栏, 这里需要隐藏
         self.navigationController?.setNavigationBarHidden(true, animated: false)
         
-        if let sourceView = self.transitionSourceView, !sourceView.isHidden {
-            sourceView.isHidden = true
-        }
+        self.cacheSourceView = self.sourceViewForPageAtIndex?(self, self.currentPage)
+        self.cacheSourceView?.isHidden = true
     }
     
     open override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        if let sourceView = self.transitionSourceView, sourceView.isHidden {
-            sourceView.isHidden = false
-        }
+        self.cacheSourceView?.isHidden = false
     }
     
     open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        if let sourceView = self.transitionSourceView, sourceView.isHidden {
-            sourceView.isHidden = false
-        }
+        self.cacheSourceView?.isHidden = false
         coordinator.animateAlongsideTransition(in: self.view, animation: nil) { context in
-            if let sourceView = self.transitionSourceView, !sourceView.isHidden {
-                sourceView.isHidden = true
+            guard self.view.window != nil else {
+               return
             }
+            self.cacheSourceView = self.sourceViewForPageAtIndex?(self, self.currentPage)
+            self.cacheSourceView?.isHidden = true
         }
     }
     
@@ -302,12 +301,9 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
     }
     
     @objc open func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, willScrollHalfFrom index: Int, toIndex: Int) {
-        if let sourceView = self.sourceViewForPageAtIndex?(self, index) {
-            sourceView.isHidden = false
-        }
-        if let sourceView = self.sourceViewForPageAtIndex?(self, toIndex) {
-            sourceView.isHidden = true
-        }
+        self.cacheSourceView?.isHidden = false
+        self.cacheSourceView = self.sourceViewForPageAtIndex?(self, toIndex)
+        self.cacheSourceView?.isHidden = true
     }
     
 }
@@ -447,12 +443,10 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     }
     
     @objc open var transitionSourceView: UIView? {
-        assert(self.isViewLoaded)
-        return self.sourceViewForPageAtIndex?(self, self.currentPage)
+        return self.cacheSourceView
     }
     
     @objc open var transitionSourceRect: CGRect {
-        assert(self.isViewLoaded)
         return self.sourceRectForPageAtIndex?(self, self.currentPage) ?? CGRect.zero
     }
     
