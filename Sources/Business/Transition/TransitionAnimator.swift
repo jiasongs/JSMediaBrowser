@@ -107,7 +107,7 @@ extension TransitionAnimator {
         
         /// will
         self.handleAnimationEntering(style: style, isEntering: isEntering, fromView: fromView, toView: toView, sourceView: sourceView, sourceRect: sourceRect)
-        UIView.animate(withDuration: self.duration, delay: 0, options: isEntering ? AnimationOptionsCurveIn : AnimationOptionsCurveOut) {
+        UIView.animate(withDuration: self.duration, delay: 0, options: isEntering ? AnimationOptionsCurveIn : UIView.AnimationOptions.curveLinear) {
             /// processing
             self.handleAnimationProcessing(style: style, isEntering: isEntering, fromView: fromView, toView: toView)
         } completion: { (finished) in
