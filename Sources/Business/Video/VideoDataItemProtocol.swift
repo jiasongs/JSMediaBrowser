@@ -8,7 +8,7 @@
 import UIKit
 import AVKit
 
-public protocol VideoSourceProtocol: SourceProtocol {
+public protocol VideoDataItemProtocol: DataItemProtocol {
     
     var videoUrl: URL? { get set }
     var videoAsset: AVAsset? { get set }

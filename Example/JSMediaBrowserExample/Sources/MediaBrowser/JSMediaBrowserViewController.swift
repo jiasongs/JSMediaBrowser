@@ -29,7 +29,7 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
         return JSMediaBrowserViewControllerDelegator()
     }()
     
-    override var sourceItems: [SourceProtocol] {
+    override var dataSource: [DataItemProtocol] {
         didSet {
             self.updatePageControl()
         }

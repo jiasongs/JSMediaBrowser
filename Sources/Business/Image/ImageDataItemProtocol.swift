@@ -7,7 +7,7 @@
 
 import UIKit
 
-public protocol ImageSourceProtocol: SourceProtocol {
+public protocol ImageDataItemProtocol: DataItemProtocol {
     
     var image: UIImage? { get set }
     var imageUrl: URL? { get set }

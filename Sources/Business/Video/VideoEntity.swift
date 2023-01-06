@@ -7,7 +7,7 @@
 
 import AVKit
 
-public struct VideoEntity: VideoSourceProtocol {
+public struct VideoEntity: VideoDataItemProtocol {
     
     public var sourceRect: CGRect = CGRect.zero
     public var thumbImage: UIImage?

@@ -118,7 +118,7 @@ class HomeViewController: UIViewController {
     
     @objc func handleImageButtonEvent(sender: QMUIButton) {
         let browserVC = JSMediaBrowserViewController()
-        var sourceItems: [SourceProtocol] = [];
+        var dataSource: [DataItemProtocol] = [];
         for (_, urlString) in self.dataSource.enumerated() {
             var isVideo = false
             for format in self.videoFormats {
@@ -129,13 +129,13 @@ class HomeViewController: UIViewController {
             }
             if isVideo {
                 let videoEntity = VideoEntity(videoUrl: URL(string: urlString))
-                sourceItems.append(videoEntity)
+                dataSource.append(videoEntity)
             } else {
                 let imageEntity = ImageEntity(imageUrl: URL(string: urlString))
-                sourceItems.append(imageEntity)
+                dataSource.append(imageEntity)
             }
         }
-        browserVC.sourceItems = sourceItems
+        browserVC.dataSource = dataSource
         browserVC.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
         browserVC.sourceViewForPageAtIndex = { [weak self] (vc, index) -> UIView? in
             return self?.floatLayoutView.subviews[index]

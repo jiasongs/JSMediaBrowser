@@ -31,11 +31,11 @@ class ShareControl: UIButton {
         guard let mediaBrowserVC = self.mediaBrowserVC else {
             return
         }
-        guard let entity = mediaBrowserVC.sourceItems[mediaBrowserVC.currentPage] as? ImageSourceProtocol, let image = entity.image else {
+        guard let imageCell = mediaBrowserVC.currentPageCell as? ImageCell else {
             return
         }
         PHPhotoLibrary.shared().performChanges {
-            guard let imageData = image.sd_imageData() else {
+            guard let imageData = imageCell.zoomImageView.image?.sd_imageData() else {
                 return
             }
             PHAssetCreationRequest.forAsset().addResource(with: .photo, data: imageData, options: nil)

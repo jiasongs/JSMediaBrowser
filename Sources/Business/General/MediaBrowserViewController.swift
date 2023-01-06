@@ -30,7 +30,7 @@ open class MediaBrowserViewController: UIViewController {
         }
     }
     
-    open var sourceItems: [SourceProtocol] = [] {
+    open var dataSource: [DataItemProtocol] = [] {
         didSet {
             guard self.isViewLoaded else {
                 return
@@ -184,15 +184,15 @@ extension MediaBrowserViewController {
 extension MediaBrowserViewController: MediaBrowserViewDataSource {
     
     @objc open func numberOfPages(in mediaBrowserView: MediaBrowserView) -> Int {
-        return self.sourceItems.count
+        return self.dataSource.count
     }
     
     @objc open func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, cellForPageAt index: Int) -> UICollectionViewCell {
         var cell: BasisCell? = nil
-        let sourceItem = self.sourceItems[index]
-        if let _ = sourceItem as? ImageSourceProtocol {
+        let dataItem = self.dataSource[index]
+        if let _ = dataItem as? ImageDataItemProtocol {
             cell = mediaBrowserView.dequeueReusableCell(ImageCell.self, at: index)
-        } else if let _ = sourceItem as? VideoSourceProtocol {
+        } else if let _ = dataItem as? VideoDataItemProtocol {
             cell = mediaBrowserView.dequeueReusableCell(VideoCell.self, at: index)
         }
         guard let cell = cell else {
@@ -222,7 +222,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     }
     
     @objc open func configureImageCell(_ cell: ImageCell, at index: Int) {
-        guard let sourceItem = self.sourceItems[index] as? ImageSourceProtocol else {
+        guard let dataItem = self.dataSource[index] as? ImageDataItemProtocol else {
             return
         }
         /// 当dismissingGesture失败时才会去响应scrollView的手势
@@ -247,14 +247,14 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
             cell?.setError(error, cancelled: cancelled, finished: finished)
         }
         /// 如果存在image, 且imageUrl为nil时, 则代表是本地图片, 无须网络请求
-        if let image = sourceItem.image, sourceItem.imageUrl == nil {
+        if let image = dataItem.image, dataItem.imageUrl == nil {
             updateImage(image)
             updateCell(nil, false, true)
         } else {
-            let url: URL? = sourceItem.imageUrl
+            let url: URL? = dataItem.imageUrl
             self.webImageMediator?.setImage(for: cell.zoomImageView.imageView,
                                             url: url,
-                                            thumbImage: sourceItem.thumbImage,
+                                            thumbImage: dataItem.thumbImage,
                                             setImageBlock: { (image: UIImage?, imageData: Data?) in
                 updateImage(image)
             }, progress: { (receivedSize: Int64, expectedSize: Int64) in
@@ -267,15 +267,15 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     }
     
     @objc open func configureVideoCell(_ cell: VideoCell, at index: Int) {
-        guard let sourceItem = self.sourceItems[index] as? VideoSourceProtocol else {
+        guard let dataItem = self.dataSource[index] as? VideoDataItemProtocol else {
             return
         }
-        cell.videoPlayerView.thumbImage = sourceItem.thumbImage
+        cell.videoPlayerView.thumbImage = dataItem.thumbImage
         /// 前后url不相同时需要释放之前的player, 否则会先显示之前的画面, 再显示当前的
-        if cell.videoPlayerView.url != sourceItem.videoUrl {
+        if cell.videoPlayerView.url != dataItem.videoUrl {
             cell.videoPlayerView.releasePlayer()
         }
-        cell.videoPlayerView.url = sourceItem.videoUrl
+        cell.videoPlayerView.url = dataItem.videoUrl
     }
     
 }
@@ -457,15 +457,15 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     }
     
     @objc open var transitionThumbImage: UIImage? {
-        let sourceItem = self.sourceItems[self.currentPage]
-        if let sourceItem = sourceItem as? ImageSourceProtocol {
-            if let image = sourceItem.image != nil ? sourceItem.image : sourceItem.thumbImage {
+        let dataItem = self.dataSource[self.currentPage]
+        if let dataItem = dataItem as? ImageDataItemProtocol {
+            if let image = dataItem.image != nil ? dataItem.image : dataItem.thumbImage {
                 return image
             } else if let imageCell = self.currentPageCell as? ImageCell {
                 return imageCell.zoomImageView.isDisplayImageView ? imageCell.zoomImageView.image : nil
             }
-        } else if let sourceItem = sourceItem as? VideoSourceProtocol {
-            if let image = sourceItem.thumbImage {
+        } else if let dataItem = dataItem as? VideoDataItemProtocol {
+            if let image = dataItem.thumbImage {
                 return image
             } else if let videoCell = self.currentPageCell as? VideoCell {
                 return videoCell.videoPlayerView.thumbImage

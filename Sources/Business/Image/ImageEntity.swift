@@ -7,7 +7,7 @@
 
 import UIKit
 
-public struct ImageEntity: ImageSourceProtocol {
+public struct ImageEntity: ImageDataItemProtocol {
     
     public var thumbImage: UIImage?
 
