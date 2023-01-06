@@ -10,6 +10,7 @@ import UIKit
 public protocol TransitionAnimatorDelegate: AnyObject {
     
     var transitionSourceView: UIView? { get }
+    var transitionSourceRect: CGRect { get }
     var transitionTargetView: UIView? { get }
     var transitionTargetFrame: CGRect { get }
     var transitionThumbImage: UIImage? { get }

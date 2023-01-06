@@ -43,6 +43,7 @@ open class MediaBrowserViewController: UIViewController {
     open var webImageMediator: WebImageMediator?
     
     open var sourceViewForPageAtIndex: ((MediaBrowserViewController, Int) -> UIView?)?
+    open var sourceRectForPageAtIndex: ((MediaBrowserViewController, Int) -> CGRect)?
     
     open var currentPage: Int {
         set {
@@ -447,6 +448,10 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     
     @objc open var transitionSourceView: UIView? {
         return self.sourceViewForPageAtIndex?(self, self.currentPage)
+    }
+    
+    @objc open var transitionSourceRect: CGRect {
+        return self.sourceRectForPageAtIndex?(self, self.currentPage) ?? CGRect.zero
     }
     
     @objc open var transitionThumbImage: UIImage? {
