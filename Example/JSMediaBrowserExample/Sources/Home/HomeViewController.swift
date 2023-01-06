@@ -140,6 +140,10 @@ class HomeViewController: UIViewController {
         browserVC.sourceViewForPageAtIndex = { [weak self] (vc, index) -> UIView? in
             return self?.floatLayoutView.subviews[index]
         }
+        browserVC.sourceRectForPageAtIndex = { [weak self] (vc, index) -> CGRect in
+            let rect = self?.floatLayoutView.subviews[index].frame ?? CGRect.zero
+            return vc.view.convert(rect, from: self?.floatLayoutView)
+        }
         browserVC.show(from: self, navigationController: QMUINavigationController(rootViewController: browserVC))
     }
     

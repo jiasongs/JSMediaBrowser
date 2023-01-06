@@ -447,10 +447,12 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     }
     
     @objc open var transitionSourceView: UIView? {
+        assert(self.isViewLoaded)
         return self.sourceViewForPageAtIndex?(self, self.currentPage)
     }
     
     @objc open var transitionSourceRect: CGRect {
+        assert(self.isViewLoaded)
         return self.sourceRectForPageAtIndex?(self, self.currentPage) ?? CGRect.zero
     }
     

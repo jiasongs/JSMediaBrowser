@@ -82,6 +82,8 @@ extension TransitionAnimator {
             let currentView: UIView = isEntering ? toView : fromView
             if let sourceView = sourceView {
                 sourceRect = currentView.convert(sourceView.frame, from: sourceView.superview)
+            } else if let transitionSourceRect = self.delegate?.transitionSourceRect {
+                sourceRect = currentView.convert(transitionSourceRect, to: currentView)
             }
             /// 判断sourceRect是否与needView相交
             if !sourceRect.isEmpty && !sourceRect.intersects(currentView.frame) {
