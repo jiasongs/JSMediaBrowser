@@ -116,7 +116,7 @@ extension PieProgressView {
         
         self.progressLayer.shouldChangeProgressWithAnimation = animated
         self.progressLayer.progress = self.progress
-        // self.progressLayer.setNeedsDisplay()
+        self.progressLayer.setNeedsDisplay()
         self.sendActions(for: UIControl.Event.valueChanged)
     }
     
