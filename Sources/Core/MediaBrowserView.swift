@@ -302,7 +302,6 @@ extension MediaBrowserView: UIScrollViewDelegate {
         if turnPageToRight || turnPageToLeft {
             let previousIndex = min(Int(round(self.previousPageOffsetRatio)), self.totalUnitPage - 1)
             let index = Int(round(pageOffsetRatio))
-            assert(previousIndex != index, "当前index与将要滚动到的index相同, 可能存在问题, 请检查self.pageOffsetRatio")
             if index >= 0 && index < self.totalUnitPage {
                 self.isNeededScrollToItem = false
                 self.currentPage = index
