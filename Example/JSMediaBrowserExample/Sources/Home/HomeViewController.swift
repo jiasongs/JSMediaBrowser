@@ -77,7 +77,11 @@ class HomeViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        self.collectionView.contentInset = UIEdgeInsets(top: self.view.safeAreaInsets.top + 5, left: 24 + self.view.safeAreaInsets.left, bottom: 24, right: 24 + self.view.safeAreaInsets.right)
+        let margin = QMUIHelper.isMac ? 60.0 : 24.0
+        self.collectionView.qmui_initialContentInset = UIEdgeInsets(top: self.view.safeAreaInsets.top + 5,
+                                                                    left: margin + self.view.safeAreaInsets.left,
+                                                                    bottom: self.view.safeAreaInsets.bottom,
+                                                                    right: margin + self.view.safeAreaInsets.right)
         self.collectionView.collectionViewLayout.invalidateLayout()
         self.collectionView.frame = self.view.bounds
     }
@@ -123,7 +127,8 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let interitemSpacing =  self.collectionView(collectionView, layout: collectionViewLayout, minimumInteritemSpacingForSectionAt: indexPath.section)
-        let size = (collectionView.qmui_width - UIEdgeInsetsGetHorizontalValue(collectionView.adjustedContentInset) - 2.0 * interitemSpacing) / 3.0
+        let columnsCount = QMUIHelper.isMac ? 6.0 : 3.0
+        let size = (collectionView.qmui_width - UIEdgeInsetsGetHorizontalValue(collectionView.adjustedContentInset) - (columnsCount - 1) * interitemSpacing) / columnsCount
         return CGSizeFloor(CGSize(width: size, height: size))
     }
     
