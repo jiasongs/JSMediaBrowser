@@ -202,7 +202,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         return cell
     }
     
-    fileprivate func configureCell(_ cell: BasisCell, at index: Int) {
+    @objc open func configureCell(_ cell: BasisCell, at index: Int) {
         cell.onPressEmpty = { [weak self] (cell: UICollectionViewCell) in
             if let index = self?.mediaBrowserView.index(for: cell) {
                 self?.mediaBrowserView.reloadPages(at: [index])
@@ -221,7 +221,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         }
     }
     
-    fileprivate func configureImageCell(_ cell: ImageCell, at index: Int) {
+    @objc open func configureImageCell(_ cell: ImageCell, at index: Int) {
         guard let sourceItem = self.sourceItems[index] as? ImageSourceProtocol else {
             return
         }
@@ -266,7 +266,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         }
     }
     
-    fileprivate func configureVideoCell(_ cell: VideoCell, at index: Int) {
+    @objc open func configureVideoCell(_ cell: VideoCell, at index: Int) {
         guard let sourceItem = self.sourceItems[index] as? VideoSourceProtocol else {
             return
         }
@@ -400,7 +400,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
         }
     }
     
-    fileprivate func beginDismissingAnimation() {
+    @objc open func beginDismissingAnimation() {
         if let context = self.transitionInteractiver.context {
             self.transitionAnimator.performAnimation(using: context, isEntering: false) { finished in
                 self.transitionInteractiver.finish()
@@ -410,7 +410,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
         }
     }
     
-    fileprivate func resetDismissingAnimation() {
+    @objc open func resetDismissingAnimation() {
         self.gestureBeganLocation = CGPoint.zero
         UIView.animate(withDuration: self.transitionAnimator.duration, delay: 0, options: AnimationOptionsCurveOut, animations: {
             self.currentPageCell?.transform = CGAffineTransform.identity

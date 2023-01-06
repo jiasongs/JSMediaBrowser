@@ -113,13 +113,6 @@ extension TransitionAnimator {
     
     fileprivate func handleAnimationEntering(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView, sourceRect: CGRect) {
         let currentView: UIView? = isEntering ? toView : fromView
-        if let animatorViews = self.delegate?.transitionAnimatorViews {
-            for view in animatorViews {
-                if isEntering {
-                    view.alpha = 0.0
-                }
-            }
-        }
         if style == .fade {
             currentView?.alpha = isEntering ? 0 : 1
         } else if style == .zoom {
@@ -164,17 +157,22 @@ extension TransitionAnimator {
             }
             self.imageView.layer.add(groupAnimation, forKey: animationGroupKey)
         }
+        
+        if isEntering {
+            self.delegate?.transitionAnimatorViews?.forEach { subview in
+                subview.alpha = 0.0
+            }
+        }
     }
     
     fileprivate func handleAnimationProcessing(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView) {
         let currentView: UIView? = isEntering ? toView : fromView
-        if let animatorViews = self.delegate?.transitionAnimatorViews {
-            for view in animatorViews {
-                view.alpha = isEntering ? 1 : 0
-            }
-        }
         if style == .fade {
             currentView?.alpha = isEntering ? 1 : 0
+        }
+        
+        self.delegate?.transitionAnimatorViews?.forEach { subview in
+            subview.alpha = isEntering ? 1 : 0
         }
     }
     
@@ -187,7 +185,7 @@ extension TransitionAnimator {
         }
         /// 释放资源
         self.imageView.removeFromSuperview()
-        self.imageView.layer.removeAnimation(forKey: animationGroupKey)
+        self.imageView.layer.removeAnimation(forKey: self.animationGroupKey)
         self.imageView.image = nil
     }
     
