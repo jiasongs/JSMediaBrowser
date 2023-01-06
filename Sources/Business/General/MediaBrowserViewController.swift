@@ -141,7 +141,7 @@ extension MediaBrowserViewController {
         self.cacheSourceView?.isHidden = false
         coordinator.animateAlongsideTransition(in: self.view, animation: nil) { context in
             guard self.view.window != nil else {
-               return
+                return
             }
             self.cacheSourceView = self.sourceViewForPageAtIndex?(self, self.currentPage)
             self.cacheSourceView?.isHidden = true
@@ -237,7 +237,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         cell.zoomImageView.modifier = self.zoomImageViewModifier
         
         /// 取消请求
-        self.webImageMediator?.cancelImageRequest(for: cell.zoomImageView.imageView)
+        self.webImageMediator?.cancelImageRequest(for: cell)
         
         let updateProgress = { [weak cell] (receivedSize: Int64, expectedSize: Int64) in
             let progress = Progress(totalUnitCount: expectedSize)
@@ -258,7 +258,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
             updateCell(nil, false, true)
         } else {
             let url: URL? = dataItem.imageUrl
-            self.webImageMediator?.setImage(for: cell.zoomImageView.imageView,
+            self.webImageMediator?.setImage(for: cell,
                                             url: url,
                                             thumbImage: dataItem.thumbImage,
                                             setImageBlock: { (image: UIImage?, imageData: Data?) in

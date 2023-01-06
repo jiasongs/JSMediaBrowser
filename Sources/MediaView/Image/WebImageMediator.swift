@@ -13,13 +13,13 @@ public typealias WebImageMediatorCompleted = (_ image: UIImage?, _ imageData: Da
 
 public protocol WebImageMediator {
     
-    func setImage(for imageView: UIImageView,
+    func setImage(for view: UIView,
                   url: URL?,
                   thumbImage: UIImage?,
                   setImageBlock: WebImageMediatorSetImageBlock?,
                   progress: WebImageMediatorDownloadProgress?,
                   completed: WebImageMediatorCompleted?)
     
-    func cancelImageRequest(for imageView: UIImageView)
+    func cancelImageRequest(for view: UIView)
     
 }
