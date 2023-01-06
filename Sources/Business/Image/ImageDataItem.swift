@@ -1,5 +1,5 @@
 //
-//  ImageEntity.swift
+//  ImageDataItem.swift
 //  JSMediaBrowser
 //
 //  Created by jiasong on 2020/12/12.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-public struct ImageEntity: ImageDataItemProtocol {
+public struct ImageDataItem: ImageDataItemProtocol {
     
     public var thumbImage: UIImage?
 

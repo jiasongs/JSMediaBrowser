@@ -129,23 +129,27 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let browserVC = JSMediaBrowserViewController()
+        var index = 0
         browserVC.dataSource = self.dataSource.map { urlString in
-            let isVideo = urlString.contains("mp4")
-            if isVideo {
-                return VideoEntity(videoUrl: URL(string: urlString))
+            var item: DataItemProtocol
+            let image = self.pictureCell(at: index)?.imageView.image
+            if urlString.contains("mp4") {
+                item = VideoDataItem(videoUrl: URL(string: urlString), thumbImage: image)
             } else {
-                return ImageEntity(imageUrl: URL(string: urlString))
+                item = ImageDataItem(imageUrl: URL(string: urlString), thumbImage: image)
             }
+            index += 1
+            return item
         }
         browserVC.currentPage = indexPath.item
         browserVC.sourceViewForPageAtIndex = { [weak self] (vc, index) -> UIView? in
-            guard let cell = self?.collectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? HomePictureCell else {
+            guard let cell = self?.pictureCell(at: index) else {
                 return nil
             }
             return cell.imageView
         }
         browserVC.sourceRectForPageAtIndex = { [weak self] (vc, index) -> CGRect in
-            guard let cell = self?.collectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? HomePictureCell else {
+            guard let cell = self?.pictureCell(at: index) else {
                 return CGRect.zero
             }
             return vc.view.convert(cell.frame, from: cell.superview)
@@ -156,6 +160,13 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
 }
 
 extension HomeViewController {
+    
+    fileprivate func pictureCell(at index: Int) -> HomePictureCell? {
+        guard let cell = self.collectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? HomePictureCell else {
+            return nil
+        }
+        return cell
+    }
     
     fileprivate func videoFirstImage(with url: URL, completion: @escaping (UIImage?) -> Void) {
         DispatchQueue.global().async {
