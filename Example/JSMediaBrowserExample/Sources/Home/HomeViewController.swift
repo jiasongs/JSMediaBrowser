@@ -14,25 +14,16 @@ import Then
 
 class HomeViewController: UIViewController {
     
-    lazy var scrollView: UIScrollView = {
-        let view = UIScrollView()
-        if #available(iOS 11.0, *) {
-            view.contentInsetAdjustmentBehavior = .never
-        }
-        return view
+    lazy var collectionView: UICollectionView = {
+        let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: UICollectionViewFlowLayout())
+        collectionView.backgroundColor = UIColor.clear
+        collectionView.alwaysBounceVertical = true
+        collectionView.alwaysBounceHorizontal = false
+        collectionView.contentInsetAdjustmentBehavior = .never
+        return collectionView
     }()
     
-    lazy var floatLayoutView: JSFloatLayoutView = {
-        let view = JSFloatLayoutView()
-        view.itemMargins = UIEdgeInsets(top: QMUIHelper.pixelOne, left: QMUIHelper.pixelOne, bottom: 0, right: 0);
-        return view
-    }()
-    
-    var dataSource: [String] = []
-    
-    var videoFormats: [String] {
-        return ["mp4", "flv"]
-    }
+    lazy var dataSource: [String] = []
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -47,38 +38,27 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .black
-        if let data = try? Data(contentsOf: NSURL.fileURL(withPath: Bundle.main.path(forResource: "data", ofType: "json") ?? "")) {
-            var array = try? JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.fragmentsAllowed) as? [String]
-            if let data1 = Bundle.main.path(forResource: "data1", ofType: "jpg") {
-                array?.append(URL(fileURLWithPath: data1).absoluteString)
-            }
-            if let data2 = Bundle.main.path(forResource: "data2", ofType: "gif") {
-                array?.append(URL(fileURLWithPath: data2).absoluteString)
-            }
-            if let data3 = Bundle.main.path(forResource: "data3", ofType: "jpg") {
-                array?.append(URL(fileURLWithPath: data3).absoluteString)
-            }
-            self.dataSource = array ?? []
+        self.view.addSubview(self.collectionView)
+        
+        self.collectionView.dataSource = self
+        self.collectionView.delegate = self
+        self.collectionView.register(HomePictureCell.self, forCellWithReuseIdentifier: "\(HomePictureCell.self)")
+        
+        /// 数据源
+        guard let data = try? Data(contentsOf: NSURL.fileURL(withPath: Bundle.main.path(forResource: "data", ofType: "json") ?? "")) else {
+            return
         }
-        self.view.addSubview(self.scrollView)
-        for item: String in self.dataSource {
-            let button = QMUIButton()
-            let imageView = SDAnimatedImageView()
-            imageView.clipsToBounds = true
-            imageView.contentMode = .scaleAspectFill
-            button.addSubview(imageView)
-            imageView.snp.makeConstraints { (maker: ConstraintMaker) in
-                maker.edges.equalTo(button)
-            }
-            if item.contains("mp4") {
-                imageView.image = self.getVideoFirstImage(with: URL(string: item)!)
-            } else {
-                imageView.sd_setImage(with: URL(string: item))
-            }
-            button.addTarget(self, action: #selector(self.handleImageButtonEvent(sender:)), for: UIControl.Event.touchUpInside)
-            self.floatLayoutView.addSubview(button)
+        var array = try? JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.fragmentsAllowed) as? [String]
+        if let data1 = Bundle.main.path(forResource: "data1", ofType: "jpg") {
+            array?.append(URL(fileURLWithPath: data1).absoluteString)
         }
-        self.scrollView.addSubview(floatLayoutView)
+        if let data2 = Bundle.main.path(forResource: "data2", ofType: "gif") {
+            array?.append(URL(fileURLWithPath: data2).absoluteString)
+        }
+        if let data3 = Bundle.main.path(forResource: "data3", ofType: "jpg") {
+            array?.append(URL(fileURLWithPath: data3).absoluteString)
+        }
+        self.dataSource = array ?? []
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -97,55 +77,107 @@ class HomeViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        let top = self.qmui_navigationBarMaxYInViewCoordinator
-        let margins: UIEdgeInsets = UIEdgeInsets(top: top + 5, left: 24 + self.view.safeAreaInsets.left, bottom: 24, right: 24 + self.view.safeAreaInsets.right);
-        let contentWidth: CGFloat = self.view.qmui_width - UIEdgeInsetsGetHorizontalValue(margins);
-        let column: Int = self.view.qmui_width > 700 ? 8 : 3
-        let horizontalValue: CGFloat = CGFloat((column - 1)) * UIEdgeInsetsGetHorizontalValue(self.floatLayoutView.itemMargins);
-        let imgWith: CGFloat = contentWidth / CGFloat(column) - horizontalValue;
-        self.floatLayoutView.minimumItemSize = CGSize(width: imgWith, height: imgWith);
-        self.floatLayoutView.maximumItemSize = self.floatLayoutView.minimumItemSize;
-        let oldSize: CGSize = self.floatLayoutView.bounds.size
-        self.floatLayoutView.frame = CGRect(x: margins.left, y: margins.top, width: contentWidth, height: QMUIViewSelfSizingHeight);
-        /// 前后Bounds相等时, 也需要刷新下内部子视图的布局, 不然可能会有Bug
-        if oldSize.equalTo(self.floatLayoutView.bounds.size) {
-            self.floatLayoutView.setNeedsLayout()
-            self.floatLayoutView.layoutIfNeeded()
-        }
-        self.scrollView.frame = self.view.bounds
-        self.scrollView.contentSize = CGSize(width: self.floatLayoutView.frame.width, height: self.floatLayoutView.frame.maxY + self.view.safeAreaInsets.bottom)
+        self.collectionView.contentInset = UIEdgeInsets(top: self.view.safeAreaInsets.top + 5, left: 24 + self.view.safeAreaInsets.left, bottom: 24, right: 24 + self.view.safeAreaInsets.right)
+        self.collectionView.collectionViewLayout.invalidateLayout()
+        self.collectionView.frame = self.view.bounds
     }
     
-    @objc func handleImageButtonEvent(sender: QMUIButton) {
-        let browserVC = JSMediaBrowserViewController()
-        var dataSource: [DataItemProtocol] = [];
-        for (_, urlString) in self.dataSource.enumerated() {
-            var isVideo = false
-            for format in self.videoFormats {
-                if urlString.contains(format) {
-                    isVideo = true
-                    break
-                }
+}
+
+extension HomeViewController: UICollectionViewDataSource {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return self.dataSource.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "\(HomePictureCell.self)", for: indexPath) as? HomePictureCell else {
+            fatalError()
+        }
+        let item = self.dataSource[indexPath.item]
+        if item.contains("mp4") {
+            self.videoFirstImage(with: URL(string: item)!) { image in
+                cell.imageView.image = image
             }
+        } else {
+            cell.imageView.sd_setImage(with: URL(string: item))
+        }
+        return cell
+    }
+    
+}
+
+extension HomeViewController: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets.zero
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 7
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 7
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let interitemSpacing =  self.collectionView(collectionView, layout: collectionViewLayout, minimumInteritemSpacingForSectionAt: indexPath.section)
+        let size = (collectionView.qmui_width - UIEdgeInsetsGetHorizontalValue(collectionView.adjustedContentInset) - 2.0 * interitemSpacing) / 3.0
+        return CGSizeFloor(CGSize(width: size, height: size))
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let browserVC = JSMediaBrowserViewController()
+        browserVC.dataSource = self.dataSource.map { urlString in
+            let isVideo = urlString.contains("mp4")
             if isVideo {
-                let videoEntity = VideoEntity(videoUrl: URL(string: urlString))
-                dataSource.append(videoEntity)
+                return VideoEntity(videoUrl: URL(string: urlString))
             } else {
-                let imageEntity = ImageEntity(imageUrl: URL(string: urlString))
-                dataSource.append(imageEntity)
+                return ImageEntity(imageUrl: URL(string: urlString))
             }
         }
-        browserVC.dataSource = dataSource
-        browserVC.currentPage = self.floatLayoutView.subviews.firstIndex(of: sender) ?? 0
+        browserVC.currentPage = indexPath.item
         browserVC.sourceViewForPageAtIndex = { [weak self] (vc, index) -> UIView? in
-            return self?.floatLayoutView.subviews[index]
+            guard let cell = self?.collectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? HomePictureCell else {
+                return nil
+            }
+            return cell.imageView
         }
         browserVC.sourceRectForPageAtIndex = { [weak self] (vc, index) -> CGRect in
-            let rect = self?.floatLayoutView.subviews[index].frame ?? CGRect.zero
-            return vc.view.convert(rect, from: self?.floatLayoutView)
+            guard let cell = self?.collectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? HomePictureCell else {
+                return CGRect.zero
+            }
+            return vc.view.convert(cell.frame, from: cell.superview)
         }
         browserVC.show(from: self, navigationController: QMUINavigationController(rootViewController: browserVC))
     }
+    
+}
+
+extension HomeViewController {
+    
+    fileprivate func videoFirstImage(with url: URL, completion: @escaping (UIImage?) -> Void) {
+        DispatchQueue.global().async {
+            let asset = AVURLAsset(url: url)
+            let generator = AVAssetImageGenerator(asset: asset)
+            generator.appliesPreferredTrackTransform = true
+            let time = CMTimeMakeWithSeconds(0.0, preferredTimescale: 1)
+            var actualTime = CMTimeMakeWithSeconds(0, preferredTimescale: 0)
+            let cgImage = try? generator.copyCGImage(at: time, actualTime: &actualTime)
+            DispatchQueue.main.async {
+                if let cgImage = cgImage {
+                    completion(UIImage(cgImage: cgImage))
+                } else {
+                    completion(nil)
+                }
+            }
+        }
+    }
+    
+}
+
+extension HomeViewController {
     
     override var prefersStatusBarHidden: Bool {
         return false
@@ -161,19 +193,6 @@ class HomeViewController: UIViewController {
     
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return .allButUpsideDown
-    }
-    
-    func getVideoFirstImage(with url: URL) -> UIImage? {
-        let asset: AVURLAsset = AVURLAsset(url: url)
-        let generator = AVAssetImageGenerator(asset: asset)
-        generator.appliesPreferredTrackTransform = true;
-        let time = CMTimeMakeWithSeconds(0.0, preferredTimescale: 1)
-        var actualTime : CMTime = CMTimeMakeWithSeconds(0, preferredTimescale: 0)
-        let cgImage: CGImage? = try? generator.copyCGImage(at: time, actualTime: &actualTime)
-        if let cgImage = cgImage {
-            return UIImage(cgImage: cgImage)
-        }
-        return nil
     }
     
 }

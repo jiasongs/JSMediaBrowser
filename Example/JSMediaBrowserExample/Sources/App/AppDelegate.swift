@@ -6,9 +6,7 @@
 //
 
 import UIKit
-#if !targetEnvironment(macCatalyst)
-import MLeaksFinder
-#endif
+import QMUIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

@@ -19,8 +19,8 @@
 		7A23CD7B2581F3C1004B4033 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7A23CD632581F367004B4033 /* Assets.xcassets */; };
 		7A25377726F75B87009E80A2 /* UIViewController+Debug.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A25377626F75B87009E80A2 /* UIViewController+Debug.m */; };
 		7A25377826F75B87009E80A2 /* UIViewController+Debug.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A25377626F75B87009E80A2 /* UIViewController+Debug.m */; };
-		7A320035264774B9005BDC71 /* JSFloatLayoutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A320034264774B9005BDC71 /* JSFloatLayoutView.m */; };
-		7A320036264774B9005BDC71 /* JSFloatLayoutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A320034264774B9005BDC71 /* JSFloatLayoutView.m */; };
+		7A497DD929680384008741EB /* HomePictureCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A497DD829680384008741EB /* HomePictureCell.swift */; };
+		7A497DDA29680384008741EB /* HomePictureCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A497DD829680384008741EB /* HomePictureCell.swift */; };
 		7A51AE272966BCD90060B964 /* JSMediaBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A51AE262966BCD90060B964 /* JSMediaBrowserViewController.swift */; };
 		7A51AE282966BCD90060B964 /* JSMediaBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A51AE262966BCD90060B964 /* JSMediaBrowserViewController.swift */; };
 		7A5F728D265B7E2A0048EF56 /* data3.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 7A5F728C265B7E2A0048EF56 /* data3.jpg */; };
@@ -52,9 +52,8 @@
 		7A23CD8C2581F58C004B4033 /* InfoMacOS.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = InfoMacOS.plist; sourceTree = "<group>"; };
 		7A25377526F75B87009E80A2 /* UIViewController+Debug.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIViewController+Debug.h"; sourceTree = "<group>"; };
 		7A25377626F75B87009E80A2 /* UIViewController+Debug.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Debug.m"; sourceTree = "<group>"; };
-		7A320033264774B9005BDC71 /* JSFloatLayoutView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSFloatLayoutView.h; sourceTree = "<group>"; };
-		7A320034264774B9005BDC71 /* JSFloatLayoutView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSFloatLayoutView.m; sourceTree = "<group>"; };
 		7A35FAEF259A2F3100149139 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
+		7A497DD829680384008741EB /* HomePictureCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomePictureCell.swift; sourceTree = "<group>"; };
 		7A51AE262966BCD90060B964 /* JSMediaBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSMediaBrowserViewController.swift; sourceTree = "<group>"; };
 		7A5F728C265B7E2A0048EF56 /* data3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = data3.jpg; sourceTree = "<group>"; };
 		7A61E076259486FA001C58FA /* PageControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageControl.swift; sourceTree = "<group>"; };
@@ -163,8 +162,6 @@
 		7A80A5B12597608A00E9927C /* General */ = {
 			isa = PBXGroup;
 			children = (
-				7A320033264774B9005BDC71 /* JSFloatLayoutView.h */,
-				7A320034264774B9005BDC71 /* JSFloatLayoutView.m */,
 				7A25377526F75B87009E80A2 /* UIViewController+Debug.h */,
 				7A25377626F75B87009E80A2 /* UIViewController+Debug.m */,
 			);
@@ -185,6 +182,7 @@
 		7AF419922598439F009E7FEE /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				7A497DD829680384008741EB /* HomePictureCell.swift */,
 				7A23CD5E2581F365004B4033 /* HomeViewController.swift */,
 			);
 			path = Home;
@@ -397,8 +395,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				7A61E077259486FA001C58FA /* PageControl.swift in Sources */,
+				7A497DD929680384008741EB /* HomePictureCell.swift in Sources */,
 				7A51AE272966BCD90060B964 /* JSMediaBrowserViewController.swift in Sources */,
-				7A320035264774B9005BDC71 /* JSFloatLayoutView.m in Sources */,
 				7A23CD5F2581F365004B4033 /* HomeViewController.swift in Sources */,
 				7A25377726F75B87009E80A2 /* UIViewController+Debug.m in Sources */,
 				7A23CD5B2581F365004B4033 /* AppDelegate.swift in Sources */,
@@ -411,8 +409,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				7A61E078259486FA001C58FA /* PageControl.swift in Sources */,
+				7A497DDA29680384008741EB /* HomePictureCell.swift in Sources */,
 				7A51AE282966BCD90060B964 /* JSMediaBrowserViewController.swift in Sources */,
-				7A320036264774B9005BDC71 /* JSFloatLayoutView.m in Sources */,
 				7A23CD762581F3C1004B4033 /* HomeViewController.swift in Sources */,
 				7A25377826F75B87009E80A2 /* UIViewController+Debug.m in Sources */,
 				7A23CD772581F3C1004B4033 /* AppDelegate.swift in Sources */,
