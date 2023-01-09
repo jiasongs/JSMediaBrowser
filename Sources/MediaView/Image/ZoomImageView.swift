@@ -13,49 +13,15 @@ public class ZoomImageView: BasisMediaView {
     
     public var modifier: ZoomImageViewModifier?
     
-    private(set) lazy var scrollView: UIScrollView = {
-        let scrollView = UIScrollView(frame: CGRect(origin: CGPoint.zero, size: frame.size))
-        scrollView.showsHorizontalScrollIndicator = false
-        scrollView.showsVerticalScrollIndicator = false
-        scrollView.minimumZoomScale = 1
-        scrollView.maximumZoomScale = self.maximumZoomScale
-        scrollView.scrollsToTop = false
-        scrollView.delaysContentTouches = false
-        scrollView.delegate = self
-        scrollView.contentInsetAdjustmentBehavior = .never
-        return scrollView
-    }()
-    
-    fileprivate var isImageViewInitialized: Bool = false
-    private(set) lazy var imageView: UIImageView = {
-        isImageViewInitialized = true
-        var imageView: UIImageView = self.modifier?.imageView(in: self) ?? UIImageView()
-        imageView.isHidden = true
-        imageView.isAccessibilityElement = true
-        self.scrollView.addSubview(imageView)
-        return imageView
-    }()
-    
-    fileprivate var isLivePhotoViewInitialized: Bool = false
-    private(set) lazy var livePhotoView: PHLivePhotoView = {
-        isLivePhotoViewInitialized = true
-        var livePhotoView: PHLivePhotoView = self.modifier?.livePhotoView(in: self) ?? PHLivePhotoView()
-        livePhotoView.isHidden = true
-        livePhotoView.delegate = self
-        livePhotoView.isAccessibilityElement = true
-        self.scrollView.addSubview(livePhotoView)
-        return livePhotoView
-    }()
-    
     public var maximumZoomScale: CGFloat = 2.0 {
         didSet {
-            self.scrollView.maximumZoomScale = maximumZoomScale
+            self.scrollView.maximumZoomScale = self.maximumZoomScale
         }
     }
     
-    public weak var image: UIImage? {
+    public var image: UIImage? {
         didSet {
-            if self.image == nil && !self.isImageViewInitialized {
+            guard self.image != nil || self.isImageViewInitialized else {
                 return
             }
             if oldValue != self.image {
@@ -70,9 +36,9 @@ public class ZoomImageView: BasisMediaView {
         }
     }
     
-    public weak var livePhoto: PHLivePhoto? {
+    public var livePhoto: PHLivePhoto? {
         didSet {
-            if self.livePhoto == nil && !self.isLivePhotoViewInitialized {
+            guard self.livePhoto != nil || self.isLivePhotoViewInitialized else {
                 return
             }
             if oldValue != self.livePhoto {
@@ -96,6 +62,40 @@ public class ZoomImageView: BasisMediaView {
     }
     
     public var enabledZoom: Bool = true
+    
+    public private(set) lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView(frame: CGRect(origin: CGPoint.zero, size: frame.size))
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.minimumZoomScale = 1
+        scrollView.maximumZoomScale = self.maximumZoomScale
+        scrollView.scrollsToTop = false
+        scrollView.delaysContentTouches = false
+        scrollView.delegate = self
+        scrollView.contentInsetAdjustmentBehavior = .never
+        return scrollView
+    }()
+    
+    fileprivate var isImageViewInitialized: Bool = false
+    fileprivate lazy var imageView: UIImageView = {
+        self.isImageViewInitialized = true
+        var imageView: UIImageView = self.modifier?.imageView(in: self) ?? UIImageView()
+        imageView.isHidden = true
+        imageView.isAccessibilityElement = true
+        self.scrollView.addSubview(imageView)
+        return imageView
+    }()
+    
+    fileprivate var isLivePhotoViewInitialized: Bool = false
+    fileprivate lazy var livePhotoView: PHLivePhotoView = {
+        self.isLivePhotoViewInitialized = true
+        var livePhotoView: PHLivePhotoView = self.modifier?.livePhotoView(in: self) ?? PHLivePhotoView()
+        livePhotoView.isHidden = true
+        livePhotoView.delegate = self
+        livePhotoView.isAccessibilityElement = true
+        self.scrollView.addSubview(livePhotoView)
+        return livePhotoView
+    }()
     
     fileprivate weak var failGestureRecognizer: UIGestureRecognizer?
     fileprivate var isLivePhotoPlaying: Bool = false
@@ -160,11 +160,6 @@ extension ZoomImageView {
         self.revertZoomIfNeeded()
     }
     
-    fileprivate var calculateViewportRect: CGRect {
-        let resultRect = self.modifier?.viewportRect(in: self) ?? CGRect.zero
-        return !resultRect.isEmpty ? resultRect : self.finalViewportRect
-    }
-    
 }
 
 extension ZoomImageView {
@@ -183,21 +178,6 @@ extension ZoomImageView {
                        y: scrollView.contentSize.height + contentInset.bottom - scrollView.bounds.height)
     }
     
-    public func revertContentOffset(animated: Bool = true) {
-        var x: CGFloat = self.scrollView.contentOffset.x
-        var y: CGFloat = self.scrollView.contentOffset.y
-        let viewport: CGRect = self.calculateViewportRect
-        if let contentView = self.contentView, !viewport.isEmpty {
-            if viewport.width < contentView.frame.width {
-                x = (contentView.frame.width - viewport.width) / 2 - viewport.minX
-            }
-            if viewport.height < contentView.frame.height {
-                y = -self.scrollView.contentInset.top
-            }
-        }
-        self.scrollView.setContentOffset(CGPoint(x: x, y: y), animated: animated)
-    }
-    
     public func require(toFail otherGestureRecognizer: UIGestureRecognizer) {
         guard self.failGestureRecognizer != otherGestureRecognizer else {
             return
@@ -211,11 +191,11 @@ extension ZoomImageView {
 extension ZoomImageView {
     
     public var isDisplayImageView: Bool {
-        return isImageViewInitialized && !self.imageView.isHidden
+        return self.isImageViewInitialized && !self.imageView.isHidden
     }
     
     public var isDisplayLivePhotoView: Bool {
-        return isLivePhotoViewInitialized && !self.livePhotoView.isHidden
+        return self.isLivePhotoViewInitialized && !self.livePhotoView.isHidden
     }
     
     var isAnimating: Bool {
@@ -248,10 +228,6 @@ extension ZoomImageView {
             self.livePhotoView.stopPlayback()
         }
     }
-    
-}
-
-extension ZoomImageView {
     
     public var minimumZoomScale: CGFloat {
         var mediaSize: CGSize = CGSize.zero
@@ -346,16 +322,26 @@ extension ZoomImageView {
         self.revertContentOffset(animated: false)
     }
     
+}
+
+extension ZoomImageView {
+    
+    fileprivate var calculateViewportRect: CGRect {
+        let resultRect = self.modifier?.viewportRect(in: self) ?? CGRect.zero
+        return !resultRect.isEmpty ? resultRect : self.finalViewportRect
+    }
+    
     fileprivate func setNeedsRevertZoom() {
         self.isNeededRevertZoom = true
         self.setNeedsLayout()
     }
     
     fileprivate func revertZoomIfNeeded() {
-        if self.isNeededRevertZoom {
-            self.isNeededRevertZoom = false
-            self.revertZooming()
+        guard self.isNeededRevertZoom else {
+            return
         }
+        self.isNeededRevertZoom = false
+        self.revertZooming()
     }
     
     fileprivate func handleDidEndZooming() {
@@ -367,18 +353,33 @@ extension ZoomImageView {
         var contentInset: UIEdgeInsets = UIEdgeInsets.zero
         contentInset.top = viewport.minY
         contentInset.left = viewport.minX
-        contentInset.right = scrollView.bounds.width - viewport.maxX
-        contentInset.bottom = scrollView.bounds.height - viewport.maxY
+        contentInset.right = self.scrollView.bounds.width - viewport.maxX
+        contentInset.bottom = self.scrollView.bounds.height - viewport.maxY
         if viewport.height >= contentViewFrame.height {
             contentInset.top = floor(viewport.midY - contentViewFrame.height / 2.0)
-            contentInset.bottom = floor(scrollView.bounds.height - viewport.midY - contentViewFrame.height / 2.0)
+            contentInset.bottom = floor(self.scrollView.bounds.height - viewport.midY - contentViewFrame.height / 2.0)
         }
         if viewport.width >= contentViewFrame.width {
             contentInset.left = floor(viewport.midX - contentViewFrame.width / 2.0)
-            contentInset.right = floor(scrollView.bounds.width - viewport.midX - contentViewFrame.width / 2.0)
+            contentInset.right = floor(self.scrollView.bounds.width - viewport.midX - contentViewFrame.width / 2.0)
         }
         self.scrollView.contentInset = contentInset
         self.scrollView.contentSize = contentView.frame.size
+    }
+    
+    fileprivate func revertContentOffset(animated: Bool = true) {
+        var x: CGFloat = self.scrollView.contentOffset.x
+        var y: CGFloat = self.scrollView.contentOffset.y
+        let viewport: CGRect = self.calculateViewportRect
+        if let contentView = self.contentView, !viewport.isEmpty {
+            if viewport.width < contentView.frame.width {
+                x = (contentView.frame.width - viewport.width) / 2 - viewport.minX
+            }
+            if viewport.height < contentView.frame.height {
+                y = -self.scrollView.contentInset.top
+            }
+        }
+        self.scrollView.setContentOffset(CGPoint(x: x, y: y), animated: animated)
     }
     
 }

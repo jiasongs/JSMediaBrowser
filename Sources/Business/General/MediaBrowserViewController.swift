@@ -344,10 +344,10 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
             return true
         }
         let zoomImageView: ZoomImageView = imageCell.zoomImageView
-        let scrollView = zoomImageView.scrollView
         let velocity: CGPoint = gestureRecognizer.velocity(in: gestureRecognizer.view)
         let minY: CGFloat = ceil(zoomImageView.minContentOffset.y)
         let maxY: CGFloat = floor(zoomImageView.maxContentOffset.y)
+        let scrollView = zoomImageView.scrollView
         /// 垂直触摸滑动
         if abs(velocity.x) <= abs(velocity.y) {
             if velocity.y > 0 {
