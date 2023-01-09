@@ -66,7 +66,7 @@ public class MediaBrowserView: UIView {
     
     public var currentPage: Int = 0 {
         didSet {
-            guard self.isNeededScrollToItem else {
+            guard self.isNeededScrollToItem && self.currentPage != oldValue else {
                 return
             }
             self.scrollToPage(at: self.currentPage, animated: false)
@@ -136,6 +136,9 @@ extension MediaBrowserView {
 extension MediaBrowserView {
     
     public func setCurrentPage(_ index: Int, animated: Bool = true) {
+        guard self.currentPage != index else {
+            return
+        }
         self.isNeededScrollToItem = false
         self.currentPage = index
         self.isNeededScrollToItem = true
