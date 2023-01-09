@@ -17,6 +17,8 @@ public protocol MediaBrowserViewDelegate: AnyObject {
     
     func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, didScrollTo index: Int)
     
+    func mediaBrowserViewDidScroll(_ mediaBrowserView: MediaBrowserView)
+    
 }
 
 /// options
@@ -29,6 +31,8 @@ extension MediaBrowserViewDelegate {
     public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, willScrollHalfFrom index: Int, toIndex: Int) {}
     
     public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, didScrollTo index: Int) {}
+    
+    public func mediaBrowserViewDidScroll(_ mediaBrowserView: MediaBrowserView) {}
     
 }
 

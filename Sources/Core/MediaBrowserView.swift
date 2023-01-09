@@ -189,6 +189,10 @@ extension MediaBrowserView {
         return self.collectionView.visibleCells
     }
     
+    public var contentOffset: CGPoint {
+        return self.collectionView.contentOffset
+    }
+    
     public func dequeueReusableCell<Cell: UICollectionViewCell>(_ cellClass: Cell.Type,
                                                                 reuseIdentifier: String? = nil,
                                                                 at index: Int) -> Cell {
@@ -294,6 +298,8 @@ extension MediaBrowserView: UIScrollViewDelegate {
             }
             self.previousPageOffsetRatio = pageOffsetRatio
         }
+        
+        self.delegate?.mediaBrowserViewDidScroll(self)
     }
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {

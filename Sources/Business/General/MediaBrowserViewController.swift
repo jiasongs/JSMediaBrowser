@@ -313,6 +313,14 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
         self.cacheSourceView?.isHidden = true
     }
     
+    @objc open func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, didScrollTo index: Int) {
+        
+    }
+    
+    @objc open func mediaBrowserViewDidScroll(_ mediaBrowserView: MediaBrowserView) {
+        
+    }
+    
 }
 
 extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
