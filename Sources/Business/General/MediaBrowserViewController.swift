@@ -368,7 +368,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
         case .began:
             self.gestureBeganLocation = gestureRecognizer.location(in: gestureRecognizerView)
             self.transitionInteractiver.begin()
-            self.hide()
+            self.hide(animated: true)
             break
         case .changed:
             let location: CGPoint = gestureRecognizer.location(in: gestureRecognizerView)
