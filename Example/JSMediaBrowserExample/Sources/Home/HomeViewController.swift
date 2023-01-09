@@ -27,6 +27,8 @@ class HomeViewController: UIViewController {
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        self.extendedLayoutIncludesOpaqueBars = true
+        
         SDImageCache.shared.clearMemory()
         SDImageCache.shared.clearDisk(onCompletion: nil)
     }

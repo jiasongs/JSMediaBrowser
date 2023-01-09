@@ -8,13 +8,13 @@
 
 #import "UIViewController+Debug.h"
 #import <QMUIKit/QMUIKit.h>
-#if DEBUG && !TARGET_OS_MACCATALYST
+#if DEBUG
 #import <MLeaksFinder/MLeaksFinder.h>
 #endif
 
 @implementation UIViewController (Debug)
 
-#if DEBUG && !TARGET_OS_MACCATALYST
+#if DEBUG
 + (void)load {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
