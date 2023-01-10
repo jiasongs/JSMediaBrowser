@@ -86,9 +86,7 @@ extension TransitionAnimator {
         
         /// 最后添加ImageView, 保证在最上层
         self.imageView.removeFromSuperview()
-        if let function = self.delegate?.transitionViewWillMoveToSuperview {
-            function(self.imageView)
-        }
+        self.delegate?.transitionViewWillMoveToSuperview(self.imageView)
         if self.imageView.superview == nil {
             containerView.addSubview(self.imageView)
         }
