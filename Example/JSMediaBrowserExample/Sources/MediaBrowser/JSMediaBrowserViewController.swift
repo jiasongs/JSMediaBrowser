@@ -32,7 +32,7 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
     
     override var dataSource: [DataItemProtocol] {
         didSet {
-            self.updatePageControl()
+            self.updatePageControl(for: self.currentPage)
         }
     }
     
@@ -59,17 +59,15 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
             make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(QMUIHelper.isNotchedScreen ? 0 : -20)
             make.height.equalTo(30)
         }
-        
-        self.updatePageControl()
     }
     
 }
 
 extension JSMediaBrowserViewController {
     
-    func updatePageControl() {
+    func updatePageControl(for index: Int) {
         self.pageControl.numberOfPages = self.totalUnitPage
-        self.pageControl.currentPage = self.currentPage
+        self.pageControl.currentPage = index
     }
     
 }
@@ -78,7 +76,7 @@ extension JSMediaBrowserViewController {
     
     override func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, willScrollHalfFrom index: Int, toIndex: Int) {
         super.mediaBrowserView(mediaBrowserView, willScrollHalfFrom: index, toIndex: toIndex)
-        self.pageControl.currentPage = toIndex
+        self.updatePageControl(for: toIndex)
     }
     
     override func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, longPressTouch gestureRecognizer: UILongPressGestureRecognizer) {

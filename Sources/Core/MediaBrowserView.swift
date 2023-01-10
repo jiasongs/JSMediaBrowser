@@ -87,6 +87,7 @@ public class MediaBrowserView: UIView {
     
     fileprivate var previousPageOffsetRatio: CGFloat = 0.0
     fileprivate var isNeededScrollToItem: Bool = true
+    fileprivate var isScrollAnimated: Bool = false
     fileprivate var registeredCellIdentifiers: NSMutableSet = NSMutableSet()
     
     public override init(frame: CGRect) {
@@ -236,6 +237,7 @@ extension MediaBrowserView {
             return
         }
         if index >= 0 && index < self.totalUnitPage {
+            self.isScrollAnimated = animated
             /// iOS 14, 当isPagingEnabled为true, scrollToItem有bug
             /// https://stackoverflow.com/questions/41884645/uicollectionview-scroll-to-item-not-working-with-horizontal-direction
             let contentOffset = CGPoint(x: self.collectionView.bounds.width * CGFloat(index),
@@ -302,11 +304,11 @@ extension MediaBrowserView: UIScrollViewDelegate {
             self.previousPageOffsetRatio = pageOffsetRatio
         }
         
+        if !self.isScrollAnimated && !scrollView.isDragging && !scrollView.isTracking && !scrollView.isDecelerating {
+            self.delegate?.mediaBrowserView(self, didScrollTo: self.currentPage)
+        }
+        
         self.delegate?.mediaBrowserViewDidScroll(self)
-    }
-    
-    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        self.delegate?.mediaBrowserView(self, didScrollTo: self.currentPage)
     }
     
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
@@ -316,7 +318,15 @@ extension MediaBrowserView: UIScrollViewDelegate {
         self.delegate?.mediaBrowserView(self, didScrollTo: self.currentPage)
     }
     
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        self.delegate?.mediaBrowserView(self, didScrollTo: self.currentPage)
+    }
+    
     public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        guard self.isScrollAnimated else {
+            return
+        }
+        self.isScrollAnimated = false
         self.delegate?.mediaBrowserView(self, didScrollTo: self.currentPage)
     }
     
