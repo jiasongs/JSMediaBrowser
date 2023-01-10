@@ -79,6 +79,14 @@ extension JSMediaBrowserViewController {
     override func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, willScrollHalfFrom index: Int, toIndex: Int) {
         super.mediaBrowserView(mediaBrowserView, willScrollHalfFrom: index, toIndex: toIndex)
         self.updatePageControl(for: toIndex)
+        
+        print("mediaBrowserView willScrollHalfFrom: \(index) toIndex: \(toIndex)")
+    }
+    
+    override func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, didScrollTo index: Int) {
+        super.mediaBrowserView(mediaBrowserView, didScrollTo: index)
+        
+        print("mediaBrowserView didScrollTo \(index)")
     }
     
     override func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, longPressTouch gestureRecognizer: UILongPressGestureRecognizer) {
