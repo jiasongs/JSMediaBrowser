@@ -21,16 +21,17 @@
         [NSObject addClassNamesToWhitelist:@[@"_UIPageControlContentView"]];
         OverrideImplementation(UIViewController.class, @selector(willDealloc), ^id(__unsafe_unretained Class originClass, SEL originCMD, IMP (^originalIMPProvider)(void)) {
             return ^(UIViewController *selfObject) {
-                BOOL shouldCallSuper = YES;
                 
-                if (selfObject.beingDismissed && [selfObject conformsToProtocol:@protocol(UIViewControllerTransitioningDelegate)]) {
+                BOOL shouldCallSuper = YES;
+                UIViewController *viewController = selfObject.navigationController ? : selfObject;
+                if (viewController.beingDismissed) {
                     id<UIViewControllerAnimatedTransitioning> animatedTransitioning = nil;
                     id<UIViewControllerInteractiveTransitioning> interactiveTransitioning = nil;
-                    if ([selfObject.transitioningDelegate respondsToSelector:@selector(animationControllerForDismissedController:)]) {
-                        animatedTransitioning = [selfObject.transitioningDelegate animationControllerForDismissedController:selfObject];
+                    if ([viewController.transitioningDelegate respondsToSelector:@selector(animationControllerForDismissedController:)]) {
+                        animatedTransitioning = [viewController.transitioningDelegate animationControllerForDismissedController:viewController];
                     }
-                    if ([selfObject.transitioningDelegate respondsToSelector:@selector(interactionControllerForDismissal:)]) {
-                        interactiveTransitioning = [selfObject.transitioningDelegate interactionControllerForDismissal:animatedTransitioning];
+                    if ([viewController.transitioningDelegate respondsToSelector:@selector(interactionControllerForDismissal:)]) {
+                        interactiveTransitioning = [viewController.transitioningDelegate interactionControllerForDismissal:animatedTransitioning];
                     }
                     if (interactiveTransitioning != nil) {
                         shouldCallSuper = NO;
