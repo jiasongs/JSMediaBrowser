@@ -109,7 +109,7 @@ extension PieProgressView {
 
 extension PieProgressView {
     
-    public func setProgress(_ progress: Float, animated: Bool = true) {
+    public func setProgress(_ progress: Float, animated: Bool) {
         self.needSetProgress = false
         self.progress = fmax(self.minimumProgress, fmin(1.0, progress))
         self.needSetProgress = true
@@ -124,14 +124,15 @@ extension PieProgressView {
 
 fileprivate class PieProgressLayer: CALayer {
     
-    var shape: Shape = .sector
     @NSManaged var fillColor: UIColor?
     @NSManaged var strokeColor: UIColor?
     @NSManaged var progress: Float
     @NSManaged var lineWidth: CGFloat
     @NSManaged var borderInset: CGFloat
-    var animationDuration: CFTimeInterval = 0.5
-    var shouldChangeProgressWithAnimation: Bool = true
+    
+    fileprivate var shape: Shape = .sector
+    fileprivate var animationDuration: CFTimeInterval = 0.5
+    fileprivate var shouldChangeProgressWithAnimation: Bool = true
     
     override class func needsDisplay(forKey key: String) -> Bool {
         return key == #keyPath(progress) || super.needsDisplay(forKey: key)

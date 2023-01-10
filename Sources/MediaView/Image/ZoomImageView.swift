@@ -267,7 +267,7 @@ extension ZoomImageView {
         return self.scrollView.zoomScale
     }
     
-    public func setZoom(scale: CGFloat, animated: Bool = true) {
+    public func setZoom(scale: CGFloat, animated: Bool) {
         if animated {
             UIView.animate(withDuration: 0.25, delay: 0.0, options: AnimationOptionsCurveOut, animations: {
                 self.scrollView.zoomScale = scale
@@ -277,7 +277,7 @@ extension ZoomImageView {
         }
     }
     
-    public func zoom(to point: CGPoint, scale: CGFloat = 3.0, animated: Bool = true) {
+    public func zoom(to point: CGPoint, scale: CGFloat = 3.0, animated: Bool) {
         guard scale > 0 else {
             return
         }
@@ -290,7 +290,7 @@ extension ZoomImageView {
         self.zoom(to: zoomRect, animated: animated)
     }
     
-    public func zoom(to rect: CGRect, animated: Bool = true) {
+    public func zoom(to rect: CGRect, animated: Bool) {
         if animated {
             UIView.animate(withDuration: 0.25, delay: 0.0, options: AnimationOptionsCurveOut, animations: {
                 self.scrollView.zoom(to: rect, animated: false)
@@ -367,7 +367,7 @@ extension ZoomImageView {
         self.scrollView.contentSize = contentView.frame.size
     }
     
-    fileprivate func revertContentOffset(animated: Bool = true) {
+    fileprivate func revertContentOffset(animated: Bool) {
         var x: CGFloat = self.scrollView.contentOffset.x
         var y: CGFloat = self.scrollView.contentOffset.y
         let viewport: CGRect = self.calculateViewportRect

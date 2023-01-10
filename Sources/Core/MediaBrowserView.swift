@@ -84,9 +84,10 @@ public class MediaBrowserView: UIView {
         return PagingLayout()
     }()
     
+    fileprivate var registeredCellIdentifiers: NSMutableSet = NSMutableSet()
     fileprivate var previousPageOffsetRatio: CGFloat = 0.0
     fileprivate var isNeededScrollToItem: Bool = true
-    fileprivate var registeredCellIdentifiers: NSMutableSet = NSMutableSet()
+    fileprivate var endScrollingAnimation: (() -> Void)?
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -134,16 +135,18 @@ extension MediaBrowserView {
 
 extension MediaBrowserView {
     
-    public func setCurrentPage(_ index: Int, animated: Bool = true) {
+    public func setCurrentPage(_ index: Int, animated: Bool, completion: (() -> Void)? = nil) {
         guard self.currentPage != index else {
             return
         }
-        self.isNeededScrollToItem = false
-        self.currentPage = index
-        self.isNeededScrollToItem = true
-        
         /// 滚动到指定位置
         self.scrollToPage(at: index, animated: animated)
+        
+        if animated {
+            self.endScrollingAnimation = completion
+        } else {
+            completion?()
+        }
     }
     
     public func reloadData() {
@@ -230,7 +233,7 @@ extension MediaBrowserView {
         return cell
     }
     
-    fileprivate func scrollToPage(at index: Int, animated: Bool = true) {
+    fileprivate func scrollToPage(at index: Int, animated: Bool) {
         guard !self.collectionView.bounds.isEmpty else {
             return
         }
@@ -317,6 +320,11 @@ extension MediaBrowserView: UIScrollViewDelegate {
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         self.delegate?.mediaBrowserView(self, didScrollTo: self.currentPage)
+    }
+    
+    public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        self.endScrollingAnimation?()
+        self.endScrollingAnimation = nil
     }
     
     fileprivate var pageOffsetRatio: CGFloat {

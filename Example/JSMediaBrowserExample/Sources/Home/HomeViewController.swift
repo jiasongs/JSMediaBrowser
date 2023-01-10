@@ -161,7 +161,7 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
             }
             return vc.view.convert(cell.frame, from: cell.superview)
         }
-        browserVC.show(from: self, navigationController: QMUINavigationController(rootViewController: browserVC))
+        browserVC.show(from: self, navigationController: QMUINavigationController(rootViewController: browserVC), animated: true)
     }
     
 }

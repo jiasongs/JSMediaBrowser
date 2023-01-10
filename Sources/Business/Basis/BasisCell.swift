@@ -65,7 +65,7 @@ public class BasisCell: UICollectionViewCell {
     }
     
     public func setProgress(_ progress: Progress) {
-        self.pieProgressView.setProgress(Float(progress.fractionCompleted))
+        self.pieProgressView.setProgress(Float(progress.fractionCompleted), animated: true)
     }
     
     public func setError(_ error: NSError?, cancelled: Bool, finished: Bool) {

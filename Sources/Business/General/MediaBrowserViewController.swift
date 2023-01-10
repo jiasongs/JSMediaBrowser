@@ -160,13 +160,13 @@ extension MediaBrowserViewController {
         return self.mediaBrowserView.currentPageCell
     }
     
-    @objc open func setCurrentPage(_ index: Int, animated: Bool = true) {
-        self.mediaBrowserView.setCurrentPage(index, animated: animated)
+    @objc open func setCurrentPage(_ index: Int, animated: Bool, completion: (() -> Void)? = nil) {
+        self.mediaBrowserView.setCurrentPage(index, animated: animated, completion: completion)
     }
     
     @objc open func show(from sender: UIViewController,
                          navigationController: UINavigationController? = nil,
-                         animated: Bool = true,
+                         animated: Bool,
                          completion: (() -> Void)? = nil) {
         self.presentedFromViewController = sender
         
@@ -181,7 +181,7 @@ extension MediaBrowserViewController {
         senderViewController.present(viewController, animated: animated, completion: completion)
     }
     
-    @objc open func hide(animated: Bool = true, completion: (() -> Void)? = nil) {
+    @objc open func hide(animated: Bool, completion: (() -> Void)? = nil) {
         self.dismiss(animated: animated, completion: completion)
     }
     
@@ -326,7 +326,7 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
 extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     
     @objc open func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, singleTouch gestureRecognizer: UITapGestureRecognizer) {
-        self.hide()
+        self.hide(animated: true)
     }
     
     @objc open func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, doubleTouch gestureRecognizer: UITapGestureRecognizer) {
@@ -336,10 +336,10 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
         let zoomImageView = imageCell.zoomImageView
         let minimumZoomScale = zoomImageView.minimumZoomScale
         if zoomImageView.zoomScale != minimumZoomScale {
-            zoomImageView.setZoom(scale: minimumZoomScale)
+            zoomImageView.setZoom(scale: minimumZoomScale, animated: true)
         } else {
             let gesturePoint: CGPoint = gestureRecognizer.location(in: zoomImageView.contentView)
-            zoomImageView.zoom(to: gesturePoint)
+            zoomImageView.zoom(to: gesturePoint, animated: true)
         }
     }
     
