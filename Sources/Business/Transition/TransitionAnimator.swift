@@ -16,6 +16,8 @@ public protocol TransitionAnimatorDelegate: AnyObject {
     var transitionThumbImage: UIImage? { get }
     var transitionAnimatorViews: [UIView]? { get }
     
+    func transitionViewWillMoveToSuperview(_ transitionView: UIView)
+    
 }
 
 public protocol TransitionAnimatorModifier {
@@ -84,7 +86,12 @@ extension TransitionAnimator {
         
         /// 最后添加ImageView, 保证在最上层
         self.imageView.removeFromSuperview()
-        containerView.addSubview(self.imageView)
+        if let function = self.delegate?.transitionViewWillMoveToSuperview {
+            function(self.imageView)
+        }
+        if self.imageView.superview == nil {
+            containerView.addSubview(self.imageView)
+        }
         
         var style: TransitioningStyle = isEntering ? self.enteringStyle : self.exitingStyle
         let sourceView = self.delegate?.transitionSourceView

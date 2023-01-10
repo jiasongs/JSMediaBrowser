@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import JSCoreKit
 
 public class MediaBrowserView: UIView {
     

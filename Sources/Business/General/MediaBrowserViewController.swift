@@ -509,6 +509,10 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
         return animatorViews
     }
     
+    @objc open func transitionViewWillMoveToSuperview(_ transitionView: UIView) {
+        self.mediaBrowserView.addSubview(transitionView)
+    }
+    
 }
 
 extension MediaBrowserViewController {
