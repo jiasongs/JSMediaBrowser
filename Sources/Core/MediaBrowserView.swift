@@ -137,6 +137,7 @@ extension MediaBrowserView {
     
     public func setCurrentPage(_ index: Int, animated: Bool, completion: (() -> Void)? = nil) {
         guard self.currentPage != index else {
+            completion?()
             return
         }
         /// 滚动到指定位置
