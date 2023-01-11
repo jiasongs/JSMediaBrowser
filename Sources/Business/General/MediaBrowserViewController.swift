@@ -164,6 +164,22 @@ extension MediaBrowserViewController {
         self.mediaBrowserView.setCurrentPage(index, animated: animated, completion: completion)
     }
     
+    @objc open var contentOffset: CGPoint {
+        return self.mediaBrowserView.contentOffset
+    }
+    
+    @objc open var isTracking: Bool {
+        return self.mediaBrowserView.isTracking
+    }
+
+    @objc open var isDragging: Bool {
+        return self.mediaBrowserView.isDragging
+    }
+
+    @objc open var isDecelerating: Bool {
+        return self.mediaBrowserView.isDecelerating
+    }
+    
     @objc open func show(from sender: UIViewController,
                          navigationController: UINavigationController? = nil,
                          animated: Bool,

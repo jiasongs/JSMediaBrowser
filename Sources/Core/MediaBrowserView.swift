@@ -140,14 +140,8 @@ extension MediaBrowserView {
             completion?()
             return
         }
-        /// 滚动到指定位置
-        self.scrollToPage(at: index, animated: animated)
         
-        if animated {
-            self.endScrollingAnimation = completion
-        } else {
-            completion?()
-        }
+        self.scrollToPage(at: index, animated: animated, completion: completion)
     }
     
     public func reloadData() {
@@ -163,31 +157,35 @@ extension MediaBrowserView {
     }
     
     public func index(for pageCell: UICollectionViewCell) -> Int? {
-        if let indexPath: IndexPath = self.collectionView.indexPath(for: pageCell) {
+        if let indexPath = self.collectionView.indexPath(for: pageCell) {
             return indexPath.item
+        } else {
+            return nil
         }
-        return nil
+    }
+    
+    public func indexForItem(in point: CGPoint) -> Int? {
+        return self.collectionView.indexPathForItem(at: point)?.item
     }
     
     public func pageCellForItem<Cell: UICollectionViewCell>(at index: Int) -> Cell? {
-        let indexPath: IndexPath = IndexPath(item: index, section: 0)
+        let indexPath = IndexPath(item: index, section: 0)
         return self.collectionView.cellForItem(at: indexPath) as? Cell
     }
     
-    public func pageCellForItem(at point: CGPoint) -> UICollectionViewCell? {
-        if let indexPath =  self.collectionView.indexPathForItem(at: point) {
-            return self.collectionView.cellForItem(at: indexPath)
+    public func pageCellForItem<Cell: UICollectionViewCell>(in point: CGPoint) -> Cell? {
+        if let index = self.indexForItem(in: point) {
+            return self.pageCellForItem(at: index)
         } else {
             return nil
         }
     }
     
     public var currentPageCell: UICollectionViewCell? {
-        let indexPath = IndexPath(item: self.currentPage, section: 0)
-        if let cell = self.collectionView.cellForItem(at: indexPath) {
+        if let cell = self.pageCellForItem(at: self.currentPage) {
             return cell
         } else {
-            return self.collectionView.visibleCells.last
+            return self.collectionView.visibleCells.first
         }
     }
     
@@ -197,6 +195,18 @@ extension MediaBrowserView {
     
     public var contentOffset: CGPoint {
         return self.collectionView.contentOffset
+    }
+    
+    public var isTracking: Bool {
+        return self.collectionView.isTracking
+    }
+    
+    public var isDragging: Bool {
+        return self.collectionView.isDragging
+    }
+    
+    public var isDecelerating: Bool {
+        return self.collectionView.isDecelerating
     }
     
     public func dequeueReusableCell<Cell: UICollectionViewCell>(_ cellClass: Cell.Type,
@@ -234,22 +244,13 @@ extension MediaBrowserView {
         return cell
     }
     
-    fileprivate func scrollToPage(at index: Int, animated: Bool) {
-        guard !self.collectionView.bounds.isEmpty else {
-            return
-        }
-        if index >= 0 && index < self.totalUnitPage {
-            /// iOS 14, 当isPagingEnabled为true, scrollToItem有bug
-            /// https://stackoverflow.com/questions/41884645/uicollectionview-scroll-to-item-not-working-with-horizontal-direction
-            let contentOffset = CGPoint(x: self.collectionView.bounds.width * CGFloat(index),
-                                        y: self.collectionView.contentOffset.y)
-            self.collectionView.setContentOffset(contentOffset, animated: animated)
-        }
-    }
-    
 }
 
 extension MediaBrowserView: UICollectionViewDataSource {
+    
+    public func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
     
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.dataSource?.numberOfPages(in: self) ?? 0
@@ -298,11 +299,12 @@ extension MediaBrowserView: UIScrollViewDelegate {
             let index = Int(round(pageOffsetRatio))
             if index >= 0 && index < self.totalUnitPage {
                 self.delegate?.mediaBrowserView(self, willScrollHalfFrom: self.currentPage, toIndex: index)
+                
                 self.isNeededScrollToItem = false
                 self.currentPage = index
                 self.isNeededScrollToItem = true
                 
-                if !scrollView.isDragging && !scrollView.isTracking && !scrollView.isDecelerating {
+                if !self.isDragging && !self.isTracking && !self.isDecelerating {
                     self.delegate?.mediaBrowserView(self, didScrollTo: self.currentPage)
                 }
             }
@@ -344,6 +346,28 @@ extension MediaBrowserView: UIScrollViewDelegate {
         }
         let rotationAnimationKeys = ["position", "bounds.origin", "bounds.size"]
         return animationKeys.contains(where: { rotationAnimationKeys.contains($0) })
+    }
+    
+    fileprivate func scrollToPage(at index: Int, animated: Bool, completion: (() -> Void)? = nil) {
+        guard !self.collectionView.bounds.isEmpty else {
+            completion?()
+            return
+        }
+        guard index >= 0 && index < self.totalUnitPage else {
+            completion?()
+            return
+        }
+        /// iOS 14, 当isPagingEnabled为true, scrollToItem有bug
+        /// https://stackoverflow.com/questions/41884645/uicollectionview-scroll-to-item-not-working-with-horizontal-direction
+        let contentOffset = CGPoint(x: self.collectionView.bounds.width * CGFloat(index),
+                                    y: self.collectionView.contentOffset.y)
+        self.collectionView.setContentOffset(contentOffset, animated: animated)
+        
+        if animated {
+            self.endScrollingAnimation = completion
+        } else {
+            completion?()
+        }
     }
     
 }
