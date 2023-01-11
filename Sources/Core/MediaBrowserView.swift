@@ -331,7 +331,7 @@ extension MediaBrowserView: UIScrollViewDelegate {
     }
     
     fileprivate var pageOffsetRatio: CGFloat {
-        let pageWidth: CGFloat = self.collectionView.bounds.width
+        let pageWidth = self.collectionView.bounds.width
         guard pageWidth > 0 else {
             return 0.0
         }
