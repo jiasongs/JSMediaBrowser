@@ -88,6 +88,8 @@ public class MediaBrowserView: UIView {
     fileprivate var previousPageOffsetRatio: CGFloat = 0.0
     fileprivate var isNeededScrollToItem: Bool = true
     fileprivate var endScrollingAnimation: (() -> Void)?
+    fileprivate var shouldCallEndDecelerating: Bool = false
+    fileprivate var isFirstDidScroll: Bool = true
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -128,6 +130,12 @@ extension MediaBrowserView {
         if self.collectionView.bounds.size != self.bounds.size {
             self.collectionView.frame = self.bounds
             self.scrollToPage(at: self.currentPage, animated: false)
+        }
+        
+        if self.isFirstDidScroll {
+            self.isFirstDidScroll = false
+            self.delegate?.mediaBrowserView(self, willScrollHalfFrom: 0, toIndex: self.currentPage)
+            self.delegate?.mediaBrowserView(self, didScrollTo: self.currentPage)
         }
     }
     
@@ -304,7 +312,8 @@ extension MediaBrowserView: UIScrollViewDelegate {
                 self.currentPage = index
                 self.isNeededScrollToItem = true
                 
-                if !self.isDragging && !self.isTracking && !self.isDecelerating {
+                self.shouldCallEndDecelerating = self.isTracking || self.isDragging || self.isDecelerating
+                if !self.shouldCallEndDecelerating {
                     self.delegate?.mediaBrowserView(self, didScrollTo: self.currentPage)
                 }
             }
@@ -318,10 +327,14 @@ extension MediaBrowserView: UIScrollViewDelegate {
         guard !decelerate else {
             return
         }
-        self.delegate?.mediaBrowserView(self, didScrollTo: self.currentPage)
+        self.scrollViewDidEndDecelerating(scrollView)
     }
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        guard self.shouldCallEndDecelerating else {
+            return
+        }
+        self.shouldCallEndDecelerating = false
         self.delegate?.mediaBrowserView(self, didScrollTo: self.currentPage)
     }
     
