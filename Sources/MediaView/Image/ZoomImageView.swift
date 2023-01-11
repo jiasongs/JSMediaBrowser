@@ -269,7 +269,7 @@ extension ZoomImageView {
     
     public func setZoom(scale: CGFloat, animated: Bool) {
         if animated {
-            UIView.animate(withDuration: 0.25, delay: 0.0, options: AnimationOptionsCurveOut, animations: {
+            UIView.animate(withDuration: 0.25, delay: 0.0, options: JSCoreHelper.animationOptionsCurveOut, animations: {
                 self.scrollView.zoomScale = scale
             }, completion: nil)
         } else {
@@ -292,7 +292,7 @@ extension ZoomImageView {
     
     public func zoom(to rect: CGRect, animated: Bool) {
         if animated {
-            UIView.animate(withDuration: 0.25, delay: 0.0, options: AnimationOptionsCurveOut, animations: {
+            UIView.animate(withDuration: 0.25, delay: 0.0, options: JSCoreHelper.animationOptionsCurveOut, animations: {
                 self.scrollView.zoom(to: rect, animated: false)
             }, completion: nil)
         } else {

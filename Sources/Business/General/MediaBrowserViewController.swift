@@ -439,7 +439,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     
     @objc open func resetDismissingAnimation() {
         self.gestureBeganLocation = CGPoint.zero
-        UIView.animate(withDuration: self.transitionAnimator.duration, delay: 0, options: AnimationOptionsCurveOut, animations: {
+        UIView.animate(withDuration: self.transitionAnimator.duration, delay: 0, options: JSCoreHelper.animationOptionsCurveOut, animations: {
             self.currentPageCell?.transform = CGAffineTransform.identity
             self.transitionAnimatorViews?.forEach { (subview) in
                 subview.alpha = 1.0

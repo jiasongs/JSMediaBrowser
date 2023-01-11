@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import JSCoreKit
 
 public protocol TransitionAnimatorDelegate: AnyObject {
     
@@ -112,7 +113,7 @@ extension TransitionAnimator {
         
         /// will
         self.handleAnimationEntering(style: style, isEntering: isEntering, fromView: fromView, toView: toView, sourceView: sourceView, sourceRect: sourceRect)
-        UIView.animate(withDuration: self.duration, delay: 0, options: isEntering ? AnimationOptionsCurveIn : UIView.AnimationOptions.curveLinear) {
+        UIView.animate(withDuration: self.duration, delay: 0, options: isEntering ? JSCoreHelper.animationOptionsCurveIn : .curveLinear) {
             /// processing
             self.handleAnimationProcessing(style: style, isEntering: isEntering, fromView: fromView, toView: toView)
         } completion: { (finished) in

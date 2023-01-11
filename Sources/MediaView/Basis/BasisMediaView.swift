@@ -6,10 +6,11 @@
 //
 
 import UIKit
+import JSCoreKit
 
 public class BasisMediaView: UIView {
     
-    public var isEnableVerticalSafeArea = false
+    public var isEnableVerticalSafeArea = JSCoreHelper.isMac ? true : false
     
     public var viewportRect: CGRect = .zero
     /// 以下属性viewportRect为zero时才会生效, 若自定义viewportRect, 请自行实现

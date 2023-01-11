@@ -297,7 +297,7 @@ extension MediaBrowserView: UIScrollViewDelegate {
         
         if turnPageToRight || turnPageToLeft {
             let index = Int(round(pageOffsetRatio))
-            if index >= 0 && index < self.totalUnitPage {
+            if index >= 0 && index < self.totalUnitPage && self.currentPage != index {
                 self.delegate?.mediaBrowserView(self, willScrollHalfFrom: self.currentPage, toIndex: index)
                 
                 self.isNeededScrollToItem = false

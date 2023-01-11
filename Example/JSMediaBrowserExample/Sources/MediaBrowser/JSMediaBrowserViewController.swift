@@ -32,7 +32,7 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
     
     override var dataSource: [DataItemProtocol] {
         didSet {
-            self.updatePageControl(for: self.currentPage)
+            self.updatePageControl()
         }
     }
     
@@ -60,16 +60,16 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
             make.height.equalTo(30)
         }
         
-        self.updatePageControl(for: self.currentPage)
+        self.updatePageControl()
     }
     
 }
 
 extension JSMediaBrowserViewController {
     
-    func updatePageControl(for index: Int) {
+    func updatePageControl(for index: Int? = nil) {
         self.pageControl.numberOfPages = self.totalUnitPage
-        self.pageControl.currentPage = index
+        self.pageControl.currentPage = index ?? self.currentPage
     }
     
 }
