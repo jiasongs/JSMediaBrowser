@@ -290,10 +290,10 @@ extension MediaBrowserView: UIScrollViewDelegate {
             return minimumValue <= value && value <= maximumValue
         }
         let pageOffsetRatio: CGFloat = self.pageOffsetRatio
-        let fastToRight: Bool = (floor(pageOffsetRatio) - floor(self.previousPageOffsetRatio) >= 1.0) && (floor(pageOffsetRatio) - self.previousPageOffsetRatio > 0.5)
-        let turnPageToRight: Bool = fastToRight || betweenOrEqual(self.previousPageOffsetRatio, floor(pageOffsetRatio) + 0.5, pageOffsetRatio)
-        let fastToLeft: Bool = (floor(self.previousPageOffsetRatio) - floor(pageOffsetRatio) >= 1.0) && (self.previousPageOffsetRatio - ceil(pageOffsetRatio) > 0.5)
-        let turnPageToLeft: Bool = fastToLeft || betweenOrEqual(pageOffsetRatio, floor(pageOffsetRatio) + 0.5, self.previousPageOffsetRatio)
+        let fastToRight = (floor(pageOffsetRatio) - floor(self.previousPageOffsetRatio) >= 1.0) && (floor(pageOffsetRatio) - self.previousPageOffsetRatio > 0.5)
+        let turnPageToRight = fastToRight || betweenOrEqual(self.previousPageOffsetRatio, floor(pageOffsetRatio) + 0.5, pageOffsetRatio)
+        let fastToLeft = (floor(self.previousPageOffsetRatio) - floor(pageOffsetRatio) >= 1.0) && (self.previousPageOffsetRatio - ceil(pageOffsetRatio) > 0.5)
+        let turnPageToLeft = fastToLeft || betweenOrEqual(pageOffsetRatio, floor(pageOffsetRatio) + 0.5, self.previousPageOffsetRatio)
         
         if turnPageToRight || turnPageToLeft {
             let index = Int(round(pageOffsetRatio))
@@ -331,12 +331,21 @@ extension MediaBrowserView: UIScrollViewDelegate {
     }
     
     fileprivate var pageOffsetRatio: CGFloat {
+        let maximumPage = CGFloat(self.totalUnitPage - 1)
         let pageWidth = self.collectionView.bounds.width
-        guard pageWidth > 0 else {
-            return 0.0
+        guard pageWidth > 0 && maximumPage >= 0 else {
+            return 0
         }
-        let contentOffsetX: CGFloat = self.collectionView.contentOffset.x
-        let pageOffsetRatio: CGFloat = contentOffsetX / pageWidth
+        
+        let contentOffsetX = self.collectionView.contentOffset.x
+        let pageOffsetRatio = contentOffsetX / pageWidth
+        guard pageOffsetRatio >= 0 else {
+            return 0
+        }
+        
+        guard pageOffsetRatio <= maximumPage else {
+            return maximumPage
+        }
         return pageOffsetRatio
     }
     
