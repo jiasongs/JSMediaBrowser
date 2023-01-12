@@ -184,6 +184,7 @@ extension ZoomImageView {
         }
         self.failGestureRecognizer = otherGestureRecognizer
         self.scrollView.panGestureRecognizer.require(toFail: otherGestureRecognizer)
+        self.scrollView.pinchGestureRecognizer?.require(toFail: otherGestureRecognizer)
     }
     
 }

@@ -313,7 +313,7 @@ extension MediaBrowserView: UIScrollViewDelegate {
                 
                 self.shouldCallEndDecelerating = self.isTracking || self.isDragging || self.isDecelerating
                 if !self.shouldCallEndDecelerating {
-                    self.delegate?.mediaBrowserView(self, didScrollTo: self.currentPage)
+                    self.delegate?.mediaBrowserView(self, didScrollTo: index)
                 }
             }
             self.previousPageOffsetRatio = pageOffsetRatio
