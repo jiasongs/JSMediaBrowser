@@ -175,11 +175,11 @@ extension MediaBrowserViewController {
     @objc open var isTracking: Bool {
         return self.mediaBrowserView.isTracking
     }
-
+    
     @objc open var isDragging: Bool {
         return self.mediaBrowserView.isDragging
     }
-
+    
     @objc open var isDecelerating: Bool {
         return self.mediaBrowserView.isDecelerating
     }
@@ -194,6 +194,7 @@ extension MediaBrowserViewController {
         viewController.modalPresentationStyle = .overCurrentContext
         viewController.modalPresentationCapturesStatusBarAppearance = true
         viewController.transitioningDelegate = self
+        
         var senderViewController = sender
         if let tabBarController = sender.tabBarController, (!tabBarController.tabBar.isHidden && !sender.hidesBottomBarWhenPushed) {
             senderViewController = tabBarController
@@ -202,7 +203,18 @@ extension MediaBrowserViewController {
     }
     
     @objc open func hide(animated: Bool, completion: (() -> Void)? = nil) {
-        self.dismiss(animated: animated, completion: completion)
+        if self.presentedFromViewController != nil {
+            self.dismiss(animated: animated, completion: completion)
+        } else {
+            self.navigationController?.popViewController(animated: animated)
+            if let transitionCoordinator = self.transitionCoordinator {
+                transitionCoordinator.animate(alongsideTransition: nil) { context in
+                    completion?()
+                }
+            } else {
+                completion?()
+            }
+        }
     }
     
 }
@@ -346,6 +358,10 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
 extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     
     @objc open func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, singleTouch gestureRecognizer: UITapGestureRecognizer) {
+        guard self.presentedFromViewController != nil else {
+            return
+        }
+        
         self.hide(animated: true)
     }
     
@@ -396,7 +412,9 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
         case .began:
             self.gestureBeganLocation = gestureRecognizer.location(in: gestureRecognizerView)
             self.transitionInteractiver.begin()
-            self.hide(animated: true)
+            if self.presentedFromViewController != nil {
+                self.hide(animated: true)
+            }
             break
         case .changed:
             let location: CGPoint = gestureRecognizer.location(in: gestureRecognizerView)
@@ -554,11 +572,28 @@ extension MediaBrowserViewController {
 extension MediaBrowserViewController {
     
     open override var shouldAutorotate: Bool {
-        return self.presentedFromViewController?.shouldAutorotate ?? true
+        guard let orientationViewController = self.orientationViewController else {
+            return true
+        }
+        
+        return orientationViewController.shouldAutorotate
     }
     
     open override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return self.presentedFromViewController?.supportedInterfaceOrientations ?? .allButUpsideDown
+        guard let orientationViewController = self.orientationViewController else {
+            return .allButUpsideDown
+        }
+        
+        return orientationViewController.supportedInterfaceOrientations
     }
     
+    fileprivate var orientationViewController: UIViewController? {
+        if let presentedFromViewController = self.presentedFromViewController {
+            return presentedFromViewController
+        } else if let viewControllers = self.navigationController?.viewControllers, let index = viewControllers.firstIndex(of: self) {
+            return index > 0 ? viewControllers[index - 1] : nil
+        }
+        return nil
+    }
+     
 }
