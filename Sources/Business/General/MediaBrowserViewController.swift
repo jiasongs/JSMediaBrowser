@@ -153,6 +153,10 @@ extension MediaBrowserViewController {
 extension MediaBrowserViewController {
     
     @objc open var totalUnitPage: Int {
+        guard self.mediaBrowserView.dataSource != nil else {
+            return self.numberOfPages(in: self.mediaBrowserView)
+        }
+        
         return self.mediaBrowserView.totalUnitPage
     }
     

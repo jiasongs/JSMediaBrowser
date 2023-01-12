@@ -89,7 +89,7 @@ public class MediaBrowserView: UIView {
     fileprivate var isNeededScrollToItem: Bool = true
     fileprivate var endScrollingAnimation: (() -> Void)?
     fileprivate var shouldCallEndDecelerating: Bool = false
-    fileprivate var isFirstDidScroll: Bool = true
+    fileprivate var scrollingPage: Int = 0
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -131,12 +131,6 @@ extension MediaBrowserView {
             self.collectionView.frame = self.bounds
             self.scrollToPage(at: self.currentPage, animated: false)
         }
-        
-        if self.isFirstDidScroll {
-            self.isFirstDidScroll = false
-            self.delegate?.mediaBrowserView(self, willScrollHalfFrom: 0, toIndex: self.currentPage)
-            self.delegate?.mediaBrowserView(self, didScrollTo: self.currentPage)
-        }
     }
     
 }
@@ -148,6 +142,9 @@ extension MediaBrowserView {
             completion?()
             return
         }
+        self.isNeededScrollToItem = false
+        self.currentPage = index
+        self.isNeededScrollToItem = true
         
         self.scrollToPage(at: index, animated: animated, completion: completion)
     }
@@ -305,8 +302,10 @@ extension MediaBrowserView: UIScrollViewDelegate {
         
         if turnPageToRight || turnPageToLeft {
             let index = Int(round(pageOffsetRatio))
-            if index >= 0 && index < self.totalUnitPage && self.currentPage != index {
-                self.delegate?.mediaBrowserView(self, willScrollHalfFrom: self.currentPage, toIndex: index)
+            if index >= 0 && index < self.totalUnitPage && self.scrollingPage != index {
+                self.delegate?.mediaBrowserView(self, willScrollHalfFrom: self.scrollingPage, toIndex: index)
+                
+                self.scrollingPage = index
                 
                 self.isNeededScrollToItem = false
                 self.currentPage = index
