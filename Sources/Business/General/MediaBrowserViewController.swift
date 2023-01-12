@@ -203,7 +203,7 @@ extension MediaBrowserViewController {
     }
     
     @objc open func hide(animated: Bool, completion: (() -> Void)? = nil) {
-        if self.presentedFromViewController != nil {
+        if self.isPresented {
             self.dismiss(animated: animated, completion: completion)
         } else {
             self.navigationController?.popViewController(animated: animated)
@@ -215,6 +215,10 @@ extension MediaBrowserViewController {
                 completion?()
             }
         }
+    }
+    
+    @objc open var isPresented: Bool {
+        return self.presentedFromViewController != nil
     }
     
 }
@@ -358,7 +362,7 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
 extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     
     @objc open func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, singleTouch gestureRecognizer: UITapGestureRecognizer) {
-        guard self.presentedFromViewController != nil else {
+        guard self.isPresented else {
             return
         }
         
@@ -412,7 +416,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
         case .began:
             self.gestureBeganLocation = gestureRecognizer.location(in: gestureRecognizerView)
             self.transitionInteractiver.begin()
-            if self.presentedFromViewController != nil {
+            if self.isPresented {
                 self.hide(animated: true)
             }
             break
