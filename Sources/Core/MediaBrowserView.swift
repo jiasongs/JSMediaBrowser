@@ -21,7 +21,11 @@ public class MediaBrowserView: UIView {
         }
     }
     
-    public weak var gestureDelegate: MediaBrowserViewGestureDelegate?
+    public weak var gestureDelegate: MediaBrowserViewGestureDelegate? {
+        didSet {
+            self.collectionView.gestureDelegate = self
+        }
+    }
     
     public var dimmingView: UIView? {
         didSet {
@@ -202,18 +206,6 @@ extension MediaBrowserView {
         return self.collectionView.contentOffset
     }
     
-    public var isTracking: Bool {
-        return self.collectionView.isTracking
-    }
-    
-    public var isDragging: Bool {
-        return self.collectionView.isDragging
-    }
-    
-    public var isDecelerating: Bool {
-        return self.collectionView.isDecelerating
-    }
-    
     public func dequeueReusableCell<Cell: UICollectionViewCell>(_ cellClass: Cell.Type,
                                                                 reuseIdentifier: String? = nil,
                                                                 at index: Int) -> Cell {
@@ -247,6 +239,26 @@ extension MediaBrowserView {
         let indexPath = IndexPath(item: index, section: 0)
         let cell = self.collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! Cell
         return cell
+    }
+    
+}
+
+extension MediaBrowserView {
+    
+    public var isTracking: Bool {
+        return self.collectionView.isTracking
+    }
+    
+    public var isDragging: Bool {
+        return self.collectionView.isDragging
+    }
+    
+    public var isDecelerating: Bool {
+        return self.collectionView.isDecelerating
+    }
+    
+    public var panGestureRecognizer: UIPanGestureRecognizer {
+        return self.collectionView.panGestureRecognizer
     }
     
 }
@@ -389,6 +401,18 @@ extension MediaBrowserView: UIScrollViewDelegate {
         } else {
             completion?()
         }
+    }
+    
+}
+
+extension MediaBrowserView: PagingCollectionViewGestureDelegate {
+    
+    public func pagingCollectionView(_ pagingCollectionView: PagingCollectionView, shouldBegin gestureRecognizer: UIGestureRecognizer, originReturn value: Bool) -> Bool {
+        return self.gestureDelegate?.mediaBrowserView(self, shouldBegin: gestureRecognizer, originReturn: value) ?? value
+    }
+    
+    public func pagingCollectionView(_ pagingCollectionView: PagingCollectionView, gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return self.gestureDelegate?.mediaBrowserView(self, gestureRecognizer: gestureRecognizer, shouldRecognizeSimultaneouslyWith: otherGestureRecognizer) ?? false
     }
     
 }

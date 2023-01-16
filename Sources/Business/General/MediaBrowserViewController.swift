@@ -30,7 +30,7 @@ open class MediaBrowserViewController: UIViewController {
         }
     }
     
-    open var dataSource: [DataItemProtocol] = [] {
+    open var dataSource: [DataItemProtocol]? {
         didSet {
             guard self.isViewLoaded else {
                 return
@@ -172,18 +172,6 @@ extension MediaBrowserViewController {
         return self.mediaBrowserView.contentOffset
     }
     
-    @objc open var isTracking: Bool {
-        return self.mediaBrowserView.isTracking
-    }
-    
-    @objc open var isDragging: Bool {
-        return self.mediaBrowserView.isDragging
-    }
-    
-    @objc open var isDecelerating: Bool {
-        return self.mediaBrowserView.isDecelerating
-    }
-    
     @objc open func show(from sender: UIViewController,
                          navigationController: UINavigationController? = nil,
                          animated: Bool,
@@ -223,15 +211,35 @@ extension MediaBrowserViewController {
     
 }
 
+extension MediaBrowserViewController {
+    
+    @objc open var isTracking: Bool {
+        return self.mediaBrowserView.isTracking
+    }
+    
+    @objc open var isDragging: Bool {
+        return self.mediaBrowserView.isDragging
+    }
+    
+    @objc open var isDecelerating: Bool {
+        return self.mediaBrowserView.isDecelerating
+    }
+    
+    @objc open var panGestureRecognizer: UIPanGestureRecognizer {
+        return self.mediaBrowserView.panGestureRecognizer
+    }
+    
+}
+
 extension MediaBrowserViewController: MediaBrowserViewDataSource {
     
     @objc open func numberOfPages(in mediaBrowserView: MediaBrowserView) -> Int {
-        return self.dataSource.count
+        return self.dataSource?.count ?? 0
     }
     
     @objc open func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, cellForPageAt index: Int) -> UICollectionViewCell {
         var cell: BasisCell? = nil
-        let dataItem = self.dataSource[index]
+        let dataItem = self.dataSource?[index]
         if let _ = dataItem as? ImageDataItemProtocol {
             cell = mediaBrowserView.dequeueReusableCell(ImageCell.self, at: index)
         } else if let _ = dataItem as? VideoDataItemProtocol {
@@ -264,7 +272,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     }
     
     @objc open func configureImageCell(_ cell: ImageCell, at index: Int) {
-        guard let dataItem = self.dataSource[index] as? ImageDataItemProtocol else {
+        guard let dataItem = self.dataSource?[index] as? ImageDataItemProtocol else {
             return
         }
         /// 当dismissingGesture失败时才会去响应scrollView的手势
@@ -309,7 +317,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     }
     
     @objc open func configureVideoCell(_ cell: VideoCell, at index: Int) {
-        guard let dataItem = self.dataSource[index] as? VideoDataItemProtocol else {
+        guard let dataItem = self.dataSource?[index] as? VideoDataItemProtocol else {
             return
         }
         cell.videoPlayerView.thumbImage = dataItem.thumbImage
@@ -360,6 +368,46 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
 }
 
 extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
+    
+    @objc open func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, shouldBegin gestureRecognizer: UIGestureRecognizer, originReturn value: Bool) -> Bool {
+        guard !self.isPresented else {
+            return value
+        }
+        guard let gestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer else {
+            return value
+        }
+        
+        let velocity = gestureRecognizer.velocity(in: gestureRecognizer.view)
+        if self.contentOffset.x <= 0 && velocity.x > 0 {
+            return false
+        } else {
+            return value
+        }
+    }
+    
+    @objc open func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard !self.isPresented else {
+            return false
+        }
+        guard let gestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer, let otherGestureRecognizer = otherGestureRecognizer as? UIPanGestureRecognizer else {
+            return false
+        }
+        
+        let velocity = gestureRecognizer.velocity(in: gestureRecognizer.view)
+        let otherVelocity = otherGestureRecognizer.velocity(in: otherGestureRecognizer.view)
+        let otherScrollView = otherGestureRecognizer.view as? UIScrollView
+        /// 两者的手势均为「水平-」滑动
+        let isHorizontalScroll = abs(velocity.x) > abs(velocity.y) && abs(otherVelocity.x) > abs(otherVelocity.y)
+        /// otherScrollView也是可以「水平-」滑动的
+        let canHorizontalScrollForOther = (otherScrollView == nil || otherScrollView!.contentSize.height <= otherScrollView!.bounds.height)
+        /// 综合判断下
+        if isHorizontalScroll && canHorizontalScrollForOther {
+            /// 全屏手势处理, 滑动最左侧视图且手势向右滑时, 返回true, 触发全屏手势
+            return self.contentOffset.x <= 0 && velocity.x > 0
+        } else {
+            return false
+        }
+    }
     
     @objc open func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, singleTouch gestureRecognizer: UITapGestureRecognizer) {
         guard self.isPresented else {
@@ -508,7 +556,7 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     }
     
     @objc open var transitionThumbImage: UIImage? {
-        let dataItem = self.dataSource[self.currentPage]
+        let dataItem = self.dataSource?[self.currentPage]
         if let dataItem = dataItem as? ImageDataItemProtocol {
             if let image = dataItem.image != nil ? dataItem.image : dataItem.thumbImage {
                 return image
@@ -599,5 +647,5 @@ extension MediaBrowserViewController {
         }
         return nil
     }
-     
+    
 }
