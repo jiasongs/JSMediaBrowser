@@ -60,4 +60,12 @@ extension PagingCollectionView: UIGestureRecognizerDelegate {
         return gestureDelegate.pagingCollectionView(self, gestureRecognizer: gestureRecognizer, shouldRecognizeSimultaneouslyWith: otherGestureRecognizer)
     }
     
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        if let _ = touch.view as? UISlider {
+            return false
+        } else {
+            return true
+        }
+    }
+    
 }

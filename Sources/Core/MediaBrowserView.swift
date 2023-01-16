@@ -445,12 +445,4 @@ extension MediaBrowserView: UIGestureRecognizerDelegate {
         self.gestureDelegate?.mediaBrowserView(self, dismissingChanged: gestureRecognizer)
     }
     
-    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        if let _ = touch.view as? UISlider {
-            return false
-        } else {
-            return true
-        }
-    }
-    
 }
