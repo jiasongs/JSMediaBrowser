@@ -67,6 +67,8 @@ public class ZoomImageView: BasisMediaView {
         let scrollView = UIScrollView(frame: CGRect(origin: CGPoint.zero, size: frame.size))
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
+        scrollView.alwaysBounceVertical = false
+        scrollView.alwaysBounceHorizontal = false
         scrollView.minimumZoomScale = 1
         scrollView.maximumZoomScale = self.maximumZoomScale
         scrollView.scrollsToTop = false

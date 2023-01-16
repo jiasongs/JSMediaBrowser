@@ -33,6 +33,8 @@ public class PagingCollectionView: UICollectionView {
         self.backgroundColor = UIColor(white: 0, alpha: 0)
         self.showsHorizontalScrollIndicator = false
         self.showsVerticalScrollIndicator = false
+        self.alwaysBounceVertical = false
+        self.alwaysBounceHorizontal = true
         self.scrollsToTop = false
         self.delaysContentTouches = false
         self.decelerationRate = .fast

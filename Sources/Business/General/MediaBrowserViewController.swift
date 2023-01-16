@@ -61,7 +61,7 @@ open class MediaBrowserViewController: UIViewController {
         }
     }
     
-    open var dismissWhenSlidingDistance: CGFloat = 60
+    open var dismissWhenSlidingDistance: CGFloat = 70
     
     open private(set) weak var presentedFromViewController: UIViewController?
     
@@ -469,15 +469,15 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
             }
             break
         case .changed:
-            let location: CGPoint = gestureRecognizer.location(in: gestureRecognizerView)
-            let horizontalDistance: CGFloat = location.x - self.gestureBeganLocation.x
-            var verticalDistance: CGFloat = location.y - self.gestureBeganLocation.y
-            let height: NSNumber = NSNumber(value: Double(gestureRecognizerView.bounds.height / 2))
-            var ratio: CGFloat = 1.0
-            var alpha: CGFloat = 1.0
-            if verticalDistance > 0 && self.isPresented {
-                ratio = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.4], extrapolateLeft: .clamp, extrapolateRight: .clamp)
-                alpha = JSCoreHelper.interpolateValue(verticalDistance, inputRange: [0, height], outputRange: [1.0, 0.2], extrapolateLeft: .clamp, extrapolateRight: .clamp)
+            let location = gestureRecognizer.location(in: gestureRecognizerView)
+            let horizontalDistance = location.x - self.gestureBeganLocation.x
+            var verticalDistance = location.y - self.gestureBeganLocation.y
+            let height = NSNumber(value: Double(gestureRecognizerView.bounds.height / 2))
+            var ratio = 1.0
+            var alpha = 1.0
+            if self.isPresented {
+                ratio = JSCoreHelper.interpolateValue(abs(verticalDistance), inputRange: [0, height], outputRange: [1.0, 0.4], extrapolateLeft: .clamp, extrapolateRight: .clamp)
+                alpha = JSCoreHelper.interpolateValue(abs(verticalDistance), inputRange: [0, height], outputRange: [1.0, 0.2], extrapolateLeft: .clamp, extrapolateRight: .clamp)
             } else {
                 verticalDistance = -JSCoreHelper.bounce(fromValue: 0, toValue: verticalDistance > 0 ? -height.doubleValue : height.doubleValue, time: abs(verticalDistance) / height.doubleValue, coeff: 1.2)
             }
@@ -488,9 +488,9 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
             }
             break
         case .ended, .cancelled, .failed:
-            let location: CGPoint = gestureRecognizer.location(in: gestureRecognizer.view)
-            let verticalDistance: CGFloat = location.y - self.gestureBeganLocation.y
-            if verticalDistance > self.dismissWhenSlidingDistance && self.isPresented {
+            let location = gestureRecognizer.location(in: gestureRecognizer.view)
+            let verticalDistance = location.y - self.gestureBeganLocation.y
+            if abs(verticalDistance) > self.dismissWhenSlidingDistance && self.isPresented {
                 self.beginDismissingAnimation()
             } else {
                 self.resetDismissingAnimation()
