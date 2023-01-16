@@ -30,7 +30,7 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
         return JSMediaBrowserViewControllerDelegator()
     }()
     
-    override var dataSource: [DataItemProtocol] {
+    override var dataSource: [DataItemProtocol]? {
         didSet {
             self.updatePageControl()
         }
@@ -38,7 +38,7 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
     
     override func didInitialize() {
         super.didInitialize()
-        self.webImageMediator = SDWebImageMediator()
+        self.webImageMediator = SDWebImageMediator(context: [.animatedImageClass: SDAnimatedImage.self])
         self.zoomImageViewModifier = SDZoomImageViewModifier()
         self.transitionAnimatorModifier = JSMediaBrowserTransitionAnimatorModifier()
         self.delegate = self.delegator

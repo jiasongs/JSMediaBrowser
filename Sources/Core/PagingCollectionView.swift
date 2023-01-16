@@ -45,19 +45,12 @@ public class PagingCollectionView: UICollectionView {
 extension PagingCollectionView: UIGestureRecognizerDelegate {
     
     public override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        guard let gestureDelegate = self.gestureDelegate else {
-            return super.gestureRecognizerShouldBegin(gestureRecognizer)
-        }
-        
-        return gestureDelegate.pagingCollectionView(self, shouldBegin: gestureRecognizer, originReturn: super.gestureRecognizerShouldBegin(gestureRecognizer))
+        let originReturnValue = super.gestureRecognizerShouldBegin(gestureRecognizer)
+        return self.gestureDelegate?.pagingCollectionView(self, shouldBegin: gestureRecognizer, originReturn: originReturnValue) ?? originReturnValue
     }
     
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        guard let gestureDelegate = self.gestureDelegate else {
-            return false
-        }
-        
-        return gestureDelegate.pagingCollectionView(self, gestureRecognizer: gestureRecognizer, shouldRecognizeSimultaneouslyWith: otherGestureRecognizer)
+        return self.gestureDelegate?.pagingCollectionView(self, gestureRecognizer: gestureRecognizer, shouldRecognizeSimultaneouslyWith: otherGestureRecognizer) ?? false
     }
     
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
