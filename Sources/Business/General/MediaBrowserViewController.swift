@@ -303,7 +303,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
             cell.videoPlayerView.releasePlayer()
         }
         cell.setProgress(Progress())
-//        cell.videoPlayerView.url = dataItem.videoUrl
+        cell.videoPlayerView.url = dataItem.videoUrl
     }
     
 }

@@ -292,41 +292,53 @@ extension VideoPlayerView {
             /// status
             self.playerItemObservers.append(
                 playerItem.observe(\.status, options: .new, changeHandler: { [weak self](playerItem: AVPlayerItem, change) in
-                    guard let strongSelf = self else { return }
+                    guard let self = self else {
+                        return
+                    }
                     if playerItem.status == .readyToPlay {
-                        self?.status = .ready
-                        self?.totalDuration = CGFloat(CMTimeGetSeconds(playerItem.duration))
-                        self?.updateThumbImageView()
-                        if strongSelf.isAutoPlay {
-                            strongSelf.play()
-                        }
+                       /// see loadedTimeRanges
                     } else if playerItem.status == .failed {
-                        self?.status = .failed
+                        self.status = .failed
                     }
                 })
             )
             /// PlayToEndTime
             self.playerItemCenterObservers.append(
                 NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: playerItem, queue: OperationQueue.main) { [weak self](notification: Notification) in
-                    guard let strongSelf = self else { return }
-                    if strongSelf.playerItem == notification.object as? AVPlayerItem {
-                        self?.status = .ended
+                    guard let self = self else {
+                        return
+                    }
+                    if self.playerItem == notification.object as? AVPlayerItem {
+                        self.status = .ended
                     }
                 }
             )
             /// loadedTimeRanges
             self.playerItemObservers.append(
-                playerItem.observe(\.loadedTimeRanges, options: .new, changeHandler: { (playerItem: AVPlayerItem, change) in
+                playerItem.observe(\.loadedTimeRanges, options: .new, changeHandler: { [weak self] (playerItem: AVPlayerItem, change) in
+                    guard let self = self else {
+                        return
+                    }
                     let loadedTimeRanges: [NSValue] = playerItem.loadedTimeRanges
-                    if loadedTimeRanges.count > 0 {
-                        // 获取缓冲区域
-                        let timeRange: CMTimeRange =  loadedTimeRanges.first?.timeRangeValue ?? CMTimeRange.zero
-                        // 开始的时间
-                        let startSeconds: TimeInterval = CMTimeGetSeconds(timeRange.start)
-                        // 表示已经缓冲的时间
-                        let durationSeconds: TimeInterval = CMTimeGetSeconds(timeRange.duration)
-                        // 计算缓冲总时间
-                        let _: TimeInterval = startSeconds + durationSeconds
+                    guard loadedTimeRanges.count > 0 else {
+                        return
+                    }
+                    // 获取缓冲区域
+                    let timeRange: CMTimeRange = loadedTimeRanges.first?.timeRangeValue ?? CMTimeRange.zero
+                    // 开始的时间
+                    let startSeconds: TimeInterval = CMTimeGetSeconds(timeRange.start)
+                    // 表示已经缓冲的时间
+                    let durationSeconds: TimeInterval = CMTimeGetSeconds(timeRange.duration)
+                    // 计算缓冲总时间
+                    let _: TimeInterval = startSeconds + durationSeconds
+                    
+                    if self.status != .ready && playerItem.status == .readyToPlay {
+                        self.status = .ready
+                        self.totalDuration = CGFloat(CMTimeGetSeconds(playerItem.duration))
+                        self.updateThumbImageView()
+                        if self.isAutoPlay {
+                            self.play()
+                        }
                     }
                 })
             )

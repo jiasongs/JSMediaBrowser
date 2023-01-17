@@ -16,16 +16,15 @@ public class VideoCell: BasisCell {
     
     public override func didInitialize() {
         super.didInitialize()
-        self.pieProgressView.isHidden = true
         self.contentView.addSubview(self.videoPlayerView)
         self.contentView.sendSubviewToBack(self.videoPlayerView)
+        
+        self.videoPlayerView.delegate = self
     }
     
     public override func prepareForReuse() {
         super.prepareForReuse()
-        self.pieProgressView.isHidden = true
         self.videoPlayerView.thumbImage = nil
-        self.videoPlayerView.delegate = self
     }
     
     public override func layoutSubviews() {
