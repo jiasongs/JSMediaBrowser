@@ -35,6 +35,7 @@ open class MediaBrowserViewController: UIViewController {
             guard self.isViewLoaded else {
                 return
             }
+            
             self.mediaBrowserView.reloadData()
         }
     }
@@ -52,22 +53,13 @@ open class MediaBrowserViewController: UIViewController {
     open var sourceViewForPageAtIndex: ((MediaBrowserViewController, Int) -> UIView?)?
     open var sourceRectForPageAtIndex: ((MediaBrowserViewController, Int) -> CGRect)?
     
-    open var currentPage: Int {
-        set {
-            self.mediaBrowserView.currentPage = newValue
-        }
-        get {
-            return self.mediaBrowserView.currentPage
-        }
-    }
-    
     open var dismissWhenSlidingDistance: CGFloat = 70
     
-    open private(set) weak var presentedFromViewController: UIViewController?
-    
-    fileprivate lazy var mediaBrowserView: MediaBrowserView = {
+    open fileprivate(set) lazy var mediaBrowserView: MediaBrowserView = {
         return MediaBrowserView()
     }()
+    
+    open fileprivate(set) weak var presentedFromViewController: UIViewController?
     
     fileprivate lazy var transitionAnimator: TransitionAnimator = {
         let animator = TransitionAnimator()
@@ -152,6 +144,15 @@ extension MediaBrowserViewController {
 
 extension MediaBrowserViewController {
     
+    @objc open var currentPage: Int {
+        set {
+            self.mediaBrowserView.currentPage = newValue
+        }
+        get {
+            return self.mediaBrowserView.currentPage
+        }
+    }
+    
     @objc open var totalUnitPage: Int {
         guard self.mediaBrowserView.dataSource != nil else {
             return self.numberOfPages(in: self.mediaBrowserView)
@@ -166,10 +167,6 @@ extension MediaBrowserViewController {
     
     @objc open func setCurrentPage(_ index: Int, animated: Bool, completion: (() -> Void)? = nil) {
         self.mediaBrowserView.setCurrentPage(index, animated: animated, completion: completion)
-    }
-    
-    @objc open var contentOffset: CGPoint {
-        return self.mediaBrowserView.contentOffset
     }
     
     @objc open func show(from sender: UIViewController,
@@ -378,7 +375,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
         }
         
         let velocity = gestureRecognizer.velocity(in: gestureRecognizer.view)
-        if self.contentOffset.x <= 0 && velocity.x > 0 {
+        if mediaBrowserView.contentOffset.x <= 0 && velocity.x > 0 {
             return false
         } else {
             return value
@@ -403,7 +400,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
         /// 综合判断下
         if isHorizontalScroll && canHorizontalScrollForOther {
             /// 全屏手势处理, 滑动最左侧视图且手势向右滑时, 返回true, 触发全屏手势
-            return self.contentOffset.x <= 0 && velocity.x > 0
+            return mediaBrowserView.contentOffset.x <= 0 && velocity.x > 0
         } else {
             return false
         }

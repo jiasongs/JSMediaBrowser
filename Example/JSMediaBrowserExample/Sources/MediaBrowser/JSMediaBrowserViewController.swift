@@ -98,7 +98,6 @@ fileprivate class JSMediaBrowserViewControllerDelegator: MediaBrowserViewControl
     
     public func mediaBrowserViewController(_ mediaBrowserViewController: MediaBrowserViewController, willDisplay emptyView: EmptyView, error: NSError) {
         emptyView.image = UIImage(named: "picture_fail")
-        emptyView.title = "\(String(describing: error.localizedDescription))"
     }
     
 }

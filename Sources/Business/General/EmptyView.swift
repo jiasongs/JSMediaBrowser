@@ -16,22 +16,16 @@ public class EmptyView: UIView {
         }
     }
     
-    public var imageViewSize: CGSize = CGSize.zero {
+    public var title: NSAttributedString? {
         didSet {
+            self.titleLabel.attributedText = self.title
             self.setNeedsLayout()
         }
     }
     
-    public var title: String? {
+    public var subtitle: NSAttributedString? {
         didSet {
-            self.titleLabel.text = self.title
-            self.setNeedsLayout()
-        }
-    }
-    
-    public var subtitle: String? {
-        didSet {
-            self.subtitleLabel.text = self.subtitle
+            self.subtitleLabel.attributedText = self.subtitle
             self.setNeedsLayout()
         }
     }
@@ -74,6 +68,7 @@ public class EmptyView: UIView {
         let button = UIButton()
         button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         button.setTitleColor(.white, for: UIControl.State.normal)
+        button.contentEdgeInsets = UIEdgeInsets(top: CGFloat.leastNonzeroMagnitude, left: 0, bottom: CGFloat.leastNonzeroMagnitude, right: 0)
         button.addTarget(self, action: #selector(self.handleAction(button:)), for: UIControl.Event.touchUpInside)
         return button
     }()
@@ -97,28 +92,13 @@ public class EmptyView: UIView {
     
     public override func layoutSubviews() {
         super.layoutSubviews()
-        var imageSize: CGSize = self.imageViewSize
-        if imageSize == CGSize.zero {
-            let width = min(self.frame.width * 0.4, 120)
-            imageSize = CGSize(width: width, height: width)
-        }
-        if self.imageView.image == nil {
-            imageSize = CGSize.zero
-        }
-        var titleSize = CGSize(width: min(self.frame.width * 0.6, 280), height: 0)
-        if let count = self.titleLabel.text?.count, count > 0 {
-            titleSize.height = self.titleLabel.sizeThatFits(titleSize).height
-        }
-        var subtitleSize = CGSize(width: min(self.frame.width * 0.75, 350), height: 0)
-        if let count = self.subtitleLabel.text?.count, count > 0 {
-            subtitleSize.height = self.subtitleLabel.sizeThatFits(subtitleSize).height
-        }
-        var buttonSize = CGSize(width: subtitleSize.width * 0.6, height: 0)
-        if let count = self.actionButton.titleLabel?.text?.count, count > 0 {
-            buttonSize.height = self.actionButton.sizeThatFits(buttonSize).height
-        }
-        let margin: CGFloat = 12.0
-        let buttonMarginTop: CGFloat = 15.0
+        let imageSize = self.imageView.sizeThatFits(CGSizeMake(min(self.frame.width * 0.4, 120), 0))
+        let titleSize = self.titleLabel.sizeThatFits(CGSize(width: min(self.frame.width * 0.6, 280), height: 0))
+        let subtitleSize = self.subtitleLabel.sizeThatFits(CGSize(width: min(self.frame.width * 0.75, 350), height: 0))
+        let buttonSize = self.actionButton.sizeThatFits(CGSize(width: subtitleSize.width * 0.6, height: 0))
+ 
+        let margin = 12.0
+        let buttonMarginTop = 15.0
         let subviewsHeight = imageSize.height + titleSize.height + subtitleSize.height + buttonSize.height + margin * 2 + buttonMarginTop
         self.imageView.frame = CGRect(x: (self.frame.width - imageSize.width) / 2, y: (self.frame.height - subviewsHeight) / 2, width: imageSize.width, height: imageSize.height)
         self.titleLabel.frame = CGRect(origin: CGPoint(x: (self.frame.width - titleSize.width) / 2, y: self.imageView.frame.maxY + margin), size: titleSize)

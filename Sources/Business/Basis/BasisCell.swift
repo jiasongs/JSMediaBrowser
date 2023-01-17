@@ -58,6 +58,7 @@ public class BasisCell: UICollectionViewCell {
     public override func layoutSubviews() {
         super.layoutSubviews()
         self.emptyView.frame = self.bounds
+        
         let width = min(self.bounds.width * 0.12, 60)
         let progressSize = CGSize(width: width, height: width)
         let progressPoint = CGPoint(x: (self.bounds.width - progressSize.width) / 2, y: (self.bounds.height - progressSize.height) / 2)
@@ -73,6 +74,7 @@ public class BasisCell: UICollectionViewCell {
             self.pieProgressView.isHidden = false
         } else {
             if let error = error {
+                self.emptyView.title = NSAttributedString(string: error.localizedDescription, attributes: nil)
                 self.willDisplayEmptyView?(self, self.emptyView, error)
                 self.emptyView.isHidden = false
             } else {
