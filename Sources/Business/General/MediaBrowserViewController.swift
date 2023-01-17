@@ -208,26 +208,6 @@ extension MediaBrowserViewController {
     
 }
 
-extension MediaBrowserViewController {
-    
-    @objc open var isTracking: Bool {
-        return self.mediaBrowserView.isTracking
-    }
-    
-    @objc open var isDragging: Bool {
-        return self.mediaBrowserView.isDragging
-    }
-    
-    @objc open var isDecelerating: Bool {
-        return self.mediaBrowserView.isDecelerating
-    }
-    
-    @objc open var panGestureRecognizer: UIPanGestureRecognizer {
-        return self.mediaBrowserView.panGestureRecognizer
-    }
-    
-}
-
 extension MediaBrowserViewController: MediaBrowserViewDataSource {
     
     @objc open func numberOfPages(in mediaBrowserView: MediaBrowserView) -> Int {
