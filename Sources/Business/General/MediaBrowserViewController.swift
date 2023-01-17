@@ -302,7 +302,8 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         if cell.videoPlayerView.url != dataItem.videoUrl {
             cell.videoPlayerView.releasePlayer()
         }
-        cell.videoPlayerView.url = dataItem.videoUrl
+        cell.setProgress(Progress())
+//        cell.videoPlayerView.url = dataItem.videoUrl
     }
     
 }
@@ -558,7 +559,7 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
         if let imageCell = self.currentPageCell as? ImageCell {
             return imageCell.zoomImageView.contentViewFrame
         } else if let videoCell = self.currentPageCell as? VideoCell {
-            return videoCell.videoPlayerView.contentViewFrame
+            return self.transitionThumbImage != nil ? videoCell.videoPlayerView.contentViewFrame : CGRect.zero
         }
         return CGRect.zero
     }

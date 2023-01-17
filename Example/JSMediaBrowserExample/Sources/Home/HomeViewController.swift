@@ -178,16 +178,15 @@ extension HomeViewController {
     fileprivate func videoFirstImage(with url: URL, completion: @escaping (UIImage?) -> Void) {
         DispatchQueue.global().async {
             let asset = AVURLAsset(url: url)
-            let generator = AVAssetImageGenerator(asset: asset)
-            generator.appliesPreferredTrackTransform = true
-            let time = CMTimeMakeWithSeconds(0.0, preferredTimescale: 1)
-            var actualTime = CMTimeMakeWithSeconds(0, preferredTimescale: 0)
-            let cgImage = try? generator.copyCGImage(at: time, actualTime: &actualTime)
-            DispatchQueue.main.async {
-                if let cgImage = cgImage {
-                    completion(UIImage(cgImage: cgImage))
-                } else {
-                    completion(nil)
+            let imageGenerator = AVAssetImageGenerator(asset: asset)
+            imageGenerator.appliesPreferredTrackTransform = true
+            imageGenerator.generateCGImagesAsynchronously(forTimes: [NSValue(time: CMTimeMakeWithSeconds(0, preferredTimescale: 1))]) { _, cgImage, _, _, error in
+                DispatchQueue.main.async {
+                    if let cgImage = cgImage {
+                        completion(UIImage(cgImage: cgImage))
+                    } else {
+                        completion(nil)
+                    }
                 }
             }
         }

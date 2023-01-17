@@ -79,12 +79,18 @@ public class VideoPlayerView: BasisMediaView {
     
     public var status: Stauts = .stopped {
         didSet {
-            if status == .ready {
+            if self.status == .ready {
                 self.delegate?.didReadyForDisplay(in: self)
-            } else if status == .failed {
+            } else if self.status == .failed {
                 self.delegate?.videoPlayerView(self, didFailed: self.player.error as NSError?)
-            } else if status == .ended || status == .stopped {
+            } else if self.status == .ended || status == .stopped {
                 self.delegate?.didPlayToEndTime(in: self)
+            }
+            
+            if self.status == .ended {
+                self.seek(to: 0) { finished in
+                    self.player.play()
+                }
             }
         }
     }
@@ -92,28 +98,28 @@ public class VideoPlayerView: BasisMediaView {
     public var thumbImage: UIImage? {
         didSet {
             self.thumbImageView.image = self.thumbImage
-            self.thumbImageView.isHidden = self.thumbImage == nil
+            self.updateThumbImageView()
             self.setNeedsLayout()
         }
     }
     
-    private lazy var player: AVPlayer = {
+    fileprivate lazy var player: AVPlayer = {
         let player = AVPlayer(playerItem: nil)
         self.playerLayer.player = player
         self.playerLayer.videoGravity = .resizeAspect
         return player
     }()
     
-    private lazy var playerView: AVPlayerView = {
+    fileprivate lazy var playerView: AVPlayerView = {
         let playerView = AVPlayerView()
         return playerView
     }()
     
-    private var playerLayer: AVPlayerLayer {
+    fileprivate var playerLayer: AVPlayerLayer {
         return self.playerView.layer as! AVPlayerLayer
     }
     
-    private lazy var thumbImageView: UIImageView = {
+    fileprivate lazy var thumbImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
@@ -127,6 +133,7 @@ public class VideoPlayerView: BasisMediaView {
     fileprivate var playerItemCenterObservers = [AnyObject]()
     fileprivate var playerTimeObservers = [Any]()
     fileprivate var systemObservers = [AnyObject]()
+    fileprivate var currentFrameImageRef: CGImage?
     
     public override func didInitialize() {
         super.didInitialize()
@@ -190,7 +197,7 @@ extension VideoPlayerView {
         if self.status == .ready || self.status == .paused {
             self.player.play()
             self.status = .playing
-            self.releaseThumbImage()
+            self.updateThumbImageView()
         }
     }
     
@@ -212,12 +219,21 @@ extension VideoPlayerView {
         self.status = .stopped
     }
     
+    public var currentFrameImage: UIImage? {
+        guard let currentFrameImageRef = self.currentFrameImageRef else {
+            return nil
+        }
+        return UIImage(cgImage: currentFrameImageRef)
+    }
+    
     public func seek(to time: CGFloat, completionHandler: ((Bool) -> Void)? = nil) {
-        let startTime: CMTime = CMTimeMakeWithSeconds(Float64(time), preferredTimescale: player.currentTime().timescale)
+        let startTime: CMTime = CMTimeMakeWithSeconds(Float64(time), preferredTimescale: self.player.currentTime().timescale)
         if !CMTIME_IS_INDEFINITE(startTime) && !CMTIME_IS_INVALID(startTime) {
-            player.seek(to: startTime, toleranceBefore: CMTimeMake(value: 1, timescale: 1000), toleranceAfter: CMTimeMake(value: 1, timescale: 1000), completionHandler: { (finished) in
+            self.player.seek(to: startTime, toleranceBefore: CMTimeMake(value: 1, timescale: 1000), toleranceAfter: CMTimeMake(value: 1, timescale: 1000), completionHandler: { (finished) in
                 completionHandler?(finished)
             })
+        } else {
+            completionHandler?(false)
         }
     }
     
@@ -225,9 +241,23 @@ extension VideoPlayerView {
 
 extension VideoPlayerView {
     
-    private func releaseThumbImage() {
-        if self.thumbImage != nil && self.isReadyForDisplay {
-            self.thumbImage = nil
+    fileprivate func updateThumbImageView() {
+        self.thumbImageView.isHidden = self.thumbImage == nil || self.isReadyForDisplay
+    }
+    
+    fileprivate func generateCurrentFrameImage() {
+       guard let asset = self.player.currentItem?.asset else {
+            return
+        }
+        let imageGenerator = AVAssetImageGenerator(asset: asset)
+        imageGenerator.appliesPreferredTrackTransform = true
+        imageGenerator.generateCGImagesAsynchronously(forTimes: [NSValue(time: self.player.currentTime())]) { _, cgImage, _, _, error in
+            guard let cgImage = cgImage else {
+                return
+            }
+            DispatchQueue.main.async {
+                self.currentFrameImageRef = cgImage
+            }
         }
     }
     
@@ -243,13 +273,15 @@ extension VideoPlayerView {
                     return
                 }
                 self.delegate?.videoPlayerView(self, periodicTime: CGFloat(CMTimeGetSeconds(time)), totalDuration: self.totalDuration)
+                
+                self.generateCurrentFrameImage()
             })
         )
         /// isReadyForDisplay
         self.playerObservers.append(
-            self.playerLayer.observe(\.isReadyForDisplay, options: .new, changeHandler: { [weak self](playerLayer: AVPlayerLayer, change) in
+            self.playerLayer.observe(\.self.isReadyForDisplay, options: .new, changeHandler: { [weak self](playerLayer: AVPlayerLayer, change) in
                 if self?.playerItem?.status == .readyToPlay {
-                    self?.releaseThumbImage()
+                    self?.updateThumbImageView()
                 }
             })
         )
@@ -264,7 +296,7 @@ extension VideoPlayerView {
                     if playerItem.status == .readyToPlay {
                         self?.status = .ready
                         self?.totalDuration = CGFloat(CMTimeGetSeconds(playerItem.duration))
-                        self?.releaseThumbImage()
+                        self?.updateThumbImageView()
                         if strongSelf.isAutoPlay {
                             strongSelf.play()
                         }
