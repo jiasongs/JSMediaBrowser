@@ -45,7 +45,7 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
         // SDWebImage
         // self.webImageMediator = SDWebImageMediator(context: [.animatedImageClass: SDAnimatedImage.self])
         // self.zoomImageViewModifier = SDZoomImageViewModifier()
-        self.transitionAnimatorModifier = JSMediaBrowserTransitionAnimatorModifier(zoomImageViewModifier: SDZoomImageViewModifier())
+        self.transitionAnimatorModifier = JSMediaBrowserTransitionAnimatorModifier(zoomImageViewModifier: self.zoomImageViewModifier)
         self.delegate = self.delegator
     }
     
@@ -109,11 +109,11 @@ fileprivate class JSMediaBrowserViewControllerDelegator: MediaBrowserViewControl
 
 fileprivate struct JSMediaBrowserTransitionAnimatorModifier: TransitionAnimatorModifier {
     
-    fileprivate var zoomImageViewModifier: ZoomImageViewModifier
+    fileprivate var zoomImageViewModifier: ZoomImageViewModifier?
     fileprivate var zoomImageView: ZoomImageView = ZoomImageView()
     
     public func imageView(in transitionAnimator: JSMediaBrowser.TransitionAnimator) -> UIImageView {
-        return self.zoomImageViewModifier.imageView(in: self.zoomImageView)
+        return self.zoomImageViewModifier?.imageView(in: self.zoomImageView) ?? UIImageView()
     }
     
 }
