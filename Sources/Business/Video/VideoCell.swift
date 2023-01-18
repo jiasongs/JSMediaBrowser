@@ -37,11 +37,11 @@ public class VideoCell: BasisCell {
 extension VideoCell: VideoPlayerViewDelegate {    
     
     public func didReadyForDisplay(in videoPlayerView: VideoPlayerView) {
-        self.setError(nil, cancelled: false, finished: true)
+        self.setError(nil, cancelled: false)
     }
     
     public func videoPlayerView(_ videoPlayerView: VideoPlayerView, didFailed error: NSError?) {
-        self.setError(error, cancelled: false, finished: true)
+        self.setError(error, cancelled: false)
     }
     
 }

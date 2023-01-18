@@ -69,7 +69,7 @@ public class BasisCell: UICollectionViewCell {
         self.pieProgressView.setProgress(Float(progress.fractionCompleted), animated: true)
     }
     
-    public func setError(_ error: NSError?, cancelled: Bool, finished: Bool) {
+    public func setError(_ error: NSError?, cancelled: Bool) {
         if cancelled {
             self.pieProgressView.isHidden = false
         } else {

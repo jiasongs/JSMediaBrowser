@@ -11,6 +11,7 @@ import JSMediaBrowser
 import SnapKit
 import QMUIKit
 import SDWebImage
+import Kingfisher
 
 class JSMediaBrowserViewController: MediaBrowserViewController {
     
@@ -38,8 +39,12 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
     
     override func didInitialize() {
         super.didInitialize()
-        self.webImageMediator = SDWebImageMediator(context: [.animatedImageClass: SDAnimatedImage.self])
-        self.zoomImageViewModifier = SDZoomImageViewModifier()
+        // Kingfisher
+         self.webImageMediator = KFWebImageMediator()
+         self.zoomImageViewModifier = KFZoomImageViewModifier()
+        // SDWebImage
+        // self.webImageMediator = SDWebImageMediator(context: [.animatedImageClass: SDAnimatedImage.self])
+        // self.zoomImageViewModifier = SDZoomImageViewModifier()
         self.transitionAnimatorModifier = JSMediaBrowserTransitionAnimatorModifier(zoomImageViewModifier: SDZoomImageViewModifier())
         self.delegate = self.delegator
     }

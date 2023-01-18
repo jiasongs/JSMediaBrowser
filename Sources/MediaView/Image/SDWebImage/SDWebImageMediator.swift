@@ -16,7 +16,7 @@ public struct SDWebImageMediator: WebImageMediator {
     public func setImage(for view: UIView, url: URL?, thumbImage: UIImage?, setImageBlock: WebImageMediatorSetImageBlock?, progress: WebImageMediatorDownloadProgress?, completed: WebImageMediatorCompleted?) {
         view.sd_internalSetImage(with: url, placeholderImage: thumbImage, options: self.options, context: self.context, setImageBlock: { (image: UIImage?, data: Data?, cacheType: SDImageCacheType, targetUrl: URL?) in
             self.executeOnMainQueue {
-                setImageBlock?(image, data)
+                setImageBlock?(image)
             }
         }, progress: { (receivedSize: Int, expectedSize: Int, targetUrl: URL?) in
             self.executeOnMainQueue {
@@ -24,11 +24,14 @@ public struct SDWebImageMediator: WebImageMediator {
             }
         }, completed: { (image: UIImage?, data: Data?, error: Error?, cacheType: SDImageCacheType, finished: Bool, url: URL?) in
             self.executeOnMainQueue {
-                var cancelled: Bool = false
-                if let error = error as NSError? {
-                    cancelled = error.code == SDWebImageError.cancelled.rawValue
+                let nsError = error as? NSError
+                if let nsError = nsError {
+                    let webImageError = WebImageError(error: nsError, cancelled: nsError.code == SDWebImageError.cancelled.rawValue)
+                    completed?(.failure(webImageError))
+                } else {
+                    let webImageResult = WebImageResult(image: image, data: data)
+                    completed?(.success(webImageResult))
                 }
-                completed?(image, data, error as NSError?, cancelled, finished)
             }
         })
     }

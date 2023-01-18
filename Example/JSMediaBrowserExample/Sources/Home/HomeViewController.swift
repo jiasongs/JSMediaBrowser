@@ -8,6 +8,7 @@
 import UIKit
 import QMUIKit
 import SDWebImage
+import Kingfisher
 import SnapKit
 import JSMediaBrowser
 import Then
@@ -29,8 +30,10 @@ class HomeViewController: UIViewController {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         self.extendedLayoutIncludesOpaqueBars = true
         
-        SDImageCache.shared.clearMemory()
-        SDImageCache.shared.clearDisk(onCompletion: nil)
+        SDWebImageManager.shared.imageCache.clear(with: .all)
+        
+        KingfisherManager.shared.cache.clearMemoryCache()
+        KingfisherManager.shared.cache.clearCache()
     }
     
     required init?(coder: NSCoder) {

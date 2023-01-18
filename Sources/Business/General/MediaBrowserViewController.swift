@@ -266,29 +266,40 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
             cell?.setProgress(progress)
         }
         let updateImage = { [weak cell] (image: UIImage?) in
-            cell?.zoomImageView.image = image
+            guard let cell = cell else {
+                return
+            }
+            cell.zoomImageView.image = image
             /// 解决网络图片下载完成后不播放的问题
-            cell?.zoomImageView.startAnimating()
+            if !cell.isHidden {
+                cell.zoomImageView.startAnimating()
+            }
         }
-        let updateCell = { [weak cell] (error: NSError?, cancelled: Bool, finished: Bool) in
-            cell?.setError(error, cancelled: cancelled, finished: finished)
+        let updateCell = { [weak cell] (error: NSError?, cancelled: Bool) in
+            cell?.setError(error, cancelled: cancelled)
         }
         /// 如果存在image, 且imageUrl为nil时, 则代表是本地图片, 无须网络请求
         if let image = dataItem.image, dataItem.imageUrl == nil {
             updateImage(image)
-            updateCell(nil, false, true)
+            updateCell(nil, false)
         } else {
             let url: URL? = dataItem.imageUrl
             self.webImageMediator?.setImage(for: cell,
                                             url: url,
                                             thumbImage: dataItem.thumbImage,
-                                            setImageBlock: { (image: UIImage?, imageData: Data?) in
+                                            setImageBlock: { (image: UIImage?) in
                 updateImage(image)
             }, progress: { (receivedSize: Int64, expectedSize: Int64) in
                 updateProgress(receivedSize, expectedSize)
-            }, completed: { (image: UIImage?, imageData: Data?, error: NSError?, cancelled: Bool, finished: Bool) in
-                updateImage(image)
-                updateCell(error, cancelled, finished)
+            }, completed: { result in
+                switch result {
+                case .success(let value):
+                    updateImage(value.image)
+                    updateCell(nil, false)
+                case .failure(let error):
+                    updateImage(nil)
+                    updateCell(error.error, error.cancelled)
+                }
             })
         }
     }
@@ -303,6 +314,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
             cell.videoPlayerView.releasePlayer()
         }
         cell.setProgress(Progress())
+        cell.videoPlayerView.isAutoPlay = !cell.isHidden
         cell.videoPlayerView.url = dataItem.videoUrl
     }
     

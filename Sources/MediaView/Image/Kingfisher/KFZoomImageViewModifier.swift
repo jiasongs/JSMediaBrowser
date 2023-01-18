@@ -1,18 +1,18 @@
 //
-//  SDZoomImageViewModifier.swift
+//  KFZoomImageViewModifier.swift
 //  JSMediaBrowser
 //
-//  Created by jiasong on 2022/1/27.
+//  Created by jiasong on 2023/01/18.
 //
 
 import UIKit
-import SDWebImage
+import Kingfisher
 import PhotosUI
 
-public struct SDZoomImageViewModifier: ZoomImageViewModifier {
+public struct KFZoomImageViewModifier: ZoomImageViewModifier {
     
     public func imageView(in zoomImageView: ZoomImageView) -> UIImageView {
-        let imageView = SDAnimatedImageView()
+        let imageView = AnimatedImageView()
         imageView.autoPlayAnimatedImage = false
         return imageView
     }
