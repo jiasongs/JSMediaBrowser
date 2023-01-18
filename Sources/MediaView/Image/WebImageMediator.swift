@@ -30,6 +30,8 @@ public struct WebImageResult {
     
     public let data: Data?
     
+    public let url: URL?
+    
 }
 
 public struct WebImageError: Error {

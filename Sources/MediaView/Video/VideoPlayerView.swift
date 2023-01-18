@@ -209,7 +209,7 @@ extension VideoPlayerView {
     public func reset() {
         self.player.pause()
         self.seek(to: 0) { (finished) in
-            self.status = .ready
+            self.status = self.playerItem?.status == .readyToPlay ? .ready : .stopped
         }
     }
     

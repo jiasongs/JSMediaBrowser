@@ -10,6 +10,7 @@ import UIKit
 public struct ImageDataItem: ImageDataItemProtocol {
     
     public var thumbImage: UIImage?
+    public var webImageMediator: WebImageMediator?
 
     public var image: UIImage?
     public var imageUrl: URL?

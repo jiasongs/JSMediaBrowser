@@ -25,6 +25,7 @@ public class VideoCell: BasisCell {
     public override func prepareForReuse() {
         super.prepareForReuse()
         self.videoPlayerView.thumbImage = nil
+        self.videoPlayerView.reset()
     }
     
     public override func layoutSubviews() {

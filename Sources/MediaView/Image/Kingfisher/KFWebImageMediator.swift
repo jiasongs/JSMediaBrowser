@@ -13,13 +13,16 @@ public struct KFWebImageMediator: WebImageMediator {
     
     fileprivate var options: KingfisherOptionsInfo
     
-    public func setImage(for view: UIView, url: URL?, thumbImage: UIImage?, setImageBlock: WebImageMediatorSetImageBlock?, progress: WebImageMediatorDownloadProgress?, completed: WebImageMediatorCompleted?) {
+    public func setImage(for view: UIView,
+                         url: URL?,
+                         thumbImage: UIImage?,
+                         setImageBlock: WebImageMediatorSetImageBlock?,
+                         progress: WebImageMediatorDownloadProgress?,
+                         completed: WebImageMediatorCompleted?)
+    {
         guard let url = url else {
             view.jsmb_taskIdentifier = nil
-            let userInfo = [NSLocalizedDescriptionKey: "url不能为空"]
-            let error = NSError(domain: KingfisherError.domain, code: KingfisherError.imageSettingError(reason: .emptySource).errorCode, userInfo: userInfo)
-            let webImageError = WebImageError(error: error, cancelled: false)
-            completed?(.failure(webImageError))
+            completed?(.failure(self.generateError(KingfisherError.imageSettingError(reason: .emptySource))))
             return
         }
         
@@ -32,7 +35,8 @@ public struct KFWebImageMediator: WebImageMediator {
         
         let source = url.isFileURL ? Source.provider(LocalFileImageDataProvider(fileURL: url)) : Source.network(url)
         let options = self.options
-        view.jsmb_imageTask = KingfisherManager.shared.retrieveImage(
+        let parsedOptions = KingfisherParsedOptionsInfo(options)
+        let task = KingfisherManager.shared.retrieveImage(
             with: source,
             options: options,
             progressBlock: { receivedSize, totalSize in
@@ -42,35 +46,35 @@ public struct KFWebImageMediator: WebImageMediator {
                 view.jsmb_imageTask = newTask
             },
             completionHandler: { result in
-                guard issuedIdentifier == view.jsmb_taskIdentifier else {
-                    let reason: KingfisherError.ImageSettingErrorReason
-                    do {
-                        let value = try result.get()
-                        reason = .notCurrentSourceTask(result: value, error: nil, source: source)
-                    } catch {
-                        reason = .notCurrentSourceTask(result: nil, error: error, source: source)
+                CallbackQueue.mainCurrentOrAsync.execute {
+                    guard issuedIdentifier == view.jsmb_taskIdentifier else {
+                        let reason: KingfisherError.ImageSettingErrorReason
+                        do {
+                            let value = try result.get()
+                            reason = .notCurrentSourceTask(result: value, error: nil, source: source)
+                        } catch {
+                            reason = .notCurrentSourceTask(result: nil, error: error, source: source)
+                        }
+                        completed?(.failure(self.generateError(KingfisherError.imageSettingError(reason: reason))))
+                        return
                     }
-                    let userInfo = [NSLocalizedDescriptionKey: "未知错误"]
-                    let error = NSError(domain: KingfisherError.domain, code: KingfisherError.imageSettingError(reason: reason).errorCode, userInfo: userInfo)
-                    let webImageError = WebImageError(error: error, cancelled: false)
-                    completed?(.failure(webImageError))
-                    return
-                }
-                view.jsmb_imageTask = nil
-                view.jsmb_taskIdentifier = nil
-                
-                switch result {
-                case .success(let value):
-                    let webImageResult = WebImageResult(image: value.image, data: value.cacheType == .none ? value.data() : nil)
-                    completed?(.success(webImageResult))
-                case .failure(let error):
-                    let userInfo = [NSLocalizedDescriptionKey: error.errorDescription ?? ""]
-                    let nsError = NSError(domain: KingfisherError.domain, code: error.errorCode, userInfo: userInfo)
-                    let webImageError = WebImageError(error: nsError, cancelled: error.isTaskCancelled)
-                    completed?(.failure(webImageError))
+                    
+                    view.jsmb_imageTask = nil
+                    view.jsmb_taskIdentifier = nil
+                    
+                    switch result {
+                    case .success(let value):
+                        completed?(.success(self.generateResult(value)))
+                    case .failure(let error):
+                        if let image = parsedOptions.onFailureImage {
+                            setImageBlock?(image)
+                        }
+                        completed?(.failure(self.generateError(error)))
+                    }
                 }
             }
         )
+        view.jsmb_imageTask = task
     }
     
     public func cancelImageRequest(for view: UIView) {
@@ -80,6 +84,22 @@ public struct KFWebImageMediator: WebImageMediator {
     public init(options: KingfisherOptionsInfo? = nil) {
         let defaultOptions = KingfisherManager.shared.defaultOptions
         self.options = defaultOptions + (options ?? [])
+    }
+    
+}
+
+extension KFWebImageMediator {
+    
+    fileprivate func generateResult(_ result: RetrieveImageResult) -> WebImageResult {
+        let webImageResult = WebImageResult(image: result.image, data: result.cacheType == .none ? result.data() : nil, url: result.source.url)
+        return webImageResult
+    }
+    
+    fileprivate func generateError(_ error: KingfisherError) -> WebImageError {
+        let userInfo = [NSLocalizedDescriptionKey: error.errorDescription ?? ""]
+        let nsError = NSError(domain: KingfisherError.domain, code: error.errorCode, userInfo: userInfo)
+        let webImageError = WebImageError(error: nsError, cancelled: error.isTaskCancelled)
+        return webImageError
     }
     
 }

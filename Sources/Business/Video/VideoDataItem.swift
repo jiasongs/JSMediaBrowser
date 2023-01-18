@@ -10,6 +10,7 @@ import AVKit
 public struct VideoDataItem: VideoDataItemProtocol {
     
     public var thumbImage: UIImage?
+    public var webImageMediator: WebImageMediator?
     
     public var videoUrl: URL?
     public var videoAsset: AVAsset?

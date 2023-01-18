@@ -257,8 +257,9 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         /// zoomImageView修改器
         cell.zoomImageView.modifier = self.zoomImageViewModifier
         
+        let webImageMediator = dataItem.webImageMediator ?? self.webImageMediator
         /// 取消请求
-        self.webImageMediator?.cancelImageRequest(for: cell)
+        webImageMediator?.cancelImageRequest(for: cell)
         
         let updateProgress = { [weak cell] (receivedSize: Int64, expectedSize: Int64) in
             let progress = Progress(totalUnitCount: expectedSize)
@@ -271,9 +272,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
             }
             cell.zoomImageView.image = image
             /// 解决网络图片下载完成后不播放的问题
-            if !cell.isHidden {
-                cell.zoomImageView.startAnimating()
-            }
+            cell.zoomImageView.startAnimating()
         }
         let updateCell = { [weak cell] (error: NSError?, cancelled: Bool) in
             cell?.setError(error, cancelled: cancelled)
@@ -284,7 +283,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
             updateCell(nil, false)
         } else {
             let url: URL? = dataItem.imageUrl
-            self.webImageMediator?.setImage(for: cell,
+            webImageMediator?.setImage(for: cell,
                                             url: url,
                                             thumbImage: dataItem.thumbImage,
                                             setImageBlock: { (image: UIImage?) in
