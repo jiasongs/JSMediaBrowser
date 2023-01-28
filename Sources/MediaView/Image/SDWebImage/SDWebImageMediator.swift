@@ -13,27 +13,39 @@ public struct SDWebImageMediator: WebImageMediator {
     public fileprivate(set) var options: SDWebImageOptions
     public fileprivate(set) var context: [SDWebImageContextOption: Any]? = nil
     
-    public func setImage(for view: UIView, url: URL?, thumbImage: UIImage?, setImageBlock: WebImageMediatorSetImageBlock?, progress: WebImageMediatorDownloadProgress?, completed: WebImageMediatorCompleted?) {
-        view.sd_internalSetImage(with: url, placeholderImage: thumbImage, options: self.options, context: self.context, setImageBlock: { (image: UIImage?, data: Data?, cacheType: SDImageCacheType, targetUrl: URL?) in
-            self.executeOnMainQueue {
-                setImageBlock?(image)
-            }
-        }, progress: { (receivedSize: Int, expectedSize: Int, targetUrl: URL?) in
-            self.executeOnMainQueue {
-                progress?(Int64(receivedSize), Int64(expectedSize))
-            }
-        }, completed: { (image: UIImage?, data: Data?, error: Error?, cacheType: SDImageCacheType, finished: Bool, url: URL?) in
-            self.executeOnMainQueue {
-                let nsError = error as? NSError
-                if let nsError = nsError {
-                    let webImageError = WebImageError(error: nsError, cancelled: nsError.code == SDWebImageError.cancelled.rawValue)
-                    completed?(.failure(webImageError))
-                } else {
-                    let webImageResult = WebImageResult(image: image, data: data, url: url)
-                    completed?(.success(webImageResult))
+    public func setImage(for view: UIView,
+                         url: URL?,
+                         thumbImage: UIImage?,
+                         setImageBlock: WebImageMediatorSetImageBlock?,
+                         progress: WebImageMediatorDownloadProgress?,
+                         completed: WebImageMediatorCompleted?) {
+        view.sd_internalSetImage(
+            with: url,
+            placeholderImage: thumbImage,
+            options: self.options,
+            context: self.context,
+            setImageBlock: { (image: UIImage?, data: Data?, cacheType: SDImageCacheType, targetUrl: URL?) in
+                self.executeOnMainQueue {
+                    setImageBlock?(image)
                 }
-            }
-        })
+            },
+            progress: { (receivedSize: Int, expectedSize: Int, targetUrl: URL?) in
+                self.executeOnMainQueue {
+                    progress?(Int64(receivedSize), Int64(expectedSize))
+                }
+            },
+            completed: { (image: UIImage?, data: Data?, error: Error?, cacheType: SDImageCacheType, finished: Bool, url: URL?) in
+                self.executeOnMainQueue {
+                    let nsError = error as? NSError
+                    if let nsError = nsError {
+                        let webImageError = WebImageError(error: nsError, cancelled: nsError.code == SDWebImageError.cancelled.rawValue)
+                        completed?(.failure(webImageError))
+                    } else {
+                        let webImageResult = WebImageResult(image: image, data: data, url: url)
+                        completed?(.success(webImageResult))
+                    }
+                }
+            })
     }
     
     public func cancelImageRequest(for view: UIView) {

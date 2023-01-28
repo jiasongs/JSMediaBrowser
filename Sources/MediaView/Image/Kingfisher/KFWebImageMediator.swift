@@ -18,8 +18,7 @@ public struct KFWebImageMediator: WebImageMediator {
                          thumbImage: UIImage?,
                          setImageBlock: WebImageMediatorSetImageBlock?,
                          progress: WebImageMediatorDownloadProgress?,
-                         completed: WebImageMediatorCompleted?)
-    {
+                         completed: WebImageMediatorCompleted?) {
         guard let url = url else {
             view.jsmb_taskIdentifier = nil
             completed?(.failure(self.generateError(KingfisherError.imageSettingError(reason: .emptySource))))
