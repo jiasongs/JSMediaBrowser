@@ -30,7 +30,7 @@ class HomeViewController: UIViewController {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         self.extendedLayoutIncludesOpaqueBars = true
         
-        SDWebImageManager.shared.imageCache.clear(with: .all)
+        SDWebImageManager.shared.imageCache.clear?(with: .all)
         
         KingfisherManager.shared.cache.clearMemoryCache()
         KingfisherManager.shared.cache.clearCache()
