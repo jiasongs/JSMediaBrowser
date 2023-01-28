@@ -7,8 +7,6 @@ def pod_Common
   pod "JSMediaBrowser", :path => "..", :subspecs => ["Business", "MediaImageForSDWebImage", "MediaImageForKingfisher"]
   pod "QMUIKit"
   pod "SnapKit"
-  pod "SDWebImage"
-  pod "Kingfisher"
   pod "Then"
   pod "LookinServer", :subspecs => ['Swift'], :configurations => ["Debug"]
   pod "MLeaksFinder", :configurations => ["Debug"]
