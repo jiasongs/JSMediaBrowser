@@ -48,22 +48,6 @@ public class SliderView: UISlider {
         }
     }
     
-    func updateThumbImage() {
-        if self.thumbSize != CGSize.zero {
-            let thumbColor: UIColor = self.thumbColor != nil ? self.thumbColor! : self.tintColor
-            UIGraphicsBeginImageContextWithOptions(self.thumbSize, false, 0)
-            if let context: CGContext = UIGraphicsGetCurrentContext() {
-                let path: UIBezierPath = UIBezierPath(ovalIn: CGRect(origin: CGPoint.zero, size: self.thumbSize))
-                context.setFillColor(thumbColor.cgColor)
-                path.fill()
-                let thumbImage: UIImage? = UIGraphicsGetImageFromCurrentImageContext()
-                UIGraphicsEndImageContext()
-                self.setThumbImage(thumbImage, for: .normal)
-                self.setThumbImage(thumbImage, for: .highlighted)
-            }
-        }
-    }
-    
 }
 
 extension SliderView {
@@ -88,8 +72,26 @@ extension SliderView {
         }
     }
     
-    private var thumbViewIfExist: UIView? {
+}
+
+extension SliderView {
+    
+    fileprivate var thumbViewIfExist: UIView? {
         return self.value(forKey: "thumbView") as? UIView
+    }
+    
+    fileprivate func updateThumbImage() {
+        let thumbColor = self.thumbColor != nil ? self.thumbColor! : self.tintColor
+        UIGraphicsBeginImageContextWithOptions(self.thumbSize, false, 0)
+        if let context = UIGraphicsGetCurrentContext() {
+            let path = UIBezierPath(ovalIn: CGRect(origin: CGPoint.zero, size: self.thumbSize))
+            context.setFillColor(thumbColor?.cgColor ?? UIColor.white.cgColor)
+            path.fill()
+            let thumbImage = UIGraphicsGetImageFromCurrentImageContext()
+            self.setThumbImage(thumbImage, for: .normal)
+            self.setThumbImage(thumbImage, for: .highlighted)
+        }
+        UIGraphicsEndImageContext()
     }
     
 }
