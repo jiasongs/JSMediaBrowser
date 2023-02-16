@@ -13,12 +13,14 @@ public struct SDWebImageMediator: WebImageMediator {
     public fileprivate(set) var options: SDWebImageOptions
     public fileprivate(set) var context: [SDWebImageContextOption: Any]? = nil
     
-    public func setImage(for view: UIView,
-                         url: URL?,
-                         thumbImage: UIImage?,
-                         setImageBlock: WebImageMediatorSetImageBlock?,
-                         progress: WebImageMediatorDownloadProgress?,
-                         completed: WebImageMediatorCompleted?) {
+    public func setImage(
+        for view: UIView,
+        url: URL?,
+        thumbImage: UIImage?,
+        setImageBlock: WebImageMediatorSetImageBlock?,
+        progress: WebImageMediatorDownloadProgress?,
+        completed: WebImageMediatorCompleted?
+    ) {
         view.sd_internalSetImage(
             with: url,
             placeholderImage: thumbImage,

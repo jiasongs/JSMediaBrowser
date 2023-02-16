@@ -13,12 +13,14 @@ public struct KFWebImageMediator: WebImageMediator {
     
     fileprivate var options: KingfisherOptionsInfo
     
-    public func setImage(for view: UIView,
-                         url: URL?,
-                         thumbImage: UIImage?,
-                         setImageBlock: WebImageMediatorSetImageBlock?,
-                         progress: WebImageMediatorDownloadProgress?,
-                         completed: WebImageMediatorCompleted?) {
+    public func setImage(
+        for view: UIView,
+        url: URL?,
+        thumbImage: UIImage?,
+        setImageBlock: WebImageMediatorSetImageBlock?,
+        progress: WebImageMediatorDownloadProgress?,
+        completed: WebImageMediatorCompleted?
+    ) {
         guard let url = url else {
             view.jsmb_taskIdentifier = nil
             completed?(.failure(self.generateError(KingfisherError.imageSettingError(reason: .emptySource))))

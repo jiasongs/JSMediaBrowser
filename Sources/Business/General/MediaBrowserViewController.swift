@@ -283,23 +283,26 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
             updateCell(nil, false)
         } else {
             let url: URL? = dataItem.imageUrl
-            webImageMediator?.setImage(for: cell,
-                                            url: url,
-                                            thumbImage: dataItem.thumbImage,
-                                            setImageBlock: { (image: UIImage?) in
-                updateImage(image)
-            }, progress: { (receivedSize: Int64, expectedSize: Int64) in
-                updateProgress(receivedSize, expectedSize)
-            }, completed: { result in
-                switch result {
-                case .success(let value):
-                    updateImage(value.image)
-                    updateCell(nil, false)
-                case .failure(let error):
-                    updateImage(nil)
-                    updateCell(error.error, error.cancelled)
-                }
-            })
+            webImageMediator?.setImage(
+                for: cell,
+                url: url,
+                thumbImage: dataItem.thumbImage,
+                setImageBlock: { (image: UIImage?) in
+                    updateImage(image)
+                },
+                progress: { (receivedSize: Int64, expectedSize: Int64) in
+                    updateProgress(receivedSize, expectedSize)
+                },
+                completed: { result in
+                    switch result {
+                    case .success(let value):
+                        updateImage(value.image)
+                        updateCell(nil, false)
+                    case .failure(let error):
+                        updateImage(nil)
+                        updateCell(error.error, error.cancelled)
+                    }
+                })
         }
     }
     
