@@ -1,16 +1,13 @@
 platform :ios, "12.0"
 use_frameworks! :linkage => :static
 
-source "https://github.com/CocoaPods/Specs.git"
-
 def pod_Common
   pod "JSMediaBrowser", :path => "..", :subspecs => ["Business", "MediaImageForSDWebImage", "MediaImageForKingfisher"]
   pod "QMUIKit"
   pod "SnapKit"
   pod "Then"
   pod "LookinServer", :subspecs => ['Swift'], :configurations => ["Debug"]
-  pod "MLeaksFinder", :configurations => ["Debug"]
-  pod "FBRetainCycleDetector", :git => "https://github.com/jiasongs/FBRetainCycleDetector.git", :configurations => ["Debug"]
+  pod "MLeaksFinder", :git => "https://github.com/Tencent/MLeaksFinder.git", :configurations => ["Debug"]
 end
 
 target "JSMediaBrowserExample" do

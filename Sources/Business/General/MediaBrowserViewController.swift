@@ -550,16 +550,16 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     @objc open var transitionThumbImage: UIImage? {
         let dataItem = self.dataSource?[self.currentPage]
         if let dataItem = dataItem as? ImageDataItemProtocol {
-            if let image = dataItem.image != nil ? dataItem.image : dataItem.thumbImage {
-                return image
-            } else if let imageCell = self.currentPageCell as? ImageCell {
+            if let imageCell = self.currentPageCell as? ImageCell {
                 return imageCell.zoomImageView.isDisplayImageView ? imageCell.zoomImageView.image : nil
+            } else if let image = dataItem.image != nil ? dataItem.image : dataItem.thumbImage {
+                return image
             }
         } else if let dataItem = dataItem as? VideoDataItemProtocol {
-            if let image = dataItem.thumbImage {
-                return image
-            } else if let videoCell = self.currentPageCell as? VideoCell {
+            if let videoCell = self.currentPageCell as? VideoCell {
                 return videoCell.videoPlayerView.thumbImage
+            } else if let image = dataItem.thumbImage {
+                return image
             }
         }
         return nil
@@ -571,7 +571,7 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     
     @objc open var transitionTargetFrame: CGRect {
         if let imageCell = self.currentPageCell as? ImageCell {
-            return imageCell.zoomImageView.contentViewFrame
+            return self.transitionThumbImage != nil ? imageCell.zoomImageView.contentViewFrame : CGRect.zero
         } else if let videoCell = self.currentPageCell as? VideoCell {
             return self.transitionThumbImage != nil ? videoCell.videoPlayerView.contentViewFrame : CGRect.zero
         }
