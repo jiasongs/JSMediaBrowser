@@ -78,8 +78,8 @@ public class ZoomImageView: BasisMediaView {
         return scrollView
     }()
     
-    fileprivate var isImageViewInitialized: Bool = false
-    fileprivate lazy var imageView: UIImageView = {
+    private var isImageViewInitialized: Bool = false
+    private lazy var imageView: UIImageView = {
         self.isImageViewInitialized = true
         var imageView: UIImageView = self.modifier?.imageView(in: self) ?? UIImageView()
         imageView.isHidden = true
@@ -88,8 +88,8 @@ public class ZoomImageView: BasisMediaView {
         return imageView
     }()
     
-    fileprivate var isLivePhotoViewInitialized: Bool = false
-    fileprivate lazy var livePhotoView: PHLivePhotoView = {
+    private var isLivePhotoViewInitialized: Bool = false
+    private lazy var livePhotoView: PHLivePhotoView = {
         self.isLivePhotoViewInitialized = true
         var livePhotoView: PHLivePhotoView = self.modifier?.livePhotoView(in: self) ?? PHLivePhotoView()
         livePhotoView.isHidden = true
@@ -99,9 +99,9 @@ public class ZoomImageView: BasisMediaView {
         return livePhotoView
     }()
     
-    fileprivate weak var failGestureRecognizer: UIGestureRecognizer?
-    fileprivate var isLivePhotoPlaying: Bool = false
-    fileprivate var isNeededRevertZoom: Bool = false
+    private weak var failGestureRecognizer: UIGestureRecognizer?
+    private var isLivePhotoPlaying: Bool = false
+    private var isNeededRevertZoom: Bool = false
     
     public override func didInitialize() {
         super.didInitialize()
@@ -329,17 +329,17 @@ extension ZoomImageView {
 
 extension ZoomImageView {
     
-    fileprivate var calculateViewportRect: CGRect {
+    private var calculateViewportRect: CGRect {
         let resultRect = self.modifier?.viewportRect(in: self) ?? CGRect.zero
         return !resultRect.isEmpty ? resultRect : self.finalViewportRect
     }
     
-    fileprivate func setNeedsRevertZoom() {
+    private func setNeedsRevertZoom() {
         self.isNeededRevertZoom = true
         self.setNeedsLayout()
     }
     
-    fileprivate func revertZoomIfNeeded() {
+    private func revertZoomIfNeeded() {
         guard self.isNeededRevertZoom else {
             return
         }
@@ -347,7 +347,7 @@ extension ZoomImageView {
         self.revertZooming()
     }
     
-    fileprivate func handleDidEndZooming() {
+    private func handleDidEndZooming() {
         guard let contentView = self.contentView else {
             return
         }
@@ -370,7 +370,7 @@ extension ZoomImageView {
         self.scrollView.contentSize = contentView.frame.size
     }
     
-    fileprivate func revertContentOffset(animated: Bool) {
+    private func revertContentOffset(animated: Bool) {
         var x: CGFloat = self.scrollView.contentOffset.x
         var y: CGFloat = self.scrollView.contentOffset.y
         let viewport: CGRect = self.calculateViewportRect

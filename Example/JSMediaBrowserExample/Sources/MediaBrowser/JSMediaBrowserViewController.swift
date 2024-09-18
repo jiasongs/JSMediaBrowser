@@ -27,7 +27,7 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
         }
     }()
     
-    fileprivate lazy var delegator: JSMediaBrowserViewControllerDelegator = {
+    private lazy var delegator: JSMediaBrowserViewControllerDelegator = {
         return JSMediaBrowserViewControllerDelegator()
     }()
     
@@ -99,7 +99,7 @@ extension JSMediaBrowserViewController {
     
 }
 
-fileprivate class JSMediaBrowserViewControllerDelegator: MediaBrowserViewControllerDelegate {
+private class JSMediaBrowserViewControllerDelegator: MediaBrowserViewControllerDelegate {
     
     public func mediaBrowserViewController(_ mediaBrowserViewController: MediaBrowserViewController, willDisplay emptyView: EmptyView, error: NSError) {
         emptyView.image = UIImage(named: "picture_fail")
@@ -107,10 +107,14 @@ fileprivate class JSMediaBrowserViewControllerDelegator: MediaBrowserViewControl
     
 }
 
-fileprivate struct JSMediaBrowserTransitionAnimatorModifier: TransitionAnimatorModifier {
+private struct JSMediaBrowserTransitionAnimatorModifier: TransitionAnimatorModifier {
     
-    fileprivate var zoomImageViewModifier: ZoomImageViewModifier?
-    fileprivate var zoomImageView: ZoomImageView = ZoomImageView()
+    private var zoomImageViewModifier: ZoomImageViewModifier?
+    private var zoomImageView: ZoomImageView = ZoomImageView()
+    
+    init(zoomImageViewModifier: ZoomImageViewModifier?) {
+        self.zoomImageViewModifier = zoomImageViewModifier
+    }
     
     public func imageView(in transitionAnimator: JSMediaBrowser.TransitionAnimator) -> UIImageView {
         return self.zoomImageViewModifier?.imageView(in: self.zoomImageView) ?? UIImageView()

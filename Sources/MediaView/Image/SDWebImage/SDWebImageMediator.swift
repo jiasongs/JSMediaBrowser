@@ -10,8 +10,8 @@ import SDWebImage
 
 public struct SDWebImageMediator: WebImageMediator {
     
-    public fileprivate(set) var options: SDWebImageOptions
-    public fileprivate(set) var context: [SDWebImageContextOption: Any]? = nil
+    public private(set) var options: SDWebImageOptions
+    public private(set) var context: [SDWebImageContextOption: Any]? = nil
     
     public func setImage(
         for view: UIView,
@@ -63,7 +63,7 @@ public struct SDWebImageMediator: WebImageMediator {
 
 extension SDWebImageMediator {
     
-    fileprivate func executeOnMainQueue(_ work: @escaping () -> Void) {
+    private func executeOnMainQueue(_ work: @escaping () -> Void) {
         if Thread.isMainThread {
             work()
         } else {

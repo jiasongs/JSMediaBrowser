@@ -171,14 +171,14 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
 
 extension HomeViewController {
     
-    fileprivate func pictureCell(at index: Int) -> HomePictureCell? {
+    private func pictureCell(at index: Int) -> HomePictureCell? {
         guard let cell = self.collectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? HomePictureCell else {
             return nil
         }
         return cell
     }
     
-    fileprivate func videoFirstImage(with url: URL, completion: @escaping (UIImage?) -> Void) {
+    private func videoFirstImage(with url: URL, completion: @escaping (UIImage?) -> Void) {
         DispatchQueue.global().async {
             let asset = AVURLAsset(url: url)
             let imageGenerator = AVAssetImageGenerator(asset: asset)

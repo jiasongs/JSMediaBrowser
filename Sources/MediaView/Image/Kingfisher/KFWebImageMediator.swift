@@ -11,7 +11,7 @@ import ObjectiveC.runtime
 
 public struct KFWebImageMediator: WebImageMediator {
     
-    fileprivate var options: KingfisherOptionsInfo
+    private var options: KingfisherOptionsInfo
     
     public func setImage(
         for view: UIView,
@@ -91,12 +91,12 @@ public struct KFWebImageMediator: WebImageMediator {
 
 extension KFWebImageMediator {
     
-    fileprivate func generateResult(_ result: RetrieveImageResult) -> WebImageResult {
+    private func generateResult(_ result: RetrieveImageResult) -> WebImageResult {
         let webImageResult = WebImageResult(image: result.image, data: result.cacheType == .none ? result.data() : nil, url: result.source.url)
         return webImageResult
     }
     
-    fileprivate func generateError(_ error: KingfisherError) -> WebImageError {
+    private func generateError(_ error: KingfisherError) -> WebImageError {
         let userInfo = [NSLocalizedDescriptionKey: error.errorDescription ?? ""]
         let nsError = NSError(domain: KingfisherError.domain, code: error.errorCode, userInfo: userInfo)
         let webImageError = WebImageError(error: nsError, cancelled: error.isTaskCancelled)
@@ -105,10 +105,10 @@ extension KFWebImageMediator {
     
 }
 
-fileprivate var taskIdentifierKey: Void?
-fileprivate var imageTaskKey: Void?
+private var taskIdentifierKey: UInt8 = 0
+private var imageTaskKey: UInt8 = 0
 
-fileprivate enum Identifier {
+private enum Identifier {
     
     public typealias Value = UInt
     
@@ -121,9 +121,9 @@ fileprivate enum Identifier {
     
 }
 
-extension UIView {
+private extension UIView {
     
-    fileprivate var jsmb_taskIdentifier: Identifier.Value? {
+    var jsmb_taskIdentifier: Identifier.Value? {
         get {
             let value = objc_getAssociatedObject(self, &taskIdentifierKey) as? NSNumber
             return value?.uintValue as? Identifier.Value
@@ -134,7 +134,7 @@ extension UIView {
         }
     }
     
-    fileprivate var jsmb_imageTask: DownloadTask? {
+    var jsmb_imageTask: DownloadTask? {
         get {
             return objc_getAssociatedObject(self, &imageTaskKey) as? DownloadTask
         }

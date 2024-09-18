@@ -41,12 +41,12 @@ public class EmptyView: UIView {
     
     public var onPressAction: ((UIButton) -> Void)?
     
-    fileprivate lazy var imageView: UIImageView = {
+    private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         return imageView
     }()
     
-    fileprivate lazy var titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16)
         label.numberOfLines = 2
@@ -55,7 +55,7 @@ public class EmptyView: UIView {
         return label
     }()
     
-    fileprivate lazy var subtitleLabel: UILabel = {
+    private lazy var subtitleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
         label.numberOfLines = 3
@@ -64,7 +64,7 @@ public class EmptyView: UIView {
         return label
     }()
     
-    fileprivate lazy var actionButton: UIButton = {
+    private lazy var actionButton: UIButton = {
         let button = UIButton()
         button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         button.setTitleColor(.white, for: UIControl.State.normal)
@@ -96,7 +96,7 @@ public class EmptyView: UIView {
         let titleSize = self.titleLabel.sizeThatFits(CGSize(width: min(self.frame.width * 0.6, 280), height: 0))
         let subtitleSize = self.subtitleLabel.sizeThatFits(CGSize(width: min(self.frame.width * 0.75, 350), height: 0))
         let buttonSize = self.actionButton.sizeThatFits(CGSize(width: subtitleSize.width * 0.6, height: 0))
- 
+        
         let margin = 12.0
         let buttonMarginTop = 15.0
         let subviewsHeight = imageSize.height + titleSize.height + subtitleSize.height + buttonSize.height + margin * 2 + buttonMarginTop

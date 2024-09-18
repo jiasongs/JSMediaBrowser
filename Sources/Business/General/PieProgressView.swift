@@ -60,9 +60,9 @@ public class PieProgressView: UIControl {
         }
     }
     
-    fileprivate var needSetProgress: Bool = true
+    private var needSetProgress: Bool = true
     
-    fileprivate var progressLayer: PieProgressLayer {
+    private var progressLayer: PieProgressLayer {
         return self.layer as! PieProgressLayer
     }
     
@@ -122,7 +122,7 @@ extension PieProgressView {
     
 }
 
-fileprivate class PieProgressLayer: CALayer {
+private class PieProgressLayer: CALayer {
     
     @NSManaged var fillColor: UIColor?
     @NSManaged var strokeColor: UIColor?

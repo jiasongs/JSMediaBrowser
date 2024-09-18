@@ -44,9 +44,9 @@ public class TransitionAnimator: Transitioner {
     
     public var exitingStyle: TransitioningStyle = .zoom
     
-    fileprivate static let animationGroupKey: String = "AnimationGroupKey"
+    private static let animationGroupKey: String = "AnimationGroupKey"
     
-    fileprivate lazy var imageView: UIImageView = {
+    private lazy var imageView: UIImageView = {
         let imageView = self.modifier?.imageView(in: self) ?? UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
@@ -128,7 +128,7 @@ extension TransitionAnimator {
 
 extension TransitionAnimator {
     
-    fileprivate func handleAnimationEntering(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView, sourceView: UIView?, sourceRect: CGRect) {
+    private func handleAnimationEntering(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView, sourceView: UIView?, sourceRect: CGRect) {
         let currentView: UIView? = isEntering ? toView : fromView
         if style == .fade {
             currentView?.alpha = isEntering ? 0 : 1
@@ -183,7 +183,7 @@ extension TransitionAnimator {
         }
     }
     
-    fileprivate func handleAnimationProcessing(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView) {
+    private func handleAnimationProcessing(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView) {
         let currentView: UIView? = isEntering ? toView : fromView
         if style == .fade {
             currentView?.alpha = isEntering ? 1 : 0
@@ -194,7 +194,7 @@ extension TransitionAnimator {
         }
     }
     
-    fileprivate func handleAnimationCompletion(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView) {
+    private func handleAnimationCompletion(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView) {
         let currentView: UIView? = isEntering ? toView : fromView
         if style == .fade {
             currentView?.alpha = 1

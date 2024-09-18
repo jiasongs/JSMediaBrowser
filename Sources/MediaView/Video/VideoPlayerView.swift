@@ -103,23 +103,23 @@ public class VideoPlayerView: BasisMediaView {
         }
     }
     
-    fileprivate lazy var player: AVPlayer = {
+    private lazy var player: AVPlayer = {
         let player = AVPlayer(playerItem: nil)
         self.playerLayer.player = player
         self.playerLayer.videoGravity = .resizeAspect
         return player
     }()
     
-    fileprivate lazy var playerView: AVPlayerView = {
+    private lazy var playerView: AVPlayerView = {
         let playerView = AVPlayerView()
         return playerView
     }()
     
-    fileprivate var playerLayer: AVPlayerLayer {
+    private var playerLayer: AVPlayerLayer {
         return self.playerView.layer as! AVPlayerLayer
     }
     
-    fileprivate lazy var thumbImageView: UIImageView = {
+    private lazy var thumbImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
@@ -128,12 +128,12 @@ public class VideoPlayerView: BasisMediaView {
         return imageView
     }()
     
-    fileprivate var playerItemObservers = [NSKeyValueObservation]()
-    fileprivate var playerObservers = [NSKeyValueObservation]()
-    fileprivate var playerItemCenterObservers = [AnyObject]()
-    fileprivate var playerTimeObservers = [Any]()
-    fileprivate var systemObservers = [AnyObject]()
-    fileprivate var currentFrameImageRef: CGImage?
+    private var playerItemObservers = [NSKeyValueObservation]()
+    private var playerObservers = [NSKeyValueObservation]()
+    private var playerItemCenterObservers = [AnyObject]()
+    private var playerTimeObservers = [Any]()
+    private var systemObservers = [AnyObject]()
+    private var currentFrameImageRef: CGImage?
     
     public override func didInitialize() {
         super.didInitialize()
@@ -241,11 +241,11 @@ extension VideoPlayerView {
 
 extension VideoPlayerView {
     
-    fileprivate func updateThumbImageView() {
+    private func updateThumbImageView() {
         self.thumbImageView.isHidden = self.thumbImage == nil || self.isReadyForDisplay
     }
     
-    fileprivate func generateCurrentFrameImage() {
+    private func generateCurrentFrameImage() {
        guard let asset = self.player.currentItem?.asset else {
             return
         }
@@ -390,7 +390,7 @@ extension VideoPlayerView {
     
 }
 
-fileprivate class AVPlayerView: UIView {
+private class AVPlayerView: UIView {
     
     public override class var layerClass: AnyClass {
         return AVPlayerLayer.self

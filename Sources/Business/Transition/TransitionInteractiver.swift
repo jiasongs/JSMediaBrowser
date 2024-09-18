@@ -9,7 +9,7 @@ import UIKit
 
 public class TransitionInteractiver: Transitioner {
     
-    fileprivate var isInteractive: Bool = false
+    private var isInteractive: Bool = false
     
 }
 
@@ -75,11 +75,11 @@ extension TransitionInteractiver {
         }
     }
     
-    fileprivate func checkInteractiveBegan() {
+    private func checkInteractiveBegan() {
         assert(self.isInteractive, "可能未调用begin(), 请检查代码, 保证begin与finish、cancel成对出现")
     }
     
-    fileprivate func checkInteractiveEnd() {
+    private func checkInteractiveEnd() {
         assert(!self.isInteractive, "可能未调用finish()或者cancel(), 请检查代码, 保证begin与finish、cancel成对出现")
     }
     

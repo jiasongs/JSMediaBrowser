@@ -21,11 +21,7 @@ public class MediaBrowserView: UIView {
         }
     }
     
-    public weak var gestureDelegate: MediaBrowserViewGestureDelegate? {
-        didSet {
-            self.collectionView.gestureDelegate = self
-        }
-    }
+    public weak var gestureDelegate: MediaBrowserViewGestureDelegate?
     
     public var dimmingView: UIView? {
         didSet {
@@ -80,20 +76,20 @@ public class MediaBrowserView: UIView {
         return self.collectionView.numberOfItems(inSection: 0)
     }
     
-    fileprivate lazy var collectionView: PagingCollectionView = {
+    private lazy var collectionView: PagingCollectionView = {
         return PagingCollectionView(frame: CGRect.zero, collectionViewLayout: self.collectionViewLayout)
     }()
     
-    fileprivate lazy var collectionViewLayout: PagingLayout = {
+    private lazy var collectionViewLayout: PagingLayout = {
         return PagingLayout()
     }()
     
-    fileprivate var registeredCellIdentifiers: NSMutableSet = NSMutableSet()
-    fileprivate var previousPageOffsetRatio: CGFloat = 0.0
-    fileprivate var isNeededScrollToItem: Bool = true
-    fileprivate var endScrollingAnimation: (() -> Void)?
-    fileprivate var shouldCallEndDecelerating: Bool = false
-    fileprivate var scrollingPage: Int = 0
+    private var registeredCellIdentifiers: NSMutableSet = NSMutableSet()
+    private var previousOffsetIndex: CGFloat = 0.0
+    private var isNeededScrollToItem: Bool = true
+    private var endScrollingAnimation: (() -> Void)?
+    private var shouldCallEndDecelerating: Bool = false
+    private var scrollingPage: Int = 0
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -306,14 +302,14 @@ extension MediaBrowserView: UIScrollViewDelegate {
         let betweenOrEqual =  { (minimumValue: CGFloat, value: CGFloat, maximumValue: CGFloat) -> Bool in
             return minimumValue <= value && value <= maximumValue
         }
-        let pageOffsetRatio = self.pageOffsetRatio
-        let fastToRight = (floor(pageOffsetRatio) - floor(self.previousPageOffsetRatio) >= 1.0) && (floor(pageOffsetRatio) - self.previousPageOffsetRatio > 0.5)
-        let turnPageToRight = fastToRight || betweenOrEqual(self.previousPageOffsetRatio, floor(pageOffsetRatio) + 0.5, pageOffsetRatio)
-        let fastToLeft = (floor(self.previousPageOffsetRatio) - floor(pageOffsetRatio) >= 1.0) && (self.previousPageOffsetRatio - ceil(pageOffsetRatio) > 0.5)
-        let turnPageToLeft = fastToLeft || betweenOrEqual(pageOffsetRatio, floor(pageOffsetRatio) + 0.5, self.previousPageOffsetRatio)
+        let offsetIndex = self.offsetIndex
+        let fastToRight = (floor(offsetIndex) - floor(self.previousOffsetIndex) >= 1.0) && (floor(offsetIndex) - self.previousOffsetIndex > 0.5)
+        let turnPageToRight = fastToRight || betweenOrEqual(self.previousOffsetIndex, floor(offsetIndex) + 0.5, offsetIndex)
+        let fastToLeft = (floor(self.previousOffsetIndex) - floor(offsetIndex) >= 1.0) && (self.previousOffsetIndex - ceil(offsetIndex) > 0.5)
+        let turnPageToLeft = fastToLeft || betweenOrEqual(offsetIndex, floor(offsetIndex) + 0.5, self.previousOffsetIndex)
         
         if turnPageToRight || turnPageToLeft {
-            let index = Int(round(pageOffsetRatio))
+            let index = Int(round(offsetIndex))
             if index >= 0 && index < self.totalUnitPage && self.scrollingPage != index {
                 self.delegate?.mediaBrowserView(self, willScrollHalfFrom: self.scrollingPage, toIndex: index)
                 
@@ -328,7 +324,7 @@ extension MediaBrowserView: UIScrollViewDelegate {
                     self.delegate?.mediaBrowserView(self, didScrollTo: index)
                 }
             }
-            self.previousPageOffsetRatio = pageOffsetRatio
+            self.previousOffsetIndex = offsetIndex
         }
         
         self.delegate?.mediaBrowserViewDidScroll(self)
@@ -354,7 +350,7 @@ extension MediaBrowserView: UIScrollViewDelegate {
         self.endScrollingAnimation = nil
     }
     
-    fileprivate var pageOffsetRatio: CGFloat {
+    private var offsetIndex: CGFloat {
         let maximumPage = CGFloat(self.totalUnitPage - 1)
         let pageWidth = self.collectionView.bounds.width
         guard pageWidth > 0 && maximumPage >= 0 else {
@@ -362,18 +358,18 @@ extension MediaBrowserView: UIScrollViewDelegate {
         }
         
         let contentOffsetX = self.collectionView.contentOffset.x
-        let pageOffsetRatio = contentOffsetX / pageWidth
-        guard pageOffsetRatio >= 0 else {
+        let offsetIndex = contentOffsetX / pageWidth
+        guard offsetIndex >= 0 else {
             return 0
         }
         
-        guard pageOffsetRatio <= maximumPage else {
+        guard offsetIndex <= maximumPage else {
             return maximumPage
         }
-        return pageOffsetRatio
+        return offsetIndex
     }
     
-    fileprivate var isPossiblyRotating: Bool {
+    private var isPossiblyRotating: Bool {
         guard let animationKeys = self.collectionView.layer.animationKeys() else {
             return false
         }
@@ -381,7 +377,7 @@ extension MediaBrowserView: UIScrollViewDelegate {
         return animationKeys.contains(where: { rotationAnimationKeys.contains($0) })
     }
     
-    fileprivate func scrollToPage(at index: Int, animated: Bool, completion: (() -> Void)? = nil) {
+    private func scrollToPage(at index: Int, animated: Bool, completion: (() -> Void)? = nil) {
         guard !self.collectionView.bounds.isEmpty else {
             completion?()
             return
@@ -401,18 +397,6 @@ extension MediaBrowserView: UIScrollViewDelegate {
         } else {
             completion?()
         }
-    }
-    
-}
-
-extension MediaBrowserView: PagingCollectionViewGestureDelegate {
-    
-    public func pagingCollectionView(_ pagingCollectionView: PagingCollectionView, shouldBegin gestureRecognizer: UIGestureRecognizer, originReturn value: Bool) -> Bool {
-        return self.gestureDelegate?.mediaBrowserView(self, shouldBegin: gestureRecognizer, originReturn: value) ?? value
-    }
-    
-    public func pagingCollectionView(_ pagingCollectionView: PagingCollectionView, gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return self.gestureDelegate?.mediaBrowserView(self, gestureRecognizer: gestureRecognizer, shouldRecognizeSimultaneouslyWith: otherGestureRecognizer) ?? false
     }
     
 }

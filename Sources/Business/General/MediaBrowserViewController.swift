@@ -55,26 +55,26 @@ open class MediaBrowserViewController: UIViewController {
     
     open var dismissWhenSlidingDistance: CGFloat = 70
     
-    open fileprivate(set) lazy var mediaBrowserView: MediaBrowserView = {
+    open private(set) lazy var mediaBrowserView: MediaBrowserView = {
         return MediaBrowserView()
     }()
     
-    open fileprivate(set) weak var presentedFromViewController: UIViewController?
+    open private(set) weak var presentedFromViewController: UIViewController?
     
-    fileprivate lazy var transitionAnimator: TransitionAnimator = {
+    private lazy var transitionAnimator: TransitionAnimator = {
         let animator = TransitionAnimator()
         animator.delegate = self
         return animator
     }()
     
-    fileprivate lazy var transitionInteractiver: TransitionInteractiver = {
+    private lazy var transitionInteractiver: TransitionInteractiver = {
         let interactiver = TransitionInteractiver()
         return interactiver
     }()
     
-    fileprivate var gestureBeganLocation: CGPoint = CGPoint.zero
+    private var gestureBeganLocation: CGPoint = CGPoint.zero
     
-    fileprivate weak var cacheSourceView: UIView?
+    private weak var cacheSourceView: UIView?
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -361,46 +361,6 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
 
 extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     
-    @objc open func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, shouldBegin gestureRecognizer: UIGestureRecognizer, originReturn value: Bool) -> Bool {
-        guard !self.isPresented else {
-            return value
-        }
-        guard let gestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer else {
-            return value
-        }
-        
-        let velocity = gestureRecognizer.velocity(in: gestureRecognizer.view)
-        if mediaBrowserView.contentOffset.x <= 0 && velocity.x > 0 {
-            return false
-        } else {
-            return value
-        }
-    }
-    
-    @objc open func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        guard !self.isPresented else {
-            return false
-        }
-        guard let gestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer, let otherGestureRecognizer = otherGestureRecognizer as? UIPanGestureRecognizer else {
-            return false
-        }
-        
-        let velocity = gestureRecognizer.velocity(in: gestureRecognizer.view)
-        let otherVelocity = otherGestureRecognizer.velocity(in: otherGestureRecognizer.view)
-        let otherScrollView = otherGestureRecognizer.view as? UIScrollView
-        /// 两者的手势均为「水平-」滑动
-        let isHorizontalScroll = abs(velocity.x) > abs(velocity.y) && abs(otherVelocity.x) > abs(otherVelocity.y)
-        /// otherScrollView也是可以「水平-」滑动的
-        let canHorizontalScrollForOther = (otherScrollView == nil || otherScrollView!.contentSize.height <= otherScrollView!.bounds.height)
-        /// 综合判断下
-        if isHorizontalScroll && canHorizontalScrollForOther {
-            /// 全屏手势处理, 滑动最左侧视图且手势向右滑时, 返回true, 触发全屏手势
-            return mediaBrowserView.contentOffset.x <= 0 && velocity.x > 0
-        } else {
-            return false
-        }
-    }
-    
     @objc open func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, singleTouch gestureRecognizer: UITapGestureRecognizer) {
         guard self.isPresented else {
             return
@@ -631,7 +591,7 @@ extension MediaBrowserViewController {
         return orientationViewController.supportedInterfaceOrientations
     }
     
-    fileprivate var orientationViewController: UIViewController? {
+    private var orientationViewController: UIViewController? {
         if let presentedFromViewController = self.presentedFromViewController {
             return presentedFromViewController
         } else if let viewControllers = self.navigationController?.viewControllers, let index = viewControllers.firstIndex(of: self) {
