@@ -140,7 +140,7 @@ extension TransitionAnimator {
             /// 隐藏目标视图
             zoomView?.isHidden = true
             /// 设置下Frame
-            self.imageView.image = self.delegate?.transitionThumbImage
+            self.imageView.image = self.transitionThumbImage()
             self.imageView.frame = isEntering ? sourceRect : zoomContentViewFrameInView
             self.imageView.startAnimating()
             /// 计算position
@@ -206,6 +206,29 @@ extension TransitionAnimator {
         self.imageView.removeFromSuperview()
         self.imageView.layer.removeAnimation(forKey: TransitionAnimator.animationGroupKey)
         self.imageView.image = nil
+    }
+    
+    private func transitionThumbImage() -> UIImage? {
+        guard let image = self.delegate?.transitionThumbImage else {
+            return nil
+        }
+        let imageOrientation = image.imageOrientation
+        if imageOrientation == .down {
+            let image = UIImage(cgImage: image.cgImage!, scale: image.scale, orientation: .up)
+            return image
+            //            let imageSize = image.size
+            //            guard JSCGSizeIsValidated(imageSize) else {
+            //                return image
+            //            }
+            //            let format = UIGraphicsImageRendererFormat()
+            //            format.scale = image.scale
+            //            format.opaque = image.js_opaque
+            //            let renderer = UIGraphicsImageRenderer(size: imageSize, format: format)
+            //            return renderer.image { _ in
+            //                image.draw(in: CGRect(origin: .zero, size: imageSize))
+            //            }
+        }
+        return image
     }
     
 }
