@@ -40,11 +40,11 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
     override func didInitialize() {
         super.didInitialize()
         // Kingfisher
-        self.webImageMediator = KFWebImageMediator()
-        self.zoomImageViewModifier = KFZoomImageViewModifier()
+        // self.webImageMediator = KFWebImageMediator()
+        // self.zoomImageViewModifier = KFZoomImageViewModifier()
         // SDWebImage
-        // self.webImageMediator = SDWebImageMediator(context: [.animatedImageClass: SDAnimatedImage.self])
-        // self.zoomImageViewModifier = SDZoomImageViewModifier()
+        self.webImageMediator = SDWebImageMediator(context: [.animatedImageClass: SDAnimatedImage.self])
+        self.zoomImageViewModifier = SDZoomImageViewModifier()
         self.transitionAnimatorModifier = JSMediaBrowserTransitionAnimatorModifier(zoomImageViewModifier: self.zoomImageViewModifier)
         self.delegate = self.delegator
     }

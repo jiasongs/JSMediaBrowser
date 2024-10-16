@@ -7,16 +7,22 @@
 
 import UIKit
 
-public enum Shape: Int {
-    case sector
-    case ring
-}
-
 public class PieProgressView: UIControl {
+    
+    public enum Shape: Int {
+        case sector
+        case ring
+    }
+    
+    public var shape: Shape = .sector {
+        didSet {
+            self.progressLayer.shape = self.shape
+        }
+    }
     
     public var animationDuration: CFTimeInterval = 0.5 {
         didSet {
-            self.progressLayer.animationDuration = animationDuration
+            self.progressLayer.animationDuration = self.animationDuration
         }
     }
     
@@ -35,36 +41,43 @@ public class PieProgressView: UIControl {
         }
     }
     
-    public var borderWidth: CGFloat = 1.0 {
+    public var trackWidth: CGFloat = 2.0 {
         didSet {
-            self.progressLayer.borderWidth = borderWidth
+            self.progressLayer.trackWidth = self.trackWidth
+            self.trackLayer.borderWidth = self.trackWidth
         }
     }
     
-    public var borderInset: CGFloat = 3.0 {
+    public var trackColor: UIColor? {
         didSet {
-            self.progressLayer.borderInset = borderInset
+            self.progressLayer.trackColor = self.trackColor
+            self.trackLayer.borderColor = self.trackColor?.cgColor
         }
     }
     
-    public var lineWidth: CGFloat = 0.0 {
+    public var lineWidth: CGFloat = 2.0 {
         didSet {
-            self.progressLayer.lineWidth = lineWidth
+            self.progressLayer.lineWidth = self.lineWidth
         }
     }
     
-    public var shape: Shape = .sector {
+    public var spacing: CGFloat = 3.0 {
         didSet {
-            self.progressLayer.shape = shape
-            self.borderWidth = CGFloat(borderWidth)
+            self.progressLayer.spacing = self.spacing
         }
     }
     
-    private var needSetProgress: Bool = true
+    fileprivate var needSetProgress: Bool = true
     
-    private var progressLayer: PieProgressLayer {
-        return self.layer as! PieProgressLayer
-    }
+    fileprivate lazy var progressLayer: PieProgressLayer = {
+        let layer = PieProgressLayer()
+        layer.contentsScale = UIScreen.main.scale
+        return layer
+    }()
+    
+    fileprivate lazy var trackLayer: CALayer = {
+        return CALayer()
+    }()
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -79,37 +92,41 @@ public class PieProgressView: UIControl {
     
     func didInitialize() {
         self.backgroundColor = UIColor(white: 0, alpha: 0)
-        self.tintColor = UIColor.red
-        self.borderWidth = 1.0
-        self.borderInset = 3.0
+        self.lineWidth = CGFloat(self.lineWidth)
+        self.trackWidth = CGFloat(self.trackWidth)
+        self.spacing = CGFloat(self.spacing)
+        self.progress = Float(self.progress)
+        self.animationDuration = CGFloat(self.animationDuration)
         
-        self.progress = 0.0
-        self.animationDuration = 0.3
-        
-        self.progressLayer.contentsScale = UIScreen.main.scale
-        self.progressLayer.setNeedsDisplay()
+        self.layer.addSublayer(self.trackLayer)
+        self.layer.addSublayer(self.progressLayer)
     }
     
-}
-
-extension PieProgressView {
-    
-    public override class var layerClass: AnyClass {
-        return PieProgressLayer.self
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        self.progressLayer.frame = self.bounds
+        self.progressLayer.cornerRadius = min(self.bounds.width, self.bounds.height) / 2
+        
+        self.trackLayer.frame = self.bounds
+        self.trackLayer.cornerRadius = self.progressLayer.cornerRadius
     }
     
     public override func tintColorDidChange() {
         super.tintColorDidChange()
         self.progressLayer.fillColor = self.tintColor
         self.progressLayer.strokeColor = self.tintColor
-        self.progressLayer.borderColor = self.tintColor.cgColor
+        
+        if self.trackColor == nil {
+            self.progressLayer.trackColor = self.tintColor
+            self.trackLayer.borderColor = self.tintColor.cgColor
+        }
     }
     
 }
 
 extension PieProgressView {
     
-    public func setProgress(_ progress: Float, animated: Bool) {
+    @objc public func setProgress(_ progress: Float, animated: Bool) {
         self.needSetProgress = false
         self.progress = max(self.minimumProgress, min(1.0, progress))
         self.needSetProgress = true
@@ -124,13 +141,15 @@ extension PieProgressView {
 
 private class PieProgressLayer: CALayer {
     
+    @NSManaged var progress: Float
     @NSManaged var fillColor: UIColor?
     @NSManaged var strokeColor: UIColor?
-    @NSManaged var progress: Float
+    @NSManaged var trackWidth: CGFloat
+    @NSManaged var trackColor: UIColor?
     @NSManaged var lineWidth: CGFloat
-    @NSManaged var borderInset: CGFloat
+    @NSManaged var spacing: CGFloat
     
-    fileprivate var shape: Shape = .sector
+    fileprivate var shape: PieProgressView.Shape = .sector
     fileprivate var animationDuration: CFTimeInterval = 0.5
     fileprivate var shouldChangeProgressWithAnimation: Bool = true
     
@@ -149,42 +168,32 @@ private class PieProgressLayer: CALayer {
     }
     
     override func draw(in context: CGContext) {
+        super.draw(in: context)
         if self.bounds.isEmpty {
             return
         }
         
-        let center: CGPoint = CGPoint(x: self.bounds.midX, y: self.bounds.midY)
-        var radius: CGFloat = min(center.x, center.y) - self.borderWidth - self.borderInset
-        let startAngle: CGFloat = CGFloat(-Float.pi / 2)
-        let endAngle: CGFloat = CGFloat(Float.pi * 2 * self.progress) + startAngle
+        let center = CGPoint(x: self.bounds.midX, y: self.bounds.midY)
+        let startAngle = CGFloat(-Float.pi / 2)
+        let endAngle = CGFloat(Float.pi * 2 * self.progress) + startAngle
         
         switch self.shape {
         case .sector:
             // 绘制扇形进度区域
-            context.setFillColor(self.fillColor?.cgColor ?? UIColor.red.cgColor)
+            let radius = min(center.x, center.y) - self.trackWidth - self.spacing
+            context.setFillColor(self.fillColor?.cgColor ?? UIColor.clear.cgColor)
             context.move(to: center)
             context.addArc(center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: false)
             context.closePath()
             context.fillPath()
-            break
         case .ring:
             // 绘制环形进度区域
-            radius -= self.lineWidth
+            let radius = min(center.x, center.y) - max(self.trackWidth, self.lineWidth) / 2 - self.spacing
             context.setLineWidth(self.lineWidth)
-            context.setStrokeColor(self.strokeColor?.cgColor ?? UIColor.red.cgColor)
+            context.setStrokeColor(self.strokeColor?.cgColor ?? UIColor.clear.cgColor)
             context.addArc(center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: false)
             context.strokePath()
-            break
         }
-        
-        super.draw(in: context)
-    }
-    
-    override func layoutSublayers() {
-        super.layoutSublayers()
-        self.cornerRadius = self.bounds.height / 2
     }
     
 }
-
-

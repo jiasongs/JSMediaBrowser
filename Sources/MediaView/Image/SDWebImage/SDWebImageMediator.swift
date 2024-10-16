@@ -51,7 +51,7 @@ public struct SDWebImageMediator: WebImageMediator {
     }
     
     public func cancelImageRequest(for view: UIView) {
-        view.sd_cancelCurrentImageLoad()
+        view.sd_cancelLatestImageLoad()
     }
     
     public init(options: SDWebImageOptions? = nil, context: [SDWebImageContextOption: Any]? = nil) {
