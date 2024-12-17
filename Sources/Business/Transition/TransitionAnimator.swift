@@ -128,7 +128,14 @@ extension TransitionAnimator {
 
 extension TransitionAnimator {
     
-    private func handleAnimationEntering(style: TransitioningStyle, isEntering: Bool, fromView: UIView, toView: UIView, sourceView: UIView?, sourceRect: CGRect) {
+    private func handleAnimationEntering(
+        style: TransitioningStyle,
+        isEntering: Bool,
+        fromView: UIView,
+        toView: UIView,
+        sourceView: UIView?,
+        sourceRect: CGRect
+    ) {
         let currentView: UIView? = isEntering ? toView : fromView
         if style == .fade {
             currentView?.alpha = isEntering ? 0 : 1
@@ -160,7 +167,7 @@ extension TransitionAnimator {
             cornerRadiusAnimation.fromValue = isEntering ? cornerRadius : 0
             cornerRadiusAnimation.toValue = isEntering ? 0 : cornerRadius
             /// 添加组动画
-            let groupAnimation: CAAnimationGroup  = CAAnimationGroup()
+            let groupAnimation: CAAnimationGroup = CAAnimationGroup()
             groupAnimation.duration = self.duration
             groupAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
             groupAnimation.fillMode = .forwards

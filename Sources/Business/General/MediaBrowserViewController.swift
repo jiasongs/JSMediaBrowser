@@ -145,11 +145,11 @@ extension MediaBrowserViewController {
 extension MediaBrowserViewController {
     
     @objc open var currentPage: Int {
-        set {
-            self.mediaBrowserView.currentPage = newValue
-        }
         get {
             return self.mediaBrowserView.currentPage
+        }
+        set {
+            self.mediaBrowserView.currentPage = newValue
         }
     }
     
@@ -186,7 +186,7 @@ extension MediaBrowserViewController {
             return
         }
         if !(presenter is UITabBarController), let tabBarController = presenter.tabBarController, tabBarController.isViewLoaded {
-            if !tabBarController.tabBar.isHidden && tabBarController.tabBar.bounds.height > 0 && !presenter.hidesBottomBarWhenPushed  {
+            if !tabBarController.tabBar.isHidden && tabBarController.tabBar.bounds.height > 0 && !presenter.hidesBottomBarWhenPushed {
                 presenter = tabBarController
             }
         }
@@ -224,11 +224,11 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     }
     
     @objc open func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, cellForPageAt index: Int) -> UICollectionViewCell {
-        var cell: BasisCell? = nil
+        var cell: BasisCell?
         let dataItem = self.dataSource?[index]
-        if let _ = dataItem as? ImageDataItemProtocol {
+        if dataItem is ImageDataItemProtocol {
             cell = mediaBrowserView.dequeueReusableCell(ImageCell.self, at: index)
-        } else if let _ = dataItem as? VideoDataItemProtocol {
+        } else if dataItem is VideoDataItemProtocol {
             cell = mediaBrowserView.dequeueReusableCell(VideoCell.self, at: index)
         }
         guard let cell = cell else {
@@ -428,7 +428,6 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
             if self.isPresented {
                 self.hide(animated: true)
             }
-            break
         case .changed:
             let location = gestureRecognizer.location(in: gestureRecognizerView)
             let horizontalDistance = location.x - self.gestureBeganLocation.x
@@ -447,7 +446,6 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
             self.transitionAnimatorViews?.forEach { (subview) in
                 subview.alpha = alpha
             }
-            break
         case .ended, .cancelled, .failed:
             let location = gestureRecognizer.location(in: gestureRecognizer.view)
             let verticalDistance = location.y - self.gestureBeganLocation.y
@@ -456,7 +454,6 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
             } else {
                 self.resetDismissingAnimation()
             }
-            break
         default:
             break
         }
@@ -474,12 +471,12 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     
     @objc open func resetDismissingAnimation() {
         self.gestureBeganLocation = CGPoint.zero
-        UIView.animate(withDuration: self.transitionAnimator.duration, delay: 0, options: JSCoreHelper.animationOptionsCurveOut, animations: {
+        UIView.animate(withDuration: self.transitionAnimator.duration, delay: 0, options: JSCoreHelper.animationOptionsCurveOut) {
             self.currentPageCell?.transform = CGAffineTransform.identity
             self.transitionAnimatorViews?.forEach { (subview) in
                 subview.alpha = 1.0
             }
-        }) { finished in
+        } completion: { finished in
             self.transitionInteractiver.cancel()
         }
     }

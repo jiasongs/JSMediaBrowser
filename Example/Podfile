@@ -6,6 +6,7 @@ def pod_Common
   pod "QMUIKit"
   pod "SnapKit"
   pod "Then"
+  pod 'SwiftLint', :configurations => ['Debug']
   pod "LookinServer", :subspecs => ['Swift'], :configurations => ["Debug"]
   pod "MLeaksFinder", :git => "https://github.com/Tencent/MLeaksFinder.git", :configurations => ["Debug"]
 end

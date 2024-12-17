@@ -215,6 +215,7 @@
 				7A23CD542581F365004B4033 /* Frameworks */,
 				7A23CD552581F365004B4033 /* Resources */,
 				88DA13EC2328531550B0994F /* [CP] Copy Pods Resources */,
+				7AB99CAF2D112AE200A19EEA /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -234,6 +235,7 @@
 				7A23CD782581F3C1004B4033 /* Frameworks */,
 				7A23CD792581F3C1004B4033 /* Resources */,
 				F95877334F03A81A0725635E /* [CP] Copy Pods Resources */,
+				7AB99CB02D112AEA00A19EEA /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -315,6 +317,40 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		7AB99CAF2D112AE200A19EEA /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "${PODS_ROOT}/SwiftLint/swiftlint --strict\n";
+		};
+		7AB99CB02D112AEA00A19EEA /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "${PODS_ROOT}/SwiftLint/swiftlint --strict\n";
+		};
 		88DA13EC2328531550B0994F /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

@@ -32,12 +32,20 @@ public class PagingCollectionView: UICollectionView {
         self.contentInsetAdjustmentBehavior = .never
     }
     
+    public override func touchesShouldCancel(in view: UIView) -> Bool {
+        // 默认情况下只有当view是非UIControl的时候才会返回YES，这里统一对UIControl也返回YES
+        guard view is UIControl else {
+            return super.touchesShouldCancel(in: view)
+        }
+        return true
+    }
+    
 }
 
 extension PagingCollectionView: UIGestureRecognizerDelegate {
     
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        if let _ = touch.view as? UISlider {
+        if touch.view is UISlider {
             return false
         } else {
             return true

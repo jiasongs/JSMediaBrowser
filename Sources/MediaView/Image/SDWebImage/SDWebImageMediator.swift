@@ -11,7 +11,7 @@ import SDWebImage
 public struct SDWebImageMediator: WebImageMediator {
     
     public private(set) var options: SDWebImageOptions
-    public private(set) var context: [SDWebImageContextOption: Any]? = nil
+    public private(set) var context: [SDWebImageContextOption: Any]?
     
     public func setImage(
         for view: UIView,

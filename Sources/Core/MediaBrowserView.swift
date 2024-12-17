@@ -211,7 +211,9 @@ extension MediaBrowserView {
             self.collectionView.register(cellClass, forCellWithReuseIdentifier: identifier)
         }
         let indexPath = IndexPath(item: index, section: 0)
-        let cell = self.collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! Cell
+        guard let cell = self.collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as? Cell else {
+            fatalError()
+        }
         return cell
     }
     
@@ -226,14 +228,18 @@ extension MediaBrowserView {
             self.collectionView.register(nib, forCellWithReuseIdentifier: identifier)
         }
         let indexPath = IndexPath(item: index, section: 0)
-        let cell = self.collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! Cell
+        guard let cell = self.collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as? Cell else {
+            fatalError()
+        }
         return cell
     }
     
     public func dequeueReusableCell<Cell: UICollectionViewCell>(_ storyboardReuseIdentifier: String, at index: Int) -> Cell {
         let identifier: String = storyboardReuseIdentifier
         let indexPath = IndexPath(item: index, section: 0)
-        let cell = self.collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! Cell
+        guard let cell = self.collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as? Cell else {
+            fatalError()
+        }
         return cell
     }
     
@@ -299,7 +305,7 @@ extension MediaBrowserView: UIScrollViewDelegate {
             return
         }
         
-        let betweenOrEqual =  { (minimumValue: CGFloat, value: CGFloat, maximumValue: CGFloat) -> Bool in
+        let betweenOrEqual = { (minimumValue: CGFloat, value: CGFloat, maximumValue: CGFloat) -> Bool in
             return minimumValue <= value && value <= maximumValue
         }
         let offsetIndex = self.offsetIndex

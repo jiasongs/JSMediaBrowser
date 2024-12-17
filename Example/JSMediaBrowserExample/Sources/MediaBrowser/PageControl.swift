@@ -22,7 +22,7 @@ class PageControl: UIPageControl {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }  
+    }
   
     @objc func handlePageControlEvent() {
         guard let mediaBrowserVC = self.mediaBrowserVC else {

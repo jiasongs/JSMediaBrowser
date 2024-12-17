@@ -92,7 +92,7 @@ public class EmptyView: UIView {
     
     public override func layoutSubviews() {
         super.layoutSubviews()
-        let imageSize = self.imageView.sizeThatFits(CGSizeMake(min(self.frame.width * 0.4, 120), 0))
+        let imageSize = self.imageView.sizeThatFits(CGSize(width: min(self.frame.width * 0.4, 120), height: 0))
         let titleSize = self.titleLabel.sizeThatFits(CGSize(width: min(self.frame.width * 0.6, 280), height: 0))
         let subtitleSize = self.subtitleLabel.sizeThatFits(CGSize(width: min(self.frame.width * 0.75, 350), height: 0))
         let buttonSize = self.actionButton.sizeThatFits(CGSize(width: subtitleSize.width * 0.6, height: 0))

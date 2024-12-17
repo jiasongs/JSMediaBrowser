@@ -116,7 +116,10 @@ public class VideoPlayerView: BasisMediaView {
     }()
     
     private var playerLayer: AVPlayerLayer {
-        return self.playerView.layer as! AVPlayerLayer
+        guard let layer = self.playerView.layer as? AVPlayerLayer else {
+            fatalError()
+        }
+        return layer
     }
     
     private lazy var thumbImageView: UIImageView = {
