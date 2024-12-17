@@ -27,7 +27,7 @@ public struct KFWebImageMediator: WebImageMediator {
             return
         }
         
-        let issuedIdentifier = Identifier.next()
+        let issuedIdentifier = AtomicInt()
         view.jsmb_taskIdentifier = issuedIdentifier
         
         if let thumbImage = thumbImage {
@@ -44,10 +44,12 @@ public struct KFWebImageMediator: WebImageMediator {
                 progress?(receivedSize, totalSize)
             },
             downloadTaskUpdated: { newTask in
-                view.jsmb_imageTask = newTask
+                MainThreadTask.currentOrAsync {
+                    view.jsmb_imageTask = newTask
+                }
             },
             completionHandler: { result in
-                CallbackQueue.mainCurrentOrAsync.execute {
+                MainThreadTask.currentOrAsync {
                     guard issuedIdentifier == view.jsmb_taskIdentifier else {
                         let reason: KingfisherError.ImageSettingErrorReason
                         do {
@@ -105,41 +107,80 @@ extension KFWebImageMediator {
     
 }
 
-private var taskIdentifierKey: UInt8 = 0
-private var imageTaskKey: UInt8 = 0
-
-private enum Identifier {
-    
-    public typealias Value = UInt
-    
-    static var current: Value = 0
-    
-    static func next() -> Value {
-        self.current += 1
-        return self.current
-    }
-    
+private struct AssociatedKeys {
+    static var taskIdentifier: UInt8 = 0
+    static var imageTask: UInt8 = 0
 }
 
 private extension UIView {
     
-    var jsmb_taskIdentifier: Identifier.Value? {
+    var jsmb_taskIdentifier: AtomicInt? {
         get {
-            let value = objc_getAssociatedObject(self, &taskIdentifierKey) as? NSNumber
-            return value?.uintValue as? Identifier.Value
+            return objc_getAssociatedObject(self, &AssociatedKeys.taskIdentifier) as? AtomicInt
         }
         set {
-            let number = newValue != nil ? NSNumber(value: newValue!) : nil
-            objc_setAssociatedObject(self, &taskIdentifierKey, number, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+            objc_setAssociatedObject(self, &AssociatedKeys.taskIdentifier, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
     
     var jsmb_imageTask: DownloadTask? {
         get {
-            return objc_getAssociatedObject(self, &imageTaskKey) as? DownloadTask
+            return objc_getAssociatedObject(self, &AssociatedKeys.imageTask) as? DownloadTask
         }
         set {
-            objc_setAssociatedObject(self, &imageTaskKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(self, &AssociatedKeys.imageTask, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
+    
+}
+
+private struct AtomicInt: Equatable {
+    
+    private static let lock = UnfairLock()
+    private static var current: Int = 1
+    
+    private let value: Int
+    
+    fileprivate init() {
+        self.value = AtomicInt.lock.withLock {
+            let value = AtomicInt.current
+            AtomicInt.current = value + 1
+            return value
+        }
+    }
+}
+
+private final class UnfairLock {
+    
+    private let lock: os_unfair_lock_t
+    
+    init() {
+        self.lock = .allocate(capacity: 1)
+        self.lock.initialize(to: os_unfair_lock())
+    }
+    
+    deinit {
+        self.lock.deinitialize(count: 1)
+        self.lock.deallocate()
+    }
+    
+    func withLock<T>(execute work: () throws -> T) rethrows -> T {
+        os_unfair_lock_lock(self.lock)
+        defer {
+            os_unfair_lock_unlock(self.lock)
+        }
+        return try work()
+    }
+    
+}
+
+private struct MainThreadTask {
+    
+    static func currentOrAsync(execute work: @MainActor @Sendable @escaping () -> Void) {
+        if Thread.isMainThread {
+            MainActor.assumeIsolated(work)
+        } else {
+            DispatchQueue.main.async(execute: work)
         }
     }
     

@@ -1,11 +1,11 @@
 
 Pod::Spec.new do |s|
   s.name         = "JSMediaBrowser"
-  s.version      = "1.0.5"
+  s.version      = "1.2.0"
   s.summary      = "图片、视频浏览器"
   s.homepage     = "https://github.com/jiasongs/JSMediaBrowser"
   s.author       = { "jiasong" => "593908937@qq.com" }
-  s.platform     = :ios, "12.0"
+  s.platform     = :ios, "13.0"
   s.swift_versions = ["4.2", "5.0"]
   s.requires_arc = true
   s.source       = { :git => "https://github.com/jiasongs/JSMediaBrowser.git", :tag => "#{s.version}" }
@@ -39,7 +39,7 @@ Pod::Spec.new do |s|
   s.subspec "MediaImageForKingfisher" do |ss|
     ss.source_files = "Sources/MediaView/Image/Kingfisher/*.{swift,h,m}"
     ss.dependency "JSMediaBrowser/MediaImage"
-    ss.dependency "Kingfisher", "~> 7.0"
+    ss.dependency "Kingfisher", "~> 8.0"
   end
 
   s.subspec "MediaVideo" do |ss|

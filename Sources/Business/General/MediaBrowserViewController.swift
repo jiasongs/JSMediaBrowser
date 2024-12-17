@@ -176,15 +176,24 @@ extension MediaBrowserViewController {
         self.presentedFromViewController = sender
         
         let viewController = navigationController ?? self
-        viewController.modalPresentationStyle = .overCurrentContext
         viewController.modalPresentationCapturesStatusBarAppearance = true
+        viewController.modalPresentationStyle = .overCurrentContext
         viewController.transitioningDelegate = self
         
-        var senderViewController = sender
-        if let tabBarController = sender.tabBarController, (!tabBarController.tabBar.isHidden && !sender.hidesBottomBarWhenPushed) {
-            senderViewController = tabBarController
+        var presenter = sender
+        guard presenter.isViewLoaded else {
+            assertionFailure()
+            return
         }
-        senderViewController.present(viewController, animated: animated, completion: completion)
+        if !(presenter is UITabBarController), let tabBarController = presenter.tabBarController, tabBarController.isViewLoaded {
+            if !tabBarController.tabBar.isHidden && tabBarController.tabBar.bounds.height > 0 && !presenter.hidesBottomBarWhenPushed  {
+                presenter = tabBarController
+            }
+        }
+        if let presentedViewController = presenter.presentedViewController {
+            presenter = presentedViewController
+        }
+        presenter.present(viewController, animated: animated, completion: completion)
     }
     
     @objc open func hide(animated: Bool, completion: (() -> Void)? = nil) {
