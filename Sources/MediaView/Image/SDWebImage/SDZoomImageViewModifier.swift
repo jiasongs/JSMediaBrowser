@@ -17,7 +17,7 @@ public struct SDZoomImageViewModifier: ZoomImageViewModifier {
         return imageView
     }
     
-    public func livePhotoView(in zoomImageView: ZoomImageView) -> PHLivePhotoView {
+    public func livePhotoView(in zoomImageView: ZoomImageView) -> any LivePhotoView {
         return PHLivePhotoView()
     }
     

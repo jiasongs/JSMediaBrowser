@@ -21,35 +21,45 @@ public class ZoomImageView: BasisMediaView {
     
     public var image: UIImage? {
         didSet {
-            guard self.image != nil || self.isImageViewInitialized else {
+            if self.image != nil {
+                self.createImageViewIfNeeded()
+            }
+            
+            guard oldValue != self.image else {
                 return
             }
-            if oldValue != self.image {
-                if self.isLivePhotoViewInitialized {
-                    self.livePhotoView.isHidden = true
-                    self.livePhotoView.livePhoto = nil
-                }
-                self.imageView.isHidden = false
-                self.imageView.image = self.image
-                self.setNeedsRevertZoom()
+            if let livePhotoView = self.livePhotoView {
+                livePhotoView.isHidden = true
+                livePhotoView.livePhoto = nil
             }
+            if let imageView = self.imageView {
+                imageView.isHidden = false
+                imageView.image = self.image
+            }
+            
+            self.setNeedsRevertZoom()
         }
     }
     
-    public var livePhoto: PHLivePhoto? {
+    public var livePhoto: LivePhoto? {
         didSet {
-            guard self.livePhoto != nil || self.isLivePhotoViewInitialized else {
+            if self.livePhoto != nil {
+                self.createLivePhotoViewIfNeeded()
+            }
+            
+            guard oldValue != self.livePhoto else {
                 return
             }
-            if oldValue != self.livePhoto {
-                if self.isImageViewInitialized {
-                    self.imageView.isHidden = true
-                    self.imageView.image = nil
-                }
-                self.livePhotoView.isHidden = false
-                self.livePhotoView.livePhoto = self.livePhoto
-                self.setNeedsRevertZoom()
+            if let imageView = self.imageView {
+                imageView.isHidden = true
+                imageView.image = nil
             }
+            if let livePhotoView = self.livePhotoView {
+                livePhotoView.isHidden = false
+                // livePhotoView.livePhoto = self.livePhoto
+            }
+            
+            self.setNeedsRevertZoom()
         }
     }
     
@@ -78,29 +88,12 @@ public class ZoomImageView: BasisMediaView {
         return scrollView
     }()
     
-    private var isImageViewInitialized: Bool = false
-    private lazy var imageView: UIImageView = {
-        self.isImageViewInitialized = true
-        var imageView: UIImageView = self.modifier?.imageView(in: self) ?? UIImageView()
-        imageView.isHidden = true
-        imageView.isAccessibilityElement = true
-        self.scrollView.addSubview(imageView)
-        return imageView
-    }()
+    private var imageView: UIImageView?
     
-    private var isLivePhotoViewInitialized: Bool = false
-    private lazy var livePhotoView: PHLivePhotoView = {
-        self.isLivePhotoViewInitialized = true
-        var livePhotoView: PHLivePhotoView = self.modifier?.livePhotoView(in: self) ?? PHLivePhotoView()
-        livePhotoView.isHidden = true
-        livePhotoView.delegate = self
-        livePhotoView.isAccessibilityElement = true
-        self.scrollView.addSubview(livePhotoView)
-        return livePhotoView
-    }()
+    private var livePhotoView: (any LivePhotoView)?
     
     private weak var failGestureRecognizer: UIGestureRecognizer?
-    private var isLivePhotoPlaying: Bool = false
+    
     private var isNeededRevertZoom: Bool = false
     
     public override func didInitialize() {
@@ -189,23 +182,48 @@ extension ZoomImageView {
         self.scrollView.pinchGestureRecognizer?.require(toFail: otherGestureRecognizer)
     }
     
+    @available(iOS 17.0, *)
+    public var imageDynamicRange: UIImage.DynamicRange {
+        guard let imageView = self.imageView else {
+            return .unspecified
+        }
+        return imageView.imageDynamicRange
+    }
+    
+    @available(iOS 17.0, *)
+    func setPreferredImageDynamicRange(_ dynamicRange: UIImage.DynamicRange) {
+        guard let imageView = self.imageView else {
+            return
+        }
+        guard imageView.preferredImageDynamicRange != dynamicRange else {
+            return
+        }
+        imageView.preferredImageDynamicRange = dynamicRange
+    }
+    
 }
 
 extension ZoomImageView {
     
     public var isDisplayImageView: Bool {
-        return self.isImageViewInitialized && !self.imageView.isHidden
+        guard let imageView = self.imageView else {
+            return false
+        }
+        return !imageView.isHidden
     }
     
     public var isDisplayLivePhotoView: Bool {
-        return self.isLivePhotoViewInitialized && !self.livePhotoView.isHidden
+        guard let livePhotoView = self.livePhotoView else {
+            return false
+        }
+        return !livePhotoView.isHidden
     }
     
-    var isAnimating: Bool {
-        if self.isDisplayImageView {
-            return self.imageView.isAnimating
-        } else if self.isDisplayLivePhotoView {
-            return self.isLivePhotoPlaying
+    public var isAnimating: Bool {
+        if self.isDisplayImageView, let imageView = self.imageView {
+            return imageView.isAnimating
+        } else if self.isDisplayLivePhotoView, let livePhotoView = self.livePhotoView {
+            return livePhotoView.isPlaying
         }
         return false
     }
@@ -215,9 +233,9 @@ extension ZoomImageView {
             return
         }
         if self.isDisplayImageView {
-            self.imageView.startAnimating()
+            self.imageView?.startAnimating()
         } else if self.isDisplayLivePhotoView {
-            self.livePhotoView.startPlayback(with: .full)
+            self.livePhotoView?.startPlayback()
         }
     }
     
@@ -226,9 +244,9 @@ extension ZoomImageView {
             return
         }
         if self.isDisplayImageView {
-            self.imageView.stopAnimating()
+            self.imageView?.stopAnimating()
         } else if self.isDisplayLivePhotoView {
-            self.livePhotoView.stopPlayback()
+            self.livePhotoView?.stopPlayback()
         }
     }
     
@@ -329,6 +347,46 @@ extension ZoomImageView {
 
 extension ZoomImageView {
     
+    private func createImageViewIfNeeded() {
+        guard self.imageView == nil else {
+            return
+        }
+        let imageView = self.modifier?.imageView(in: self) ?? UIImageView()
+        imageView.isHidden = true
+        imageView.isAccessibilityElement = true
+        self.scrollView.addSubview(imageView)
+        self.imageView = imageView
+        
+        self.updateImageHighDynamicRange()
+    }
+    
+    private func updateImageHighDynamicRange() {
+        guard let imageView = self.imageView else {
+            return
+        }
+        if #available(iOS 17.0, *) {
+//            if self.isEnableImageHighDynamicRange {
+//                imageView.preferredImageDynamicRange = .high
+//            } else {
+                imageView.preferredImageDynamicRange = .unspecified
+//            }
+        }
+    }
+    
+    private func createLivePhotoViewIfNeeded() {
+        guard self.livePhotoView == nil else {
+            return
+        }
+        let livePhotoView = self.modifier?.livePhotoView(in: self) ?? PHLivePhotoView()
+        livePhotoView.isHidden = true
+        livePhotoView.isAccessibilityElement = true
+        self.scrollView.addSubview(livePhotoView)
+    }
+    
+}
+
+extension ZoomImageView {
+    
     private var calculateViewportRect: CGRect {
         let resultRect = self.modifier?.viewportRect(in: self) ?? CGRect.zero
         return !resultRect.isEmpty ? resultRect : self.finalViewportRect
@@ -395,18 +453,6 @@ extension ZoomImageView: UIScrollViewDelegate {
     
     public func scrollViewDidZoom(_ scrollView: UIScrollView) {
         self.handleDidEndZooming()
-    }
-    
-}
-
-extension ZoomImageView: PHLivePhotoViewDelegate {
-    
-    public func livePhotoView(_ livePhotoView: PHLivePhotoView, willBeginPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) {
-        self.isLivePhotoPlaying = true
-    }
-    
-    public func livePhotoView(_ livePhotoView: PHLivePhotoView, didEndPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) {
-        self.isLivePhotoPlaying = false
     }
     
 }

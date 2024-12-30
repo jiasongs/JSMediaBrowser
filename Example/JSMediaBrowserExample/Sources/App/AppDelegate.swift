@@ -2,13 +2,13 @@
 //  AppDelegate.swift
 //  JSMediaBrowserExample
 //
-//  Created by jiasong on 2020/12/10.
+//  Created by jiasong on 2024/12/30.
 //
 
 import UIKit
 import QMUIKit
 
-@UIApplicationMain
+@main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?

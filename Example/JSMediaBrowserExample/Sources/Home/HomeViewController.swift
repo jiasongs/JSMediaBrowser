@@ -54,17 +54,26 @@ class HomeViewController: UIViewController {
             return
         }
         var array = try? JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.fragmentsAllowed) as? [String]
-        if let data1 = Bundle.main.path(forResource: "data1", ofType: "jpg") {
-            array?.append(URL(fileURLWithPath: data1).absoluteString)
+        if let hdr = Bundle.main.path(forResource: "TestHDR1", ofType: "heic") {
+            array?.append(URL(fileURLWithPath: hdr).absoluteString)
         }
-        if let data2 = Bundle.main.path(forResource: "data2", ofType: "gif") {
-            array?.append(URL(fileURLWithPath: data2).absoluteString)
+        if let hdr = Bundle.main.path(forResource: "TestHDR2", ofType: "JPG") {
+            array?.append(URL(fileURLWithPath: hdr).absoluteString)
         }
-        if let data3 = Bundle.main.path(forResource: "data3", ofType: "jpg") {
-            array?.append(URL(fileURLWithPath: data3).absoluteString)
+        if let hdr = Bundle.main.path(forResource: "TestHDR3", ofType: "JPG") {
+            array?.append(URL(fileURLWithPath: hdr).absoluteString)
         }
-        if let data4 = Bundle.main.path(forResource: "data4", ofType: "jpg") {
-            array?.append(URL(fileURLWithPath: data4).absoluteString)
+        if let data = Bundle.main.path(forResource: "data1", ofType: "jpg") {
+            array?.append(URL(fileURLWithPath: data).absoluteString)
+        }
+        if let data = Bundle.main.path(forResource: "data2", ofType: "gif") {
+            array?.append(URL(fileURLWithPath: data).absoluteString)
+        }
+        if let data = Bundle.main.path(forResource: "data3", ofType: "jpg") {
+            array?.append(URL(fileURLWithPath: data).absoluteString)
+        }
+        if let data = Bundle.main.path(forResource: "data4", ofType: "jpg") {
+            array?.append(URL(fileURLWithPath: data).absoluteString)
         }
         self.dataSource = array ?? []
     }

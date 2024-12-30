@@ -50,6 +50,9 @@ public class TransitionAnimator: Transitioner {
         let imageView = self.modifier?.imageView(in: self) ?? UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
+        if #available(iOS 17.0, *) {
+            imageView.preferredImageDynamicRange = .high
+        }
         return imageView
     }()
     

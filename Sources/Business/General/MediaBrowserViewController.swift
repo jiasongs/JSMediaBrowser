@@ -43,7 +43,7 @@ open class MediaBrowserViewController: UIViewController {
     open var webImageMediator: WebImageMediator?
     
     open var zoomImageViewModifier: ZoomImageViewModifier?
-    
+
     open var transitionAnimatorModifier: TransitionAnimatorModifier? {
         didSet {
             self.transitionAnimator.modifier = self.transitionAnimatorModifier
@@ -265,6 +265,8 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         cell.zoomImageView.require(toFail: self.mediaBrowserView.dismissingGesture)
         /// zoomImageView修改器
         cell.zoomImageView.modifier = self.zoomImageViewModifier
+        // zoomImageView HDR
+       // cell.zoomImageView.isEnableImageHighDynamicRange = self.isEnableImageHighDynamicRange
         
         let webImageMediator = dataItem.webImageMediator ?? self.webImageMediator
         /// 取消请求
