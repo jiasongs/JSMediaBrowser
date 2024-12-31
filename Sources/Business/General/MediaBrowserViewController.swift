@@ -41,8 +41,6 @@ open class MediaBrowserViewController: UIViewController {
         }
     }
     
-    public var dismissWhenSlidingDistance: CGFloat = 70
-    
     public private(set) lazy var mediaBrowserView: MediaBrowserView = {
         return MediaBrowserView()
     }()
@@ -449,7 +447,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
         case .ended, .cancelled, .failed:
             let location = gestureRecognizer.location(in: gestureRecognizer.view)
             let verticalDistance = location.y - self.gestureBeganLocation.y
-            if abs(verticalDistance) > self.dismissWhenSlidingDistance && self.isPresented {
+            if abs(verticalDistance) > self.configuration.dismissWhenSlidingDistance && self.isPresented {
                 self.beginDismissingAnimation()
             } else {
                 self.resetDismissingAnimation()

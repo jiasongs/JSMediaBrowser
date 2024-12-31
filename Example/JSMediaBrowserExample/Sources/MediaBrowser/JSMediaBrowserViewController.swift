@@ -66,7 +66,8 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
             zoomImageViewModifier: { _ in
                 // KFZoomImageViewModifier()
                 return SDZoomImageViewModifier()
-            })
+            }
+        )
         super.init(configuration: configuration)
         
         self.eventHandler = DefaultMediaBrowserViewControllerEventHandler(

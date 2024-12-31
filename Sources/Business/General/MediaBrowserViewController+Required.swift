@@ -14,13 +14,16 @@ public struct MediaBrowserViewControllerConfiguration {
     
     public var webImageMediator: BuildWebImageMediator
     public var zoomImageViewModifier: BuildZoomImageViewModifier
+    public var dismissWhenSlidingDistance: CGFloat
     
     public init(
         webImageMediator: @escaping BuildWebImageMediator,
-        zoomImageViewModifier: @escaping BuildZoomImageViewModifier
+        zoomImageViewModifier: @escaping BuildZoomImageViewModifier,
+        dismissWhenSlidingDistance: CGFloat = 70
     ) {
         self.webImageMediator = webImageMediator
         self.zoomImageViewModifier = zoomImageViewModifier
+        self.dismissWhenSlidingDistance = dismissWhenSlidingDistance
     }
     
 }

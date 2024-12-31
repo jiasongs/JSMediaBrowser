@@ -11,7 +11,7 @@ import ObjectiveC.runtime
 
 public struct KFWebImageMediator: WebImageMediator {
     
-    private var options: KingfisherOptionsInfo
+    public var options: KingfisherOptionsInfo
     
     public func setImage(
         for view: UIView,
