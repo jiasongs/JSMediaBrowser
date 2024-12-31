@@ -43,16 +43,11 @@ public final class TransitionAnimator: Transitioner {
     
     private static let animationGroupKey: String = "AnimationGroupKey"
     
-    private lazy var imageView: UIImageView = {
-        let imageView = self.buildImageView(0)
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        return imageView
-    }()
+    private let buildImageView: () -> UIImageView
     
-    private let buildImageView: (Int) -> UIImageView
+    private var imageView: UIImageView?
     
-    public init(imageView: @escaping (Int) -> UIImageView) {
+    public init(imageView: @escaping () -> UIImageView) {
         self.buildImageView = imageView
     }
     
@@ -88,11 +83,16 @@ extension TransitionAnimator {
         let toView: UIView = transitionContext.view(forKey: .to) ?? toViewController.view
         let containerView: UIView = transitionContext.containerView
         
+        let imageView = self.buildImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        self.imageView = imageView
+        
         /// 最后添加ImageView, 保证在最上层
-        self.imageView.removeFromSuperview()
-        self.delegate?.transitionViewWillMoveToSuperview(self.imageView)
-        if self.imageView.superview == nil {
-            containerView.addSubview(self.imageView)
+        imageView.removeFromSuperview()
+        self.delegate?.transitionViewWillMoveToSuperview(imageView)
+        if imageView.superview == nil {
+            containerView.addSubview(imageView)
         }
         
         var style: TransitioningStyle = isEntering ? self.enteringStyle : self.exitingStyle
@@ -142,7 +142,7 @@ extension TransitionAnimator {
         let currentView: UIView? = isEntering ? toView : fromView
         if style == .fade {
             currentView?.alpha = isEntering ? 0 : 1
-        } else if style == .zoom {
+        } else if style == .zoom, let imageView = self.imageView {
             let zoomView = self.delegate?.transitionTargetView
             let zoomContentViewFrame = self.delegate?.transitionTargetFrame ?? CGRect.zero
             let zoomContentViewFrameInView = currentView?.convert(zoomContentViewFrame, from: zoomView) ?? CGRect.zero
@@ -150,9 +150,9 @@ extension TransitionAnimator {
             /// 隐藏目标视图
             zoomView?.isHidden = true
             /// 设置下Frame
-            self.imageView.image = self.renderTransitionThumbImage()
-            self.imageView.frame = isEntering ? sourceRect : zoomContentViewFrameInView
-            self.imageView.startAnimating()
+            imageView.image = self.renderTransitionThumbImage()
+            imageView.frame = isEntering ? sourceRect : zoomContentViewFrameInView
+            imageView.startAnimating()
             /// 计算position
             let sourceCenter = CGPoint(x: sourceRect.midX, y: sourceRect.midY)
             let zoomContentViewCenterInView = CGPoint(x: zoomContentViewFrameInView.midX, y: zoomContentViewFrameInView.midY)
@@ -183,7 +183,7 @@ extension TransitionAnimator {
                     animation.preferredFrameRateRange = preferredFrameRateRange
                 })
             }
-            self.imageView.layer.add(groupAnimation, forKey: TransitionAnimator.animationGroupKey)
+            imageView.layer.add(groupAnimation, forKey: TransitionAnimator.animationGroupKey)
         }
         
         if isEntering {
@@ -211,11 +211,13 @@ extension TransitionAnimator {
         } else if style == .zoom {
             self.delegate?.transitionTargetView?.isHidden = false
         }
-        /// 释放资源
-        self.imageView.stopAnimating()
-        self.imageView.removeFromSuperview()
-        self.imageView.layer.removeAnimation(forKey: TransitionAnimator.animationGroupKey)
-        self.imageView.image = nil
+        if let imageView = self.imageView {
+            imageView.stopAnimating()
+            imageView.removeFromSuperview()
+            imageView.layer.removeAnimation(forKey: TransitionAnimator.animationGroupKey)
+            imageView.image = nil
+            self.imageView = nil
+        }
     }
     
     private func renderTransitionThumbImage() -> UIImage? {

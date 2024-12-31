@@ -150,13 +150,15 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let cell = collectionView.cellForItem(at: indexPath) as? HomePictureCell
         let browserVC = JSMediaBrowserViewController()
-        browserVC.dataSource = self.dataSource.map { urlString in
+        browserVC.dataSource = self.dataSource.enumerated().map {
+            let thumbImage = $0.offset == indexPath.item ? cell?.imageView.image : nil
             var item: AssetItem
-            if urlString.contains("mp4") {
-                item = VideoItem(videoUrl: URL(string: urlString), thumbImage: nil)
+            if $0.element.contains("mp4") {
+                item = VideoItem(videoUrl: URL(string: $0.element), thumbImage: thumbImage)
             } else {
-                item = ImageItem(imageUrl: URL(string: urlString), thumbImage: nil)
+                item = ImageItem(imageUrl: URL(string: $0.element), thumbImage: thumbImage)
             }
             return item
         }

@@ -50,7 +50,10 @@ open class MediaBrowserViewController: UIViewController {
     private lazy var transitionAnimator: TransitionAnimator = {
         let animator = TransitionAnimator(imageView: { [weak self] in
             guard let self = self else { return UIImageView() }
-            return self.configuration.zoomImageViewModifier($0).imageView(in: ZoomImageView())
+            if let cell = self.currentPageCell as? ImageCell {
+                return self.configuration.zoomImageViewModifier(self.currentPage).imageView(in: cell.zoomImageView)
+            }
+            return UIImageView()
         })
         animator.delegate = self
         return animator
