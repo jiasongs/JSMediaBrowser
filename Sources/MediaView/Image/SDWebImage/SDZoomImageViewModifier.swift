@@ -14,6 +14,9 @@ public struct SDZoomImageViewModifier: ZoomImageViewModifier {
     public func imageView(in zoomImageView: ZoomImageView) -> UIImageView {
         let imageView = SDAnimatedImageView()
         imageView.autoPlayAnimatedImage = false
+        if #available(iOS 17.0, *) {
+            imageView.preferredImageDynamicRange = .high
+        }
         return imageView
     }
     
