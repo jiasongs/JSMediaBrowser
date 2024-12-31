@@ -21,10 +21,6 @@ public struct SDZoomImageViewModifier: ZoomImageViewModifier {
         return PHLivePhotoView()
     }
     
-    public func viewportRect(in zoomImageView: ZoomImageView) -> CGRect {
-        return CGRect.zero
-    }
-    
     public init() {
         
     }

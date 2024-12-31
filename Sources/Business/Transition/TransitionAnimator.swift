@@ -21,10 +21,9 @@ public protocol TransitionAnimatorDelegate: AnyObject {
     
 }
 
-public protocol TransitionAnimatorModifier {
-    
-    func imageView(in transitionAnimator: TransitionAnimator) -> UIImageView
-    
+public enum TransitioningStyle: Int {
+    case zoom
+    case fade
 }
 
 public enum TransitionAnimatorType: Int {
@@ -32,11 +31,9 @@ public enum TransitionAnimatorType: Int {
     case dismiss
 }
 
-public class TransitionAnimator: Transitioner {
+public final class TransitionAnimator: Transitioner {
     
     public weak var delegate: TransitionAnimatorDelegate?
-    
-    public var modifier: TransitionAnimatorModifier?
     
     public var duration: TimeInterval = 0.25
     
@@ -47,14 +44,17 @@ public class TransitionAnimator: Transitioner {
     private static let animationGroupKey: String = "AnimationGroupKey"
     
     private lazy var imageView: UIImageView = {
-        let imageView = self.modifier?.imageView(in: self) ?? UIImageView()
+        let imageView = self.buildImageView(0)
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-        if #available(iOS 17.0, *) {
-            imageView.preferredImageDynamicRange = .high
-        }
         return imageView
     }()
+    
+    private let buildImageView: (Int) -> UIImageView
+    
+    public init(imageView: @escaping (Int) -> UIImageView) {
+        self.buildImageView = imageView
+    }
     
 }
 

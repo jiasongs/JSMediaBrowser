@@ -15,14 +15,14 @@ public class BasisMediaView: UIView {
     /// 以下属性viewportRect为zero时才会生效, 若自定义viewportRect, 请自行实现
     private var viewportRectMaxWidth: CGFloat = 580
     
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
+    public init() {
+        super.init(frame: .zero)
         self.didInitialize()
     }
     
-    required public init?(coder: NSCoder) {
-        super.init(coder: coder)
-        self.didInitialize()
+    @available(*, unavailable, message: "use init()")
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     public func didInitialize() {

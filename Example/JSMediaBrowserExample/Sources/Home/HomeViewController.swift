@@ -151,31 +151,22 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let browserVC = JSMediaBrowserViewController()
-        var index = 0
         browserVC.dataSource = self.dataSource.map { urlString in
-            var item: DataItemProtocol
-            let image = self.pictureCell(at: index)?.imageView.image
+            var item: AssetItem
             if urlString.contains("mp4") {
-                item = VideoDataItem(videoUrl: URL(string: urlString), thumbImage: image)
+                item = VideoItem(videoUrl: URL(string: urlString), thumbImage: nil)
             } else {
-                item = ImageDataItem(imageUrl: URL(string: urlString), thumbImage: image)
+                item = ImageItem(imageUrl: URL(string: urlString), thumbImage: nil)
             }
-            index += 1
             return item
         }
         browserVC.currentPage = indexPath.item
-        browserVC.sourceViewForPageAtIndex = { [weak self] (vc, index) -> UIView? in
-            guard let cell = self?.pictureCell(at: index) else {
+        browserVC.source = .init(sourceView: {[weak self] in
+            guard let cell = self?.pictureCell(at: $0) else {
                 return nil
             }
             return cell.imageView
-        }
-        browserVC.sourceRectForPageAtIndex = { [weak self] (vc, index) -> CGRect in
-            guard let cell = self?.pictureCell(at: index) else {
-                return CGRect.zero
-            }
-            return vc.view.convert(cell.frame, from: cell.superview)
-        }
+        })
         browserVC.show(from: self, navigationController: QMUINavigationController(rootViewController: browserVC), animated: true)
     }
     

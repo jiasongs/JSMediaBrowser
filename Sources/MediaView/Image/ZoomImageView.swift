@@ -9,7 +9,7 @@ import UIKit
 import PhotosUI
 import JSCoreKit
 
-public class ZoomImageView: BasisMediaView {
+public final class ZoomImageView: BasisMediaView {
     
     public var modifier: ZoomImageViewModifier?
     
@@ -182,25 +182,6 @@ extension ZoomImageView {
         self.scrollView.pinchGestureRecognizer?.require(toFail: otherGestureRecognizer)
     }
     
-    @available(iOS 17.0, *)
-    public var imageDynamicRange: UIImage.DynamicRange {
-        guard let imageView = self.imageView else {
-            return .unspecified
-        }
-        return imageView.imageDynamicRange
-    }
-    
-    @available(iOS 17.0, *)
-    func setPreferredImageDynamicRange(_ dynamicRange: UIImage.DynamicRange) {
-        guard let imageView = self.imageView else {
-            return
-        }
-        guard imageView.preferredImageDynamicRange != dynamicRange else {
-            return
-        }
-        imageView.preferredImageDynamicRange = dynamicRange
-    }
-    
 }
 
 extension ZoomImageView {
@@ -356,21 +337,6 @@ extension ZoomImageView {
         imageView.isAccessibilityElement = true
         self.scrollView.addSubview(imageView)
         self.imageView = imageView
-        
-        self.updateImageHighDynamicRange()
-    }
-    
-    private func updateImageHighDynamicRange() {
-        guard let imageView = self.imageView else {
-            return
-        }
-        if #available(iOS 17.0, *) {
-//            if self.isEnableImageHighDynamicRange {
-//                imageView.preferredImageDynamicRange = .high
-//            } else {
-                imageView.preferredImageDynamicRange = .unspecified
-//            }
-        }
     }
     
     private func createLivePhotoViewIfNeeded() {
@@ -388,8 +354,7 @@ extension ZoomImageView {
 extension ZoomImageView {
     
     private var calculateViewportRect: CGRect {
-        let resultRect = self.modifier?.viewportRect(in: self) ?? CGRect.zero
-        return !resultRect.isEmpty ? resultRect : self.finalViewportRect
+        return self.finalViewportRect
     }
     
     private func setNeedsRevertZoom() {

@@ -13,6 +13,36 @@ import QMUIKit
 import SDWebImage
 import Kingfisher
 
+public struct ImageItem: ImageAssetItem {
+    
+    public var thumbImage: UIImage?
+    
+    public var image: UIImage?
+    public var imageUrl: URL?
+    
+    public init(image: UIImage? = nil, imageUrl: URL? = nil, thumbImage: UIImage? = nil) {
+        self.image = image
+        self.imageUrl = imageUrl
+        self.thumbImage = thumbImage
+    }
+    
+}
+
+public struct VideoItem: VideoAssetItem {
+    
+    public var thumbImage: UIImage?
+    
+    public var videoUrl: URL?
+    public var videoAsset: AVAsset?
+    
+    public init(videoUrl: URL? = nil, videoAsset: AVAsset? = nil, thumbImage: UIImage? = nil) {
+        self.videoUrl = videoUrl
+        self.videoAsset = videoAsset
+        self.thumbImage = thumbImage
+    }
+    
+}
+
 class JSMediaBrowserViewController: MediaBrowserViewController {
     
     lazy var shareControl: ShareControl = {
@@ -27,26 +57,34 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
         }
     }()
     
-    private lazy var delegator: JSMediaBrowserViewControllerDelegator = {
-        return JSMediaBrowserViewControllerDelegator()
-    }()
-    
-    override var dataSource: [DataItemProtocol]? {
-        didSet {
-            self.updatePageControl()
-        }
-    }
-    
-    override func didInitialize() {
-        super.didInitialize()
-        // Kingfisher
-        // self.webImageMediator = KFWebImageMediator()
-        // self.zoomImageViewModifier = KFZoomImageViewModifier()
-        // SDWebImage
-        self.webImageMediator = SDWebImageMediator(context: [.animatedImageClass: SDAnimatedImage.self])
-        self.zoomImageViewModifier = SDZoomImageViewModifier()
-        self.transitionAnimatorModifier = JSMediaBrowserTransitionAnimatorModifier(zoomImageViewModifier: self.zoomImageViewModifier)
-        self.delegate = self.delegator
+    init() {
+        let configuration = MediaBrowserViewControllerConfiguration(
+            webImageMediator: { _ in
+                // KFWebImageMediator()
+                return SDWebImageMediator(context: [.animatedImageClass: SDAnimatedImage.self])
+            },
+            zoomImageViewModifier: { _ in
+                // KFZoomImageViewModifier()
+                return SDZoomImageViewModifier()
+            })
+        super.init(configuration: configuration)
+        
+        self.eventHandler = DefaultMediaBrowserViewControllerEventHandler(
+            willReloadData: { [weak self] _ in
+                guard let self = self else { return }
+                self.updatePageControl()
+            },
+            willDisplayEmptyView: { emptyView, _, _ in
+                emptyView.image = UIImage(named: "img_fail")
+            },
+            willScrollHalf: { [weak self] in
+                guard let self = self else { return }
+                self.updatePageControl(for: $1)
+            },
+            didLongPressTouch: {
+                QMUITips.show(withText: "长按")
+            }
+        )
     }
     
     override func viewDidLoad() {
@@ -73,51 +111,6 @@ extension JSMediaBrowserViewController {
     func updatePageControl(for index: Int? = nil) {
         self.pageControl.numberOfPages = self.totalUnitPage
         self.pageControl.currentPage = index ?? self.currentPage
-    }
-    
-}
-
-extension JSMediaBrowserViewController {
-    
-    override func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, willScrollHalfFrom index: Int, toIndex: Int) {
-        super.mediaBrowserView(mediaBrowserView, willScrollHalfFrom: index, toIndex: toIndex)
-        self.updatePageControl(for: toIndex)
-        
-        print("mediaBrowserView willScrollHalfFrom: \(index) toIndex: \(toIndex)")
-    }
-    
-    override func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, didScrollTo index: Int) {
-        super.mediaBrowserView(mediaBrowserView, didScrollTo: index)
-        
-        print("mediaBrowserView didScrollTo \(index)")
-    }
-    
-    override func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, longPressTouch gestureRecognizer: UILongPressGestureRecognizer) {
-        super.mediaBrowserView(mediaBrowserView, longPressTouch: gestureRecognizer)
-        QMUITips.show(withText: "长按")
-    }
-    
-}
-
-private class JSMediaBrowserViewControllerDelegator: MediaBrowserViewControllerDelegate {
-    
-    public func mediaBrowserViewController(_ mediaBrowserViewController: MediaBrowserViewController, willDisplay emptyView: EmptyView, error: NSError) {
-        emptyView.image = UIImage(named: "picture_fail")
-    }
-    
-}
-
-private struct JSMediaBrowserTransitionAnimatorModifier: TransitionAnimatorModifier {
-    
-    private var zoomImageViewModifier: ZoomImageViewModifier?
-    private var zoomImageView: ZoomImageView = ZoomImageView()
-    
-    init(zoomImageViewModifier: ZoomImageViewModifier?) {
-        self.zoomImageViewModifier = zoomImageViewModifier
-    }
-    
-    public func imageView(in transitionAnimator: JSMediaBrowser.TransitionAnimator) -> UIImageView {
-        return self.zoomImageViewModifier?.imageView(in: self.zoomImageView) ?? UIImageView()
     }
     
 }

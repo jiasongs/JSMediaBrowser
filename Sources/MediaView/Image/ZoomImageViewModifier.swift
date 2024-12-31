@@ -14,6 +14,4 @@ public protocol ZoomImageViewModifier {
     
     func livePhotoView(in zoomImageView: ZoomImageView) -> any LivePhotoView
     
-    func viewportRect(in zoomImageView: ZoomImageView) -> CGRect
-    
 }

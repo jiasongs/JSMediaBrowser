@@ -13,7 +13,7 @@ public protocol MediaBrowserViewDelegate: AnyObject {
     
     func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, didEndDisplaying cell: UICollectionViewCell, forPageAt index: Int)
     
-    func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, willScrollHalfFrom index: Int, toIndex: Int)
+    func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, willScrollHalfFrom sourceIndex: Int, to targetIndex: Int)
     
     func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, didScrollTo index: Int)
     
@@ -22,17 +22,17 @@ public protocol MediaBrowserViewDelegate: AnyObject {
 }
 
 /// options
-extension MediaBrowserViewDelegate {
+public extension MediaBrowserViewDelegate {
     
-    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, willDisplay cell: UICollectionViewCell, forPageAt index: Int) {}
+    func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, willDisplay cell: UICollectionViewCell, forPageAt index: Int) {}
     
-    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, didEndDisplaying cell: UICollectionViewCell, forPageAt index: Int) {}
+    func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, didEndDisplaying cell: UICollectionViewCell, forPageAt index: Int) {}
     
-    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, willScrollHalfFrom index: Int, toIndex: Int) {}
+    func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, willScrollHalfFrom sourceIndex: Int, to targetIndex: Int) {}
     
-    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, didScrollTo index: Int) {}
+    func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, didScrollTo index: Int) {}
     
-    public func mediaBrowserViewDidScroll(_ mediaBrowserView: MediaBrowserView) {}
+    func mediaBrowserViewDidScroll(_ mediaBrowserView: MediaBrowserView) {}
     
 }
 
@@ -51,18 +51,18 @@ public protocol MediaBrowserViewGestureDelegate: AnyObject {
 }
 
 /// options
-extension MediaBrowserViewGestureDelegate {
+public extension MediaBrowserViewGestureDelegate {
     
-    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, singleTouch gestureRecognizer: UITapGestureRecognizer) {}
+    func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, singleTouch gestureRecognizer: UITapGestureRecognizer) {}
     
-    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, doubleTouch gestureRecognizer: UITapGestureRecognizer) {}
+    func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, doubleTouch gestureRecognizer: UITapGestureRecognizer) {}
     
-    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, longPressTouch gestureRecognizer: UILongPressGestureRecognizer) {}
+    func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, longPressTouch gestureRecognizer: UILongPressGestureRecognizer) {}
     
-    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, dismissingShouldBegin gestureRecognizer: UIPanGestureRecognizer) -> Bool {
+    func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, dismissingShouldBegin gestureRecognizer: UIPanGestureRecognizer) -> Bool {
         return true
     }
     
-    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, dismissingChanged gestureRecognizer: UIPanGestureRecognizer) {}
+    func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, dismissingChanged gestureRecognizer: UIPanGestureRecognizer) {}
     
 }

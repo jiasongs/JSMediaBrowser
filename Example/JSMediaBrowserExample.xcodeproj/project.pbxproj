@@ -210,8 +210,8 @@
 				7A730F832D227191006C8FA6 /* Sources */,
 				7A730F842D227191006C8FA6 /* Frameworks */,
 				7A730F852D227191006C8FA6 /* Resources */,
-				6E3DC6D139101A77B0D0E738 /* [CP] Copy Pods Resources */,
 				7A730FF12D227638006C8FA6 /* ShellScript */,
+				EB3BF8DB6626A997636554F2 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -230,8 +230,8 @@
 				7A730FD42D2272D1006C8FA6 /* Sources */,
 				7A730FDC2D2272D1006C8FA6 /* Frameworks */,
 				7A730FDD2D2272D1006C8FA6 /* Resources */,
-				53E82875920A3D9675E91706 /* [CP] Copy Pods Resources */,
 				7A730FF22D22764D006C8FA6 /* ShellScript */,
+				9F2302B33507BFE9E8490C01 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -359,40 +359,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		53E82875920A3D9675E91706 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-JSMediaBrowserExampleMacOS/Pods-JSMediaBrowserExampleMacOS-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-JSMediaBrowserExampleMacOS/Pods-JSMediaBrowserExampleMacOS-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-JSMediaBrowserExampleMacOS/Pods-JSMediaBrowserExampleMacOS-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		6E3DC6D139101A77B0D0E738 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-JSMediaBrowserExample/Pods-JSMediaBrowserExample-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-JSMediaBrowserExample/Pods-JSMediaBrowserExample-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-JSMediaBrowserExample/Pods-JSMediaBrowserExample-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		7A730FF12D227638006C8FA6 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -426,6 +392,40 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "${PODS_ROOT}/SwiftLint/swiftlint --strict\n";
+		};
+		9F2302B33507BFE9E8490C01 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-JSMediaBrowserExampleMacOS/Pods-JSMediaBrowserExampleMacOS-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-JSMediaBrowserExampleMacOS/Pods-JSMediaBrowserExampleMacOS-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-JSMediaBrowserExampleMacOS/Pods-JSMediaBrowserExampleMacOS-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EB3BF8DB6626A997636554F2 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-JSMediaBrowserExample/Pods-JSMediaBrowserExample-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-JSMediaBrowserExample/Pods-JSMediaBrowserExample-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-JSMediaBrowserExample/Pods-JSMediaBrowserExample-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -588,7 +588,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -645,7 +645,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
