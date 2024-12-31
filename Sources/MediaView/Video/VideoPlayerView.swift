@@ -167,10 +167,6 @@ public class VideoPlayerView: BasisMediaView {
         self.removeObserverForSystem()
     }
     
-}
-
-extension VideoPlayerView {
-    
     public override func layoutSubviews() {
         super.layoutSubviews()
         let viewport = self.finalViewportRect
@@ -249,7 +245,7 @@ extension VideoPlayerView {
     }
     
     private func generateCurrentFrameImage() {
-       guard let asset = self.player.currentItem?.asset else {
+        guard let asset = self.player.currentItem?.asset else {
             return
         }
         let imageGenerator = AVAssetImageGenerator(asset: asset)
@@ -268,7 +264,7 @@ extension VideoPlayerView {
 
 extension VideoPlayerView {
     
-    func addObserverForPlayer() {
+    private func addObserverForPlayer() {
         /// progress
         self.playerTimeObservers.append(
             self.player.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: DispatchQueue.main, using: { [weak self](time: CMTime) in
@@ -290,7 +286,7 @@ extension VideoPlayerView {
         )
     }
     
-    func addObserverForPlayerItem() {
+    private func addObserverForPlayerItem() {
         if let playerItem = self.playerItem {
             /// status
             self.playerItemObservers.append(
@@ -299,7 +295,7 @@ extension VideoPlayerView {
                         return
                     }
                     if playerItem.status == .readyToPlay {
-                       /// see loadedTimeRanges
+                        /// see loadedTimeRanges
                     } else if playerItem.status == .failed {
                         self.status = .failed
                     }
@@ -348,7 +344,7 @@ extension VideoPlayerView {
         }
     }
     
-    func removeObserverForPlayer() {
+    private func removeObserverForPlayer() {
         /// 移除playerObservers
         for observer in self.playerObservers {
             observer.invalidate()
@@ -361,7 +357,7 @@ extension VideoPlayerView {
         self.playerTimeObservers.removeAll()
     }
     
-    func removeObserverForPlayerItem() {
+    private func removeObserverForPlayerItem() {
         /// 移除playerItemObservers
         for observer in self.playerItemObservers {
             observer.invalidate()
@@ -374,7 +370,7 @@ extension VideoPlayerView {
         self.playerItemCenterObservers.removeAll()
     }
     
-    func addObserverForSystem() {
+    private func addObserverForSystem() {
         self.systemObservers.append(
             NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: OperationQueue.main, using: { [weak self](notification: Notification) in
                 if let strongSelf = self, strongSelf.status == .playing {
@@ -384,7 +380,7 @@ extension VideoPlayerView {
         )
     }
     
-    func removeObserverForSystem() {
+    private func removeObserverForSystem() {
         for observer in self.systemObservers {
             NotificationCenter.default.removeObserver(observer)
         }

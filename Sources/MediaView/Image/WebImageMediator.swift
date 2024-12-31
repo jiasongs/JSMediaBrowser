@@ -27,9 +27,7 @@ public protocol WebImageMediator {
 public struct WebImageResult {
     
     public let image: UIImage?
-    
     public let data: Data?
-    
     public let url: URL?
     
 }
@@ -37,7 +35,6 @@ public struct WebImageResult {
 public struct WebImageError: Error {
     
     public let error: NSError
-    
-    public let cancelled: Bool
+    public let isCancelled: Bool
     
 }

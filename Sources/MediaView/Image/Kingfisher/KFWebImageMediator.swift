@@ -99,9 +99,8 @@ extension KFWebImageMediator {
     }
     
     private func generateError(_ error: KingfisherError) -> WebImageError {
-        let userInfo = [NSLocalizedDescriptionKey: error.errorDescription ?? ""]
-        let nsError = NSError(domain: KingfisherError.domain, code: error.errorCode, userInfo: userInfo)
-        let webImageError = WebImageError(error: nsError, cancelled: error.isTaskCancelled)
+        let nsError = error as NSError
+        let webImageError = WebImageError(error: nsError, isCancelled: error.isTaskCancelled)
         return webImageError
     }
     

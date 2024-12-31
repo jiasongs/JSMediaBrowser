@@ -13,7 +13,7 @@ open class MediaBrowserViewController: UIViewController {
     
     public var configuration: MediaBrowserViewControllerConfiguration
     
-    public var source: MediaBrowserViewControllerSource?
+    public var sourceReference: MediaBrowserViewControllerSourceReference?
     
     public var eventHandler: MediaBrowserViewControllerEventHandler?
     
@@ -69,6 +69,8 @@ open class MediaBrowserViewController: UIViewController {
     
     private weak var cacheSourceView: UIView?
     
+    private var dismissWhenSlidingDistance: CGFloat = 70
+    
     public init(configuration: MediaBrowserViewControllerConfiguration) {
         self.configuration = configuration
         
@@ -88,7 +90,7 @@ open class MediaBrowserViewController: UIViewController {
     }
     
     deinit {
-        print("mediaBrowser 释放")
+        
     }
     
     open override func viewDidLoad() {
@@ -111,7 +113,7 @@ open class MediaBrowserViewController: UIViewController {
         /// 外部可能设置导航栏, 这里需要隐藏
         self.navigationController?.setNavigationBarHidden(true, animated: false)
         
-        self.cacheSourceView = self.source?.sourceView?(self.currentPage)
+        self.cacheSourceView = self.sourceReference?.sourceView?(self.currentPage)
         self.cacheSourceView?.isHidden = true
     }
     
@@ -127,7 +129,7 @@ open class MediaBrowserViewController: UIViewController {
             guard self.view.window != nil else {
                 return
             }
-            self.cacheSourceView = self.source?.sourceView?(self.currentPage)
+            self.cacheSourceView = self.sourceReference?.sourceView?(self.currentPage)
             self.cacheSourceView?.isHidden = true
         }
     }
@@ -291,7 +293,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
                         updateCell(nil, false)
                     case .failure(let error):
                         updateImage(nil)
-                        updateCell(error.error, error.cancelled)
+                        updateCell(error.error, error.isCancelled)
                     }
                 })
         }
@@ -340,18 +342,14 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
     
     public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, willScrollHalfFrom sourceIndex: Int, to targetIndex: Int) {
         self.cacheSourceView?.isHidden = false
-        self.cacheSourceView = self.source?.sourceView?(targetIndex)
+        self.cacheSourceView = self.sourceReference?.sourceView?(targetIndex)
         self.cacheSourceView?.isHidden = true
         
         self.eventHandler?.willScrollHalf(from: sourceIndex, to: targetIndex)
-        
-        print("Scroll - willScrollHalfFrom")
     }
     
     public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, didScrollTo index: Int) {
         self.eventHandler?.didScroll(to: index)
-        
-        print("Scroll - didScroll")
     }
     
 }
@@ -441,7 +439,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
         case .ended, .cancelled, .failed:
             let location = gestureRecognizer.location(in: gestureRecognizer.view)
             let verticalDistance = location.y - self.gestureBeganLocation.y
-            if abs(verticalDistance) > self.configuration.dismissWhenSlidingDistance && self.isPresented {
+            if abs(verticalDistance) > self.dismissWhenSlidingDistance && self.isPresented {
                 self.beginDismissingAnimation()
             } else {
                 self.resetDismissingAnimation()
@@ -502,7 +500,7 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
     }
     
     public var transitionSourceRect: CGRect {
-        return self.source?.sourceRect?(self.currentPage) ?? CGRect.zero
+        return self.sourceReference?.sourceRect?(self.currentPage) ?? CGRect.zero
     }
     
     public var transitionThumbImage: UIImage? {

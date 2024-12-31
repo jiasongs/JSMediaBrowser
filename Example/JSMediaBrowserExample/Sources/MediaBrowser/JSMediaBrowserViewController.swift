@@ -58,7 +58,7 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
     }()
     
     init() {
-        let configuration = MediaBrowserViewControllerConfiguration(
+        super.init(configuration: .init(
             webImageMediator: { _ in
                 // KFWebImageMediator()
                 return SDWebImageMediator(context: [.animatedImageClass: SDAnimatedImage.self])
@@ -67,8 +67,7 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
                 // KFZoomImageViewModifier()
                 return SDZoomImageViewModifier()
             }
-        )
-        super.init(configuration: configuration)
+        ))
         
         self.eventHandler = DefaultMediaBrowserViewControllerEventHandler(
             willReloadData: { [weak self] _ in
