@@ -223,9 +223,8 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     
     public func configureCell(_ cell: BasisCell, at index: Int) {
         cell.onPressEmpty = { [weak self] (cell: UICollectionViewCell) in
-            if let index = self?.mediaBrowserView.index(for: cell) {
-                self?.mediaBrowserView.reloadPages(at: [index])
-            }
+            guard let self = self else { return }
+            self.mediaBrowserView.reloadData()
         }
         cell.willDisplayEmptyView = { [weak self] (cell: UICollectionViewCell, emptyView: EmptyView, error: NSError) in
             guard let self = self else {

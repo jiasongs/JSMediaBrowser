@@ -150,14 +150,6 @@ extension MediaBrowserView {
         self.collectionView.reloadData()
     }
     
-    public func reloadPages(at indexs: [Int]) {
-        var indexPaths: [IndexPath] = []
-        for index in indexs {
-            indexPaths.append(IndexPath(item: index, section: 0))
-        }
-        self.collectionView.reloadItems(at: indexPaths)
-    }
-    
     public func index(for pageCell: UICollectionViewCell) -> Int? {
         if let indexPath = self.collectionView.indexPath(for: pageCell) {
             return indexPath.item
