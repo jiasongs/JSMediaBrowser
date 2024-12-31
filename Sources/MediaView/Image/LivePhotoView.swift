@@ -6,23 +6,36 @@
 //
 
 import UIKit
-import PhotosUI
 
-public struct LivePhoto: Equatable {
+public protocol LivePhoto: Equatable {
     
-    var size: CGSize {
-        return .zero
-    }
+    var size: CGSize { get }
     
 }
 
 public protocol LivePhotoView: UIView {
     
-    var livePhoto: LivePhoto? { get set }
+    associatedtype LivePhotoType: LivePhoto
+    
+    var livePhoto: LivePhotoType? { get set }
     
     var isPlaying: Bool { get }
     
     func startPlayback()
     func stopPlayback()
+    
+}
+
+internal extension LivePhotoView {
+    
+    func isEqual(lhs: (any LivePhoto)?, rhs: (any LivePhoto)?) -> Bool {
+        let lhs = lhs as? LivePhotoType
+        let rhs = rhs as? LivePhotoType
+        return lhs == rhs
+    }
+    
+    func setLivePhoto(_ livePhoto: (any LivePhoto)?) {
+        self.livePhoto = livePhoto as? LivePhotoType
+    }
     
 }

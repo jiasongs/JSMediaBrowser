@@ -25,38 +25,42 @@ public final class ZoomImageView: BasisMediaView {
                 self.createImageViewIfNeeded()
             }
             
+            guard let imageView = self.imageView else {
+                return
+            }
             guard oldValue != self.image else {
                 return
             }
+            imageView.isHidden = false
+            imageView.image = self.image
+            
             if let livePhotoView = self.livePhotoView {
                 livePhotoView.isHidden = true
-                livePhotoView.livePhoto = nil
-            }
-            if let imageView = self.imageView {
-                imageView.isHidden = false
-                imageView.image = self.image
+                livePhotoView.setLivePhoto(nil)
             }
             
             self.setNeedsRevertZoom()
         }
     }
     
-    public var livePhoto: LivePhoto? {
+    public var livePhoto: (any LivePhoto)? {
         didSet {
             if self.livePhoto != nil {
                 self.createLivePhotoViewIfNeeded()
             }
             
-            guard oldValue != self.livePhoto else {
+            guard let livePhotoView = self.livePhotoView else {
                 return
             }
+            guard !livePhotoView.isEqual(lhs: oldValue, rhs: self.livePhoto) else {
+                return
+            }
+            livePhotoView.isHidden = false
+            livePhotoView.setLivePhoto(self.livePhoto)
+            
             if let imageView = self.imageView {
                 imageView.isHidden = true
                 imageView.image = nil
-            }
-            if let livePhotoView = self.livePhotoView {
-                livePhotoView.isHidden = false
-                // livePhotoView.livePhoto = self.livePhoto
             }
             
             self.setNeedsRevertZoom()
