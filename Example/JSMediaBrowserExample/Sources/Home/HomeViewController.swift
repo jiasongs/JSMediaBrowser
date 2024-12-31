@@ -162,13 +162,14 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
             }
             return item
         }
-        browserVC.currentPage = indexPath.item
-        browserVC.source = .init(sourceView: {[weak self] in
-            guard let cell = self?.pictureCell(at: $0) else {
+        browserVC.source = .init(sourceView: { [weak self] in
+            guard let self = self else { return nil }
+            guard let cell = self.pictureCell(at: $0) else {
                 return nil
             }
             return cell.imageView
         })
+        browserVC.setCurrentPage(indexPath.item, animated: false)
         browserVC.show(from: self, navigationController: QMUINavigationController(rootViewController: browserVC), animated: true)
     }
     

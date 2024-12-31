@@ -52,8 +52,9 @@ open class MediaBrowserViewController: UIViewController {
             guard let self = self else { return UIImageView() }
             if let cell = self.currentPageCell as? ImageCell {
                 return self.configuration.zoomImageViewModifier(self.currentPage).imageView(in: cell.zoomImageView)
+            } else {
+                return UIImageView()
             }
-            return UIImageView()
         })
         animator.delegate = self
         return animator
@@ -70,7 +71,7 @@ open class MediaBrowserViewController: UIViewController {
     
     public init(configuration: MediaBrowserViewControllerConfiguration) {
         self.configuration = configuration
-    
+        
         super.init(nibName: nil, bundle: nil)
         
         self.didInitialize()
@@ -92,7 +93,7 @@ open class MediaBrowserViewController: UIViewController {
     
     open override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor(white: 0, alpha: 0)
+        self.view.backgroundColor = nil
         self.view.addSubview(self.mediaBrowserView)
         
         self.mediaBrowserView.dataSource = self
@@ -136,19 +137,10 @@ open class MediaBrowserViewController: UIViewController {
 extension MediaBrowserViewController {
     
     public var currentPage: Int {
-        get {
-            return self.mediaBrowserView.currentPage
-        }
-        set {
-            self.mediaBrowserView.currentPage = newValue
-        }
+        return self.mediaBrowserView.currentPage
     }
     
     public var totalUnitPage: Int {
-        guard self.mediaBrowserView.dataSource != nil else {
-            return self.numberOfPages(in: self.mediaBrowserView)
-        }
-        
         return self.mediaBrowserView.totalUnitPage
     }
     
@@ -353,14 +345,14 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
         self.cacheSourceView?.isHidden = true
         
         self.eventHandler?.willScrollHalf(from: sourceIndex, to: targetIndex)
+        
+        print("Scroll - willScrollHalfFrom")
     }
     
     public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, didScrollTo index: Int) {
         self.eventHandler?.didScroll(to: index)
-    }
-    
-    public func mediaBrowserViewDidScroll(_ mediaBrowserView: MediaBrowserView) {
         
+        print("Scroll - didScroll")
     }
     
 }

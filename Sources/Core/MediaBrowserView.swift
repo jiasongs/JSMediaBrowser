@@ -63,17 +63,10 @@ public class MediaBrowserView: UIView {
         return gesture
     }()
     
-    public var currentPage: Int = 0 {
-        didSet {
-            guard self.isNeededScrollToItem && self.currentPage != oldValue else {
-                return
-            }
-            self.scrollToPage(at: self.currentPage, animated: false)
-        }
-    }
+    public private(set) var currentPage: Int = 0
     
     public var totalUnitPage: Int {
-        return self.collectionView.numberOfItems(inSection: 0)
+        return self.dataSource?.numberOfPages(in: self) ?? 0
     }
     
     private lazy var collectionView: PagingCollectionView = {
@@ -84,12 +77,11 @@ public class MediaBrowserView: UIView {
         return PagingLayout()
     }()
     
-    private var registeredCellIdentifiers: NSMutableSet = NSMutableSet()
+    private var registeredCellIdentifiers = NSMutableSet()
+    
     private var previousOffsetIndex: CGFloat = 0.0
-    private var isNeededScrollToItem: Bool = true
-    private var endScrollingAnimation: (() -> Void)?
-    private var shouldCallEndDecelerating: Bool = false
-    private var scrollingPage: Int = 0
+    
+    private var endScrollingCompletions: [() -> Void] = []
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -142,11 +134,16 @@ extension MediaBrowserView {
             completion?()
             return
         }
-        self.isNeededScrollToItem = false
+        let previousPage = self.currentPage
         self.currentPage = index
-        self.isNeededScrollToItem = true
         
-        self.scrollToPage(at: index, animated: animated, completion: completion)
+        self.delegate?.mediaBrowserView(self, willScrollHalfFrom: previousPage, to: index)
+        self.scrollToPage(at: index, animated: animated) { [weak self] in
+            guard let self = self else { return }
+            self.delegate?.mediaBrowserView(self, didScrollTo: self.currentPage)
+            
+            completion?()
+        }
     }
     
     public func reloadData() {
@@ -304,6 +301,9 @@ extension MediaBrowserView: UIScrollViewDelegate {
         guard !self.collectionView.bounds.isEmpty && !self.isPossiblyRotating else {
             return
         }
+        defer {
+            self.delegate?.mediaBrowserViewDidScroll(self)
+        }
         
         let betweenOrEqual = { (minimumValue: CGFloat, value: CGFloat, maximumValue: CGFloat) -> Bool in
             return minimumValue <= value && value <= maximumValue
@@ -316,44 +316,31 @@ extension MediaBrowserView: UIScrollViewDelegate {
         
         if turnPageToRight || turnPageToLeft {
             let index = Int(round(offsetIndex))
-            if index >= 0 && index < self.totalUnitPage && self.scrollingPage != index {
-                self.delegate?.mediaBrowserView(self, willScrollHalfFrom: self.scrollingPage, to: index)
-                
-                self.scrollingPage = index
-                
-                self.isNeededScrollToItem = false
+            if index >= 0 && index < self.totalUnitPage && self.currentPage != index {
+                self.delegate?.mediaBrowserView(self, willScrollHalfFrom: self.currentPage, to: index)
+
                 self.currentPage = index
-                self.isNeededScrollToItem = true
-                
-                self.shouldCallEndDecelerating = self.isTracking || self.isDragging || self.isDecelerating
-                if !self.shouldCallEndDecelerating {
-                    self.delegate?.mediaBrowserView(self, didScrollTo: index)
-                }
             }
             self.previousOffsetIndex = offsetIndex
         }
-        
-        self.delegate?.mediaBrowserViewDidScroll(self)
     }
     
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         guard !decelerate else {
             return
         }
-        self.scrollViewDidEndDecelerating(scrollView)
+        self.delegate?.mediaBrowserView(self, didScrollTo: self.currentPage)
     }
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        guard self.shouldCallEndDecelerating else {
-            return
-        }
-        self.shouldCallEndDecelerating = false
         self.delegate?.mediaBrowserView(self, didScrollTo: self.currentPage)
     }
     
     public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-        self.endScrollingAnimation?()
-        self.endScrollingAnimation = nil
+        self.endScrollingCompletions.forEach {
+            $0()
+        }
+        self.endScrollingCompletions.removeAll()
     }
     
     private var offsetIndex: CGFloat {
@@ -399,7 +386,9 @@ extension MediaBrowserView: UIScrollViewDelegate {
         self.collectionView.setContentOffset(contentOffset, animated: animated)
         
         if animated {
-            self.endScrollingAnimation = completion
+            if let completion = completion {
+                self.endScrollingCompletions.append(completion)
+            }
         } else {
             completion?()
         }

@@ -103,6 +103,8 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
             make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(QMUIHelper.isNotchedScreen ? 0 : -20)
             make.height.equalTo(30)
         }
+        
+        self.updatePageControl()
     }
     
 }

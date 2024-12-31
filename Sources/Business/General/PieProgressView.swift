@@ -91,7 +91,7 @@ public class PieProgressView: UIControl {
     }
     
     func didInitialize() {
-        self.backgroundColor = UIColor(white: 0, alpha: 0)
+        self.backgroundColor = nil
         self.lineWidth = CGFloat(self.lineWidth)
         self.trackWidth = CGFloat(self.trackWidth)
         self.spacing = CGFloat(self.spacing)

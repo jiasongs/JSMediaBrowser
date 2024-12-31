@@ -20,7 +20,7 @@ public class PagingCollectionView: UICollectionView {
     }
     
     public func didInitialize() {
-        self.backgroundColor = UIColor(white: 0, alpha: 0)
+        self.backgroundColor = nil
         self.showsHorizontalScrollIndicator = false
         self.showsVerticalScrollIndicator = false
         self.alwaysBounceVertical = false
