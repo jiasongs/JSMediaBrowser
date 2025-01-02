@@ -36,9 +36,9 @@ class BrowserViewController: MediaBrowserViewController {
             livePhotoMediator: { _ in
                 return PHLivePhotoMediator()
             },
-            zoomImageViewModifier: { _ in
-                // KFZoomImageViewModifier()
-                return SDZoomImageViewModifier()
+            zoomViewModifier: { _ in
+                // KFZoomViewModifier()
+                return SDZoomViewModifier()
             }
         ))
         
@@ -90,9 +90,9 @@ extension BrowserViewController {
     
 }
 
-private struct SDZoomImageViewModifier: ZoomImageViewModifier {
+private struct SDZoomViewModifier: ZoomViewModifier {
     
-    func imageView(in zoomImageView: ZoomImageView) -> UIImageView {
+    func imageView(in zoomView: ZoomView) -> UIImageView {
         let imageView = SDAnimatedImageView()
         imageView.autoPlayAnimatedImage = false
         if #available(iOS 17.0, *) {
@@ -101,15 +101,15 @@ private struct SDZoomImageViewModifier: ZoomImageViewModifier {
         return imageView
     }
     
-    func livePhotoView(in zoomImageView: ZoomImageView) -> any LivePhotoView {
+    func livePhotoView(in zoomView: ZoomView) -> any LivePhotoView {
         return PHLivePhotoView()
     }
     
 }
 
-private struct KFZoomImageViewModifier: ZoomImageViewModifier {
+private struct KFZoomViewModifier: ZoomViewModifier {
     
-    func imageView(in zoomImageView: ZoomImageView) -> UIImageView {
+    func imageView(in zoomView: ZoomView) -> UIImageView {
         let imageView = AnimatedImageView()
         imageView.autoPlayAnimatedImage = false
         if #available(iOS 17.0, *) {
@@ -118,7 +118,7 @@ private struct KFZoomImageViewModifier: ZoomImageViewModifier {
         return imageView
     }
     
-    func livePhotoView(in zoomImageView: ZoomImageView) -> any LivePhotoView {
+    func livePhotoView(in zoomView: ZoomView) -> any LivePhotoView {
         return PHLivePhotoView()
     }
     

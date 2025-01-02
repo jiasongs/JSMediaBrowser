@@ -1,5 +1,5 @@
 //
-//  ZoomImageView.swift
+//  ZoomView.swift
 //  JSMediaBrowser
 //
 //  Created by jiasong on 2020/12/10.
@@ -8,9 +8,9 @@
 import UIKit
 import JSCoreKit
 
-public final class ZoomImageView: BasisMediaView {
+public final class ZoomView: BasisMediaView {
     
-    public var modifier: ZoomImageViewModifier?
+    public var modifier: ZoomViewModifier?
     
     public var maximumZoomScale: CGFloat = 2.0 {
         didSet {
@@ -126,7 +126,7 @@ public final class ZoomImageView: BasisMediaView {
     
 }
 
-extension ZoomImageView {
+extension ZoomView {
     
     public override func layoutSubviews() {
         super.layoutSubviews()
@@ -158,7 +158,7 @@ extension ZoomImageView {
     
 }
 
-extension ZoomImageView {
+extension ZoomView {
     
     public var minContentOffset: CGPoint {
         let scrollView: UIScrollView = self.scrollView
@@ -176,7 +176,7 @@ extension ZoomImageView {
   
 }
 
-extension ZoomImageView {
+extension ZoomView {
     
     public var isDisplayImageView: Bool {
         guard let imageView = self.imageView else {
@@ -318,7 +318,7 @@ extension ZoomImageView {
     
 }
 
-extension ZoomImageView {
+extension ZoomView {
     
     private func createImageViewIfNeeded() {
         guard self.imageView == nil else {
@@ -346,7 +346,7 @@ extension ZoomImageView {
     
 }
 
-extension ZoomImageView {
+extension ZoomView {
     
     private var calculateViewportRect: CGRect {
         return self.finalViewportRect
@@ -405,7 +405,7 @@ extension ZoomImageView {
     
 }
 
-extension ZoomImageView: UIScrollViewDelegate {
+extension ZoomView: UIScrollViewDelegate {
     
     public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return self.contentView

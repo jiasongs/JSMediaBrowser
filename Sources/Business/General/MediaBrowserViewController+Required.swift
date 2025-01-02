@@ -11,20 +11,20 @@ public struct MediaBrowserViewControllerConfiguration {
     
     public typealias BuildWebImageMediator = (Int) -> WebImageMediator
     public typealias BuildLivePhotoMediator = (Int) -> LivePhotoMediator
-    public typealias BuildZoomImageViewModifier = (Int) -> ZoomImageViewModifier
+    public typealias BuildZoomViewModifier = (Int) -> ZoomViewModifier
     
     public var webImageMediator: BuildWebImageMediator
     public var livePhotoMediator: BuildLivePhotoMediator
-    public var zoomImageViewModifier: BuildZoomImageViewModifier
+    public var zoomViewModifier: BuildZoomViewModifier
     
     public init(
         webImageMediator: @escaping BuildWebImageMediator,
         livePhotoMediator: @escaping BuildLivePhotoMediator,
-        zoomImageViewModifier: @escaping BuildZoomImageViewModifier
+        zoomViewModifier: @escaping BuildZoomViewModifier
     ) {
         self.webImageMediator = webImageMediator
         self.livePhotoMediator = livePhotoMediator
-        self.zoomImageViewModifier = zoomImageViewModifier
+        self.zoomViewModifier = zoomViewModifier
     }
     
 }
@@ -56,7 +56,7 @@ public protocol MediaBrowserViewControllerEventHandler {
     func didSingleTouch()
     func didLongPressTouch()
     
-    func willDisplayZoomImageView(_ zoomImageView: ZoomImageView, at index: Int)
+    func willDisplayZoomView(_ zoomView: ZoomView, at index: Int)
     func willDisplayVideoPlayerView(_ videoPlayerView: VideoPlayerView, at index: Int)
     func willDisplayEmptyView(_ emptyView: EmptyView, with error: NSError, at index: Int)
     
@@ -72,7 +72,7 @@ public extension MediaBrowserViewControllerEventHandler {
     func didSingleTouch() {}
     func didLongPressTouch() {}
     
-    func willDisplayZoomImageView(_ zoomImageView: ZoomImageView, at index: Int) {}
+    func willDisplayZoomView(_ zoomView: ZoomView, at index: Int) {}
     func willDisplayVideoPlayerView(_ videoPlayerView: VideoPlayerView, at index: Int) {}
     func willDisplayEmptyView(_ emptyView: EmptyView, with error: NSError, at index: Int) {}
     
@@ -81,7 +81,7 @@ public extension MediaBrowserViewControllerEventHandler {
 public struct DefaultMediaBrowserViewControllerEventHandler: MediaBrowserViewControllerEventHandler {
     
     public typealias WillReloadData = ([AssetItem]) -> Void
-    public typealias DisplayZoomImageView = (ZoomImageView, Int) -> Void
+    public typealias DisplayZoomView = (ZoomView, Int) -> Void
     public typealias DisplayVideoPlayerView = (VideoPlayerView, Int) -> Void
     public typealias DisplayEmptyView = (EmptyView, NSError, Int) -> Void
     public typealias WillScroll = (Int, Int) -> Void
@@ -89,7 +89,7 @@ public struct DefaultMediaBrowserViewControllerEventHandler: MediaBrowserViewCon
     public typealias Touch = () -> Void
     
     private let _willReloadData: WillReloadData?
-    private let _willDisplayZoomImageView: DisplayZoomImageView?
+    private let _willDisplayZoomView: DisplayZoomView?
     private let _willDisplayVideoPlayerView: DisplayVideoPlayerView?
     private let _willDisplayEmptyView: DisplayEmptyView?
     private let _willScrollHalf: WillScroll?
@@ -99,7 +99,7 @@ public struct DefaultMediaBrowserViewControllerEventHandler: MediaBrowserViewCon
     
     public init(
         willReloadData: WillReloadData? = nil,
-        willDisplayZoomImageView: DisplayZoomImageView? = nil,
+        willDisplayZoomView: DisplayZoomView? = nil,
         willDisplayVideoPlayerView: DisplayVideoPlayerView? = nil,
         willDisplayEmptyView: DisplayEmptyView? = nil,
         willScrollHalf: WillScroll? = nil,
@@ -108,7 +108,7 @@ public struct DefaultMediaBrowserViewControllerEventHandler: MediaBrowserViewCon
         didLongPressTouch: Touch? = nil
     ) {
         self._willReloadData = willReloadData
-        self._willDisplayZoomImageView = willDisplayZoomImageView
+        self._willDisplayZoomView = willDisplayZoomView
         self._willDisplayVideoPlayerView = willDisplayVideoPlayerView
         self._willDisplayEmptyView = willDisplayEmptyView
         self._willScrollHalf = willScrollHalf
@@ -137,8 +137,8 @@ public struct DefaultMediaBrowserViewControllerEventHandler: MediaBrowserViewCon
         self._didLongPressTouch?()
     }
     
-    public func willDisplayZoomImageView(_ zoomImageView: ZoomImageView, at index: Int) {
-        self._willDisplayZoomImageView?(zoomImageView, index)
+    public func willDisplayZoomView(_ zoomView: ZoomView, at index: Int) {
+        self._willDisplayZoomView?(zoomView, index)
     }
     
     public func willDisplayVideoPlayerView(_ videoPlayerView: VideoPlayerView, at index: Int) {

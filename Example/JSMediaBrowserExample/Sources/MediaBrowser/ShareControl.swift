@@ -35,7 +35,7 @@ class ShareControl: UIButton {
             return
         }
         PHPhotoLibrary.shared().performChanges {
-            guard let imageData = imageCell.zoomImageView.image?.sd_imageData() else {
+            guard let imageData = imageCell.zoomView.image?.sd_imageData() else {
                 return
             }
             PHAssetCreationRequest.forAsset().addResource(with: .photo, data: imageData, options: nil)
