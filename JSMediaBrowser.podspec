@@ -41,11 +41,12 @@ Pod::Spec.new do |s|
     ss.dependency "SDWebImage", "~> 5.0"
   end
 
-  s.subspec "MediaPhotoForKingfisher" do |ss|
-    ss.source_files = "Sources/MediaView/Photo/Kingfisher/*.{swift,h,m}"
-    ss.dependency "JSMediaBrowser/MediaPhoto"
-    ss.dependency "Kingfisher", "~> 8.0"
-  end
+  # 后续支持Kingfisher
+  # s.subspec "MediaPhotoForKingfisher" do |ss|
+  #   ss.source_files = "Sources/MediaView/Photo/Kingfisher/*.{swift,h,m}"
+  #   ss.dependency "JSMediaBrowser/MediaPhoto"
+  #   ss.dependency "Kingfisher", "~> 8.0"
+  # end
 
   s.subspec "MediaVideo" do |ss|
     ss.source_files = "Sources/MediaView/Video/*.{swift,h,m}"

@@ -11,7 +11,6 @@ import JSMediaBrowser
 import SnapKit
 import QMUIKit
 import SDWebImage
-import Kingfisher
 import PhotosUI
 
 class BrowserViewController: MediaBrowserViewController {
@@ -31,14 +30,12 @@ class BrowserViewController: MediaBrowserViewController {
     init() {
         super.init(configuration: .init(
             webImageMediator: { _ in
-                // KFWebImageMediator()
                 return SDWebImageMediator(context: [.animatedImageClass: SDAnimatedImage.self])
             },
             livePhotoMediator: { _ in
                 return PHLivePhotoMediator()
             },
             zoomViewModifier: { _ in
-                // KFZoomViewModifier()
                 return SDZoomViewModifier()
             },
             transitioningModifier: { _ in
@@ -98,12 +95,7 @@ private struct SDZoomViewModifier: ZoomViewModifier {
     
     func assetView(in zoomView: ZoomView, asset: any ZoomAsset) -> (any ZoomAssetView)? {
         if asset is UIImage {
-            let imageView = SDAnimatedImageView()
-            imageView.autoPlayAnimatedImage = false
-            if #available(iOS 17.0, *) {
-                imageView.preferredImageDynamicRange = .high
-            }
-            return imageView
+            return SDTransitioningModifier().imageView()
         } else if asset is PHLivePhoto {
             return PHLivePhotoView()
         } else {
@@ -122,25 +114,6 @@ private struct SDTransitioningModifier: TransitioningModifier {
             imageView.preferredImageDynamicRange = .high
         }
         return imageView
-    }
-    
-}
-
-private struct KFZoomViewModifier: ZoomViewModifier {
-    
-    func assetView(in zoomView: ZoomView, asset: any ZoomAsset) -> (any ZoomAssetView)? {
-        if asset is UIImage {
-            let imageView = AnimatedImageView()
-            imageView.autoPlayAnimatedImage = false
-            if #available(iOS 17.0, *) {
-                imageView.preferredImageDynamicRange = .high
-            }
-            return imageView
-        } else if asset is PHLivePhoto {
-            return PHLivePhotoView()
-        } else {
-            return nil
-        }
     }
     
 }
