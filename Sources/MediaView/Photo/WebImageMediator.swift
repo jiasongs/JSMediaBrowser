@@ -25,7 +25,7 @@ public protocol WebImageMediator {
 
 public struct WebImageMediationResult {
     
-    public let image: UIImage?
+    public let image: (any ZoomAsset)?
     public let data: Data?
     public let url: URL?
     

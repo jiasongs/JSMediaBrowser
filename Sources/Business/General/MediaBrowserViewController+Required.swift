@@ -12,19 +12,23 @@ public struct MediaBrowserViewControllerConfiguration {
     public typealias BuildWebImageMediator = (Int) -> WebImageMediator
     public typealias BuildLivePhotoMediator = (Int) -> LivePhotoMediator
     public typealias BuildZoomViewModifier = (Int) -> ZoomViewModifier
+    public typealias BuildTransitioningModifier = (Int) -> TransitioningModifier
     
     public var webImageMediator: BuildWebImageMediator
     public var livePhotoMediator: BuildLivePhotoMediator
     public var zoomViewModifier: BuildZoomViewModifier
+    public var transitioningModifier: BuildTransitioningModifier
     
     public init(
         webImageMediator: @escaping BuildWebImageMediator,
         livePhotoMediator: @escaping BuildLivePhotoMediator,
-        zoomViewModifier: @escaping BuildZoomViewModifier
+        zoomViewModifier: @escaping BuildZoomViewModifier,
+        transitioningModifier: @escaping BuildTransitioningModifier
     ) {
         self.webImageMediator = webImageMediator
         self.livePhotoMediator = livePhotoMediator
         self.zoomViewModifier = zoomViewModifier
+        self.transitioningModifier = transitioningModifier
     }
     
 }

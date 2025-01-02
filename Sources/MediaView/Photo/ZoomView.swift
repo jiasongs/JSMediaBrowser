@@ -12,55 +12,20 @@ public final class ZoomView: BasisMediaView {
     
     public var modifier: ZoomViewModifier?
     
-    public var maximumZoomScale: CGFloat = 2.0 {
+    public var asset: (any ZoomAsset)? {
         didSet {
-            self.scrollView.maximumZoomScale = self.maximumZoomScale
-        }
-    }
-    
-    public var image: UIImage? {
-        didSet {
-            if self.image != nil {
-                self.createImageViewIfNeeded()
+            if let asset = self.asset {
+                self.createAssetView(for: asset)
             }
             
-            guard let imageView = self.imageView else {
+            guard let assetView = self.assetView else {
                 return
             }
-            guard oldValue != self.image else {
+            guard !assetView.isEqual(lhs: oldValue, rhs: self.asset) else {
                 return
             }
-            imageView.isHidden = false
-            imageView.image = self.image
-            
-            if let livePhotoView = self.livePhotoView {
-                livePhotoView.isHidden = true
-                livePhotoView.setLivePhoto(nil)
-            }
-            
-            self.setNeedsRevertZoom()
-        }
-    }
-    
-    public var livePhoto: (any LivePhoto)? {
-        didSet {
-            if self.livePhoto != nil {
-                self.createLivePhotoViewIfNeeded()
-            }
-            
-            guard let livePhotoView = self.livePhotoView else {
-                return
-            }
-            guard !livePhotoView.isEqual(lhs: oldValue, rhs: self.livePhoto) else {
-                return
-            }
-            livePhotoView.isHidden = false
-            livePhotoView.setLivePhoto(self.livePhoto)
-            
-            if let imageView = self.imageView {
-                imageView.isHidden = true
-                imageView.image = nil
-            }
+            assetView.isHidden = false
+            assetView.setAsset(self.asset)
             
             self.setNeedsRevertZoom()
         }
@@ -76,6 +41,12 @@ public final class ZoomView: BasisMediaView {
     
     public var enabledZoom: Bool = true
     
+    public var maximumZoomScale: CGFloat = 2.0 {
+        didSet {
+            self.scrollView.maximumZoomScale = self.maximumZoomScale
+        }
+    }
+
     public private(set) lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView(frame: CGRect(origin: CGPoint.zero, size: frame.size))
         scrollView.showsHorizontalScrollIndicator = false
@@ -91,9 +62,7 @@ public final class ZoomView: BasisMediaView {
         return scrollView
     }()
     
-    private var imageView: UIImageView?
-    
-    private var livePhotoView: (any LivePhotoView)?
+    private var assetView: (any ZoomAssetView)?
     
     private var isNeededRevertZoom: Bool = false
     
@@ -109,12 +78,7 @@ public final class ZoomView: BasisMediaView {
     }
     
     public override var contentView: UIView? {
-        if self.isDisplayImageView {
-            return self.imageView
-        } else if self.isDisplayLivePhotoView {
-            return self.livePhotoView
-        }
-        return nil
+        return self.assetView
     }
     
     public override var contentViewFrame: CGRect {
@@ -141,12 +105,12 @@ extension ZoomView {
         }
         /// contentView
         if let contentView = self.contentView {
-            var contentSize = CGSize.zero
-            if self.isDisplayImageView, let imageSize = self.image?.size {
-                contentSize = imageSize
-            } else if self.isDisplayLivePhotoView, let livePhotoSize = self.livePhoto?.size {
-                contentSize = livePhotoSize
-            }
+            let contentSize = {
+                guard let asset = self.asset else {
+                    return CGSize.zero
+                }
+                return asset.size
+            }()
             let contentRect = JSCGRectApplyAffineTransformWithAnchorPoint(CGRect(origin: CGPoint.zero, size: contentSize),
                                                                           contentView.transform,
                                                                           contentView.layer.anchorPoint)
@@ -173,63 +137,52 @@ extension ZoomView {
         return CGPoint(x: scrollView.contentSize.width + contentInset.right - scrollView.bounds.width,
                        y: scrollView.contentSize.height + contentInset.bottom - scrollView.bounds.height)
     }
-  
+    
 }
 
 extension ZoomView {
     
-    public var isDisplayImageView: Bool {
-        guard let imageView = self.imageView else {
+    public var isDisplayAssetView: Bool {
+        guard let assetView = self.assetView else {
             return false
         }
-        return !imageView.isHidden
+        return !assetView.isHidden
     }
     
-    public var isDisplayLivePhotoView: Bool {
-        guard let livePhotoView = self.livePhotoView else {
+    public var isPlaying: Bool {
+        guard let assetView = self.assetView else {
             return false
         }
-        return !livePhotoView.isHidden
+        return assetView.isPlaying
     }
     
-    public var isAnimating: Bool {
-        if self.isDisplayImageView, let imageView = self.imageView {
-            return imageView.isAnimating
-        } else if self.isDisplayLivePhotoView, let livePhotoView = self.livePhotoView {
-            return livePhotoView.isPlaying
-        }
-        return false
-    }
-    
-    public func startAnimating() {
-        guard !self.isAnimating else {
+    public func startPlaying() {
+        guard !self.isPlaying else {
             return
         }
-        if self.isDisplayImageView {
-            self.imageView?.startAnimating()
-        } else if self.isDisplayLivePhotoView {
-            self.livePhotoView?.startPlayback()
-        }
-    }
-    
-    public func stopAnimating() {
-        guard self.isAnimating else {
+        guard let assetView = self.assetView else {
             return
         }
-        if self.isDisplayImageView {
-            self.imageView?.stopAnimating()
-        } else if self.isDisplayLivePhotoView {
-            self.livePhotoView?.stopPlayback()
+        assetView.startPlaying()
+    }
+    
+    public func stopPlaying() {
+        guard self.isPlaying else {
+            return
         }
+        guard let assetView = self.assetView else {
+            return
+        }
+        assetView.stopPlaying()
     }
     
     public var minimumZoomScale: CGFloat {
-        var mediaSize: CGSize = CGSize.zero
-        if let image = self.image {
-            mediaSize = image.size
-        } else if let livePhoto = self.livePhoto {
-            mediaSize = livePhoto.size
-        }
+        let mediaSize = {
+            guard let asset = self.asset else {
+                return CGSize.zero
+            }
+            return asset.size
+        }()
         var minScale: CGFloat = 1.0
         if self.contentView == nil || mediaSize.width <= 0 || mediaSize.height <= 0 {
             minScale = 1.0
@@ -320,28 +273,17 @@ extension ZoomView {
 
 extension ZoomView {
     
-    private func createImageViewIfNeeded() {
-        guard self.imageView == nil else {
+    private func createAssetView(for asset: any ZoomAsset) {
+        guard self.assetView == nil else {
             return
         }
-        let imageView = self.modifier?.imageView(in: self) ?? UIImageView()
-        imageView.isHidden = true
-        imageView.isAccessibilityElement = true
-        self.scrollView.addSubview(imageView)
-        self.imageView = imageView
-    }
-    
-    private func createLivePhotoViewIfNeeded() {
-        guard self.livePhotoView == nil else {
+        guard let assetView = self.modifier?.assetView(in: self, asset: asset) else {
             return
         }
-        guard let livePhotoView = self.modifier?.livePhotoView(in: self) else {
-            return
-        }
-        livePhotoView.isHidden = true
-        livePhotoView.isAccessibilityElement = true
-        self.scrollView.addSubview(livePhotoView)
-        self.livePhotoView = livePhotoView
+        assetView.isHidden = true
+        assetView.isAccessibilityElement = true
+        self.scrollView.addSubview(assetView)
+        self.assetView = assetView
     }
     
 }

@@ -4,16 +4,15 @@ use_frameworks! :linkage => :dynamic
 def pod_Common
   pod "JSMediaBrowser", :path => "../", :subspecs => [
     "Business", 
-    "MediaImageForSDWebImage", 
-    "MediaImageForPHLivePhoto", 
-    "MediaImageForKingfisher"
+    "MediaPhotoForSDWebImage", 
+    "MediaPhotoForPHLivePhoto", 
+    "MediaPhotoForKingfisher"
   ]
   pod "QMUIKit"
   pod "SnapKit"
   pod "Then"
   pod 'SwiftLint', :configurations => ['Debug']
   pod "LookinServer", :subspecs => ['Swift'], :configurations => ["Debug"]
-  pod "MLeaksFinder", :git => "https://github.com/Tencent/MLeaksFinder.git", :configurations => ["Debug"]
 end
 
 target "JSMediaBrowserExample" do

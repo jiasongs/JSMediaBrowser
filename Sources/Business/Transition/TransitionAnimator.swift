@@ -10,6 +10,7 @@ import JSCoreKit
 
 public protocol TransitionAnimatorDelegate: AnyObject {
     
+    var transitionModifier: TransitioningModifier { get }
     var transitionSourceView: UIView? { get }
     var transitionSourceRect: CGRect { get }
     var transitionTargetView: UIView? { get }
@@ -26,9 +27,10 @@ public enum TransitioningStyle: Int {
     case fade
 }
 
-public enum TransitionAnimatorType: Int {
-    case presenting
-    case dismiss
+public protocol TransitioningModifier {
+    
+    func imageView() -> UIImageView
+    
 }
 
 public final class TransitionAnimator: Transitioner {
@@ -43,12 +45,10 @@ public final class TransitionAnimator: Transitioner {
     
     private static let animationGroupKey: String = "AnimationGroupKey"
     
-    private let buildImageView: () -> UIImageView
-    
     private var imageView: UIImageView?
     
-    public init(imageView: @escaping () -> UIImageView) {
-        self.buildImageView = imageView
+    public override init() {
+        super.init()
     }
     
 }
@@ -83,18 +83,18 @@ extension TransitionAnimator {
         let toView: UIView = transitionContext.view(forKey: .to) ?? toViewController.view
         let containerView: UIView = transitionContext.containerView
         
-        let imageView = self.buildImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        self.imageView = imageView
-        
-        /// 最后添加ImageView, 保证在最上层
-        imageView.removeFromSuperview()
-        self.delegate?.transitionViewWillMoveToSuperview(imageView)
-        if imageView.superview == nil {
-            containerView.addSubview(imageView)
+        if let imageView = self.delegate?.transitionModifier.imageView() {
+            imageView.contentMode = .scaleAspectFill
+            imageView.clipsToBounds = true
+            /// 最后添加ImageView, 保证在最上层
+            imageView.removeFromSuperview()
+            self.delegate?.transitionViewWillMoveToSuperview(imageView)
+            if imageView.superview == nil {
+                containerView.addSubview(imageView)
+            }
+            self.imageView = imageView
         }
-        
+
         var style: TransitioningStyle = isEntering ? self.enteringStyle : self.exitingStyle
         let sourceView = self.delegate?.transitionSourceView
         var sourceRect = CGRect.zero

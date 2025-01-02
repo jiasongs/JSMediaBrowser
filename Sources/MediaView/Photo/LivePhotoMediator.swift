@@ -26,7 +26,7 @@ public protocol LivePhotoMediator {
 
 public struct LivePhotoMediationResult {
     
-    public let livePhoto: (any LivePhoto)?
+    public let livePhoto: (any ZoomAsset)?
     
 }
 

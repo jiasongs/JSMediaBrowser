@@ -12,6 +12,7 @@ import SnapKit
 import QMUIKit
 import SDWebImage
 import Kingfisher
+import PhotosUI
 
 class BrowserViewController: MediaBrowserViewController {
     
@@ -39,6 +40,9 @@ class BrowserViewController: MediaBrowserViewController {
             zoomViewModifier: { _ in
                 // KFZoomViewModifier()
                 return SDZoomViewModifier()
+            },
+            transitioningModifier: { _ in
+                return SDTransitioningModifier()
             }
         ))
         
@@ -92,7 +96,26 @@ extension BrowserViewController {
 
 private struct SDZoomViewModifier: ZoomViewModifier {
     
-    func imageView(in zoomView: ZoomView) -> UIImageView {
+    func assetView(in zoomView: ZoomView, asset: any ZoomAsset) -> (any ZoomAssetView)? {
+        if asset is UIImage {
+            let imageView = SDAnimatedImageView()
+            imageView.autoPlayAnimatedImage = false
+            if #available(iOS 17.0, *) {
+                imageView.preferredImageDynamicRange = .high
+            }
+            return imageView
+        } else if asset is PHLivePhoto {
+            return PHLivePhotoView()
+        } else {
+            return nil
+        }
+    }
+    
+}
+
+private struct SDTransitioningModifier: TransitioningModifier {
+    
+    func imageView() -> UIImageView {
         let imageView = SDAnimatedImageView()
         imageView.autoPlayAnimatedImage = false
         if #available(iOS 17.0, *) {
@@ -101,25 +124,23 @@ private struct SDZoomViewModifier: ZoomViewModifier {
         return imageView
     }
     
-    func livePhotoView(in zoomView: ZoomView) -> any LivePhotoView {
-        return PHLivePhotoView()
-    }
-    
 }
 
 private struct KFZoomViewModifier: ZoomViewModifier {
     
-    func imageView(in zoomView: ZoomView) -> UIImageView {
-        let imageView = AnimatedImageView()
-        imageView.autoPlayAnimatedImage = false
-        if #available(iOS 17.0, *) {
-            imageView.preferredImageDynamicRange = .high
+    func assetView(in zoomView: ZoomView, asset: any ZoomAsset) -> (any ZoomAssetView)? {
+        if asset is UIImage {
+            let imageView = AnimatedImageView()
+            imageView.autoPlayAnimatedImage = false
+            if #available(iOS 17.0, *) {
+                imageView.preferredImageDynamicRange = .high
+            }
+            return imageView
+        } else if asset is PHLivePhoto {
+            return PHLivePhotoView()
+        } else {
+            return nil
         }
-        return imageView
-    }
-    
-    func livePhotoView(in zoomView: ZoomView) -> any LivePhotoView {
-        return PHLivePhotoView()
     }
     
 }

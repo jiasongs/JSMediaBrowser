@@ -1,5 +1,5 @@
 //
-//  PHLivePhotoView+LivePhoto.swift
+//  PHLivePhotoView+ZoomAsset.swift
 //  JSMediaBrowser
 //
 //  Created by jiasong on 2024/12/30.
@@ -8,18 +8,31 @@
 import UIKit
 import PhotosUI
 
-extension PHLivePhoto: LivePhoto {}
+extension PHLivePhoto: ZoomAsset {}
 
-extension PHLivePhotoView: LivePhotoView {
+extension PHLivePhotoView: ZoomAssetView {
+    
+    public var asset: PHLivePhoto? {
+        get {
+            return self.livePhoto
+        }
+        set {
+            self.livePhoto = newValue
+        }
+    }
     
     public var isPlaying: Bool {
         return self.delegator?.isPlaying ?? false
     }
     
-    public func startPlayback() {
+    public func startPlaying() {
         self.delegate = self.delegator
         
         self.startPlayback(with: .full)
+    }
+    
+    public func stopPlaying() {
+        self.stopPlayback()
     }
     
     private var delegator: PHLivePhotoViewDelegator? {

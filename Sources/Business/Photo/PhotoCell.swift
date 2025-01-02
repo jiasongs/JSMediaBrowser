@@ -1,5 +1,5 @@
 //
-//  ImageCell.swift
+//  PhotoCell.swift
 //  JSMediaBrowser
 //
 //  Created by jiasong on 2020/12/12.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-public class ImageCell: BasisCell {
+public class PhotoCell: BasisCell {
     
     public lazy var zoomView: ZoomView = {
         return ZoomView()
@@ -20,9 +20,8 @@ public class ImageCell: BasisCell {
     
     public override func prepareForReuse() {
         super.prepareForReuse()
-        self.zoomView.stopAnimating()
-        self.zoomView.image = nil
-        self.zoomView.livePhoto = nil
+        self.zoomView.stopPlaying()
+        self.zoomView.asset = nil
     }
     
     public override func layoutSubviews() {
