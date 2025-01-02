@@ -18,8 +18,8 @@ public struct PHLivePhotoMediator: LivePhotoMediator {
         for view: UIView,
         imageURL: URL,
         videoURL: URL,
-        progress: LivePhotoMediatorDownloadProgress?,
-        completed: (Result<LivePhotoMediationResult, LivePhotoMediationError>) -> Void
+        progress: @escaping LivePhotoMediatorDownloadProgress,
+        completed: @escaping (Result<LivePhotoMediationResult, LivePhotoMediationError>) -> Void
     ) {
         let taskIdentifier = PHLivePhoto.request(
             withResourceFileURLs: [imageURL, videoURL],
@@ -27,8 +27,17 @@ public struct PHLivePhotoMediator: LivePhotoMediator {
             targetSize: .zero,
             contentMode: .default
         ) {
-            print("\($0)")
-            print("\($1)")
+            if let livePhoto = $0 {
+                let result = LivePhotoMediationResult(livePhoto: livePhoto)
+                completed(.success(result))
+            } else {
+                guard let error = $1[PHLivePhotoInfoErrorKey] as? NSError else {
+                    return
+                }
+                let isCancelled = $1[PHLivePhotoInfoCancelledKey] as? Bool ?? false
+                let error1 = LivePhotoMediationError(error: error, isCancelled: isCancelled)
+                completed(.failure(error1))
+            }
         }
         view.jsmbph_taskIdentifier = taskIdentifier
     }

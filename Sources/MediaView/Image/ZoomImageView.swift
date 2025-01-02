@@ -353,6 +353,7 @@ extension ZoomImageView {
         livePhotoView.isHidden = true
         livePhotoView.isAccessibilityElement = true
         self.scrollView.addSubview(livePhotoView)
+        self.livePhotoView = livePhotoView
     }
     
 }

@@ -15,8 +15,8 @@ public protocol WebImageMediator {
     func requestImage(
         for view: UIView,
         url: URL?,
-        progress: WebImageMediatorDownloadProgress?,
-        completed: WebImageMediatorCompleted?
+        progress: @escaping WebImageMediatorDownloadProgress,
+        completed: @escaping WebImageMediatorCompleted
     )
     
     func cancelRequest(for view: UIView)

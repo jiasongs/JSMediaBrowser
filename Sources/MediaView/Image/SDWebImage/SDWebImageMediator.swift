@@ -21,8 +21,8 @@ public struct SDWebImageMediator: WebImageMediator {
     public func requestImage(
         for view: UIView,
         url: URL?,
-        progress: WebImageMediatorDownloadProgress?,
-        completed: WebImageMediatorCompleted?
+        progress: @escaping WebImageMediatorDownloadProgress,
+        completed: @escaping WebImageMediatorCompleted
     ) {
         view.sd_internalSetImage(
             with: url,
@@ -31,19 +31,19 @@ public struct SDWebImageMediator: WebImageMediator {
             context: self.context,
             setImageBlock: nil,
             progress: { (receivedSize: Int, expectedSize: Int, targetURL: URL?) in
-                self.executeOnMainQueue {
-                    progress?(Int64(receivedSize), Int64(expectedSize))
+                MainThreadTask.currentOrAsync {
+                    progress(Int64(receivedSize), Int64(expectedSize))
                 }
             },
             completed: { (image: UIImage?, data: Data?, error: Error?, cacheType: SDImageCacheType, finished: Bool, url: URL?) in
-                self.executeOnMainQueue {
+                MainThreadTask.currentOrAsync {
                     let nsError = error as? NSError
                     if let nsError = nsError {
-                        let webImageError = WebImageMediationError(error: nsError, isCancelled: nsError.code == SDWebImageError.cancelled.rawValue)
-                        completed?(.failure(webImageError))
+                        let error = WebImageMediationError(error: nsError, isCancelled: nsError.code == SDWebImageError.cancelled.rawValue)
+                        completed(.failure(error))
                     } else {
-                        let webImageResult = WebImageMediationResult(image: image, data: data, url: url)
-                        completed?(.success(webImageResult))
+                        let result = WebImageMediationResult(image: image, data: data, url: url)
+                        completed(.success(result))
                     }
                 }
             })
@@ -55,15 +55,13 @@ public struct SDWebImageMediator: WebImageMediator {
     
 }
 
-extension SDWebImageMediator {
+private struct MainThreadTask {
     
-    private func executeOnMainQueue(_ work: @escaping () -> Void) {
+    static func currentOrAsync(execute work: @MainActor @Sendable @escaping () -> Void) {
         if Thread.isMainThread {
-            work()
+            MainActor.assumeIsolated(work)
         } else {
-            DispatchQueue.main.async {
-                work()
-            }
+            DispatchQueue.main.async(execute: work)
         }
     }
     

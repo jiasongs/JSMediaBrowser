@@ -300,6 +300,8 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
                     return
                 }
                 cell.zoomImageView.livePhoto = livePhoto
+                /// 解决下载完成后不播放的问题
+                cell.zoomImageView.startAnimating()
             }
             /// 缩略图
             updateImage(dataItem.thumbImage)

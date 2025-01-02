@@ -13,22 +13,22 @@ extension PHLivePhoto: LivePhoto {}
 extension PHLivePhotoView: LivePhotoView {
     
     public var isPlaying: Bool {
-        return self._isPlaying
+        return self.delegator?.isPlaying ?? false
     }
     
     public func startPlayback() {
-        self.startPlayback(with: .full)
+        self.delegate = self.delegator
+        
+        self.startPlayback(with: .undefined)
     }
     
-    private var _isPlaying: Bool {
+    private var delegator: PHLivePhotoViewDelegator? {
         get {
-            guard let number = objc_getAssociatedObject(self, &AssociatedKeys.isPlaying) as? NSNumber else {
-                return false
-            }
-            return number.boolValue
+            return objc_getAssociatedObject(self, &AssociatedKeys.delegator) as? PHLivePhotoViewDelegator
         }
         set {
-            objc_setAssociatedObject(self, &AssociatedKeys.isPlaying, NSNumber(value: newValue), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            let delegator = PHLivePhotoViewDelegator()
+            objc_setAssociatedObject(self, &AssociatedKeys.delegator, delegator, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
     
@@ -36,16 +36,18 @@ extension PHLivePhotoView: LivePhotoView {
 
 private final class PHLivePhotoViewDelegator: NSObject, PHLivePhotoViewDelegate {
     
+    var isPlaying: Bool = false
+    
     func livePhotoView(_ livePhotoView: PHLivePhotoView, willBeginPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) {
-        // self._isPlaying
+        self.isPlaying = true
     }
     
     func livePhotoView(_ livePhotoView: PHLivePhotoView, didEndPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) {
-        
+        self.isPlaying = false
     }
     
 }
 
 private struct AssociatedKeys {
-    static var isPlaying: UInt8 = 0
+    static var delegator: UInt8 = 0
 }

@@ -21,12 +21,12 @@ public struct KFWebImageMediator: WebImageMediator {
     public func requestImage(
         for view: UIView,
         url: URL?,
-        progress: WebImageMediatorDownloadProgress?,
-        completed: WebImageMediatorCompleted?
+        progress: @escaping WebImageMediatorDownloadProgress,
+        completed: @escaping WebImageMediatorCompleted
     ) {
         guard let url = url else {
             view.jsmbkf_taskIdentifier = nil
-            completed?(.failure(self.generateError(KingfisherError.imageSettingError(reason: .emptySource))))
+            completed(.failure(self.generateError(KingfisherError.imageSettingError(reason: .emptySource))))
             return
         }
         
@@ -35,12 +35,11 @@ public struct KFWebImageMediator: WebImageMediator {
         
         let source = url.isFileURL ? Source.provider(LocalFileImageDataProvider(fileURL: url)) : Source.network(url)
         let options = self.options
-        let parsedOptions = KingfisherParsedOptionsInfo(options)
         let task = KingfisherManager.shared.retrieveImage(
             with: source,
             options: options,
-            progressBlock: { receivedSize, totalSize in
-                progress?(receivedSize, totalSize)
+            progressBlock: {
+                progress($0, $1)
             },
             downloadTaskUpdated: { newTask in
                 MainThreadTask.currentOrAsync {
@@ -57,7 +56,7 @@ public struct KFWebImageMediator: WebImageMediator {
                         } catch {
                             reason = .notCurrentSourceTask(result: nil, error: error, source: source)
                         }
-                        completed?(.failure(self.generateError(KingfisherError.imageSettingError(reason: reason))))
+                        completed(.failure(self.generateError(KingfisherError.imageSettingError(reason: reason))))
                         return
                     }
                     
@@ -66,9 +65,9 @@ public struct KFWebImageMediator: WebImageMediator {
                     
                     switch result {
                     case .success(let value):
-                        completed?(.success(self.generateResult(value)))
+                        completed(.success(self.generateResult(value)))
                     case .failure(let error):
-                        completed?(.failure(self.generateError(error)))
+                        completed(.failure(self.generateError(error)))
                     }
                 }
             }
@@ -85,21 +84,19 @@ public struct KFWebImageMediator: WebImageMediator {
 extension KFWebImageMediator {
     
     private func generateResult(_ result: RetrieveImageResult) -> WebImageMediationResult {
-        let webImageResult = WebImageMediationResult(
+        return WebImageMediationResult(
             image: result.image,
             data: result.cacheType == .none ? result.data() : nil,
             url: result.source.url
         )
-        return webImageResult
     }
     
     private func generateError(_ error: KingfisherError) -> WebImageMediationError {
         let nsError = error as NSError
-        let webImageError = WebImageMediationError(
+        return WebImageMediationError(
             error: nsError,
             isCancelled: error.isTaskCancelled
         )
-        return webImageError
     }
     
 }

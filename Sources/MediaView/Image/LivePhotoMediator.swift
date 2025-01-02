@@ -16,8 +16,8 @@ public protocol LivePhotoMediator {
         for view: UIView,
         imageURL: URL,
         videoURL: URL,
-        progress: LivePhotoMediatorDownloadProgress?,
-        completed: LivePhotoMediatorCompleted
+        progress: @escaping LivePhotoMediatorDownloadProgress,
+        completed: @escaping LivePhotoMediatorCompleted
     )
     
     func cancelRequest(for view: UIView)
@@ -27,8 +27,6 @@ public protocol LivePhotoMediator {
 public struct LivePhotoMediationResult {
     
     public let livePhoto: (any LivePhoto)?
-    public let data: Data?
-    public let url: URL?
     
 }
 
