@@ -383,15 +383,14 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
 extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     
     public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, shouldBegin gestureRecognizer: UIGestureRecognizer) -> Bool? {
-        if gestureRecognizer == mediaBrowserView.dismissingGesture {
-            let gestureRecognizer = mediaBrowserView.dismissingGesture
+        if gestureRecognizer == mediaBrowserView.dismissingGesture, let gestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
             guard let photoCell = self.currentPageCell as? PhotoCell else {
                 return true
             }
             let zoomView = photoCell.zoomView
-            let velocity: CGPoint = gestureRecognizer.velocity(in: gestureRecognizer.view)
-            let minY: CGFloat = ceil(zoomView.minContentOffset.y)
-            let maxY: CGFloat = floor(zoomView.maxContentOffset.y)
+            let velocity = gestureRecognizer.velocity(in: gestureRecognizer.view)
+            let minY = ceil(zoomView.minContentOffset.y)
+            let maxY = floor(zoomView.maxContentOffset.y)
             let scrollView = zoomView.scrollView
             /// 垂直触摸滑动
             if abs(velocity.x) <= abs(velocity.y) {
@@ -411,7 +410,13 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     }
     
     public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool? {
-        if otherGestureRecognizer == mediaBrowserView.dismissingGesture {
+        if gestureRecognizer == mediaBrowserView.dismissingGesture {
+            guard let scrollView = otherGestureRecognizer.view as? UIScrollView else {
+                return nil
+            }
+            guard otherGestureRecognizer == scrollView.panGestureRecognizer || otherGestureRecognizer == scrollView.pinchGestureRecognizer else {
+                return nil
+            }
             return true
         }
         return nil
