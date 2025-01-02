@@ -411,6 +411,9 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     }
     
     public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool? {
+        if otherGestureRecognizer == mediaBrowserView.dismissingGesture {
+            return true
+        }
         return nil
     }
     
