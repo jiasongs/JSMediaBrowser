@@ -258,6 +258,12 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
             /// 解决资源下载完成后不播放的问题
             cell.zoomView.startPlaying()
         }
+        let updateThumbnail = { [weak cell] (thumbnail: UIImage?) in
+            guard let cell = cell else {
+                return
+            }
+            cell.zoomView.thumbnail = thumbnail
+        }
         if let dataItem = self.dataSource[index] as? ImageAssetItem {
             let webImageMediator = self.configuration.webImageMediator(index)
             /// 取消请求
@@ -268,7 +274,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
                 updateCell(nil, false)
             } else if let url = dataItem.imageURL {
                 /// 缩略图
-                updateAsset(dataItem.thumbImage)
+                updateThumbnail(dataItem.thumbnail)
                 /// 请求图片
                 webImageMediator.requestImage(
                     for: cell,
@@ -280,6 +286,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
                         switch $0 {
                         case .success(let value):
                             updateAsset(value.image)
+                            updateThumbnail(nil)
                             updateCell(nil, false)
                         case .failure(let error):
                             updateAsset(nil)
@@ -287,12 +294,11 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
                         }
                     })
             } else {
-                updateAsset(dataItem.thumbImage)
+                updateThumbnail(dataItem.thumbnail)
             }
         } else if let dataItem = self.dataSource[index] as? LivePhotoAssetItem {
-            /// 缩略图
-            updateAsset(dataItem.thumbImage)
-            // todo
+            // 缩略图
+            updateThumbnail(dataItem.thumbnail)
             
             let livePhotoMediator = self.configuration.livePhotoMediator(index)
             livePhotoMediator.cancelRequest(for: cell)
@@ -307,6 +313,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
                     switch $0 {
                     case .success(let value):
                         updateAsset(value.livePhoto)
+                        updateThumbnail(nil)
                         updateCell(nil, false)
                     case .failure(let error):
                         updateAsset(nil)
@@ -320,7 +327,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         guard let dataItem = self.dataSource[index] as? VideoAssetItem else {
             return
         }
-        cell.videoPlayerView.thumbImage = dataItem.thumbImage
+        cell.videoPlayerView.thumbnail = dataItem.thumbnail
         /// 前后url不相同时需要释放之前的player, 否则会先显示之前的画面, 再显示当前的
         if cell.videoPlayerView.url != dataItem.videoURL {
             cell.videoPlayerView.releasePlayer()
@@ -404,15 +411,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     }
     
     public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool? {
-        if gestureRecognizer == mediaBrowserView.longPressGesture {
-            // todo
-            guard let photoCell = self.currentPageCell as? PhotoCell else {
-                return true
-            }
-            return nil
-        } else {
-            return nil
-        }
+        return nil
     }
     
     public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, singleTouch gestureRecognizer: UITapGestureRecognizer) {
@@ -531,8 +530,38 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
         return self.transitionInteractiver.wantsInteractiveStart ? self.transitionInteractiver : nil
     }
     
-    public var transitionModifier: TransitioningModifier {
-        return self.configuration.transitioningModifier(self.currentPage)
+    public var transitionThumbnailView: UIImageView? {
+        if let photoCell = self.currentPageCell as? PhotoCell {
+            let zoomViewModifier = self.configuration.zoomViewModifier(self.currentPage)
+            return zoomViewModifier.thumbnailView(in: photoCell.zoomView)
+        } else if self.currentPageCell is VideoCell {
+            return UIImageView()
+        }
+        return nil
+    }
+    
+    public var transitionThumbnail: UIImage? {
+        let dataItem = self.dataSource[self.currentPage]
+        
+        if let photoCell = self.currentPageCell as? PhotoCell {
+            if let image = photoCell.zoomView.thumbnail {
+                return image
+            } else if let dataItem = dataItem as? ImageAssetItem, let image = dataItem.image ?? dataItem.thumbnail {
+                return image
+            } else if let dataItem = dataItem as? LivePhotoAssetItem, let image = dataItem.thumbnail {
+                return image
+            } else {
+                return photoCell.zoomView.asset as? UIImage
+            }
+        } else if let videoCell = self.currentPageCell as? VideoCell {
+            if let image = videoCell.videoPlayerView.thumbnail {
+                return image
+            } else {
+                return dataItem.thumbnail
+            }
+        } else {
+            return nil
+        }
     }
     
     public var transitionSourceView: UIView? {
@@ -543,41 +572,17 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
         return self.sourceReference?.sourceRect?(self.currentPage) ?? CGRect.zero
     }
     
-    public var transitionThumbImage: UIImage? {
-        let dataItem = self.dataSource[self.currentPage]
-        if let dataItem = dataItem as? ImageAssetItem {
-            // todo
-            var result: UIImage?
-            if let photoCell = self.currentPageCell as? PhotoCell, let image = photoCell.zoomView.asset as? UIImage {
-                result = image
-            } else if let image = dataItem.image != nil ? dataItem.image : dataItem.thumbImage {
-                result = image
-            }
-            return result
-        } else if let dataItem = dataItem as? LivePhotoAssetItem {
-            // todo
-            return dataItem.thumbImage
-        } else if let dataItem = dataItem as? VideoAssetItem {
-            if let videoCell = self.currentPageCell as? VideoCell {
-                return videoCell.videoPlayerView.thumbImage
-            } else if let image = dataItem.thumbImage {
-                return image
-            }
-        }
-        return nil
-    }
-    
     public var transitionTargetView: UIView? {
         return self.currentPageCell
     }
     
     public var transitionTargetFrame: CGRect {
         if let photoCell = self.currentPageCell as? PhotoCell {
-            return self.transitionThumbImage != nil ? photoCell.zoomView.contentViewFrame : CGRect.zero
+            return photoCell.zoomView.contentViewFrame
         } else if let videoCell = self.currentPageCell as? VideoCell {
-            return self.transitionThumbImage != nil ? videoCell.videoPlayerView.contentViewFrame : CGRect.zero
+            return videoCell.videoPlayerView.contentViewFrame
         }
-        return CGRect.zero
+        return .zero
     }
     
     public var transitionAnimatorViews: [UIView]? {

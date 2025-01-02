@@ -28,9 +28,9 @@ public protocol ZoomAssetView: UIView {
 
 internal extension ZoomAssetView {
     
-    func isEqual(lhs: (any ZoomAsset)?, rhs: (any ZoomAsset)?) -> Bool {
-        let lhs = lhs as? ZoomAssetType
-        let rhs = rhs as? ZoomAssetType
+    func isEqual(_ asset: (any ZoomAsset)?) -> Bool {
+        let lhs = self.asset
+        let rhs = asset as? ZoomAssetType
         return lhs == rhs
     }
     

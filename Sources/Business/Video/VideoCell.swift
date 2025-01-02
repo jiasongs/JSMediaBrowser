@@ -24,7 +24,7 @@ public class VideoCell: BasisCell {
     
     public override func prepareForReuse() {
         super.prepareForReuse()
-        self.videoPlayerView.thumbImage = nil
+        self.videoPlayerView.thumbnail = nil
         self.videoPlayerView.reset()
     }
     
@@ -36,13 +36,21 @@ public class VideoCell: BasisCell {
 }
 
 extension VideoCell: VideoPlayerViewDelegate {
-    
+  
     public func didReadyForDisplay(in videoPlayerView: VideoPlayerView) {
         self.setError(nil, cancelled: false)
     }
     
     public func videoPlayerView(_ videoPlayerView: VideoPlayerView, didFailed error: NSError?) {
         self.setError(error, cancelled: false)
+    }
+    
+    public func didPlayToEndTime(in videoPlayerView: VideoPlayerView) {
+        
+    }
+    
+    public func videoPlayerView(_ videoPlayerView: VideoPlayerView, periodicTime currentTime: CGFloat, totalDuration: CGFloat) {
+        
     }
     
 }

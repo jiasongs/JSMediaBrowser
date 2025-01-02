@@ -29,7 +29,7 @@ class HomeViewController: UIViewController {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         self.extendedLayoutIncludesOpaqueBars = true
         
-        SDWebImageManager.shared.imageCache.clear?(with: .all)
+        SDImageCachesManager.shared.clear(with: .all)
     }
     
     required init?(coder: NSCoder) {
@@ -153,15 +153,15 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
         let cell = collectionView.cellForItem(at: indexPath) as? HomePictureCell
         let browserVC = BrowserViewController()
         browserVC.dataSource = self.dataSource.enumerated().map {
-            let thumbImage = $0.offset == indexPath.item ? cell?.imageView.image : nil
+            let thumbnail = $0.offset == indexPath.item ? cell?.imageView.image : nil
             var item: AssetItem
             if $0.element.contains("mp4") {
-                item = VideoItem(videoURL: URL(string: $0.element)!, thumbImage: thumbImage)
+                item = VideoItem(videoURL: URL(string: $0.element)!, thumbnail: thumbnail)
             } else if $0.element.contains("LivePhoto") {
                 let video = Bundle.main.url(forResource: "LivePhoto", withExtension: "MOV")!
-                item = LivePhotoItem(imageURL: URL(string: $0.element)!, videoURL: video, thumbImage: thumbImage)
+                item = LivePhotoItem(imageURL: URL(string: $0.element)!, videoURL: video, thumbnail: thumbnail)
             } else {
-                item = ImageItem(imageURL: URL(string: $0.element), thumbImage: thumbImage)
+                item = ImageItem(imageURL: URL(string: $0.element), thumbnail: thumbnail)
             }
             return item
         }

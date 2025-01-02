@@ -14,6 +14,7 @@ class HomePictureCell: UICollectionViewCell {
     
     lazy var imageView: SDAnimatedImageView = {
         let imageView = SDAnimatedImageView()
+        imageView.autoPlayAnimatedImage = false
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
         return imageView
@@ -27,6 +28,7 @@ class HomePictureCell: UICollectionViewCell {
         }
     }
     
+    @available(*, unavailable, message: "use init()")
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

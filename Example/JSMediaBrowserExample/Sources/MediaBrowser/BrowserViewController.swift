@@ -30,16 +30,16 @@ class BrowserViewController: MediaBrowserViewController {
     init() {
         super.init(configuration: .init(
             webImageMediator: { _ in
-                return SDWebImageMediator(context: [.animatedImageClass: SDAnimatedImage.self])
+                return SDWebImageMediator(
+                    options: [.fromLoaderOnly],
+                    context: [.animatedImageClass: SDAnimatedImage.self]
+                )
             },
             livePhotoMediator: { _ in
                 return PHLivePhotoMediator()
             },
             zoomViewModifier: { _ in
                 return SDZoomViewModifier()
-            },
-            transitioningModifier: { _ in
-                return SDTransitioningModifier()
             }
         ))
         
@@ -92,10 +92,15 @@ extension BrowserViewController {
 }
 
 private struct SDZoomViewModifier: ZoomViewModifier {
-    
+
     func assetView(in zoomView: ZoomView, asset: any ZoomAsset) -> (any ZoomAssetView)? {
         if asset is UIImage {
-            return SDTransitioningModifier().imageView()
+            let imageView = SDAnimatedImageView()
+            imageView.autoPlayAnimatedImage = false
+            if #available(iOS 17.0, *) {
+                imageView.preferredImageDynamicRange = .high
+            }
+            return imageView
         } else if asset is PHLivePhoto {
             return PHLivePhotoView()
         } else {
@@ -103,16 +108,9 @@ private struct SDZoomViewModifier: ZoomViewModifier {
         }
     }
     
-}
-
-private struct SDTransitioningModifier: TransitioningModifier {
-    
-    func imageView() -> UIImageView {
+    func thumbnailView(in zoomView: ZoomView) -> UIImageView? {
         let imageView = SDAnimatedImageView()
         imageView.autoPlayAnimatedImage = false
-        if #available(iOS 17.0, *) {
-            imageView.preferredImageDynamicRange = .high
-        }
         return imageView
     }
     

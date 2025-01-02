@@ -95,13 +95,22 @@ public class VideoPlayerView: BasisMediaView {
         }
     }
     
-    public var thumbImage: UIImage? {
+    public var thumbnail: UIImage? {
         didSet {
-            self.thumbImageView.image = self.thumbImage
-            self.updateThumbImageView()
+            self.thumbnailView.image = self.thumbnail
+            self.updateThumbnailView()
             self.setNeedsLayout()
         }
     }
+    
+    private lazy var thumbnailView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        self.addSubview(imageView)
+        self.sendSubviewToBack(imageView)
+        return imageView
+    }()
     
     private lazy var player: AVPlayer = {
         let player = AVPlayer(playerItem: nil)
@@ -122,15 +131,6 @@ public class VideoPlayerView: BasisMediaView {
         return layer
     }
     
-    private lazy var thumbImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        imageView.clipsToBounds = true
-        self.addSubview(imageView)
-        self.sendSubviewToBack(imageView)
-        return imageView
-    }()
-    
     private var playerItemObservers = [NSKeyValueObservation]()
     private var playerObservers = [NSKeyValueObservation]()
     private var playerItemCenterObservers = [AnyObject]()
@@ -145,22 +145,6 @@ public class VideoPlayerView: BasisMediaView {
         self.addObserverForPlayer()
     }
     
-    public override var containerView: UIView {
-        return self
-    }
-    
-    public override var contentView: UIView? {
-        return self.playerView
-    }
-    
-    public override var contentViewFrame: CGRect {
-        if self.isReadyForDisplay {
-            return self.convert(self.playerLayer.videoRect, from: self.playerView)
-        } else {
-            return self.convert(self.thumbImageView.frame, from: self.thumbImageView.superview)
-        }
-    }
-    
     deinit {
         self.removeObserverForPlayerItem()
         self.removeObserverForPlayer()
@@ -171,16 +155,37 @@ public class VideoPlayerView: BasisMediaView {
         super.layoutSubviews()
         let viewport = self.finalViewportRect
         self.playerView.js_frameApplyTransform = viewport
-        if let image = self.thumbImage {
+        
+        if let image = self.thumbnail {
             /// scaleAspectFit
-            let horizontalRatio: CGFloat = viewport.width / image.size.width
-            let verticalRatio: CGFloat = viewport.height / image.size.height
-            let ratio: CGFloat = min(horizontalRatio, verticalRatio)
-            let resizedSize: CGSize = CGSize(width: image.size.width * ratio, height: image.size.height * ratio)
-            var rect: CGRect = CGRect(origin: CGPoint.zero, size: resizedSize)
+            let horizontalRatio = viewport.width / image.size.width
+            let verticalRatio = viewport.height / image.size.height
+            let ratio = min(horizontalRatio, verticalRatio)
+            let resizedSize = CGSize(width: image.size.width * ratio, height: image.size.height * ratio)
+            var rect = CGRect(origin: CGPoint.zero, size: resizedSize)
             rect.origin.x = viewport.minX + (viewport.width - resizedSize.width) / 2.0
             rect.origin.y = viewport.minY + (viewport.height - resizedSize.height) / 2.0
-            self.thumbImageView.js_frameApplyTransform = rect
+            self.thumbnailView.js_frameApplyTransform = rect
+        }
+    }
+    
+    public override var containerView: UIView {
+        return self
+    }
+    
+    public override var contentView: UIView? {
+        if self.isReadyForDisplay {
+            return self.playerView
+        } else {
+            return self.thumbnailView
+        }
+    }
+    
+    public override var contentViewFrame: CGRect {
+        if self.isReadyForDisplay {
+            return self.convert(self.playerLayer.videoRect, from: self.playerView)
+        } else {
+            return self.convert(self.thumbnailView.frame, from: self.thumbnailView.superview)
         }
     }
     
@@ -196,7 +201,7 @@ extension VideoPlayerView {
         if self.status == .ready || self.status == .paused {
             self.player.play()
             self.status = .playing
-            self.updateThumbImageView()
+            self.updateThumbnailView()
         }
     }
     
@@ -240,8 +245,8 @@ extension VideoPlayerView {
 
 extension VideoPlayerView {
     
-    private func updateThumbImageView() {
-        self.thumbImageView.isHidden = self.thumbImage == nil || self.isReadyForDisplay
+    private func updateThumbnailView() {
+        self.thumbnailView.isHidden = self.thumbnail == nil || self.isReadyForDisplay
     }
     
     private func generateCurrentFrameImage() {
@@ -278,9 +283,10 @@ extension VideoPlayerView {
         )
         /// isReadyForDisplay
         self.playerObservers.append(
-            self.playerLayer.observe(\.self.isReadyForDisplay, options: .new, changeHandler: { [weak self](playerLayer: AVPlayerLayer, change) in
-                if self?.playerItem?.status == .readyToPlay {
-                    self?.updateThumbImageView()
+            self.playerLayer.observe(\.self.isReadyForDisplay, options: .new, changeHandler: { [weak self] (playerLayer: AVPlayerLayer, change) in
+                guard let self = self else { return }
+                if self.playerItem?.status == .readyToPlay {
+                    self.updateThumbnailView()
                 }
             })
         )
@@ -334,7 +340,7 @@ extension VideoPlayerView {
                     if self.status != .ready && playerItem.status == .readyToPlay {
                         self.status = .ready
                         self.totalDuration = CGFloat(CMTimeGetSeconds(playerItem.duration))
-                        self.updateThumbImageView()
+                        self.updateThumbnailView()
                         if self.isAutoPlay {
                             self.play()
                         }

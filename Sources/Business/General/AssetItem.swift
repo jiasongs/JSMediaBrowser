@@ -9,6 +9,6 @@ import UIKit
 
 public protocol AssetItem {
     
-    var thumbImage: UIImage? { get set }
+    var thumbnail: UIImage? { get set }
     
 }

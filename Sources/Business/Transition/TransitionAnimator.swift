@@ -10,12 +10,12 @@ import JSCoreKit
 
 public protocol TransitionAnimatorDelegate: AnyObject {
     
-    var transitionModifier: TransitioningModifier { get }
+    var transitionThumbnail: UIImage? { get }
+    var transitionThumbnailView: UIImageView? { get }
     var transitionSourceView: UIView? { get }
     var transitionSourceRect: CGRect { get }
     var transitionTargetView: UIView? { get }
     var transitionTargetFrame: CGRect { get }
-    var transitionThumbImage: UIImage? { get }
     var transitionAnimatorViews: [UIView]? { get }
     
     func transitionViewWillMoveToSuperview(_ transitionView: UIView)
@@ -25,12 +25,6 @@ public protocol TransitionAnimatorDelegate: AnyObject {
 public enum TransitioningStyle: Int {
     case zoom
     case fade
-}
-
-public protocol TransitioningModifier {
-    
-    func imageView() -> UIImageView
-    
 }
 
 public final class TransitionAnimator: Transitioner {
@@ -83,7 +77,7 @@ extension TransitionAnimator {
         let toView: UIView = transitionContext.view(forKey: .to) ?? toViewController.view
         let containerView: UIView = transitionContext.containerView
         
-        if let imageView = self.delegate?.transitionModifier.imageView() {
+        if let imageView = self.delegate?.transitionThumbnailView {
             imageView.contentMode = .scaleAspectFill
             imageView.clipsToBounds = true
             /// 最后添加ImageView, 保证在最上层
@@ -94,7 +88,7 @@ extension TransitionAnimator {
             }
             self.imageView = imageView
         }
-
+        
         var style: TransitioningStyle = isEntering ? self.enteringStyle : self.exitingStyle
         let sourceView = self.delegate?.transitionSourceView
         var sourceRect = CGRect.zero
@@ -112,7 +106,11 @@ extension TransitionAnimator {
         }
         
         let contentViewFrame = self.delegate?.transitionTargetFrame ?? CGRect.zero
-        style = style == .zoom && (sourceRect.isEmpty || contentViewFrame.isEmpty) ? .fade : style
+        
+        /// 判断是否可以zoom
+        if style == .zoom && (sourceRect.isEmpty || contentViewFrame.isEmpty || self.imageView == nil) {
+            style = .fade
+        }
         
         /// will
         self.handleAnimationEntering(style: style, isEntering: isEntering, fromView: fromView, toView: toView, sourceView: sourceView, sourceRect: sourceRect)
@@ -150,7 +148,7 @@ extension TransitionAnimator {
             /// 隐藏目标视图
             zoomView?.isHidden = true
             /// 设置下Frame
-            imageView.image = self.renderTransitionThumbImage()
+            imageView.image = self.renderTransitionThumbnail()
             imageView.frame = isEntering ? sourceRect : zoomContentViewFrameInView
             imageView.startAnimating()
             /// 计算position
@@ -220,8 +218,8 @@ extension TransitionAnimator {
         }
     }
     
-    private func renderTransitionThumbImage() -> UIImage? {
-        guard let image = self.delegate?.transitionThumbImage else {
+    private func renderTransitionThumbnail() -> UIImage? {
+        guard let image = self.delegate?.transitionThumbnail else {
             return nil
         }
         /// 图片方向不正常时，重绘图片

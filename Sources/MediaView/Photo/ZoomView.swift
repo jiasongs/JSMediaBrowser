@@ -21,11 +21,32 @@ public final class ZoomView: BasisMediaView {
             guard let assetView = self.assetView else {
                 return
             }
-            guard !assetView.isEqual(lhs: oldValue, rhs: self.asset) else {
+            guard !assetView.isEqual(self.asset) else {
                 return
             }
-            assetView.isHidden = false
             assetView.setAsset(self.asset)
+            
+            self.updateThumbnailView()
+            
+            self.setNeedsRevertZoom()
+        }
+    }
+    
+    public var thumbnail: UIImage? {
+        didSet {
+            if self.thumbnail != nil {
+                self.createThumbnailView()
+            }
+            
+            guard let thumbnailView = self.thumbnailView else {
+                return
+            }
+            guard thumbnailView.image != self.thumbnail else {
+                return
+            }
+            thumbnailView.image = self.thumbnail
+            
+            self.updateThumbnailView()
             
             self.setNeedsRevertZoom()
         }
@@ -46,7 +67,7 @@ public final class ZoomView: BasisMediaView {
             self.scrollView.maximumZoomScale = self.maximumZoomScale
         }
     }
-
+    
     public private(set) lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView(frame: CGRect(origin: CGPoint.zero, size: frame.size))
         scrollView.showsHorizontalScrollIndicator = false
@@ -64,6 +85,8 @@ public final class ZoomView: BasisMediaView {
     
     private var assetView: (any ZoomAssetView)?
     
+    private var thumbnailView: UIImageView?
+    
     private var isNeededRevertZoom: Bool = false
     
     public override func didInitialize() {
@@ -78,7 +101,13 @@ public final class ZoomView: BasisMediaView {
     }
     
     public override var contentView: UIView? {
-        return self.assetView
+        if self.asset != nil {
+            return self.assetView
+        } else if self.thumbnail != nil {
+            return self.thumbnailView
+        } else {
+            return nil
+        }
     }
     
     public override var contentViewFrame: CGRect {
@@ -88,33 +117,42 @@ public final class ZoomView: BasisMediaView {
         return self.convert(contentView.frame, from: contentView.superview)
     }
     
-}
-
-extension ZoomView {
-    
     public override func layoutSubviews() {
         super.layoutSubviews()
-        if self.bounds.isEmpty {
-            return
-        }
         /// scrollView
         let previousSize = self.scrollView.bounds.size
         if previousSize != self.bounds.size {
             self.scrollView.js_frameApplyTransform = self.bounds
             self.setNeedsRevertZoom()
         }
-        /// contentView
-        if let contentView = self.contentView {
-            let contentSize = {
+        
+        let calculateLayout = { (view: UIView, size: CGSize) in
+            let contentRect = JSCGRectApplyAffineTransformWithAnchorPoint(
+                CGRect(origin: CGPoint.zero, size: size),
+                view.transform,
+                view.layer.anchorPoint
+            )
+            view.frame = CGRect(origin: .zero, size: contentRect.size)
+        }
+        /// assetView
+        if let assetView = self.assetView {
+            let assetSize = {
                 guard let asset = self.asset else {
                     return CGSize.zero
                 }
                 return asset.size
             }()
-            let contentRect = JSCGRectApplyAffineTransformWithAnchorPoint(CGRect(origin: CGPoint.zero, size: contentSize),
-                                                                          contentView.transform,
-                                                                          contentView.layer.anchorPoint)
-            contentView.frame = CGRect(origin: CGPoint.zero, size: contentRect.size)
+            calculateLayout(assetView, assetSize)
+        }
+        /// thumbnailView
+        if let thumbnailView = self.thumbnailView {
+            let thumbnailSize = {
+                guard let thumbnail = self.thumbnail else {
+                    return CGSize.zero
+                }
+                return thumbnail.size
+            }()
+            calculateLayout(thumbnailView, thumbnailSize)
         }
         
         self.revertZoomIfNeeded()
@@ -142,13 +180,6 @@ extension ZoomView {
 
 extension ZoomView {
     
-    public var isDisplayAssetView: Bool {
-        guard let assetView = self.assetView else {
-            return false
-        }
-        return !assetView.isHidden
-    }
-    
     public var isPlaying: Bool {
         guard let assetView = self.assetView else {
             return false
@@ -157,31 +188,30 @@ extension ZoomView {
     }
     
     public func startPlaying() {
-        guard !self.isPlaying else {
-            return
+        if self.asset != nil, let assetView = self.assetView, !assetView.isPlaying {
+            assetView.startPlaying()
+        } else if self.thumbnail != nil, let thumbnailView = self.thumbnailView, !thumbnailView.isAnimating {
+            thumbnailView.startAnimating()
         }
-        guard let assetView = self.assetView else {
-            return
-        }
-        assetView.startPlaying()
     }
     
     public func stopPlaying() {
-        guard self.isPlaying else {
-            return
+        if let assetView = self.assetView, assetView.isPlaying {
+            assetView.stopPlaying()
         }
-        guard let assetView = self.assetView else {
-            return
+        if let thumbnailView = self.thumbnailView, thumbnailView.isAnimating {
+            thumbnailView.stopAnimating()
         }
-        assetView.stopPlaying()
     }
     
     public var minimumZoomScale: CGFloat {
         let mediaSize = {
-            guard let asset = self.asset else {
-                return CGSize.zero
+            if let asset = self.asset {
+                return asset.size
+            } else if let thumbnail = self.thumbnail {
+                return thumbnail.size
             }
-            return asset.size
+            return CGSize.zero
         }()
         var minScale: CGFloat = 1.0
         if self.contentView == nil || mediaSize.width <= 0 || mediaSize.height <= 0 {
@@ -251,10 +281,10 @@ extension ZoomView {
         if self.bounds.isEmpty {
             return
         }
-        let enabledZoom: Bool = self.enabledZoom
-        let minimumZoomScale: CGFloat = self.minimumZoomScale
-        let maximumZoomScale: CGFloat = max(enabledZoom ? self.maximumZoomScale : minimumZoomScale, minimumZoomScale)
-        let shouldFireDidZoomingManual: Bool = self.zoomScale == minimumZoomScale
+        let enabledZoom = self.enabledZoom
+        let minimumZoomScale = self.minimumZoomScale
+        let maximumZoomScale = max(enabledZoom ? self.maximumZoomScale : minimumZoomScale, minimumZoomScale)
+        let shouldFireDidZoomingManual = self.zoomScale == minimumZoomScale
         self.scrollView.panGestureRecognizer.isEnabled = enabledZoom
         self.scrollView.pinchGestureRecognizer?.isEnabled = enabledZoom
         self.scrollView.minimumZoomScale = minimumZoomScale
@@ -280,10 +310,30 @@ extension ZoomView {
         guard let assetView = self.modifier?.assetView(in: self, asset: asset) else {
             return
         }
-        assetView.isHidden = true
         assetView.isAccessibilityElement = true
         self.scrollView.addSubview(assetView)
+        self.scrollView.sendSubviewToBack(assetView)
         self.assetView = assetView
+    }
+    
+    private func createThumbnailView() {
+        guard self.thumbnailView == nil else {
+            return
+        }
+        guard let thumbnailView = self.modifier?.thumbnailView(in: self) else {
+            return
+        }
+        thumbnailView.isAccessibilityElement = true
+        self.scrollView.addSubview(thumbnailView)
+        self.scrollView.bringSubviewToFront(thumbnailView)
+        self.thumbnailView = thumbnailView
+    }
+    
+    private func updateThumbnailView() {
+        guard let thumbnailView = self.thumbnailView else {
+            return
+        }
+        thumbnailView.isHidden = self.thumbnail == nil || self.asset != nil
     }
     
 }

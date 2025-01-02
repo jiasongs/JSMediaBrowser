@@ -18,16 +18,3 @@ public protocol VideoPlayerViewDelegate: AnyObject {
     func videoPlayerView(_ videoPlayerView: VideoPlayerView, didFailed error: NSError?)
     
 }
-
-/// options
-extension VideoPlayerViewDelegate {
-    
-    public func didReadyForDisplay(in videoPlayerView: VideoPlayerView) {}
-    
-    public func didPlayToEndTime(in videoPlayerView: VideoPlayerView) {}
-    
-    public func videoPlayerView(_ videoPlayerView: VideoPlayerView, periodicTime currentTime: CGFloat, totalDuration: CGFloat) {}
-    
-    public func videoPlayerView(_ videoPlayerView: VideoPlayerView, didFailed error: NSError?) {}
-    
-}
