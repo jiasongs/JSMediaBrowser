@@ -25,14 +25,20 @@ public class MediaBrowserView: UIView {
     
     public var dimmingView: UIView? {
         didSet {
-            oldValue?.removeFromSuperview()
+            guard oldValue != self.dimmingView else {
+                return
+            }
+            if let oldValue = oldValue, oldValue.superview == self {
+                oldValue.removeFromSuperview()
+            }
             if let dimmingView = self.dimmingView {
+                dimmingView.removeFromSuperview()
                 self.insertSubview(dimmingView, at: 0)
             }
         }
     }
     
-    public lazy var singleTapGesture: UITapGestureRecognizer = {
+    public private(set) lazy var singleTapGesture: UITapGestureRecognizer = {
         let gesture = UITapGestureRecognizer(target: self, action: #selector(self.handleSingleTapGesture))
         gesture.numberOfTapsRequired = 1
         gesture.numberOfTouchesRequired = 1
@@ -41,7 +47,7 @@ public class MediaBrowserView: UIView {
         return gesture
     }()
     
-    public lazy var doubleTapGesture: UITapGestureRecognizer = {
+    public private(set) lazy var doubleTapGesture: UITapGestureRecognizer = {
         let gesture = UITapGestureRecognizer(target: self, action: #selector(self.handleDoubleTapGesture))
         gesture.numberOfTapsRequired = 2
         gesture.numberOfTouchesRequired = 1
@@ -49,13 +55,14 @@ public class MediaBrowserView: UIView {
         return gesture
     }()
     
-    public lazy var longPressGesture: UILongPressGestureRecognizer = {
+    public private(set) lazy var longPressGesture: UILongPressGestureRecognizer = {
         let gesture = UILongPressGestureRecognizer(target: self, action: #selector(self.handleLongPressGesture))
         gesture.minimumPressDuration = 1
+        gesture.delegate = self
         return gesture
     }()
     
-    public lazy var dismissingGesture: UIPanGestureRecognizer = {
+    public private(set) lazy var dismissingGesture: UIPanGestureRecognizer = {
         let gesture = UIPanGestureRecognizer(target: self, action: #selector(self.handleDismissingGesture))
         gesture.minimumNumberOfTouches = 1
         gesture.maximumNumberOfTouches = 1
@@ -110,10 +117,6 @@ public class MediaBrowserView: UIView {
             UIAccessibility.post(notification: UIAccessibility.Notification.layoutChanged, argument: "轻点两下退出预览")
         }
     }
-    
-}
-
-extension MediaBrowserView {
     
     public override func layoutSubviews() {
         super.layoutSubviews()
@@ -310,7 +313,7 @@ extension MediaBrowserView: UIScrollViewDelegate {
             let index = Int(round(offsetIndex))
             if index >= 0 && index < self.totalUnitPage && self.currentPage != index {
                 self.delegate?.mediaBrowserView(self, willScrollHalfFrom: self.currentPage, to: index)
-
+                
                 self.currentPage = index
             }
             self.previousOffsetIndex = offsetIndex
@@ -390,29 +393,29 @@ extension MediaBrowserView: UIScrollViewDelegate {
 
 extension MediaBrowserView: UIGestureRecognizerDelegate {
     
-    @objc public func handleSingleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
+    public override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return self.gestureDelegate?.mediaBrowserView(self, shouldBegin: gestureRecognizer) ?? super.gestureRecognizerShouldBegin(gestureRecognizer)
+    }
+    
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return self.gestureDelegate?.mediaBrowserView(self, gestureRecognizer: gestureRecognizer, shouldBeRequiredToFailBy: otherGestureRecognizer) ?? false
+    }
+    
+    @objc private func handleSingleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
         self.gestureDelegate?.mediaBrowserView(self, singleTouch: gestureRecognizer)
     }
     
-    @objc public func handleDoubleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
+    @objc private func handleDoubleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
         self.gestureDelegate?.mediaBrowserView(self, doubleTouch: gestureRecognizer)
     }
     
-    @objc public func handleLongPressGesture(_ gestureRecognizer: UILongPressGestureRecognizer) {
+    @objc private func handleLongPressGesture(_ gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state == .began {
             self.gestureDelegate?.mediaBrowserView(self, longPressTouch: gestureRecognizer)
         }
     }
     
-    public override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        if gestureRecognizer == self.dismissingGesture {
-            return self.gestureDelegate?.mediaBrowserView(self, dismissingShouldBegin: self.dismissingGesture) ?? false
-        } else {
-            return super.gestureRecognizerShouldBegin(gestureRecognizer)
-        }
-    }
-    
-    @objc func handleDismissingGesture(gestureRecognizer: UIPanGestureRecognizer) {
+    @objc private func handleDismissingGesture(gestureRecognizer: UIPanGestureRecognizer) {
         self.gestureDelegate?.mediaBrowserView(self, dismissingChanged: gestureRecognizer)
     }
     

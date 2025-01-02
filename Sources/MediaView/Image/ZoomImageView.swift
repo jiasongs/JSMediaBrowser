@@ -95,8 +95,6 @@ public final class ZoomImageView: BasisMediaView {
     
     private var livePhotoView: (any LivePhotoView)?
     
-    private weak var failGestureRecognizer: UIGestureRecognizer?
-    
     private var isNeededRevertZoom: Bool = false
     
     public override func didInitialize() {
@@ -175,17 +173,7 @@ extension ZoomImageView {
         return CGPoint(x: scrollView.contentSize.width + contentInset.right - scrollView.bounds.width,
                        y: scrollView.contentSize.height + contentInset.bottom - scrollView.bounds.height)
     }
-    
-    public func require(toFail otherGestureRecognizer: UIGestureRecognizer) {
-        guard self.failGestureRecognizer != otherGestureRecognizer else {
-            return
-        }
-        self.failGestureRecognizer = otherGestureRecognizer
-        
-        self.scrollView.panGestureRecognizer.require(toFail: otherGestureRecognizer)
-        self.scrollView.pinchGestureRecognizer?.require(toFail: otherGestureRecognizer)
-    }
-    
+  
 }
 
 extension ZoomImageView {

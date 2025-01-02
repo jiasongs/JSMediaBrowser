@@ -55,7 +55,7 @@ class HomeViewController: UIViewController {
         }
         var array = try? JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.fragmentsAllowed) as? [String]
         
-        if let image = Bundle.main.url(forResource: "LivePhoto", withExtension: "jpg") {
+        if let image = Bundle.main.url(forResource: "LivePhoto", withExtension: "JPG") {
             array?.append(image.absoluteString)
         }
         if let HDR = Bundle.main.path(forResource: "TestHDR1", ofType: "heic") {
@@ -162,7 +162,7 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
             if $0.element.contains("mp4") {
                 item = VideoItem(videoURL: URL(string: $0.element)!, thumbImage: thumbImage)
             } else if $0.element.contains("LivePhoto") {
-                let video = Bundle.main.url(forResource: "LivePhoto", withExtension: "mov")!
+                let video = Bundle.main.url(forResource: "LivePhoto", withExtension: "MOV")!
                 item = LivePhotoItem(imageURL: URL(string: $0.element)!, videoURL: video, thumbImage: thumbImage)
             } else {
                 item = ImageItem(imageURL: URL(string: $0.element), thumbImage: thumbImage)

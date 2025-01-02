@@ -20,16 +20,10 @@ public struct KFWebImageMediator: WebImageMediator {
     
     public func requestImage(
         for view: UIView,
-        url: URL?,
+        url: URL,
         progress: @escaping WebImageMediatorDownloadProgress,
         completed: @escaping WebImageMediatorCompleted
     ) {
-        guard let url = url else {
-            view.jsmbkf_taskIdentifier = nil
-            completed(.failure(self.generateError(KingfisherError.imageSettingError(reason: .emptySource))))
-            return
-        }
-        
         let issuedIdentifier = AtomicInt()
         view.jsmbkf_taskIdentifier = issuedIdentifier
         

@@ -243,8 +243,9 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     }
     
     public func configureImageCell(_ cell: ImageCell, at index: Int) {
-        /// 当dismissingGesture失败时才会去响应scrollView的手势
-        cell.zoomImageView.require(toFail: self.mediaBrowserView.dismissingGesture)
+        defer {
+            self.eventHandler?.willDisplayZoomImageView(cell.zoomImageView, at: index)
+        }
         /// zoomImageView修改器
         cell.zoomImageView.modifier = self.configuration.zoomImageViewModifier(index)
         
@@ -272,11 +273,10 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
             if let image = dataItem.image, dataItem.imageURL == nil {
                 updateImage(image)
                 updateCell(nil, false)
-            } else {
+            } else if let url = dataItem.imageURL {
                 /// 缩略图
                 updateImage(dataItem.thumbImage)
                 /// 请求图片
-                let url = dataItem.imageURL
                 webImageMediator.requestImage(
                     for: cell,
                     url: url,
@@ -293,6 +293,8 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
                             updateCell(error.error, error.isCancelled)
                         }
                     })
+            } else {
+                updateImage(dataItem.thumbImage)
             }
         } else if let dataItem = self.dataSource[index] as? LivePhotoAssetItem {
             let updateLivePhoto = { [weak cell] (livePhoto: (any LivePhoto)?) in
@@ -326,8 +328,6 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
                     }
                 })
         }
-       
-        self.eventHandler?.willDisplayZoomImageView(cell.zoomImageView, at: index)
     }
     
     public func configureVideoCell(_ cell: VideoCell, at index: Int) {
@@ -349,7 +349,7 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
 }
 
 extension MediaBrowserViewController: MediaBrowserViewDelegate {
-    
+ 
     public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, willDisplay cell: UICollectionViewCell, forPageAt index: Int) {
         if let imageCell = cell as? ImageCell {
             imageCell.zoomImageView.startAnimating()
@@ -381,9 +381,52 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
         self.eventHandler?.didScroll(to: index)
     }
     
+    public func mediaBrowserViewDidScroll(_ mediaBrowserView: MediaBrowserView) {
+        
+    }
+    
 }
 
 extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
+    
+    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, shouldBegin gestureRecognizer: UIGestureRecognizer) -> Bool? {
+        if gestureRecognizer == mediaBrowserView.dismissingGesture {
+            let gestureRecognizer = mediaBrowserView.dismissingGesture
+            guard let imageCell = self.currentPageCell as? ImageCell else {
+                return true
+            }
+            let zoomImageView: ZoomImageView = imageCell.zoomImageView
+            let velocity: CGPoint = gestureRecognizer.velocity(in: gestureRecognizer.view)
+            let minY: CGFloat = ceil(zoomImageView.minContentOffset.y)
+            let maxY: CGFloat = floor(zoomImageView.maxContentOffset.y)
+            let scrollView = zoomImageView.scrollView
+            /// 垂直触摸滑动
+            if abs(velocity.x) <= abs(velocity.y) {
+                if velocity.y > 0 {
+                    /// 手势向下
+                    return scrollView.contentOffset.y <= minY && !(scrollView.isDragging || scrollView.isDecelerating)
+                } else {
+                    /// 手势向上
+                    return scrollView.contentOffset.y >= maxY && !(scrollView.isDragging || scrollView.isDecelerating)
+                }
+            } else {
+                return false
+            }
+        } else {
+            return nil
+        }
+    }
+    
+    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool? {
+        if gestureRecognizer == mediaBrowserView.longPressGesture {
+            guard let imageCell = self.currentPageCell as? ImageCell else {
+                return true
+            }
+            return nil
+        } else {
+            return nil
+        }
+    }
     
     public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, singleTouch gestureRecognizer: UITapGestureRecognizer) {
         defer {
@@ -413,29 +456,6 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     
     public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, longPressTouch gestureRecognizer: UILongPressGestureRecognizer) {
         self.eventHandler?.didLongPressTouch()
-    }
-    
-    public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, dismissingShouldBegin gestureRecognizer: UIPanGestureRecognizer) -> Bool {
-        guard let imageCell = self.currentPageCell as? ImageCell else {
-            return true
-        }
-        let zoomImageView: ZoomImageView = imageCell.zoomImageView
-        let velocity: CGPoint = gestureRecognizer.velocity(in: gestureRecognizer.view)
-        let minY: CGFloat = ceil(zoomImageView.minContentOffset.y)
-        let maxY: CGFloat = floor(zoomImageView.maxContentOffset.y)
-        let scrollView = zoomImageView.scrollView
-        /// 垂直触摸滑动
-        if abs(velocity.x) <= abs(velocity.y) {
-            if velocity.y > 0 {
-                /// 手势向下
-                return scrollView.contentOffset.y <= minY && !(scrollView.isDragging || scrollView.isDecelerating)
-            } else {
-                /// 手势向上
-                return scrollView.contentOffset.y >= maxY && !(scrollView.isDragging || scrollView.isDecelerating)
-            }
-        } else {
-            return false
-        }
     }
     
     public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, dismissingChanged gestureRecognizer: UIPanGestureRecognizer) {

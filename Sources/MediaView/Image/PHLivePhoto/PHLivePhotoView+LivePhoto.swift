@@ -19,17 +19,16 @@ extension PHLivePhotoView: LivePhotoView {
     public func startPlayback() {
         self.delegate = self.delegator
         
-        self.startPlayback(with: .undefined)
+        self.startPlayback(with: .full)
     }
     
     private var delegator: PHLivePhotoViewDelegator? {
-        get {
-            return objc_getAssociatedObject(self, &AssociatedKeys.delegator) as? PHLivePhotoViewDelegator
-        }
-        set {
-            let delegator = PHLivePhotoViewDelegator()
+        var delegator = objc_getAssociatedObject(self, &AssociatedKeys.delegator) as? PHLivePhotoViewDelegator
+        if delegator == nil {
+            delegator = PHLivePhotoViewDelegator()
             objc_setAssociatedObject(self, &AssociatedKeys.delegator, delegator, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
+        return delegator
     }
     
 }
