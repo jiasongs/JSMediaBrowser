@@ -13,7 +13,7 @@ import QMUIKit
 
 class ShareControl: UIButton {
     
-    weak var mediaBrowserVC: JSMediaBrowserViewController?
+    weak var mediaBrowserVC: BrowserViewController?
     
     override init(frame: CGRect) {
         super.init(frame: frame)

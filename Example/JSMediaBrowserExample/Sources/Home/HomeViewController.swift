@@ -54,14 +54,18 @@ class HomeViewController: UIViewController {
             return
         }
         var array = try? JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.fragmentsAllowed) as? [String]
-        if let hdr = Bundle.main.path(forResource: "TestHDR1", ofType: "heic") {
-            array?.append(URL(fileURLWithPath: hdr).absoluteString)
+        
+        if let image = Bundle.main.url(forResource: "LivePhoto", withExtension: "jpg") {
+            array?.append(image.absoluteString)
         }
-        if let hdr = Bundle.main.path(forResource: "TestHDR2", ofType: "JPG") {
-            array?.append(URL(fileURLWithPath: hdr).absoluteString)
+        if let HDR = Bundle.main.path(forResource: "TestHDR1", ofType: "heic") {
+            array?.append(URL(fileURLWithPath: HDR).absoluteString)
         }
-        if let hdr = Bundle.main.path(forResource: "TestHDR3", ofType: "JPG") {
-            array?.append(URL(fileURLWithPath: hdr).absoluteString)
+        if let HDR = Bundle.main.path(forResource: "TestHDR2", ofType: "JPG") {
+            array?.append(URL(fileURLWithPath: HDR).absoluteString)
+        }
+        if let HDR = Bundle.main.path(forResource: "TestHDR3", ofType: "JPG") {
+            array?.append(URL(fileURLWithPath: HDR).absoluteString)
         }
         if let data = Bundle.main.path(forResource: "data1", ofType: "jpg") {
             array?.append(URL(fileURLWithPath: data).absoluteString)
@@ -151,14 +155,17 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as? HomePictureCell
-        let browserVC = JSMediaBrowserViewController()
+        let browserVC = BrowserViewController()
         browserVC.dataSource = self.dataSource.enumerated().map {
             let thumbImage = $0.offset == indexPath.item ? cell?.imageView.image : nil
             var item: AssetItem
             if $0.element.contains("mp4") {
-                item = VideoItem(videoUrl: URL(string: $0.element), thumbImage: thumbImage)
+                item = VideoItem(videoURL: URL(string: $0.element)!, thumbImage: thumbImage)
+            } else if $0.element.contains("LivePhoto") {
+                let video = Bundle.main.url(forResource: "LivePhoto", withExtension: "mov")!
+                item = LivePhotoItem(imageURL: URL(string: $0.element)!, videoURL: video, thumbImage: thumbImage)
             } else {
-                item = ImageItem(imageUrl: URL(string: $0.element), thumbImage: thumbImage)
+                item = ImageItem(imageURL: URL(string: $0.element), thumbImage: thumbImage)
             }
             return item
         }

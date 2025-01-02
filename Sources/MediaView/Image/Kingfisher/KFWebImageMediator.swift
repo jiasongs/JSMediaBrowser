@@ -13,26 +13,25 @@ public struct KFWebImageMediator: WebImageMediator {
     
     public var options: KingfisherOptionsInfo
     
-    public func setImage(
+    public init(options: KingfisherOptionsInfo? = nil) {
+        let defaultOptions = KingfisherManager.shared.defaultOptions
+        self.options = defaultOptions + (options ?? [])
+    }
+    
+    public func requestImage(
         for view: UIView,
         url: URL?,
-        thumbImage: UIImage?,
-        setImageBlock: WebImageMediatorSetImageBlock?,
         progress: WebImageMediatorDownloadProgress?,
         completed: WebImageMediatorCompleted?
     ) {
         guard let url = url else {
-            view.jsmb_taskIdentifier = nil
+            view.jsmbkf_taskIdentifier = nil
             completed?(.failure(self.generateError(KingfisherError.imageSettingError(reason: .emptySource))))
             return
         }
         
         let issuedIdentifier = AtomicInt()
-        view.jsmb_taskIdentifier = issuedIdentifier
-        
-        if let thumbImage = thumbImage {
-            setImageBlock?(thumbImage)
-        }
+        view.jsmbkf_taskIdentifier = issuedIdentifier
         
         let source = url.isFileURL ? Source.provider(LocalFileImageDataProvider(fileURL: url)) : Source.network(url)
         let options = self.options
@@ -45,12 +44,12 @@ public struct KFWebImageMediator: WebImageMediator {
             },
             downloadTaskUpdated: { newTask in
                 MainThreadTask.currentOrAsync {
-                    view.jsmb_imageTask = newTask
+                    view.jsmbkf_imageTask = newTask
                 }
             },
             completionHandler: { result in
                 MainThreadTask.currentOrAsync {
-                    guard issuedIdentifier == view.jsmb_taskIdentifier else {
+                    guard issuedIdentifier == view.jsmbkf_taskIdentifier else {
                         let reason: KingfisherError.ImageSettingErrorReason
                         do {
                             let value = try result.get()
@@ -62,45 +61,44 @@ public struct KFWebImageMediator: WebImageMediator {
                         return
                     }
                     
-                    view.jsmb_imageTask = nil
-                    view.jsmb_taskIdentifier = nil
+                    view.jsmbkf_imageTask = nil
+                    view.jsmbkf_taskIdentifier = nil
                     
                     switch result {
                     case .success(let value):
                         completed?(.success(self.generateResult(value)))
                     case .failure(let error):
-                        if let image = parsedOptions.onFailureImage {
-                            setImageBlock?(image)
-                        }
                         completed?(.failure(self.generateError(error)))
                     }
                 }
             }
         )
-        view.jsmb_imageTask = task
+        view.jsmbkf_imageTask = task
     }
     
-    public func cancelImageRequest(for view: UIView) {
-        view.jsmb_imageTask?.cancel()
-    }
-    
-    public init(options: KingfisherOptionsInfo? = nil) {
-        let defaultOptions = KingfisherManager.shared.defaultOptions
-        self.options = defaultOptions + (options ?? [])
+    public func cancelRequest(for view: UIView) {
+        view.jsmbkf_imageTask?.cancel()
     }
     
 }
 
 extension KFWebImageMediator {
     
-    private func generateResult(_ result: RetrieveImageResult) -> WebImageResult {
-        let webImageResult = WebImageResult(image: result.image, data: result.cacheType == .none ? result.data() : nil, url: result.source.url)
+    private func generateResult(_ result: RetrieveImageResult) -> WebImageMediationResult {
+        let webImageResult = WebImageMediationResult(
+            image: result.image,
+            data: result.cacheType == .none ? result.data() : nil,
+            url: result.source.url
+        )
         return webImageResult
     }
     
-    private func generateError(_ error: KingfisherError) -> WebImageError {
+    private func generateError(_ error: KingfisherError) -> WebImageMediationError {
         let nsError = error as NSError
-        let webImageError = WebImageError(error: nsError, isCancelled: error.isTaskCancelled)
+        let webImageError = WebImageMediationError(
+            error: nsError,
+            isCancelled: error.isTaskCancelled
+        )
         return webImageError
     }
     
@@ -113,7 +111,7 @@ private struct AssociatedKeys {
 
 private extension UIView {
     
-    var jsmb_taskIdentifier: AtomicInt? {
+    var jsmbkf_taskIdentifier: AtomicInt? {
         get {
             return objc_getAssociatedObject(self, &AssociatedKeys.taskIdentifier) as? AtomicInt
         }
@@ -122,7 +120,7 @@ private extension UIView {
         }
     }
     
-    var jsmb_imageTask: DownloadTask? {
+    var jsmbkf_imageTask: DownloadTask? {
         get {
             return objc_getAssociatedObject(self, &AssociatedKeys.imageTask) as? DownloadTask
         }

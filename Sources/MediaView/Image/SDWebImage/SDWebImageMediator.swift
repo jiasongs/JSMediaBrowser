@@ -13,25 +13,24 @@ public struct SDWebImageMediator: WebImageMediator {
     public var options: SDWebImageOptions
     public var context: [SDWebImageContextOption: Any]?
     
-    public func setImage(
+    public init(options: SDWebImageOptions? = nil, context: [SDWebImageContextOption: Any]? = nil) {
+        self.options = options ?? [.retryFailed]
+        self.context = context
+    }
+    
+    public func requestImage(
         for view: UIView,
         url: URL?,
-        thumbImage: UIImage?,
-        setImageBlock: WebImageMediatorSetImageBlock?,
         progress: WebImageMediatorDownloadProgress?,
         completed: WebImageMediatorCompleted?
     ) {
         view.sd_internalSetImage(
             with: url,
-            placeholderImage: thumbImage,
+            placeholderImage: nil,
             options: self.options,
             context: self.context,
-            setImageBlock: { (image: UIImage?, data: Data?, cacheType: SDImageCacheType, targetUrl: URL?) in
-                self.executeOnMainQueue {
-                    setImageBlock?(image)
-                }
-            },
-            progress: { (receivedSize: Int, expectedSize: Int, targetUrl: URL?) in
+            setImageBlock: nil,
+            progress: { (receivedSize: Int, expectedSize: Int, targetURL: URL?) in
                 self.executeOnMainQueue {
                     progress?(Int64(receivedSize), Int64(expectedSize))
                 }
@@ -40,23 +39,18 @@ public struct SDWebImageMediator: WebImageMediator {
                 self.executeOnMainQueue {
                     let nsError = error as? NSError
                     if let nsError = nsError {
-                        let webImageError = WebImageError(error: nsError, isCancelled: nsError.code == SDWebImageError.cancelled.rawValue)
+                        let webImageError = WebImageMediationError(error: nsError, isCancelled: nsError.code == SDWebImageError.cancelled.rawValue)
                         completed?(.failure(webImageError))
                     } else {
-                        let webImageResult = WebImageResult(image: image, data: data, url: url)
+                        let webImageResult = WebImageMediationResult(image: image, data: data, url: url)
                         completed?(.success(webImageResult))
                     }
                 }
             })
     }
     
-    public func cancelImageRequest(for view: UIView) {
+    public func cancelRequest(for view: UIView) {
         view.sd_cancelLatestImageLoad()
-    }
-    
-    public init(options: SDWebImageOptions? = nil, context: [SDWebImageContextOption: Any]? = nil) {
-        self.options = options ?? [.retryFailed]
-        self.context = context
     }
     
 }

@@ -7,7 +7,6 @@
 
 import UIKit
 import JSCoreKit
-import PhotosUI
 
 open class MediaBrowserViewController: UIViewController {
     
@@ -213,6 +212,8 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         let dataItem = self.dataSource[index]
         if dataItem is ImageAssetItem {
             cell = mediaBrowserView.dequeueReusableCell(ImageCell.self, at: index)
+        } else if dataItem is LivePhotoAssetItem {
+            cell = mediaBrowserView.dequeueReusableCell(ImageCell.self, at: index)
         } else if dataItem is VideoAssetItem {
             cell = mediaBrowserView.dequeueReusableCell(VideoCell.self, at: index)
         }
@@ -242,22 +243,18 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
     }
     
     public func configureImageCell(_ cell: ImageCell, at index: Int) {
-        guard let dataItem = self.dataSource[index] as? ImageAssetItem else {
-            return
-        }
         /// 当dismissingGesture失败时才会去响应scrollView的手势
         cell.zoomImageView.require(toFail: self.mediaBrowserView.dismissingGesture)
         /// zoomImageView修改器
         cell.zoomImageView.modifier = self.configuration.zoomImageViewModifier(index)
         
-        let webImageMediator = self.configuration.webImageMediator(index)
-        /// 取消请求
-        webImageMediator.cancelImageRequest(for: cell)
-        
         let updateProgress = { [weak cell] (receivedSize: Int64, expectedSize: Int64) in
             let progress = Progress(totalUnitCount: expectedSize)
             progress.completedUnitCount = receivedSize
             cell?.setProgress(progress)
+        }
+        let updateCell = { [weak cell] (error: NSError?, cancelled: Bool) in
+            cell?.setError(error, cancelled: cancelled)
         }
         let updateImage = { [weak cell] (image: UIImage?) in
             guard let cell = cell else {
@@ -267,37 +264,67 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
             /// 解决网络图片下载完成后不播放的问题
             cell.zoomImageView.startAnimating()
         }
-        let updateCell = { [weak cell] (error: NSError?, cancelled: Bool) in
-            cell?.setError(error, cancelled: cancelled)
-        }
-        /// 如果存在image, 且imageUrl为nil时, 则代表是本地图片, 无须网络请求
-        if let image = dataItem.image, dataItem.imageUrl == nil {
-            updateImage(image)
-            updateCell(nil, false)
-        } else {
-            let url = dataItem.imageUrl
-            webImageMediator.setImage(
+        if let dataItem = self.dataSource[index] as? ImageAssetItem {
+            let webImageMediator = self.configuration.webImageMediator(index)
+            /// 取消请求
+            webImageMediator.cancelRequest(for: cell)
+            /// 如果存在image, 且imageURL为nil时, 则代表是本地图片, 无须网络请求
+            if let image = dataItem.image, dataItem.imageURL == nil {
+                updateImage(image)
+                updateCell(nil, false)
+            } else {
+                /// 缩略图
+                updateImage(dataItem.thumbImage)
+                /// 请求图片
+                let url = dataItem.imageURL
+                webImageMediator.requestImage(
+                    for: cell,
+                    url: url,
+                    progress: {
+                        updateProgress($0, $1)
+                    },
+                    completed: {
+                        switch $0 {
+                        case .success(let value):
+                            updateImage(value.image)
+                            updateCell(nil, false)
+                        case .failure(let error):
+                            updateImage(nil)
+                            updateCell(error.error, error.isCancelled)
+                        }
+                    })
+            }
+        } else if let dataItem = self.dataSource[index] as? LivePhotoAssetItem {
+            let updateLivePhoto = { [weak cell] (livePhoto: (any LivePhoto)?) in
+                guard let cell = cell else {
+                    return
+                }
+                cell.zoomImageView.livePhoto = livePhoto
+            }
+            /// 缩略图
+            updateImage(dataItem.thumbImage)
+            
+            let livePhotoMediator = self.configuration.livePhotoMediator(index)
+            livePhotoMediator.cancelRequest(for: cell)
+            livePhotoMediator.requestLivePhoto(
                 for: cell,
-                url: url,
-                thumbImage: dataItem.thumbImage,
-                setImageBlock: { (image: UIImage?) in
-                    updateImage(image)
+                imageURL: dataItem.imageURL,
+                videoURL: dataItem.videoURL,
+                progress: {
+                    updateProgress($0, $1)
                 },
-                progress: { (receivedSize: Int64, expectedSize: Int64) in
-                    updateProgress(receivedSize, expectedSize)
-                },
-                completed: { result in
-                    switch result {
+                completed: {
+                    switch $0 {
                     case .success(let value):
-                        updateImage(value.image)
+                        updateLivePhoto(value.livePhoto)
                         updateCell(nil, false)
                     case .failure(let error):
-                        updateImage(nil)
+                        updateLivePhoto(nil)
                         updateCell(error.error, error.isCancelled)
                     }
                 })
         }
-        
+       
         self.eventHandler?.willDisplayZoomImageView(cell.zoomImageView, at: index)
     }
     
@@ -307,12 +334,12 @@ extension MediaBrowserViewController: MediaBrowserViewDataSource {
         }
         cell.videoPlayerView.thumbImage = dataItem.thumbImage
         /// 前后url不相同时需要释放之前的player, 否则会先显示之前的画面, 再显示当前的
-        if cell.videoPlayerView.url != dataItem.videoUrl {
+        if cell.videoPlayerView.url != dataItem.videoURL {
             cell.videoPlayerView.releasePlayer()
         }
         cell.setProgress(Progress())
         cell.videoPlayerView.isAutoPlay = !cell.isHidden
-        cell.videoPlayerView.url = dataItem.videoUrl
+        cell.videoPlayerView.url = dataItem.videoURL
         
         self.eventHandler?.willDisplayVideoPlayerView(cell.videoPlayerView, at: index)
     }
@@ -325,7 +352,7 @@ extension MediaBrowserViewController: MediaBrowserViewDelegate {
         if let imageCell = cell as? ImageCell {
             imageCell.zoomImageView.startAnimating()
         } else if let videoCell = cell as? VideoCell {
-            let status: Stauts = videoCell.videoPlayerView.status
+            let status = videoCell.videoPlayerView.status
             if status == .ready || status == .paused {
                 videoCell.videoPlayerView.play()
             }
@@ -509,6 +536,10 @@ extension MediaBrowserViewController: UIViewControllerTransitioningDelegate, Tra
             if let imageCell = self.currentPageCell as? ImageCell {
                 return imageCell.zoomImageView.isDisplayImageView ? imageCell.zoomImageView.image : nil
             } else if let image = dataItem.image != nil ? dataItem.image : dataItem.thumbImage {
+                return image
+            }
+        } else if let dataItem = dataItem as? LivePhotoAssetItem {
+            if let image = dataItem.thumbImage {
                 return image
             }
         } else if let dataItem = dataItem as? VideoAssetItem {

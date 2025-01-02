@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import PhotosUI
 import JSCoreKit
 
 public final class ZoomImageView: BasisMediaView {
@@ -182,6 +181,7 @@ extension ZoomImageView {
             return
         }
         self.failGestureRecognizer = otherGestureRecognizer
+        
         self.scrollView.panGestureRecognizer.require(toFail: otherGestureRecognizer)
         self.scrollView.pinchGestureRecognizer?.require(toFail: otherGestureRecognizer)
     }
@@ -347,7 +347,9 @@ extension ZoomImageView {
         guard self.livePhotoView == nil else {
             return
         }
-        let livePhotoView = self.modifier?.livePhotoView(in: self) ?? PHLivePhotoView()
+        guard let livePhotoView = self.modifier?.livePhotoView(in: self) else {
+            return
+        }
         livePhotoView.isHidden = true
         livePhotoView.isAccessibilityElement = true
         self.scrollView.addSubview(livePhotoView)

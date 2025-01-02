@@ -1,5 +1,5 @@
 //
-//  JSMediaBrowserViewController.swift
+//  BrowserViewController.swift
 //  JSMediaBrowserExample
 //
 //  Created by jiasong on 2023/1/5.
@@ -13,37 +13,7 @@ import QMUIKit
 import SDWebImage
 import Kingfisher
 
-public struct ImageItem: ImageAssetItem {
-    
-    public var thumbImage: UIImage?
-    
-    public var image: UIImage?
-    public var imageUrl: URL?
-    
-    public init(image: UIImage? = nil, imageUrl: URL? = nil, thumbImage: UIImage? = nil) {
-        self.image = image
-        self.imageUrl = imageUrl
-        self.thumbImage = thumbImage
-    }
-    
-}
-
-public struct VideoItem: VideoAssetItem {
-    
-    public var thumbImage: UIImage?
-    
-    public var videoUrl: URL?
-    public var videoAsset: AVAsset?
-    
-    public init(videoUrl: URL? = nil, videoAsset: AVAsset? = nil, thumbImage: UIImage? = nil) {
-        self.videoUrl = videoUrl
-        self.videoAsset = videoAsset
-        self.thumbImage = thumbImage
-    }
-    
-}
-
-class JSMediaBrowserViewController: MediaBrowserViewController {
+class BrowserViewController: MediaBrowserViewController {
     
     lazy var shareControl: ShareControl = {
         return ShareControl().then {
@@ -62,6 +32,9 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
             webImageMediator: { _ in
                 // KFWebImageMediator()
                 return SDWebImageMediator(context: [.animatedImageClass: SDAnimatedImage.self])
+            },
+            livePhotoMediator: { _ in
+                return PHLivePhotoMediator()
             },
             zoomImageViewModifier: { _ in
                 // KFZoomImageViewModifier()
@@ -108,11 +81,45 @@ class JSMediaBrowserViewController: MediaBrowserViewController {
     
 }
 
-extension JSMediaBrowserViewController {
+extension BrowserViewController {
     
     func updatePageControl(for index: Int? = nil) {
         self.pageControl.numberOfPages = self.totalUnitPage
         self.pageControl.currentPage = index ?? self.currentPage
+    }
+    
+}
+
+private struct SDZoomImageViewModifier: ZoomImageViewModifier {
+    
+    func imageView(in zoomImageView: ZoomImageView) -> UIImageView {
+        let imageView = SDAnimatedImageView()
+        imageView.autoPlayAnimatedImage = false
+        if #available(iOS 17.0, *) {
+            imageView.preferredImageDynamicRange = .high
+        }
+        return imageView
+    }
+    
+    func livePhotoView(in zoomImageView: ZoomImageView) -> any LivePhotoView {
+        return PHLivePhotoView()
+    }
+    
+}
+
+private struct KFZoomImageViewModifier: ZoomImageViewModifier {
+    
+    func imageView(in zoomImageView: ZoomImageView) -> UIImageView {
+        let imageView = AnimatedImageView()
+        imageView.autoPlayAnimatedImage = false
+        if #available(iOS 17.0, *) {
+            imageView.preferredImageDynamicRange = .high
+        }
+        return imageView
+    }
+    
+    func livePhotoView(in zoomImageView: ZoomImageView) -> any LivePhotoView {
+        return PHLivePhotoView()
     }
     
 }

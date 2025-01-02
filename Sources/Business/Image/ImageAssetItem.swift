@@ -10,6 +10,6 @@ import UIKit
 public protocol ImageAssetItem: AssetItem {
     
     var image: UIImage? { get set }
-    var imageUrl: URL? { get set }
+    var imageURL: URL? { get set }
     
 }

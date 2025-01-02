@@ -10,16 +10,20 @@ import UIKit
 public struct MediaBrowserViewControllerConfiguration {
     
     public typealias BuildWebImageMediator = (Int) -> WebImageMediator
+    public typealias BuildLivePhotoMediator = (Int) -> LivePhotoMediator
     public typealias BuildZoomImageViewModifier = (Int) -> ZoomImageViewModifier
     
     public var webImageMediator: BuildWebImageMediator
+    public var livePhotoMediator: BuildLivePhotoMediator
     public var zoomImageViewModifier: BuildZoomImageViewModifier
     
     public init(
         webImageMediator: @escaping BuildWebImageMediator,
+        livePhotoMediator: @escaping BuildLivePhotoMediator,
         zoomImageViewModifier: @escaping BuildZoomImageViewModifier
     ) {
         self.webImageMediator = webImageMediator
+        self.livePhotoMediator = livePhotoMediator
         self.zoomImageViewModifier = zoomImageViewModifier
     }
     
