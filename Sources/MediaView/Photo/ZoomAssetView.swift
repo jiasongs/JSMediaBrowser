@@ -35,6 +35,11 @@ internal extension ZoomAssetView {
     }
     
     func setAsset(_ asset: (any ZoomAsset)?) {
+        guard let asset = asset else {
+            self.asset = nil
+            return
+        }
+        assert(asset is ZoomAssetType, "类型不匹配")
         self.asset = asset as? ZoomAssetType
     }
     

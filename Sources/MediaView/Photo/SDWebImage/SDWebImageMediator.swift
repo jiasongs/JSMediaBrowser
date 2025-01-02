@@ -42,7 +42,7 @@ public struct SDWebImageMediator: WebImageMediator {
                         let error = WebImageMediationError(error: nsError, isCancelled: nsError.code == SDWebImageError.cancelled.rawValue)
                         completed(.failure(error))
                     } else {
-                        let result = WebImageMediationResult(image: image, data: data, url: url)
+                        let result = WebImageMediationResult(image: image)
                         completed(.success(result))
                     }
                 }

@@ -405,6 +405,7 @@ extension MediaBrowserViewController: MediaBrowserViewGestureDelegate {
     
     public func mediaBrowserView(_ mediaBrowserView: MediaBrowserView, gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool? {
         if gestureRecognizer == mediaBrowserView.longPressGesture {
+            // todo
             guard let photoCell = self.currentPageCell as? PhotoCell else {
                 return true
             }
